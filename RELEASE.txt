@@ -1,0 +1,2 @@
+- Improve handling of device disconnection in the middle of a request close
+- Publish library to GitHub

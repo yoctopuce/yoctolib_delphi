@@ -1,0 +1,6 @@
+nopoc     BITMAP    "artwork\nopoc.bmp"
+poc       BITMAP    "artwork\poc.bmp"
+pocb      BITMAP    "artwork\pocB.bmp"
+pocbg     BITMAP    "artwork\pocBG.bmp"
+pocg      BITMAP    "artwork\pocG.bmp"
+
