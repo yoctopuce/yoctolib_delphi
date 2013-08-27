@@ -1,41 +1,41 @@
-(*********************************************************************
+{*********************************************************************
  *
- * $Id: yocto_api.pas 10744 2013-03-27 17:17:42Z martinm $
+ * $Id: yocto_api.pas 12326 2013-08-13 15:52:20Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
  * - - - - - - - - - License information: - - - - - - - - -
  *
- * Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+ *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
- * 1) If you have obtained this file from www.yoctopuce.com,
- *    Yoctopuce Sarl licenses to you (hereafter Licensee) the
- *    right to use, modify, copy, and integrate this source file
- *    into your own solution for the sole purpose of interfacing
- *    a Yoctopuce product with Licensee's solution.
+ *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+ *  non-exclusive license to use, modify, copy and integrate this
+ *  file into your software for the sole purpose of interfacing 
+ *  with Yoctopuce products. 
  *
- *    The use of this file and all relationship between Yoctopuce
- *    and Licensee are governed by Yoctopuce General Terms and
- *    Conditions.
+ *  You may reproduce and distribute copies of this file in 
+ *  source or object form, as long as the sole purpose of this
+ *  code is to interface with Yoctopuce products. You must retain 
+ *  this notice in the distributed source file.
  *
- *    THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT
- *    WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
- *    WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
- *    FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
- *    EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *    INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
- *    COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
- *    SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
- *    LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
- *    CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
- *    BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
- *    WARRANTY, OR OTHERWISE.
+ *  You should refer to Yoctopuce General Terms and Conditions
+ *  for additional information regarding your rights and 
+ *  obligations.
  *
- * 2) If your intent is not to interface with Yoctopuce products,
- *    you are not entitled to use, read or create any derived
- *    material from this source file.
+ *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+ *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+ *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+ *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+ *  WARRANTY, OR OTHERWISE.
  *
- *********************************************************************)
+ *********************************************************************}
 unit yocto_api;
 
 interface
@@ -107,7 +107,7 @@ const
 
    YOCTO_API_VERSION_STR     = '1.01';
    YOCTO_API_VERSION_BCD     = $0101;
-   YOCTO_API_BUILD_NO        = '11167';
+   YOCTO_API_BUILD_NO        = '12553';
    YOCTO_DEFAULT_PORT        = 4444;
    YOCTO_VENDORID            = $24e0;
    YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -125,6 +125,7 @@ const
    YOCTO_PUBVAL_LEN          = 16; // Temporary storage, > YOCTO_PUBVAL_SIZE
    YOCTO_PASS_LEN            = 20;
    YOCTO_REALM_LEN           = 20;
+   YIOHDL_SIZE               = 8;
 
    INVALID_YHANDLE   =   0;
 
@@ -146,7 +147,7 @@ yDeviceSt = packed record
  end;
 
  YIOHDL = packed record
-   raw : array[0..7] of u8;
+   raw : array[0..YIOHDL_SIZE-1] of u8;
  end;
 
  PYIOHDL = ^YIOHDL;
@@ -195,6 +196,7 @@ const
    YAPI_EXHAUSTED                 = -10;     // you have run out of a limited ressource, check the documentation
    YAPI_DOUBLE_ACCES              = -11;     // you have two process that try to acces to the same device
    YAPI_UNAUTHORIZED              = -12;     // unauthorized access to password-protected device
+   YAPI_RTC_NOT_READY             = -13;     // real-time clock has not been initialized (or time was lost)
 
    Y_PRODUCTNAME_INVALID           = YAPI_INVALID_STRING;
    Y_SERIALNUMBER_INVALID          = YAPI_INVALID_STRING;
@@ -1175,6 +1177,22 @@ public
    /// </returns>
    ///-
    function get_icon2d():TBYTEARRAY;
+
+   ////
+   /// <summary>
+   ///   Returns a string with last logs of the module.
+   /// <para>
+   ///   This method return only
+   ///   logs that are still in the module.
+   /// </para>
+   /// <para>
+   /// </para>
+   /// </summary>
+   /// <returns>
+   ///   a string with last logs of the module.
+   /// </returns>
+   ///-
+   function get_lastLogs():string;
 
    //--- (end of generated code: YModule accessors declaration)
 
@@ -4857,6 +4875,30 @@ function TYModule.download(pathname:string):TBYTEARRAY;
 function TYModule.get_icon2d():TBYTEARRAY;
      begin
         result:= self._download('icon2d.png');
+            
+     end;
+
+
+////
+/// <summary>
+///   Returns a string with last logs of the module.
+/// <para>
+///   This method return only
+///   logs that are still in the module.
+/// </para>
+/// <para>
+/// </para>
+/// </summary>
+/// <returns>
+///   a string with last logs of the module.
+/// </returns>
+///-
+function TYModule.get_lastLogs():string;
+     var
+        content : TBYTEARRAY;
+     begin
+        content := self._download('logs.txt');
+        result:= string(content);
             
      end;
 

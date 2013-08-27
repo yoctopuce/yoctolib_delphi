@@ -1,8 +1,8 @@
 {*********************************************************************
  *
- * $Id: yocto_led.pas 12324 2013-08-13 15:10:31Z mvuilleu $
+ * $Id: yocto_realtimeclock.pas 12324 2013-08-13 15:10:31Z mvuilleu $
  *
- * Implements yFindLed(), the high-level API for Led functions
+ * Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
@@ -38,96 +38,92 @@
  *********************************************************************}
 
 
-unit yocto_led;
+unit yocto_realtimeclock;
 
 interface
 
 uses
    sysutils, classes, windows, yocto_api, yjson;
 
-//--- (YLed definitions)
+//--- (YRealTimeClock definitions)
 
 const
    Y_LOGICALNAME_INVALID           = YAPI_INVALID_STRING;
    Y_ADVERTISEDVALUE_INVALID       = YAPI_INVALID_STRING;
-   Y_POWER_OFF = 0;
-   Y_POWER_ON = 1;
-   Y_POWER_INVALID = -1;
-
-   Y_LUMINOSITY_INVALID            = -1;
-   Y_BLINKING_STILL = 0;
-   Y_BLINKING_RELAX = 1;
-   Y_BLINKING_AWARE = 2;
-   Y_BLINKING_RUN = 3;
-   Y_BLINKING_CALL = 4;
-   Y_BLINKING_PANIC = 5;
-   Y_BLINKING_INVALID = -1;
+   Y_UNIXTIME_INVALID              = YAPI_INVALID_LONGWORD;
+   Y_DATETIME_INVALID              = YAPI_INVALID_STRING;
+   Y_UTCOFFSET_INVALID             = YAPI_INVALID_LONGINT;
+   Y_TIMESET_FALSE = 0;
+   Y_TIMESET_TRUE = 1;
+   Y_TIMESET_INVALID = -1;
 
 
 
-//--- (end of YLed definitions)
+//--- (end of YRealTimeClock definitions)
 
 type
-//--- (YLed declaration)
- TYLed = class;
- TUpdateCallback  = procedure(func: TYLed; value:string);
+//--- (YRealTimeClock declaration)
+ TYRealTimeClock = class;
+ TUpdateCallback  = procedure(func: TYRealTimeClock; value:string);
 ////
 /// <summary>
-///   TYLed Class: Led function interface
+///   TYRealTimeClock Class: Real Time Clock function interface
 /// <para>
-///   Yoctopuce application programming interface
-///   allows you not only to drive the intensity of the led, but also to
-///   have it blink at various preset frequencies.
+///   The RealTimeClock function maintains and provides current date and time, even accross power cut
+///   lasting several days. It is the base for automated wake-up functions provided by the WakeUpScheduler.
+///   The current time may represent a local time as well as an UTC time, but no automatic time change
+///   will occur to account for daylight saving time.
 /// </para>
 /// </summary>
 ///-
-TYLed=class(TYFunction)
+TYRealTimeClock=class(TYFunction)
 protected
    // Attributes (function value cache)
    _logicalName              : string;
    _advertisedValue          : string;
-   _power                    : Integer;
-   _luminosity               : LongInt;
-   _blinking                 : Integer;
+   _unixTime                 : LongWord;
+   _dateTime                 : string;
+   _utcOffset                : LongInt;
+   _timeSet                  : Integer;
    // ValueCallback 
    _callback                 : TUpdateCallback;
    // Function-specific method for reading JSON output and caching result
    function _parse(j:PJSONRECORD):integer; override;
 
-   //--- (end of YLed declaration)
+   //--- (end of YRealTimeClock declaration)
 
 public
    constructor Create(func:string);
 
    ////
    /// <summary>
-   ///   Continues the enumeration of leds started using <c>yFirstLed()</c>.
+   ///   Continues the enumeration of clocks started using <c>yFirstRealTimeClock()</c>.
    /// <para>
    /// </para>
    /// </summary>
    /// <returns>
-   ///   a pointer to a <c>YLed</c> object, corresponding to
-   ///   a led currently online, or a <c>null</c> pointer
-   ///   if there are no more leds to enumerate.
+   ///   a pointer to a <c>YRealTimeClock</c> object, corresponding to
+   ///   a clock currently online, or a <c>null</c> pointer
+   ///   if there are no more clocks to enumerate.
    /// </returns>
    ///-
-   function nextLed():TYLed;
+   function nextRealTimeClock():TYRealTimeClock;
 
-   //--- (YLed accessors declaration)
+   //--- (YRealTimeClock accessors declaration)
   Procedure registerValueCallback(callback : TUpdateCallback);
   procedure set_callback(callback : TUpdateCallback);
   procedure setCallback(callback : TUpdateCallback);
   procedure advertiseValue(value : String);override;
    ////
    /// <summary>
-   ///   Returns the logical name of the led.
+   ///   Returns the logical name of the clock.
    /// <para>
    /// </para>
    /// <para>
    /// </para>
    /// </summary>
    /// <returns>
-   ///   a string corresponding to the logical name of the led
+   ///   a string corresponding to the logical name of the clock
    /// </returns>
    /// <para>
    ///   On failure, throws an exception or returns <c>Y_LOGICALNAME_INVALID</c>.
@@ -137,7 +133,7 @@ public
 
    ////
    /// <summary>
-   ///   Changes the logical name of the led.
+   ///   Changes the logical name of the clock.
    /// <para>
    ///   You can use <c>yCheckLogicalName()</c>
    ///   prior to this call to make sure that your parameter is valid.
@@ -148,7 +144,7 @@ public
    /// </para>
    /// </summary>
    /// <param name="newval">
-   ///   a string corresponding to the logical name of the led
+   ///   a string corresponding to the logical name of the clock
    /// </param>
    /// <para>
    /// </para>
@@ -163,14 +159,14 @@ public
 
    ////
    /// <summary>
-   ///   Returns the current value of the led (no more than 6 characters).
+   ///   Returns the current value of the clock (no more than 6 characters).
    /// <para>
    /// </para>
    /// <para>
    /// </para>
    /// </summary>
    /// <returns>
-   ///   a string corresponding to the current value of the led (no more than 6 characters)
+   ///   a string corresponding to the current value of the clock (no more than 6 characters)
    /// </returns>
    /// <para>
    ///   On failure, throws an exception or returns <c>Y_ADVERTISEDVALUE_INVALID</c>.
@@ -180,31 +176,33 @@ public
 
    ////
    /// <summary>
-   ///   Returns the current led state.
+   ///   Returns the current time in Unix format (number of elapsed seconds since Jan 1st, 1970).
    /// <para>
    /// </para>
    /// <para>
    /// </para>
    /// </summary>
    /// <returns>
-   ///   either <c>Y_POWER_OFF</c> or <c>Y_POWER_ON</c>, according to the current led state
+   ///   an integer corresponding to the current time in Unix format (number of elapsed seconds since Jan 1st, 1970)
    /// </returns>
    /// <para>
-   ///   On failure, throws an exception or returns <c>Y_POWER_INVALID</c>.
+   ///   On failure, throws an exception or returns <c>Y_UNIXTIME_INVALID</c>.
    /// </para>
    ///-
-   function get_power():Integer;
+   function get_unixTime():LongWord;
 
    ////
    /// <summary>
-   ///   Changes the state of the led.
+   ///   Changes the current time.
    /// <para>
+   ///   Time is specifid in Unix format (number of elapsed seconds since Jan 1st, 1970).
+   ///   If current UTC time is known, utcOffset will be automatically adjusted for the new specified time.
    /// </para>
    /// <para>
    /// </para>
    /// </summary>
    /// <param name="newval">
-   ///   either <c>Y_POWER_OFF</c> or <c>Y_POWER_ON</c>, according to the state of the led
+   ///   an integer corresponding to the current time
    /// </param>
    /// <para>
    /// </para>
@@ -215,35 +213,53 @@ public
    ///   On failure, throws an exception or returns a negative error code.
    /// </para>
    ///-
-   function set_power(newval:Integer):integer;
+   function set_unixTime(newval:LongWord):integer;
 
    ////
    /// <summary>
-   ///   Returns the current led intensity (in per cent).
+   ///   Returns the current time in the form "YYYY/MM/DD hh:mm:ss"
+   /// <para>
+   /// </para>
+   /// </summary>
+   /// <returns>
+   ///   a string corresponding to the current time in the form "YYYY/MM/DD hh:mm:ss"
+   /// </returns>
+   /// <para>
+   ///   On failure, throws an exception or returns <c>Y_DATETIME_INVALID</c>.
+   /// </para>
+   ///-
+   function get_dateTime():string;
+
+   ////
+   /// <summary>
+   ///   Returns the number of seconds between current time and UTC time (time zone).
    /// <para>
    /// </para>
    /// <para>
    /// </para>
    /// </summary>
    /// <returns>
-   ///   an integer corresponding to the current led intensity (in per cent)
+   ///   an integer corresponding to the number of seconds between current time and UTC time (time zone)
    /// </returns>
    /// <para>
-   ///   On failure, throws an exception or returns <c>Y_LUMINOSITY_INVALID</c>.
+   ///   On failure, throws an exception or returns <c>Y_UTCOFFSET_INVALID</c>.
    /// </para>
    ///-
-   function get_luminosity():LongInt;
+   function get_utcOffset():LongInt;
 
    ////
    /// <summary>
-   ///   Changes the current led intensity (in per cent).
+   ///   Changes the number of seconds between current time and UTC time (time zone).
    /// <para>
+   ///   The timezone is automatically rounded to the nearest multiple of 15 minutes.
+   ///   If current UTC time is known, the current time will automatically be updated according to the
+   ///   selected time zone.
    /// </para>
    /// <para>
    /// </para>
    /// </summary>
    /// <param name="newval">
-   ///   an integer corresponding to the current led intensity (in per cent)
+   ///   an integer corresponding to the number of seconds between current time and UTC time (time zone)
    /// </param>
    /// <para>
    /// </para>
@@ -254,59 +270,34 @@ public
    ///   On failure, throws an exception or returns a negative error code.
    /// </para>
    ///-
-   function set_luminosity(newval:LongInt):integer;
+   function set_utcOffset(newval:LongInt):integer;
 
    ////
    /// <summary>
-   ///   Returns the current led signaling mode.
+   ///   Returns true if the clock has been set, and false otherwise.
    /// <para>
    /// </para>
    /// <para>
    /// </para>
    /// </summary>
    /// <returns>
-   ///   a value among <c>Y_BLINKING_STILL</c>, <c>Y_BLINKING_RELAX</c>, <c>Y_BLINKING_AWARE</c>,
-   ///   <c>Y_BLINKING_RUN</c>, <c>Y_BLINKING_CALL</c> and <c>Y_BLINKING_PANIC</c> corresponding to the
-   ///   current led signaling mode
+   ///   either <c>Y_TIMESET_FALSE</c> or <c>Y_TIMESET_TRUE</c>, according to true if the clock has been
+   ///   set, and false otherwise
    /// </returns>
    /// <para>
-   ///   On failure, throws an exception or returns <c>Y_BLINKING_INVALID</c>.
+   ///   On failure, throws an exception or returns <c>Y_TIMESET_INVALID</c>.
    /// </para>
    ///-
-   function get_blinking():Integer;
+   function get_timeSet():Integer;
 
-   ////
-   /// <summary>
-   ///   Changes the current led signaling mode.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <param name="newval">
-   ///   a value among <c>Y_BLINKING_STILL</c>, <c>Y_BLINKING_RELAX</c>, <c>Y_BLINKING_AWARE</c>,
-   ///   <c>Y_BLINKING_RUN</c>, <c>Y_BLINKING_CALL</c> and <c>Y_BLINKING_PANIC</c> corresponding to the
-   ///   current led signaling mode
-   /// </param>
-   /// <para>
-   /// </para>
-   /// <returns>
-   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns a negative error code.
-   /// </para>
-   ///-
-   function set_blinking(newval:Integer):integer;
-
-   //--- (end of YLed accessors declaration)
+   //--- (end of YRealTimeClock accessors declaration)
 end;
 
-//--- (Led functions declaration)
+//--- (RealTimeClock functions declaration)
 
 ////
 /// <summary>
-///   Retrieves a led for a given identifier.
+///   Retrieves a clock for a given identifier.
 /// <para>
 ///   The identifier can be specified using several formats:
 /// </para>
@@ -330,60 +321,61 @@ end;
 /// <para>
 /// </para>
 /// <para>
-///   This function does not require that the led is online at the time
+///   This function does not require that the clock is online at the time
 ///   it is invoked. The returned object is nevertheless valid.
-///   Use the method <c>YLed.isOnline()</c> to test if the led is
+///   Use the method <c>YRealTimeClock.isOnline()</c> to test if the clock is
 ///   indeed online at a given time. In case of ambiguity when looking for
-///   a led by logical name, no error is notified: the first instance
+///   a clock by logical name, no error is notified: the first instance
 ///   found is returned. The search is performed first by hardware name,
 ///   then by logical name.
 /// </para>
 /// </summary>
 /// <param name="func">
-///   a string that uniquely characterizes the led
+///   a string that uniquely characterizes the clock
 /// </param>
 /// <returns>
-///   a <c>YLed</c> object allowing you to drive the led.
+///   a <c>YRealTimeClock</c> object allowing you to drive the clock.
 /// </returns>
 ///-
-function yFindLed(func:string):TYLed;
+function yFindRealTimeClock(func:string):TYRealTimeClock;
 ////
 /// <summary>
-///   Starts the enumeration of leds currently accessible.
+///   Starts the enumeration of clocks currently accessible.
 /// <para>
-///   Use the method <c>YLed.nextLed()</c> to iterate on
-///   next leds.
+///   Use the method <c>YRealTimeClock.nextRealTimeClock()</c> to iterate on
+///   next clocks.
 /// </para>
 /// </summary>
 /// <returns>
-///   a pointer to a <c>YLed</c> object, corresponding to
-///   the first led currently online, or a <c>null</c> pointer
+///   a pointer to a <c>YRealTimeClock</c> object, corresponding to
+///   the first clock currently online, or a <c>null</c> pointer
 ///   if there are none.
 /// </returns>
 ///-
-function yFirstLed():TYLed;
+function yFirstRealTimeClock():TYRealTimeClock;
 
-//--- (end of Led functions declaration)
+//--- (end of RealTimeClock functions declaration)
 
 implementation
 
-//--- (YLed implementation)
+//--- (YRealTimeClock implementation)
 
 var
-   _LedCache : TStringList;
+   _RealTimeClockCache : TStringList;
 
-constructor TYLed.Create(func:string);
+constructor TYRealTimeClock.Create(func:string);
  begin
-   inherited Create('Led', func);
+   inherited Create('RealTimeClock', func);
    _logicalName := Y_LOGICALNAME_INVALID;
    _advertisedValue := Y_ADVERTISEDVALUE_INVALID;
-   _power := Y_POWER_INVALID;
-   _luminosity := Y_LUMINOSITY_INVALID;
-   _blinking := Y_BLINKING_INVALID;
+   _unixTime := Y_UNIXTIME_INVALID;
+   _dateTime := Y_DATETIME_INVALID;
+   _utcOffset := Y_UTCOFFSET_INVALID;
+   _timeSet := Y_TIMESET_INVALID;
  end;
 
 {$HINTS OFF}
-function TYLed._parse(j:PJSONRECORD):integer;
+function TYRealTimeClock._parse(j:PJSONRECORD):integer;
  var
    member,sub : PJSONRECORD;
    i,l        : integer;
@@ -400,17 +392,21 @@ function TYLed._parse(j:PJSONRECORD):integer;
        begin
          _advertisedValue := string(member^.svalue);
        end else
-      if (member^.name = 'power') then
+      if (member^.name = 'unixTime') then
        begin
-         _power := member^.ivalue;
+         _unixTime := member^.ivalue;
        end else
-      if (member^.name = 'luminosity') then
+      if (member^.name = 'dateTime') then
        begin
-         _luminosity := member^.ivalue;
+         _dateTime := string(member^.svalue);
        end else
-      if (member^.name = 'blinking') then
+      if (member^.name = 'utcOffset') then
        begin
-         _blinking := member^.ivalue;
+         _utcOffset := member^.ivalue;
+       end else
+      if (member^.name = 'timeSet') then
+       begin
+         _timeSet := member^.ivalue;
        end else
        begin end;
     end;
@@ -420,20 +416,20 @@ function TYLed._parse(j:PJSONRECORD):integer;
 
 ////
 /// <summary>
-///   Returns the logical name of the led.
+///   Returns the logical name of the clock.
 /// <para>
 /// </para>
 /// <para>
 /// </para>
 /// </summary>
 /// <returns>
-///   a string corresponding to the logical name of the led
+///   a string corresponding to the logical name of the clock
 /// </returns>
 /// <para>
 ///   On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
 /// </para>
 ///-
-function TYLed.get_logicalName():string;
+function TYRealTimeClock.get_logicalName():string;
  begin
    if (_cacheExpiration <= yGetTickCount()) then
       if (YISERR(load(YAPI_defaultCacheValidity))) then
@@ -446,7 +442,7 @@ function TYLed.get_logicalName():string;
 
 ////
 /// <summary>
-///   Changes the logical name of the led.
+///   Changes the logical name of the clock.
 /// <para>
 ///   You can use yCheckLogicalName()
 ///   prior to this call to make sure that your parameter is valid.
@@ -457,7 +453,7 @@ function TYLed.get_logicalName():string;
 /// </para>
 /// </summary>
 /// <param name="newval">
-///   a string corresponding to the logical name of the led
+///   a string corresponding to the logical name of the clock
 /// </param>
 /// <para>
 /// </para>
@@ -468,7 +464,7 @@ function TYLed.get_logicalName():string;
 ///   On failure, throws an exception or returns a negative error code.
 /// </para>
 ///-
-function TYLed.set_logicalName(newval:string):integer;
+function TYRealTimeClock.set_logicalName(newval:string):integer;
  var
    rest_val: string;
  begin
@@ -478,20 +474,20 @@ function TYLed.set_logicalName(newval:string):integer;
 
 ////
 /// <summary>
-///   Returns the current value of the led (no more than 6 characters).
+///   Returns the current value of the clock (no more than 6 characters).
 /// <para>
 /// </para>
 /// <para>
 /// </para>
 /// </summary>
 /// <returns>
-///   a string corresponding to the current value of the led (no more than 6 characters)
+///   a string corresponding to the current value of the clock (no more than 6 characters)
 /// </returns>
 /// <para>
 ///   On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
 /// </para>
 ///-
-function TYLed.get_advertisedValue():string;
+function TYRealTimeClock.get_advertisedValue():string;
  begin
    if (_cacheExpiration <= yGetTickCount()) then
       if (YISERR(load(YAPI_defaultCacheValidity))) then
@@ -504,40 +500,42 @@ function TYLed.get_advertisedValue():string;
 
 ////
 /// <summary>
-///   Returns the current led state.
+///   Returns the current time in Unix format (number of elapsed seconds since Jan 1st, 1970).
 /// <para>
 /// </para>
 /// <para>
 /// </para>
 /// </summary>
 /// <returns>
-///   either Y_POWER_OFF or Y_POWER_ON, according to the current led state
+///   an integer corresponding to the current time in Unix format (number of elapsed seconds since Jan 1st, 1970)
 /// </returns>
 /// <para>
-///   On failure, throws an exception or returns Y_POWER_INVALID.
+///   On failure, throws an exception or returns Y_UNIXTIME_INVALID.
 /// </para>
 ///-
-function TYLed.get_power():Integer;
+function TYRealTimeClock.get_unixTime():LongWord;
  begin
    if (_cacheExpiration <= yGetTickCount()) then
       if (YISERR(load(YAPI_defaultCacheValidity))) then
        begin
-         result := Y_POWER_INVALID;
+         result := Y_UNIXTIME_INVALID;
          exit;
        end;
-   result := _power;
+   result := _unixTime;
  end;
 
 ////
 /// <summary>
-///   Changes the state of the led.
+///   Changes the current time.
 /// <para>
+///   Time is specifid in Unix format (number of elapsed seconds since Jan 1st, 1970).
+///   If current UTC time is known, utcOffset will be automatically adjusted for the new specified time.
 /// </para>
 /// <para>
 /// </para>
 /// </summary>
 /// <param name="newval">
-///   either Y_POWER_OFF or Y_POWER_ON, according to the state of the led
+///   an integer corresponding to the current time
 /// </param>
 /// <para>
 /// </para>
@@ -548,106 +546,77 @@ function TYLed.get_power():Integer;
 ///   On failure, throws an exception or returns a negative error code.
 /// </para>
 ///-
-function TYLed.set_power(newval:Integer):integer;
- var
-   rest_val: string;
- begin
-   if(newval>0) then rest_val := '1' else rest_val := '0';
-   result := _setAttr('power',rest_val);
- end;
-
-////
-/// <summary>
-///   Returns the current led intensity (in per cent).
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   an integer corresponding to the current led intensity (in per cent)
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_LUMINOSITY_INVALID.
-/// </para>
-///-
-function TYLed.get_luminosity():LongInt;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_LUMINOSITY_INVALID;
-         exit;
-       end;
-   result := _luminosity;
- end;
-
-////
-/// <summary>
-///   Changes the current led intensity (in per cent).
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <param name="newval">
-///   an integer corresponding to the current led intensity (in per cent)
-/// </param>
-/// <para>
-/// </para>
-/// <returns>
-///   YAPI_SUCCESS if the call succeeds.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns a negative error code.
-/// </para>
-///-
-function TYLed.set_luminosity(newval:LongInt):integer;
+function TYRealTimeClock.set_unixTime(newval:LongWord):integer;
  var
    rest_val: string;
  begin
    rest_val := inttostr(newval);
-   result := _setAttr('luminosity',rest_val);
+   result := _setAttr('unixTime',rest_val);
  end;
 
 ////
 /// <summary>
-///   Returns the current led signaling mode.
+///   Returns the current time in the form "YYYY/MM/DD hh:mm:ss"
+/// <para>
+/// </para>
+/// </summary>
+/// <returns>
+///   a string corresponding to the current time in the form "YYYY/MM/DD hh:mm:ss"
+/// </returns>
+/// <para>
+///   On failure, throws an exception or returns Y_DATETIME_INVALID.
+/// </para>
+///-
+function TYRealTimeClock.get_dateTime():string;
+ begin
+   if (_cacheExpiration <= yGetTickCount()) then
+      if (YISERR(load(YAPI_defaultCacheValidity))) then
+       begin
+         result := Y_DATETIME_INVALID;
+         exit;
+       end;
+   result := _dateTime;
+ end;
+
+////
+/// <summary>
+///   Returns the number of seconds between current time and UTC time (time zone).
 /// <para>
 /// </para>
 /// <para>
 /// </para>
 /// </summary>
 /// <returns>
-///   a value among Y_BLINKING_STILL, Y_BLINKING_RELAX, Y_BLINKING_AWARE, Y_BLINKING_RUN, Y_BLINKING_CALL
-///   and Y_BLINKING_PANIC corresponding to the current led signaling mode
+///   an integer corresponding to the number of seconds between current time and UTC time (time zone)
 /// </returns>
 /// <para>
-///   On failure, throws an exception or returns Y_BLINKING_INVALID.
+///   On failure, throws an exception or returns Y_UTCOFFSET_INVALID.
 /// </para>
 ///-
-function TYLed.get_blinking():Integer;
+function TYRealTimeClock.get_utcOffset():LongInt;
  begin
    if (_cacheExpiration <= yGetTickCount()) then
       if (YISERR(load(YAPI_defaultCacheValidity))) then
        begin
-         result := Y_BLINKING_INVALID;
+         result := Y_UTCOFFSET_INVALID;
          exit;
        end;
-   result := _blinking;
+   result := _utcOffset;
  end;
 
 ////
 /// <summary>
-///   Changes the current led signaling mode.
+///   Changes the number of seconds between current time and UTC time (time zone).
 /// <para>
+///   The timezone is automatically rounded to the nearest multiple of 15 minutes.
+///   If current UTC time is known, the current time will automatically be updated according to the
+///   selected time zone.
 /// </para>
 /// <para>
 /// </para>
 /// </summary>
 /// <param name="newval">
-///   a value among Y_BLINKING_STILL, Y_BLINKING_RELAX, Y_BLINKING_AWARE, Y_BLINKING_RUN, Y_BLINKING_CALL
-///   and Y_BLINKING_PANIC corresponding to the current led signaling mode
+///   an integer corresponding to the number of seconds between current time and UTC time (time zone)
 /// </param>
 /// <para>
 /// </para>
@@ -658,29 +627,55 @@ function TYLed.get_blinking():Integer;
 ///   On failure, throws an exception or returns a negative error code.
 /// </para>
 ///-
-function TYLed.set_blinking(newval:Integer):integer;
+function TYRealTimeClock.set_utcOffset(newval:LongInt):integer;
  var
    rest_val: string;
  begin
    rest_val := inttostr(newval);
-   result := _setAttr('blinking',rest_val);
+   result := _setAttr('utcOffset',rest_val);
  end;
 
-function TYLed.nextLed(): TYLed;
+////
+/// <summary>
+///   Returns true if the clock has been set, and false otherwise.
+/// <para>
+/// </para>
+/// <para>
+/// </para>
+/// </summary>
+/// <returns>
+///   either Y_TIMESET_FALSE or Y_TIMESET_TRUE, according to true if the clock has been set, and false otherwise
+/// </returns>
+/// <para>
+///   On failure, throws an exception or returns Y_TIMESET_INVALID.
+/// </para>
+///-
+function TYRealTimeClock.get_timeSet():Integer;
+ begin
+   if (_cacheExpiration <= yGetTickCount()) then
+      if (YISERR(load(YAPI_defaultCacheValidity))) then
+       begin
+         result := Y_TIMESET_INVALID;
+         exit;
+       end;
+   result := _timeSet;
+ end;
+
+function TYRealTimeClock.nextRealTimeClock(): TYRealTimeClock;
  var
    hwid: string;
  begin
    if (YISERR(_nextFunction(hwid))) then
     begin
-      nextLed := nil;
+      nextRealTimeClock := nil;
       exit;
     end;
    if (hwid='') then
     begin
-      nextLed := nil;
+      nextRealTimeClock := nil;
       exit;
     end;
-    nextLed := yFindLed(hwid);
+    nextRealTimeClock := yFindRealTimeClock(hwid);
  end;
 
 
@@ -692,7 +687,7 @@ function TYLed.nextLed(): TYLed;
     /// </para>
     /// </summary>
     ///-
-  Procedure TYLed.registerValueCallback(callback : TUpdateCallback);
+  Procedure TYRealTimeClock.registerValueCallback(callback : TUpdateCallback);
   begin
    If assigned(callback) Then
      registerFuncCallback(self)
@@ -701,83 +696,83 @@ function TYLed.nextLed(): TYLed;
    _callback := callback;
   End;
 
-  procedure TYLed.set_callback(callback : TUpdateCallback);
+  procedure TYRealTimeClock.set_callback(callback : TUpdateCallback);
    Begin
     registerValueCallback(callback);
   End;
 
-  procedure  TYLed.setCallback(callback : TUpdateCallback);
+  procedure  TYRealTimeClock.setCallback(callback : TUpdateCallback);
    Begin
     registerValueCallback(callback);
    End;
 
-  procedure  TYLed.advertiseValue(value : String);
+  procedure  TYRealTimeClock.advertiseValue(value : String);
   Begin
     If assigned(_callback)  Then _callback(self, value)
    End;
 
-//--- (end of YLed implementation)
+//--- (end of YRealTimeClock implementation)
 
-//--- (Led functions)
+//--- (RealTimeClock functions)
 
-function yFindLed(func:string): TYLed;
+function yFindRealTimeClock(func:string): TYRealTimeClock;
  var
    index: integer;
-   res  : TYLed;
+   res  : TYRealTimeClock;
  begin
-    if (_LedCache.Find(func, index)) then
+    if (_RealTimeClockCache.Find(func, index)) then
      begin
-       yFindLed := TYLed(_LedCache.objects[index]);
+       yFindRealTimeClock := TYRealTimeClock(_RealTimeClockCache.objects[index]);
        exit;
      end;
-   res := TYLed.Create(func);
-   _LedCache.addObject(func, res);
-   yFindLed := res;
+   res := TYRealTimeClock.Create(func);
+   _RealTimeClockCache.addObject(func, res);
+   yFindRealTimeClock := res;
  end;
 
-function yFirstLed(): TYLed;
+function yFirstRealTimeClock(): TYRealTimeClock;
  var
    v_fundescr      : YFUN_DESCR;
    dev             : YDEV_DESCR;
    neededsize, err : integer;
    serial, funcId, funcName, funcVal, errmsg : string;
  begin
-   err := yapiGetFunctionsByClass('Led', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
+   err := yapiGetFunctionsByClass('RealTimeClock', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
    if (YISERR(err) or (neededsize = 0)) then
     begin
-       yFirstLed := nil;
+       yFirstRealTimeClock := nil;
        exit;
     end;
    if (YISERR(yapiGetFunctionInfo(v_fundescr, dev, serial, funcId, funcName, funcVal, errmsg))) then
     begin
-       yFirstLed := nil;
+       yFirstRealTimeClock := nil;
        exit;
     end;
-   yFirstLed := yFindLed(serial+'.'+funcId);
+   yFirstRealTimeClock := yFindRealTimeClock(serial+'.'+funcId);
  end;
 
-procedure _LedCleanup();
+procedure _RealTimeClockCleanup();
   var i:integer;
 begin
-  for i:=0 to _LedCache.count-1 do 
+  for i:=0 to _RealTimeClockCache.count-1 do 
     begin
-     _LedCache.objects[i].free();
-     _LedCache.objects[i]:=nil;
+     _RealTimeClockCache.objects[i].free();
+     _RealTimeClockCache.objects[i]:=nil;
     end;
-   _LedCache.free();
-   _LedCache:=nil;
+   _RealTimeClockCache.free();
+   _RealTimeClockCache:=nil;
 end;
 
-//--- (end of Led functions)
+//--- (end of RealTimeClock functions)
 
 initialization
-   //--- (Led initialization)
-   _LedCache        := TstringList.create();
-   _LedCache.sorted := true;
-   //--- (end of Led initialization)
+   //--- (RealTimeClock initialization)
+   _RealTimeClockCache        := TstringList.create();
+   _RealTimeClockCache.sorted := true;
+   //--- (end of RealTimeClock initialization)
 
 finalization
-   //--- (Led cleanup)
-   _LedCleanup();
-   //--- (end of Led cleanup)
+   //--- (RealTimeClock cleanup)
+   _RealTimeClockCleanup();
+   //--- (end of RealTimeClock cleanup)
 end.

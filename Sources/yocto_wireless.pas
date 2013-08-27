@@ -1,39 +1,39 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 10384 2013-03-16 16:57:45Z martinm $
+ * $Id: yocto_wireless.pas 12337 2013-08-14 15:22:22Z mvuilleu $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
- * Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+ *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
- * 1) If you have obtained this file from www.yoctopuce.com,
- *    Yoctopuce Sarl licenses to you (hereafter Licensee) the
- *    right to use, modify, copy, and integrate this source file
- *    into your own solution for the sole purpose of interfacing
- *    a Yoctopuce product with Licensee's solution.
+ *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+ *  non-exclusive license to use, modify, copy and integrate this
+ *  file into your software for the sole purpose of interfacing 
+ *  with Yoctopuce products. 
  *
- *    The use of this file and all relationship between Yoctopuce 
- *    and Licensee are governed by Yoctopuce General Terms and 
- *    Conditions.
+ *  You may reproduce and distribute copies of this file in 
+ *  source or object form, as long as the sole purpose of this
+ *  code is to interface with Yoctopuce products. You must retain 
+ *  this notice in the distributed source file.
  *
- *    THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *    WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *    WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
- *    FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
- *    EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *    INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *    COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *    SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
- *    LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
- *    CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
- *    BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
- *    WARRANTY, OR OTHERWISE.
+ *  You should refer to Yoctopuce General Terms and Conditions
+ *  for additional information regarding your rights and 
+ *  obligations.
  *
- * 2) If your intent is not to interface with Yoctopuce products,
- *    you are not entitled to use, read or create any derived
- *    material from this source file.
+ *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+ *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+ *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+ *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+ *  WARRANTY, OR OTHERWISE.
  *
  *********************************************************************}
 
@@ -45,7 +45,7 @@ interface
 uses
    sysutils, classes, windows, yocto_api, yjson;
 
-//--- (YWireless definitions)
+//--- (generated code: YWireless definitions)
 
 const
    Y_LOGICALNAME_INVALID           = YAPI_INVALID_STRING;
@@ -64,9 +64,51 @@ const
    Y_WLANCONFIG_INVALID            = YAPI_INVALID_STRING;
 
 
-//--- (end of YWireless definitions)
+//--- (end of generated code: YWireless definitions)
 
 type
+
+
+//--- (generated code: YWlanRecord declaration)
+ TYWlanRecord = class;
+////
+/// <summary>
+///   TYWlanRecord Class: Description of a wireless network
+/// <para>
+/// </para>
+/// <para>
+/// </para>
+/// </summary>
+///-
+TYWlanRecord=class(TObject)
+protected
+   // Attributes (function value cache)
+   // Function-specific method for reading JSON output and caching result
+
+   //--- (end of generated code: YWlanRecord declaration)
+   _ssid,_sec:string;
+   _channel,_rssi :integer;
+public
+   constructor create(data:string);
+   
+
+   //--- (generated code: YWlanRecord accessors declaration)
+   function get_ssid():string;
+
+   function get_channel():integer;
+
+   function get_security():string;
+
+   function get_linkQuality():integer;
+
+   //--- (end of generated code: YWlanRecord accessors declaration)
+end;
+
+
+
+TYWLANRECORDARRAY = array of TYWlanRecord;
+
+
 //--- (YWireless declaration)
  TYWireless = class;
  TUpdateCallback  = procedure(func: TYWireless; value:string);
@@ -95,7 +137,7 @@ protected
    // Function-specific method for reading JSON output and caching result
    function _parse(j:PJSONRECORD):integer; override;
 
-   //--- (end of YWireless declaration)
+   //--- (end of generated code: YWireless declaration)
 
 public
    constructor Create(func:string);
@@ -114,7 +156,7 @@ public
    ///-
    function nextWireless():TYWireless;
 
-   //--- (YWireless accessors declaration)
+   //--- (generated code: YWireless accessors declaration)
   Procedure registerValueCallback(callback : TUpdateCallback);
   procedure set_callback(callback : TUpdateCallback);
   procedure setCallback(callback : TUpdateCallback);
@@ -304,7 +346,7 @@ public
    ///   wireless network, without using an access point.
    /// <para>
    ///   If a security key is specified,
-   ///   the network will be protected by WEP128, since WPA is not standardized for
+   ///   the network is protected by WEP128, since WPA is not standardized for
    ///   ad-hoc networks.
    ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
    /// </para>
@@ -328,10 +370,33 @@ public
    ///-
    function adhocNetwork(ssid:string;securityKey:string):integer;
 
-   //--- (end of YWireless accessors declaration)
+   ////
+   /// <summary>
+   ///   Returns a list of YWlanRecord objects which describe detected Wireless networks.
+   /// <para>
+   ///   This list is not updated when the module is already connected to an acces point (infrastructure mode).
+   ///   To force an update of this list, <c>adhocNetwork()</c> must be called to disconnect
+   ///   the module from the current network. The returned list must be unallocated by caller,
+   /// </para>
+   /// <para>
+   /// </para>
+   /// </summary>
+   /// <returns>
+   ///   a list of <c>YWlanRecord</c> objects, containing the SSID, channel,
+   ///   link quality and the type of security of the wireless network.
+   /// </returns>
+   /// <para>
+   ///   On failure, throws an exception or returns an empty list.
+   /// </para>
+   ///-
+   function get_detectedWlans():TYWLANRECORDARRAY;
+
+   //--- (end of generated code: YWireless accessors declaration)
 end;
 
-//--- (Wireless functions declaration)
+procedure freeWlanRecordArray(var list:TYWLANRECORDARRAY);
+
+//--- (generated code: Wireless functions declaration)
 
 ////
 /// <summary>
@@ -392,11 +457,11 @@ function yFindWireless(func:string):TYWireless;
 ///-
 function yFirstWireless():TYWireless;
 
-//--- (end of Wireless functions declaration)
+//--- (end of generated code: Wireless functions declaration)
 
 implementation
 
-//--- (YWireless implementation)
+//--- (generated code: YWireless implementation)
 
 var
    _WirelessCache : TStringList;
@@ -736,7 +801,7 @@ function TYWireless.joinNetwork(ssid:string;securityKey:string):integer;
 ///   wireless network, without using an access point.
 /// <para>
 ///   If a security key is specified,
-///   the network will be protected by WEP128, since WPA is not standardized for
+///   the network is protected by WEP128, since WPA is not standardized for
 ///   ad-hoc networks.
 ///   Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
 /// </para>
@@ -765,6 +830,40 @@ function TYWireless.adhocNetwork(ssid:string;securityKey:string):integer;
    rest_val := 'ADHOC:'+ssid+'\\'+securityKey;
    result := _setAttr('wlanConfig', rest_val);
  end;
+
+////
+/// <summary>
+///   Returns a list of YWlanRecord objects which describe detected Wireless networks.
+/// <para>
+///   This list is not updated when the module is already connected to an acces point (infrastructure mode).
+///   To force an update of this list, <c>adhocNetwork()</c> must be called to disconnect
+///   the module from the current network. The returned list must be unallocated by caller,
+/// </para>
+/// <para>
+/// </para>
+/// </summary>
+/// <returns>
+///   a list of <c>YWlanRecord</c> objects, containing the SSID, channel,
+///   link quality and the type of security of the wireless network.
+/// </returns>
+/// <para>
+///   On failure, throws an exception or returns an empty list.
+/// </para>
+///-
+function TYWireless.get_detectedWlans():TYWLANRECORDARRAY;
+     var
+        json : TBYTEARRAY;
+         list : TSTRINGARRAY;
+         res : TYWLANRECORDARRAY;
+        i_i : integer;
+     begin
+        json := self._download('wlan.json?by=name');
+        list := self._json_get_array(json);
+        for i_i:=0 to length(list)-1 do begin SetLength(res, length(res)+1); res[length(res)-1]:= TYWlanRecord.create(list[i_i]);end;
+        result:= res;
+            
+     end;
+
 
 function TYWireless.nextWireless(): TYWireless;
  var
@@ -816,9 +915,9 @@ function TYWireless.nextWireless(): TYWireless;
     If assigned(_callback)  Then _callback(self, value)
    End;
 
-//--- (end of YWireless implementation)
+//--- (end of generated code: YWireless implementation)
 
-//--- (Wireless functions)
+//--- (generated code: Wireless functions)
 
 function yFindWireless(func:string): TYWireless;
  var
@@ -868,16 +967,86 @@ begin
    _WirelessCache:=nil;
 end;
 
-//--- (end of Wireless functions)
+//--- (end of generated code: Wireless functions)
+
+
+
+//--- (generated code: YWlanRecord implementation)
+
+
+function TYWlanRecord.get_ssid():string;
+     begin
+        result:= self._ssid; 
+     end;
+
+
+function TYWlanRecord.get_channel():integer;
+     begin
+        result:= self._channel; 
+     end;
+
+
+function TYWlanRecord.get_security():string;
+     begin
+        result:= self._sec; 
+     end;
+
+
+function TYWlanRecord.get_linkQuality():integer;
+     begin
+        result:= self._rssi; 
+     end;
+
+
+
+    ////
+    /// <summary>
+    ///   comment from .
+    /// <para>
+    ///   yc definition
+    /// </para>
+    /// </summary>
+    ///-
+//--- (end of generated code: YWlanRecord implementation)
+
+
+constructor TYWlanRecord.create(data:string);
+ var
+   p : TJSONparser;
+   node : PJSONRECORD;
+ begin
+   p := TJsonParser.create(data,false);
+   node:= p.GetChildNode(nil,'ssid');
+   self._ssid:=string(node^.svalue);
+   node:= p.GetChildNode(nil,'channel');
+   self._channel:=node^.ivalue;
+   node:= p.GetChildNode(nil,'sec');
+   self._sec:=string(node^.svalue);
+   node:= p.GetChildNode(nil,'rssi');
+   self._rssi:=node^.ivalue;
+   p.free;
+ end;
+
+//--- (generated code: YWlanRecord functions)
+//--- (end of generated code: YWlanRecord functions)
+
+procedure freeWlanRecordArray(var list:TYWLANRECORDARRAY);
+ var i:integer;
+ begin
+  for i:=0 to length(list)-1 do
+   list[i].free();
+  setLength(list,0);
+ end;
+
 
 initialization
-   //--- (Wireless initialization)
+   //--- (generated code: Wireless initialization)
    _WirelessCache        := TstringList.create();
    _WirelessCache.sorted := true;
-   //--- (end of Wireless initialization)
+   //--- (end of generated code: Wireless initialization)
 
 finalization
-   //--- (Wireless cleanup)
+   //--- (generated code: Wireless cleanup)
    _WirelessCleanup();
-   //--- (end of Wireless cleanup)
+   //--- (end of generated code: Wireless cleanup)
 end.

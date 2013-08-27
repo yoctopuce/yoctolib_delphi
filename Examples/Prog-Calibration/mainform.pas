@@ -253,14 +253,16 @@ var
  end;
 
  procedure Tform1.displayValue(value,rawvalue:double;resolution:double;valunit:string);
+   var
+    l:double;
    begin
     // displays the sensor value on the ui
     ValueDisplayUnits.caption:=valunit;
-     resolution:=0.1;
     if resolution<>Y_RESOLUTION_INVALID  then
      begin
       // if resolution is available on the device the use it to  round the value
-      resolution := power(10,trunc(log10(resolution)));
+      l := round(log10(resolution));
+      resolution := power(10,trunc(l));
       RawValueDisplay.caption:='(raw value: '+floatToStr(resolution*round(rawvalue/resolution))+')';
       ValueDisplay.caption:=floatToStr(resolution*round(value/resolution));
      end

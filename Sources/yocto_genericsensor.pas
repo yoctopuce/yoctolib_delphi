@@ -1,8 +1,8 @@
 {*********************************************************************
  *
- * $Id: yocto_voc.pas 12324 2013-08-13 15:10:31Z mvuilleu $
+ * $Id: yocto_genericsensor.pas 12324 2013-08-13 15:10:31Z mvuilleu $
  *
- * Implements yFindVoc(), the high-level API for Voc functions
+ * Implements yFindGenericSensor(), the high-level API for GenericSensor functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
@@ -38,14 +38,14 @@
  *********************************************************************}
 
 
-unit yocto_voc;
+unit yocto_genericsensor;
 
 interface
 
 uses
    sysutils, classes, windows, yocto_api, yjson;
 
-//--- (YVoc definitions)
+//--- (YGenericSensor definitions)
 
 const
    Y_LOGICALNAME_INVALID           = YAPI_INVALID_STRING;
@@ -56,25 +56,29 @@ const
    Y_HIGHESTVALUE_INVALID          : double = YAPI_INVALID_DOUBLE;
    Y_CURRENTRAWVALUE_INVALID       : double = YAPI_INVALID_DOUBLE;
    Y_CALIBRATIONPARAM_INVALID      = YAPI_INVALID_STRING;
+   Y_SIGNALVALUE_INVALID           : double = YAPI_INVALID_DOUBLE;
+   Y_SIGNALUNIT_INVALID            = YAPI_INVALID_STRING;
+   Y_SIGNALRANGE_INVALID           = YAPI_INVALID_STRING;
+   Y_VALUERANGE_INVALID            = YAPI_INVALID_STRING;
    Y_RESOLUTION_INVALID            : double = YAPI_INVALID_DOUBLE;
 
 
-//--- (end of YVoc definitions)
+//--- (end of YGenericSensor definitions)
 
 type
-//--- (YVoc declaration)
- TYVoc = class;
- TUpdateCallback  = procedure(func: TYVoc; value:string);
+//--- (YGenericSensor declaration)
+ TYGenericSensor = class;
+ TUpdateCallback  = procedure(func: TYGenericSensor; value:string);
 ////
 /// <summary>
-///   TYVoc Class: Voc function interface
+///   TYGenericSensor Class: GenericSensor function interface
 /// <para>
 ///   The Yoctopuce application programming interface allows you to read an instant
 ///   measure of the sensor, as well as the minimal and maximal values observed.
 /// </para>
 /// </summary>
 ///-
-TYVoc=class(TYFunction)
+TYGenericSensor=class(TYFunction)
 protected
    // Attributes (function value cache)
    _logicalName              : string;
@@ -85,6 +89,10 @@ protected
    _highestValue             : double;
    _currentRawValue          : double;
    _calibrationParam         : string;
+   _signalValue              : double;
+   _signalUnit               : string;
+   _signalRange              : string;
+   _valueRange               : string;
    _resolution               : double;
    _calibrationOffset        : LongInt;
    // ValueCallback 
@@ -92,40 +100,40 @@ protected
    // Function-specific method for reading JSON output and caching result
    function _parse(j:PJSONRECORD):integer; override;
 
-   //--- (end of YVoc declaration)
+   //--- (end of YGenericSensor declaration)
 
 public
    constructor Create(func:string);
 
    ////
    /// <summary>
-   ///   Continues the enumeration of Volatile Organic Compound sensors started using <c>yFirstVoc()</c>.
+   ///   Continues the enumeration of generic sensors started using <c>yFirstGenericSensor()</c>.
    /// <para>
    /// </para>
    /// </summary>
    /// <returns>
-   ///   a pointer to a <c>YVoc</c> object, corresponding to
-   ///   a Volatile Organic Compound sensor currently online, or a <c>null</c> pointer
-   ///   if there are no more Volatile Organic Compound sensors to enumerate.
+   ///   a pointer to a <c>YGenericSensor</c> object, corresponding to
+   ///   a generic sensor currently online, or a <c>null</c> pointer
+   ///   if there are no more generic sensors to enumerate.
    /// </returns>
    ///-
-   function nextVoc():TYVoc;
+   function nextGenericSensor():TYGenericSensor;
 
-   //--- (YVoc accessors declaration)
+   //--- (YGenericSensor accessors declaration)
   Procedure registerValueCallback(callback : TUpdateCallback);
   procedure set_callback(callback : TUpdateCallback);
   procedure setCallback(callback : TUpdateCallback);
   procedure advertiseValue(value : String);override;
    ////
    /// <summary>
-   ///   Returns the logical name of the Volatile Organic Compound sensor.
+   ///   Returns the logical name of the generic sensor.
    /// <para>
    /// </para>
    /// <para>
    /// </para>
    /// </summary>
    /// <returns>
-   ///   a string corresponding to the logical name of the Volatile Organic Compound sensor
+   ///   a string corresponding to the logical name of the generic sensor
    /// </returns>
    /// <para>
    ///   On failure, throws an exception or returns <c>Y_LOGICALNAME_INVALID</c>.
@@ -135,7 +143,7 @@ public
 
    ////
    /// <summary>
-   ///   Changes the logical name of the Volatile Organic Compound sensor.
+   ///   Changes the logical name of the generic sensor.
    /// <para>
    ///   You can use <c>yCheckLogicalName()</c>
    ///   prior to this call to make sure that your parameter is valid.
@@ -146,7 +154,7 @@ public
    /// </para>
    /// </summary>
    /// <param name="newval">
-   ///   a string corresponding to the logical name of the Volatile Organic Compound sensor
+   ///   a string corresponding to the logical name of the generic sensor
    /// </param>
    /// <para>
    /// </para>
@@ -161,14 +169,14 @@ public
 
    ////
    /// <summary>
-   ///   Returns the current value of the Volatile Organic Compound sensor (no more than 6 characters).
+   ///   Returns the current value of the generic sensor (no more than 6 characters).
    /// <para>
    /// </para>
    /// <para>
    /// </para>
    /// </summary>
    /// <returns>
-   ///   a string corresponding to the current value of the Volatile Organic Compound sensor (no more than 6 characters)
+   ///   a string corresponding to the current value of the generic sensor (no more than 6 characters)
    /// </returns>
    /// <para>
    ///   On failure, throws an exception or returns <c>Y_ADVERTISEDVALUE_INVALID</c>.
@@ -192,6 +200,30 @@ public
    /// </para>
    ///-
    function get_unit():string;
+
+   ////
+   /// <summary>
+   ///   Changes the measuring unit for the measured value.
+   /// <para>
+   ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+   ///   modification must be kept.
+   /// </para>
+   /// <para>
+   /// </para>
+   /// </summary>
+   /// <param name="newval">
+   ///   a string corresponding to the measuring unit for the measured value
+   /// </param>
+   /// <para>
+   /// </para>
+   /// <returns>
+   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+   /// </returns>
+   /// <para>
+   ///   On failure, throws an exception or returns a negative error code.
+   /// </para>
+   ///-
+   function set_unit(newval:string):integer;
 
    ////
    /// <summary>
@@ -290,14 +322,14 @@ public
 
    ////
    /// <summary>
-   ///   Returns the unrounded and uncalibrated raw value returned by the sensor.
+   ///   Returns the uncalibrated, unrounded raw value returned by the sensor.
    /// <para>
    /// </para>
    /// <para>
    /// </para>
    /// </summary>
    /// <returns>
-   ///   a floating point number corresponding to the unrounded and uncalibrated raw value returned by the sensor
+   ///   a floating point number corresponding to the uncalibrated, unrounded raw value returned by the sensor
    /// </returns>
    /// <para>
    ///   On failure, throws an exception or returns <c>Y_CURRENTRAWVALUE_INVALID</c>.
@@ -351,6 +383,144 @@ public
 
    ////
    /// <summary>
+   ///   Returns the measured value of the electrical signal used by the sensor.
+   /// <para>
+   /// </para>
+   /// <para>
+   /// </para>
+   /// </summary>
+   /// <returns>
+   ///   a floating point number corresponding to the measured value of the electrical signal used by the sensor
+   /// </returns>
+   /// <para>
+   ///   On failure, throws an exception or returns <c>Y_SIGNALVALUE_INVALID</c>.
+   /// </para>
+   ///-
+   function get_signalValue():double;
+
+   ////
+   /// <summary>
+   ///   Returns the measuring unit of the electrical signal used by the sensor.
+   /// <para>
+   /// </para>
+   /// <para>
+   /// </para>
+   /// </summary>
+   /// <returns>
+   ///   a string corresponding to the measuring unit of the electrical signal used by the sensor
+   /// </returns>
+   /// <para>
+   ///   On failure, throws an exception or returns <c>Y_SIGNALUNIT_INVALID</c>.
+   /// </para>
+   ///-
+   function get_signalUnit():string;
+
+   ////
+   /// <summary>
+   ///   Returns the electric signal range used by the sensor.
+   /// <para>
+   /// </para>
+   /// <para>
+   /// </para>
+   /// </summary>
+   /// <returns>
+   ///   a string corresponding to the electric signal range used by the sensor
+   /// </returns>
+   /// <para>
+   ///   On failure, throws an exception or returns <c>Y_SIGNALRANGE_INVALID</c>.
+   /// </para>
+   ///-
+   function get_signalRange():string;
+
+   ////
+   /// <summary>
+   ///   Changes the electric signal range used by the sensor.
+   /// <para>
+   /// </para>
+   /// <para>
+   /// </para>
+   /// </summary>
+   /// <param name="newval">
+   ///   a string corresponding to the electric signal range used by the sensor
+   /// </param>
+   /// <para>
+   /// </para>
+   /// <returns>
+   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+   /// </returns>
+   /// <para>
+   ///   On failure, throws an exception or returns a negative error code.
+   /// </para>
+   ///-
+   function set_signalRange(newval:string):integer;
+
+   ////
+   /// <summary>
+   ///   Returns the physical value range measured by the sensor.
+   /// <para>
+   /// </para>
+   /// <para>
+   /// </para>
+   /// </summary>
+   /// <returns>
+   ///   a string corresponding to the physical value range measured by the sensor
+   /// </returns>
+   /// <para>
+   ///   On failure, throws an exception or returns <c>Y_VALUERANGE_INVALID</c>.
+   /// </para>
+   ///-
+   function get_valueRange():string;
+
+   ////
+   /// <summary>
+   ///   Changes the physical value range measured by the sensor.
+   /// <para>
+   ///   The range change may have a side effect
+   ///   on the display resolution, as it may be adapted automatically.
+   /// </para>
+   /// <para>
+   /// </para>
+   /// </summary>
+   /// <param name="newval">
+   ///   a string corresponding to the physical value range measured by the sensor
+   /// </param>
+   /// <para>
+   /// </para>
+   /// <returns>
+   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+   /// </returns>
+   /// <para>
+   ///   On failure, throws an exception or returns a negative error code.
+   /// </para>
+   ///-
+   function set_valueRange(newval:string):integer;
+
+   ////
+   /// <summary>
+   ///   Changes the resolution of the measured physical values.
+   /// <para>
+   ///   The resolution corresponds to the numerical precision
+   ///   when displaying value. It does not change the precision of the measure itself.
+   /// </para>
+   /// <para>
+   /// </para>
+   /// </summary>
+   /// <param name="newval">
+   ///   a floating point number corresponding to the resolution of the measured physical values
+   /// </param>
+   /// <para>
+   /// </para>
+   /// <returns>
+   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+   /// </returns>
+   /// <para>
+   ///   On failure, throws an exception or returns a negative error code.
+   /// </para>
+   ///-
+   function set_resolution(newval:double):integer;
+
+   ////
+   /// <summary>
    ///   Returns the resolution of the measured values.
    /// <para>
    ///   The resolution corresponds to the numerical precision
@@ -368,14 +538,14 @@ public
    ///-
    function get_resolution():double;
 
-   //--- (end of YVoc accessors declaration)
+   //--- (end of YGenericSensor accessors declaration)
 end;
 
-//--- (Voc functions declaration)
+//--- (GenericSensor functions declaration)
 
 ////
 /// <summary>
-///   Retrieves a Volatile Organic Compound sensor for a given identifier.
+///   Retrieves a generic sensor for a given identifier.
 /// <para>
 ///   The identifier can be specified using several formats:
 /// </para>
@@ -399,51 +569,51 @@ end;
 /// <para>
 /// </para>
 /// <para>
-///   This function does not require that the Volatile Organic Compound sensor is online at the time
+///   This function does not require that the generic sensor is online at the time
 ///   it is invoked. The returned object is nevertheless valid.
-///   Use the method <c>YVoc.isOnline()</c> to test if the Volatile Organic Compound sensor is
+///   Use the method <c>YGenericSensor.isOnline()</c> to test if the generic sensor is
 ///   indeed online at a given time. In case of ambiguity when looking for
-///   a Volatile Organic Compound sensor by logical name, no error is notified: the first instance
+///   a generic sensor by logical name, no error is notified: the first instance
 ///   found is returned. The search is performed first by hardware name,
 ///   then by logical name.
 /// </para>
 /// </summary>
 /// <param name="func">
-///   a string that uniquely characterizes the Volatile Organic Compound sensor
+///   a string that uniquely characterizes the generic sensor
 /// </param>
 /// <returns>
-///   a <c>YVoc</c> object allowing you to drive the Volatile Organic Compound sensor.
+///   a <c>YGenericSensor</c> object allowing you to drive the generic sensor.
 /// </returns>
 ///-
-function yFindVoc(func:string):TYVoc;
+function yFindGenericSensor(func:string):TYGenericSensor;
 ////
 /// <summary>
-///   Starts the enumeration of Volatile Organic Compound sensors currently accessible.
+///   Starts the enumeration of generic sensors currently accessible.
 /// <para>
-///   Use the method <c>YVoc.nextVoc()</c> to iterate on
-///   next Volatile Organic Compound sensors.
+///   Use the method <c>YGenericSensor.nextGenericSensor()</c> to iterate on
+///   next generic sensors.
 /// </para>
 /// </summary>
 /// <returns>
-///   a pointer to a <c>YVoc</c> object, corresponding to
-///   the first Volatile Organic Compound sensor currently online, or a <c>null</c> pointer
+///   a pointer to a <c>YGenericSensor</c> object, corresponding to
+///   the first generic sensor currently online, or a <c>null</c> pointer
 ///   if there are none.
 /// </returns>
 ///-
-function yFirstVoc():TYVoc;
+function yFirstGenericSensor():TYGenericSensor;
 
-//--- (end of Voc functions declaration)
+//--- (end of GenericSensor functions declaration)
 
 implementation
 
-//--- (YVoc implementation)
+//--- (YGenericSensor implementation)
 
 var
-   _VocCache : TStringList;
+   _GenericSensorCache : TStringList;
 
-constructor TYVoc.Create(func:string);
+constructor TYGenericSensor.Create(func:string);
  begin
-   inherited Create('Voc', func);
+   inherited Create('GenericSensor', func);
    _logicalName := Y_LOGICALNAME_INVALID;
    _advertisedValue := Y_ADVERTISEDVALUE_INVALID;
    _unit := Y_UNIT_INVALID;
@@ -452,12 +622,16 @@ constructor TYVoc.Create(func:string);
    _highestValue := Y_HIGHESTVALUE_INVALID;
    _currentRawValue := Y_CURRENTRAWVALUE_INVALID;
    _calibrationParam := Y_CALIBRATIONPARAM_INVALID;
+   _signalValue := Y_SIGNALVALUE_INVALID;
+   _signalUnit := Y_SIGNALUNIT_INVALID;
+   _signalRange := Y_SIGNALRANGE_INVALID;
+   _valueRange := Y_VALUERANGE_INVALID;
    _resolution := Y_RESOLUTION_INVALID;
    _calibrationOffset := 0;
  end;
 
 {$HINTS OFF}
-function TYVoc._parse(j:PJSONRECORD):integer;
+function TYGenericSensor._parse(j:PJSONRECORD):integer;
  var
    member,sub : PJSONRECORD;
    i,l        : integer;
@@ -480,15 +654,15 @@ function TYVoc._parse(j:PJSONRECORD):integer;
        end else
       if (member^.name = 'currentValue') then
        begin
-         _currentValue := round(member^.ivalue/6553.6) / 10;
+         _currentValue := round(member^.ivalue/65.536) / 1000;
        end else
       if (member^.name = 'lowestValue') then
        begin
-         _lowestValue := round(member^.ivalue/6553.6) / 10;
+         _lowestValue := round(member^.ivalue/65.536) / 1000;
        end else
       if (member^.name = 'highestValue') then
        begin
-         _highestValue := round(member^.ivalue/6553.6) / 10;
+         _highestValue := round(member^.ivalue/65.536) / 1000;
        end else
       if (member^.name = 'currentRawValue') then
        begin
@@ -497,6 +671,22 @@ function TYVoc._parse(j:PJSONRECORD):integer;
       if (member^.name = 'calibrationParam') then
        begin
          _calibrationParam := string(member^.svalue);
+       end else
+      if (member^.name = 'signalValue') then
+       begin
+         _signalValue := round(member^.ivalue/65.536) / 1000;
+       end else
+      if (member^.name = 'signalUnit') then
+       begin
+         _signalUnit := string(member^.svalue);
+       end else
+      if (member^.name = 'signalRange') then
+       begin
+         _signalRange := string(member^.svalue);
+       end else
+      if (member^.name = 'valueRange') then
+       begin
+         _valueRange := string(member^.svalue);
        end else
       if (member^.name = 'resolution') then
        begin
@@ -510,20 +700,20 @@ function TYVoc._parse(j:PJSONRECORD):integer;
 
 ////
 /// <summary>
-///   Returns the logical name of the Volatile Organic Compound sensor.
+///   Returns the logical name of the generic sensor.
 /// <para>
 /// </para>
 /// <para>
 /// </para>
 /// </summary>
 /// <returns>
-///   a string corresponding to the logical name of the Volatile Organic Compound sensor
+///   a string corresponding to the logical name of the generic sensor
 /// </returns>
 /// <para>
 ///   On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
 /// </para>
 ///-
-function TYVoc.get_logicalName():string;
+function TYGenericSensor.get_logicalName():string;
  begin
    if (_cacheExpiration <= yGetTickCount()) then
       if (YISERR(load(YAPI_defaultCacheValidity))) then
@@ -536,7 +726,7 @@ function TYVoc.get_logicalName():string;
 
 ////
 /// <summary>
-///   Changes the logical name of the Volatile Organic Compound sensor.
+///   Changes the logical name of the generic sensor.
 /// <para>
 ///   You can use yCheckLogicalName()
 ///   prior to this call to make sure that your parameter is valid.
@@ -547,7 +737,7 @@ function TYVoc.get_logicalName():string;
 /// </para>
 /// </summary>
 /// <param name="newval">
-///   a string corresponding to the logical name of the Volatile Organic Compound sensor
+///   a string corresponding to the logical name of the generic sensor
 /// </param>
 /// <para>
 /// </para>
@@ -558,7 +748,7 @@ function TYVoc.get_logicalName():string;
 ///   On failure, throws an exception or returns a negative error code.
 /// </para>
 ///-
-function TYVoc.set_logicalName(newval:string):integer;
+function TYGenericSensor.set_logicalName(newval:string):integer;
  var
    rest_val: string;
  begin
@@ -568,20 +758,20 @@ function TYVoc.set_logicalName(newval:string):integer;
 
 ////
 /// <summary>
-///   Returns the current value of the Volatile Organic Compound sensor (no more than 6 characters).
+///   Returns the current value of the generic sensor (no more than 6 characters).
 /// <para>
 /// </para>
 /// <para>
 /// </para>
 /// </summary>
 /// <returns>
-///   a string corresponding to the current value of the Volatile Organic Compound sensor (no more than 6 characters)
+///   a string corresponding to the current value of the generic sensor (no more than 6 characters)
 /// </returns>
 /// <para>
 ///   On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
 /// </para>
 ///-
-function TYVoc.get_advertisedValue():string;
+function TYGenericSensor.get_advertisedValue():string;
  begin
    if (_cacheExpiration <= yGetTickCount()) then
       if (YISERR(load(YAPI_defaultCacheValidity))) then
@@ -607,15 +797,45 @@ function TYVoc.get_advertisedValue():string;
 ///   On failure, throws an exception or returns Y_UNIT_INVALID.
 /// </para>
 ///-
-function TYVoc.get_unit():string;
+function TYGenericSensor.get_unit():string;
  begin
-   if (_unit = Y_UNIT_INVALID) then
+   if (_cacheExpiration <= yGetTickCount()) then
       if (YISERR(load(YAPI_defaultCacheValidity))) then
        begin
          result := Y_UNIT_INVALID;
          exit;
        end;
    result := _unit;
+ end;
+
+////
+/// <summary>
+///   Changes the measuring unit for the measured value.
+/// <para>
+///   Remember to call the saveToFlash() method of the module if the
+///   modification must be kept.
+/// </para>
+/// <para>
+/// </para>
+/// </summary>
+/// <param name="newval">
+///   a string corresponding to the measuring unit for the measured value
+/// </param>
+/// <para>
+/// </para>
+/// <returns>
+///   YAPI_SUCCESS if the call succeeds.
+/// </returns>
+/// <para>
+///   On failure, throws an exception or returns a negative error code.
+/// </para>
+///-
+function TYGenericSensor.set_unit(newval:string):integer;
+ var
+   rest_val: string;
+ begin
+   rest_val := newval;
+   result := _setAttr('unit',rest_val);
  end;
 
 ////
@@ -633,7 +853,7 @@ function TYVoc.get_unit():string;
 ///   On failure, throws an exception or returns Y_CURRENTVALUE_INVALID.
 /// </para>
 ///-
-function TYVoc.get_currentValue():double;
+function TYGenericSensor.get_currentValue():double;
  var res : double;
  begin
    if (_cacheExpiration <= yGetTickCount()) then
@@ -671,7 +891,7 @@ function TYVoc.get_currentValue():double;
 ///   On failure, throws an exception or returns a negative error code.
 /// </para>
 ///-
-function TYVoc.set_lowestValue(newval:double):integer;
+function TYGenericSensor.set_lowestValue(newval:double):integer;
  var
    rest_val: string;
  begin
@@ -694,7 +914,7 @@ function TYVoc.set_lowestValue(newval:double):integer;
 ///   On failure, throws an exception or returns Y_LOWESTVALUE_INVALID.
 /// </para>
 ///-
-function TYVoc.get_lowestValue():double;
+function TYGenericSensor.get_lowestValue():double;
  begin
    if (_cacheExpiration <= yGetTickCount()) then
       if (YISERR(load(YAPI_defaultCacheValidity))) then
@@ -725,7 +945,7 @@ function TYVoc.get_lowestValue():double;
 ///   On failure, throws an exception or returns a negative error code.
 /// </para>
 ///-
-function TYVoc.set_highestValue(newval:double):integer;
+function TYGenericSensor.set_highestValue(newval:double):integer;
  var
    rest_val: string;
  begin
@@ -748,7 +968,7 @@ function TYVoc.set_highestValue(newval:double):integer;
 ///   On failure, throws an exception or returns Y_HIGHESTVALUE_INVALID.
 /// </para>
 ///-
-function TYVoc.get_highestValue():double;
+function TYGenericSensor.get_highestValue():double;
  begin
    if (_cacheExpiration <= yGetTickCount()) then
       if (YISERR(load(YAPI_defaultCacheValidity))) then
@@ -761,20 +981,20 @@ function TYVoc.get_highestValue():double;
 
 ////
 /// <summary>
-///   Returns the unrounded and uncalibrated raw value returned by the sensor.
+///   Returns the uncalibrated, unrounded raw value returned by the sensor.
 /// <para>
 /// </para>
 /// <para>
 /// </para>
 /// </summary>
 /// <returns>
-///   a floating point number corresponding to the unrounded and uncalibrated raw value returned by the sensor
+///   a floating point number corresponding to the uncalibrated, unrounded raw value returned by the sensor
 /// </returns>
 /// <para>
 ///   On failure, throws an exception or returns Y_CURRENTRAWVALUE_INVALID.
 /// </para>
 ///-
-function TYVoc.get_currentRawValue():double;
+function TYGenericSensor.get_currentRawValue():double;
  begin
    if (_cacheExpiration <= yGetTickCount()) then
       if (YISERR(load(YAPI_defaultCacheValidity))) then
@@ -785,7 +1005,7 @@ function TYVoc.get_currentRawValue():double;
    result := _currentRawValue;
  end;
 
-function TYVoc.get_calibrationParam():string;
+function TYGenericSensor.get_calibrationParam():string;
  begin
    if (_cacheExpiration <= yGetTickCount()) then
       if (YISERR(load(YAPI_defaultCacheValidity))) then
@@ -796,7 +1016,7 @@ function TYVoc.get_calibrationParam():string;
    result := _calibrationParam;
  end;
 
-function TYVoc.set_calibrationParam(newval:string):integer;
+function TYGenericSensor.set_calibrationParam(newval:string):integer;
  var
    rest_val: string;
  begin
@@ -840,7 +1060,7 @@ function TYVoc.set_calibrationParam(newval:string):integer;
 ///   On failure, throws an exception or returns a negative error code.
 /// </para>
 ///-
-function TYVoc.calibrateFromPoints(rawValues:floatArr;refValues:floatArr):integer;
+function TYGenericSensor.calibrateFromPoints(rawValues:floatArr;refValues:floatArr):integer;
  var
    rest_val: string;
  begin
@@ -848,7 +1068,7 @@ function TYVoc.calibrateFromPoints(rawValues:floatArr;refValues:floatArr):intege
    result := _setAttr('calibrationParam', rest_val);
  end;
 
-function TYVoc.loadCalibrationPoints(var rawValues:floatArr;var refValues:floatArr):integer;
+function TYGenericSensor.loadCalibrationPoints(var rawValues:floatArr;var refValues:floatArr):integer;
  begin
    if (_cacheExpiration <= yGetTickCount()) then
       if (YISERR(load(YAPI_defaultCacheValidity))) then
@@ -857,6 +1077,198 @@ function TYVoc.loadCalibrationPoints(var rawValues:floatArr;var refValues:floatA
          exit;
        end;
    result := _decodeCalibrationPoints(_calibrationParam,nil,rawValues,refValues,_resolution,_calibrationOffset);
+ end;
+
+////
+/// <summary>
+///   Returns the measured value of the electrical signal used by the sensor.
+/// <para>
+/// </para>
+/// <para>
+/// </para>
+/// </summary>
+/// <returns>
+///   a floating point number corresponding to the measured value of the electrical signal used by the sensor
+/// </returns>
+/// <para>
+///   On failure, throws an exception or returns Y_SIGNALVALUE_INVALID.
+/// </para>
+///-
+function TYGenericSensor.get_signalValue():double;
+ begin
+   if (_cacheExpiration <= yGetTickCount()) then
+      if (YISERR(load(YAPI_defaultCacheValidity))) then
+       begin
+         result := Y_SIGNALVALUE_INVALID;
+         exit;
+       end;
+   result := _signalValue;
+ end;
+
+////
+/// <summary>
+///   Returns the measuring unit of the electrical signal used by the sensor.
+/// <para>
+/// </para>
+/// <para>
+/// </para>
+/// </summary>
+/// <returns>
+///   a string corresponding to the measuring unit of the electrical signal used by the sensor
+/// </returns>
+/// <para>
+///   On failure, throws an exception or returns Y_SIGNALUNIT_INVALID.
+/// </para>
+///-
+function TYGenericSensor.get_signalUnit():string;
+ begin
+   if (_signalUnit = Y_SIGNALUNIT_INVALID) then
+      if (YISERR(load(YAPI_defaultCacheValidity))) then
+       begin
+         result := Y_SIGNALUNIT_INVALID;
+         exit;
+       end;
+   result := _signalUnit;
+ end;
+
+////
+/// <summary>
+///   Returns the electric signal range used by the sensor.
+/// <para>
+/// </para>
+/// <para>
+/// </para>
+/// </summary>
+/// <returns>
+///   a string corresponding to the electric signal range used by the sensor
+/// </returns>
+/// <para>
+///   On failure, throws an exception or returns Y_SIGNALRANGE_INVALID.
+/// </para>
+///-
+function TYGenericSensor.get_signalRange():string;
+ begin
+   if (_cacheExpiration <= yGetTickCount()) then
+      if (YISERR(load(YAPI_defaultCacheValidity))) then
+       begin
+         result := Y_SIGNALRANGE_INVALID;
+         exit;
+       end;
+   result := _signalRange;
+ end;
+
+////
+/// <summary>
+///   Changes the electric signal range used by the sensor.
+/// <para>
+/// </para>
+/// <para>
+/// </para>
+/// </summary>
+/// <param name="newval">
+///   a string corresponding to the electric signal range used by the sensor
+/// </param>
+/// <para>
+/// </para>
+/// <returns>
+///   YAPI_SUCCESS if the call succeeds.
+/// </returns>
+/// <para>
+///   On failure, throws an exception or returns a negative error code.
+/// </para>
+///-
+function TYGenericSensor.set_signalRange(newval:string):integer;
+ var
+   rest_val: string;
+ begin
+   rest_val := newval;
+   result := _setAttr('signalRange',rest_val);
+ end;
+
+////
+/// <summary>
+///   Returns the physical value range measured by the sensor.
+/// <para>
+/// </para>
+/// <para>
+/// </para>
+/// </summary>
+/// <returns>
+///   a string corresponding to the physical value range measured by the sensor
+/// </returns>
+/// <para>
+///   On failure, throws an exception or returns Y_VALUERANGE_INVALID.
+/// </para>
+///-
+function TYGenericSensor.get_valueRange():string;
+ begin
+   if (_cacheExpiration <= yGetTickCount()) then
+      if (YISERR(load(YAPI_defaultCacheValidity))) then
+       begin
+         result := Y_VALUERANGE_INVALID;
+         exit;
+       end;
+   result := _valueRange;
+ end;
+
+////
+/// <summary>
+///   Changes the physical value range measured by the sensor.
+/// <para>
+///   The range change may have a side effect
+///   on the display resolution, as it may be adapted automatically.
+/// </para>
+/// <para>
+/// </para>
+/// </summary>
+/// <param name="newval">
+///   a string corresponding to the physical value range measured by the sensor
+/// </param>
+/// <para>
+/// </para>
+/// <returns>
+///   YAPI_SUCCESS if the call succeeds.
+/// </returns>
+/// <para>
+///   On failure, throws an exception or returns a negative error code.
+/// </para>
+///-
+function TYGenericSensor.set_valueRange(newval:string):integer;
+ var
+   rest_val: string;
+ begin
+   rest_val := newval;
+   result := _setAttr('valueRange',rest_val);
+ end;
+
+////
+/// <summary>
+///   Changes the resolution of the measured physical values.
+/// <para>
+///   The resolution corresponds to the numerical precision
+///   when displaying value. It does not change the precision of the measure itself.
+/// </para>
+/// <para>
+/// </para>
+/// </summary>
+/// <param name="newval">
+///   a floating point number corresponding to the resolution of the measured physical values
+/// </param>
+/// <para>
+/// </para>
+/// <returns>
+///   YAPI_SUCCESS if the call succeeds.
+/// </returns>
+/// <para>
+///   On failure, throws an exception or returns a negative error code.
+/// </para>
+///-
+function TYGenericSensor.set_resolution(newval:double):integer;
+ var
+   rest_val: string;
+ begin
+   rest_val := inttostr(round(newval*65536.0));
+   result := _setAttr('resolution',rest_val);
  end;
 
 ////
@@ -876,7 +1288,7 @@ function TYVoc.loadCalibrationPoints(var rawValues:floatArr;var refValues:floatA
 ///   On failure, throws an exception or returns Y_RESOLUTION_INVALID.
 /// </para>
 ///-
-function TYVoc.get_resolution():double;
+function TYGenericSensor.get_resolution():double;
  begin
    if (_cacheExpiration <= yGetTickCount()) then
       if (YISERR(load(YAPI_defaultCacheValidity))) then
@@ -887,21 +1299,21 @@ function TYVoc.get_resolution():double;
    result := _resolution;
  end;
 
-function TYVoc.nextVoc(): TYVoc;
+function TYGenericSensor.nextGenericSensor(): TYGenericSensor;
  var
    hwid: string;
  begin
    if (YISERR(_nextFunction(hwid))) then
     begin
-      nextVoc := nil;
+      nextGenericSensor := nil;
       exit;
     end;
    if (hwid='') then
     begin
-      nextVoc := nil;
+      nextGenericSensor := nil;
       exit;
     end;
-    nextVoc := yFindVoc(hwid);
+    nextGenericSensor := yFindGenericSensor(hwid);
  end;
 
 
@@ -913,7 +1325,7 @@ function TYVoc.nextVoc(): TYVoc;
     /// </para>
     /// </summary>
     ///-
-  Procedure TYVoc.registerValueCallback(callback : TUpdateCallback);
+  Procedure TYGenericSensor.registerValueCallback(callback : TUpdateCallback);
   begin
    If assigned(callback) Then
      registerFuncCallback(self)
@@ -922,83 +1334,83 @@ function TYVoc.nextVoc(): TYVoc;
    _callback := callback;
   End;
 
-  procedure TYVoc.set_callback(callback : TUpdateCallback);
+  procedure TYGenericSensor.set_callback(callback : TUpdateCallback);
    Begin
     registerValueCallback(callback);
   End;
 
-  procedure  TYVoc.setCallback(callback : TUpdateCallback);
+  procedure  TYGenericSensor.setCallback(callback : TUpdateCallback);
    Begin
     registerValueCallback(callback);
    End;
 
-  procedure  TYVoc.advertiseValue(value : String);
+  procedure  TYGenericSensor.advertiseValue(value : String);
   Begin
     If assigned(_callback)  Then _callback(self, value)
    End;
 
-//--- (end of YVoc implementation)
+//--- (end of YGenericSensor implementation)
 
-//--- (Voc functions)
+//--- (GenericSensor functions)
 
-function yFindVoc(func:string): TYVoc;
+function yFindGenericSensor(func:string): TYGenericSensor;
  var
    index: integer;
-   res  : TYVoc;
+   res  : TYGenericSensor;
  begin
-    if (_VocCache.Find(func, index)) then
+    if (_GenericSensorCache.Find(func, index)) then
      begin
-       yFindVoc := TYVoc(_VocCache.objects[index]);
+       yFindGenericSensor := TYGenericSensor(_GenericSensorCache.objects[index]);
        exit;
      end;
-   res := TYVoc.Create(func);
-   _VocCache.addObject(func, res);
-   yFindVoc := res;
+   res := TYGenericSensor.Create(func);
+   _GenericSensorCache.addObject(func, res);
+   yFindGenericSensor := res;
  end;
 
-function yFirstVoc(): TYVoc;
+function yFirstGenericSensor(): TYGenericSensor;
  var
    v_fundescr      : YFUN_DESCR;
    dev             : YDEV_DESCR;
    neededsize, err : integer;
    serial, funcId, funcName, funcVal, errmsg : string;
  begin
-   err := yapiGetFunctionsByClass('Voc', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
+   err := yapiGetFunctionsByClass('GenericSensor', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
    if (YISERR(err) or (neededsize = 0)) then
     begin
-       yFirstVoc := nil;
+       yFirstGenericSensor := nil;
        exit;
     end;
    if (YISERR(yapiGetFunctionInfo(v_fundescr, dev, serial, funcId, funcName, funcVal, errmsg))) then
     begin
-       yFirstVoc := nil;
+       yFirstGenericSensor := nil;
        exit;
     end;
-   yFirstVoc := yFindVoc(serial+'.'+funcId);
+   yFirstGenericSensor := yFindGenericSensor(serial+'.'+funcId);
  end;
 
-procedure _VocCleanup();
+procedure _GenericSensorCleanup();
   var i:integer;
 begin
-  for i:=0 to _VocCache.count-1 do 
+  for i:=0 to _GenericSensorCache.count-1 do 
     begin
-     _VocCache.objects[i].free();
-     _VocCache.objects[i]:=nil;
+     _GenericSensorCache.objects[i].free();
+     _GenericSensorCache.objects[i]:=nil;
     end;
-   _VocCache.free();
-   _VocCache:=nil;
+   _GenericSensorCache.free();
+   _GenericSensorCache:=nil;
 end;
 
-//--- (end of Voc functions)
+//--- (end of GenericSensor functions)
 
 initialization
-   //--- (Voc initialization)
-   _VocCache        := TstringList.create();
-   _VocCache.sorted := true;
-   //--- (end of Voc initialization)
+   //--- (GenericSensor initialization)
+   _GenericSensorCache        := TstringList.create();
+   _GenericSensorCache.sorted := true;
+   //--- (end of GenericSensor initialization)
 
 finalization
-   //--- (Voc cleanup)
-   _VocCleanup();
-   //--- (end of Voc cleanup)
+   //--- (GenericSensor cleanup)
+   _GenericSensorCleanup();
+   //--- (end of GenericSensor cleanup)
 end.

@@ -20,6 +20,8 @@ procedure refresh(module:Tymodule) ;
                                              else Writeln('off');
        Writeln('uptime       : ' + intToStr(module.get_upTime() div 1000)+'s');
        Writeln('USB current  : ' + intToStr(module.get_usbCurrent())+'mA');
+       Writeln('Logs         : ');
+       Writeln(module.get_lastlogs());
        Writeln('');
        Writeln('r : refresh / b:beacon ON / space : beacon off');
      end 

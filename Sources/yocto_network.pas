@@ -1,39 +1,39 @@
 {*********************************************************************
  *
- * $Id: yocto_network.pas 10384 2013-03-16 16:57:45Z martinm $
+ * $Id: yocto_network.pas 12337 2013-08-14 15:22:22Z mvuilleu $
  *
  * Implements yFindNetwork(), the high-level API for Network functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
- * Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
+ *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
- * 1) If you have obtained this file from www.yoctopuce.com,
- *    Yoctopuce Sarl licenses to you (hereafter Licensee) the
- *    right to use, modify, copy, and integrate this source file
- *    into your own solution for the sole purpose of interfacing
- *    a Yoctopuce product with Licensee's solution.
+ *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
+ *  non-exclusive license to use, modify, copy and integrate this
+ *  file into your software for the sole purpose of interfacing 
+ *  with Yoctopuce products. 
  *
- *    The use of this file and all relationship between Yoctopuce 
- *    and Licensee are governed by Yoctopuce General Terms and 
- *    Conditions.
+ *  You may reproduce and distribute copies of this file in 
+ *  source or object form, as long as the sole purpose of this
+ *  code is to interface with Yoctopuce products. You must retain 
+ *  this notice in the distributed source file.
  *
- *    THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *    WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *    WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
- *    FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
- *    EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *    INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *    COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *    SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
- *    LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
- *    CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
- *    BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
- *    WARRANTY, OR OTHERWISE.
+ *  You should refer to Yoctopuce General Terms and Conditions
+ *  for additional information regarding your rights and 
+ *  obligations.
  *
- * 2) If your intent is not to interface with Yoctopuce products,
- *    you are not entitled to use, read or create any derived
- *    material from this source file.
+ *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
+ *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
+ *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
+ *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
+ *  WARRANTY, OR OTHERWISE.
  *
  *********************************************************************}
 
@@ -66,6 +66,11 @@ const
    Y_SECONDARYDNS_INVALID          = YAPI_INVALID_STRING;
    Y_USERPASSWORD_INVALID          = YAPI_INVALID_STRING;
    Y_ADMINPASSWORD_INVALID         = YAPI_INVALID_STRING;
+   Y_DISCOVERABLE_FALSE = 0;
+   Y_DISCOVERABLE_TRUE = 1;
+   Y_DISCOVERABLE_INVALID = -1;
+
+   Y_WWWWATCHDOGDELAY_INVALID      = YAPI_INVALID_LONGWORD;
    Y_CALLBACKURL_INVALID           = YAPI_INVALID_STRING;
    Y_CALLBACKMETHOD_POST = 0;
    Y_CALLBACKMETHOD_GET = 1;
@@ -82,6 +87,7 @@ const
    Y_CALLBACKCREDENTIALS_INVALID   = YAPI_INVALID_STRING;
    Y_CALLBACKMINDELAY_INVALID      = YAPI_INVALID_LONGWORD;
    Y_CALLBACKMAXDELAY_INVALID      = YAPI_INVALID_LONGWORD;
+   Y_POECURRENT_INVALID            = YAPI_INVALID_LONGWORD;
 
 
 //--- (end of YNetwork definitions)
@@ -114,12 +120,15 @@ protected
    _secondaryDNS             : string;
    _userPassword             : string;
    _adminPassword            : string;
+   _discoverable             : Integer;
+   _wwwWatchdogDelay         : LongWord;
    _callbackUrl              : string;
    _callbackMethod           : Integer;
    _callbackEncoding         : Integer;
    _callbackCredentials      : string;
    _callbackMinDelay         : LongWord;
    _callbackMaxDelay         : LongWord;
+   _poeCurrent               : LongWord;
    // ValueCallback 
    _callback                 : TUpdateCallback;
    // Function-specific method for reading JSON output and caching result
@@ -220,13 +229,13 @@ public
    ///   Level 1 (LIVE_1) is reached when the network is detected, but is not yet connected,
    ///   For a wireless network, this shows that the requested SSID is present.
    ///   Level 2 (LINK_2) is reached when the hardware connection is established.
-   ///   For a wired network connection, level 2 means that the cable is attached on both ends.
+   ///   For a wired network connection, level 2 means that the cable is attached at both ends.
    ///   For a connection to a wireless access point, it shows that the security parameters
    ///   are properly configured. For an ad-hoc wireless connection, it means that there is
    ///   at least one other device connected on the ad-hoc network.
    ///   Level 3 (DHCP_3) is reached when an IP address has been obtained using DHCP.
    ///   Level 4 (DNS_4) is reached when the DNS server is reachable on the network.
-   ///   Level 5 (WWW_5) is reached when global connectivity is demonstrated by properly loading
+   ///   Level 5 (WWW_5) is reached when global connectivity is demonstrated by properly loading the
    ///   current time from an NTP server.
    /// </para>
    /// <para>
@@ -325,7 +334,7 @@ public
    ///   IP address received from a DHCP server.
    /// <para>
    ///   Until an address is received from a DHCP
-   ///   server, the module will use the IP parameters specified to this function.
+   ///   server, the module uses the IP parameters specified to this function.
    ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
    /// </para>
    /// <para>
@@ -402,7 +411,7 @@ public
    /// <summary>
    ///   Changes the IP address of the primary name server to be used by the module.
    /// <para>
-   ///   When using DHCP, if a value is specified, it will override the value received from the DHCP server.
+   ///   When using DHCP, if a value is specified, it overrides the value received from the DHCP server.
    ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
    /// </para>
    /// <para>
@@ -443,7 +452,7 @@ public
    /// <summary>
    ///   Changes the IP address of the secondarz name server to be used by the module.
    /// <para>
-   ///   When using DHCP, if a value is specified, it will override the value received from the DHCP server.
+   ///   When using DHCP, if a value is specified, it overrides the value received from the DHCP server.
    ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
    /// </para>
    /// <para>
@@ -465,7 +474,7 @@ public
 
    ////
    /// <summary>
-   ///   Returns a hash string if a password has been set for user "user",
+   ///   Returns a hash string if a password has been set for "user" user,
    ///   or an empty string otherwise.
    /// <para>
    /// </para>
@@ -473,7 +482,7 @@ public
    /// </para>
    /// </summary>
    /// <returns>
-   ///   a string corresponding to a hash string if a password has been set for user "user",
+   ///   a string corresponding to a hash string if a password has been set for "user" user,
    ///   or an empty string otherwise
    /// </returns>
    /// <para>
@@ -557,6 +566,99 @@ public
 
    ////
    /// <summary>
+   ///   Returns the activation state of the multicast announce protocols to allow easy
+   ///   discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
+   /// <para>
+   /// </para>
+   /// <para>
+   /// </para>
+   /// </summary>
+   /// <returns>
+   ///   either <c>Y_DISCOVERABLE_FALSE</c> or <c>Y_DISCOVERABLE_TRUE</c>, according to the activation state
+   ///   of the multicast announce protocols to allow easy
+   ///   discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
+   /// </returns>
+   /// <para>
+   ///   On failure, throws an exception or returns <c>Y_DISCOVERABLE_INVALID</c>.
+   /// </para>
+   ///-
+   function get_discoverable():Integer;
+
+   ////
+   /// <summary>
+   ///   Changes the activation state of the multicast announce protocols to allow easy
+   ///   discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
+   /// <para>
+   /// </para>
+   /// <para>
+   /// </para>
+   /// </summary>
+   /// <param name="newval">
+   ///   either <c>Y_DISCOVERABLE_FALSE</c> or <c>Y_DISCOVERABLE_TRUE</c>, according to the activation state
+   ///   of the multicast announce protocols to allow easy
+   ///   discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
+   /// </param>
+   /// <para>
+   /// </para>
+   /// <returns>
+   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+   /// </returns>
+   /// <para>
+   ///   On failure, throws an exception or returns a negative error code.
+   /// </para>
+   ///-
+   function set_discoverable(newval:Integer):integer;
+
+   ////
+   /// <summary>
+   ///   Returns the allowed downtime of the WWW link (in seconds) before triggering an automated
+   ///   reboot to try to recover Internet connectivity.
+   /// <para>
+   ///   A zero value disables automated reboot
+   ///   in case of Internet connectivity loss.
+   /// </para>
+   /// <para>
+   /// </para>
+   /// </summary>
+   /// <returns>
+   ///   an integer corresponding to the allowed downtime of the WWW link (in seconds) before triggering an automated
+   ///   reboot to try to recover Internet connectivity
+   /// </returns>
+   /// <para>
+   ///   On failure, throws an exception or returns <c>Y_WWWWATCHDOGDELAY_INVALID</c>.
+   /// </para>
+   ///-
+   function get_wwwWatchdogDelay():LongWord;
+
+   ////
+   /// <summary>
+   ///   Changes the allowed downtime of the WWW link (in seconds) before triggering an automated
+   ///   reboot to try to recover Internet connectivity.
+   /// <para>
+   ///   A zero value disable automated reboot
+   ///   in case of Internet connectivity loss. The smallest valid non-zero timeout is
+   ///   90 seconds.
+   /// </para>
+   /// <para>
+   /// </para>
+   /// </summary>
+   /// <param name="newval">
+   ///   an integer corresponding to the allowed downtime of the WWW link (in seconds) before triggering an automated
+   ///   reboot to try to recover Internet connectivity
+   /// </param>
+   /// <para>
+   /// </para>
+   /// <returns>
+   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+   /// </returns>
+   /// <para>
+   ///   On failure, throws an exception or returns a negative error code.
+   /// </para>
+   ///-
+   function set_wwwWatchdogDelay(newval:LongWord):integer;
+
+   ////
+   /// <summary>
    ///   Returns the callback URL to notify of significant state changes.
    /// <para>
    /// </para>
@@ -574,7 +676,7 @@ public
 
    ////
    /// <summary>
-   ///   Changes the callback URL to notify of significant state changes.
+   ///   Changes the callback URL to notify significant state changes.
    /// <para>
    ///   Remember to call the
    ///   <c>saveToFlash()</c> method of the module if the modification must be kept.
@@ -583,7 +685,7 @@ public
    /// </para>
    /// </summary>
    /// <param name="newval">
-   ///   a string corresponding to the callback URL to notify of significant state changes
+   ///   a string corresponding to the callback URL to notify significant state changes
    /// </param>
    /// <para>
    /// </para>
@@ -598,7 +700,7 @@ public
 
    ////
    /// <summary>
-   ///   Returns the HTTP Method used to notify callbacks for significant state changes.
+   ///   Returns the HTTP method used to notify callbacks for significant state changes.
    /// <para>
    /// </para>
    /// <para>
@@ -606,7 +708,7 @@ public
    /// </summary>
    /// <returns>
    ///   a value among <c>Y_CALLBACKMETHOD_POST</c>, <c>Y_CALLBACKMETHOD_GET</c> and
-   ///   <c>Y_CALLBACKMETHOD_PUT</c> corresponding to the HTTP Method used to notify callbacks for
+   ///   <c>Y_CALLBACKMETHOD_PUT</c> corresponding to the HTTP method used to notify callbacks for
    ///   significant state changes
    /// </returns>
    /// <para>
@@ -617,7 +719,7 @@ public
 
    ////
    /// <summary>
-   ///   Changes the HTTP Method used to notify callbacks for significant state changes.
+   ///   Changes the HTTP method used to notify callbacks for significant state changes.
    /// <para>
    /// </para>
    /// <para>
@@ -625,7 +727,7 @@ public
    /// </summary>
    /// <param name="newval">
    ///   a value among <c>Y_CALLBACKMETHOD_POST</c>, <c>Y_CALLBACKMETHOD_GET</c> and
-   ///   <c>Y_CALLBACKMETHOD_PUT</c> corresponding to the HTTP Method used to notify callbacks for
+   ///   <c>Y_CALLBACKMETHOD_PUT</c> corresponding to the HTTP method used to notify callbacks for
    ///   significant state changes
    /// </param>
    /// <para>
@@ -737,10 +839,10 @@ public
    ////
    /// <summary>
    ///   Connects to the notification callback and saves the credentials required to
-   ///   log in to it.
+   ///   log into it.
    /// <para>
-   ///   The password will not be stored into the module, only a hashed
-   ///   copy of the credentials will be saved. Remember to call the
+   ///   The password is not stored into the module, only a hashed
+   ///   copy of the credentials are saved. Remember to call the
    ///   <c>saveToFlash()</c> method of the module if the modification must be kept.
    /// </para>
    /// <para>
@@ -765,14 +867,14 @@ public
 
    ////
    /// <summary>
-   ///   Returns the minimum wait time between two callback notifications, in seconds.
+   ///   Returns the minimum waiting time between two callback notifications, in seconds.
    /// <para>
    /// </para>
    /// <para>
    /// </para>
    /// </summary>
    /// <returns>
-   ///   an integer corresponding to the minimum wait time between two callback notifications, in seconds
+   ///   an integer corresponding to the minimum waiting time between two callback notifications, in seconds
    /// </returns>
    /// <para>
    ///   On failure, throws an exception or returns <c>Y_CALLBACKMINDELAY_INVALID</c>.
@@ -782,14 +884,14 @@ public
 
    ////
    /// <summary>
-   ///   Changes the minimum wait time between two callback notifications, in seconds.
+   ///   Changes the minimum waiting time between two callback notifications, in seconds.
    /// <para>
    /// </para>
    /// <para>
    /// </para>
    /// </summary>
    /// <param name="newval">
-   ///   an integer corresponding to the minimum wait time between two callback notifications, in seconds
+   ///   an integer corresponding to the minimum waiting time between two callback notifications, in seconds
    /// </param>
    /// <para>
    /// </para>
@@ -804,14 +906,14 @@ public
 
    ////
    /// <summary>
-   ///   Returns the maximum wait time between two callback notifications, in seconds.
+   ///   Returns the maximum waiting time between two callback notifications, in seconds.
    /// <para>
    /// </para>
    /// <para>
    /// </para>
    /// </summary>
    /// <returns>
-   ///   an integer corresponding to the maximum wait time between two callback notifications, in seconds
+   ///   an integer corresponding to the maximum waiting time between two callback notifications, in seconds
    /// </returns>
    /// <para>
    ///   On failure, throws an exception or returns <c>Y_CALLBACKMAXDELAY_INVALID</c>.
@@ -821,14 +923,14 @@ public
 
    ////
    /// <summary>
-   ///   Changes the maximum wait time between two callback notifications, in seconds.
+   ///   Changes the maximum waiting time between two callback notifications, in seconds.
    /// <para>
    /// </para>
    /// <para>
    /// </para>
    /// </summary>
    /// <param name="newval">
-   ///   an integer corresponding to the maximum wait time between two callback notifications, in seconds
+   ///   an integer corresponding to the maximum waiting time between two callback notifications, in seconds
    /// </param>
    /// <para>
    /// </para>
@@ -840,6 +942,45 @@ public
    /// </para>
    ///-
    function set_callbackMaxDelay(newval:LongWord):integer;
+
+   ////
+   /// <summary>
+   ///   Returns the current consumed by the module from Power-over-Ethernet (PoE), in milli-amps.
+   /// <para>
+   ///   The current consumption is measured after converting PoE source to 5 Volt, and should
+   ///   never exceed 1800 mA.
+   /// </para>
+   /// <para>
+   /// </para>
+   /// </summary>
+   /// <returns>
+   ///   an integer corresponding to the current consumed by the module from Power-over-Ethernet (PoE), in milli-amps
+   /// </returns>
+   /// <para>
+   ///   On failure, throws an exception or returns <c>Y_POECURRENT_INVALID</c>.
+   /// </para>
+   ///-
+   function get_poeCurrent():LongWord;
+
+   ////
+   /// <summary>
+   ///   Pings str_host to test the network connectivity.
+   /// <para>
+   ///   Sends four requests ICMP ECHO_REQUEST from the
+   ///   module to the target str_host. This method returns a string with the result of the
+   ///   4 ICMP ECHO_REQUEST result.
+   /// </para>
+   /// </summary>
+   /// <param name="host">
+   ///   the hostname or the IP address of the target
+   /// </param>
+   /// <para>
+   /// </para>
+   /// <returns>
+   ///   a string with the result of the ping.
+   /// </returns>
+   ///-
+   function ping(host:string):string;
 
    //--- (end of YNetwork accessors declaration)
 end;
@@ -929,12 +1070,15 @@ constructor TYNetwork.Create(func:string);
    _secondaryDNS := Y_SECONDARYDNS_INVALID;
    _userPassword := Y_USERPASSWORD_INVALID;
    _adminPassword := Y_ADMINPASSWORD_INVALID;
+   _discoverable := Y_DISCOVERABLE_INVALID;
+   _wwwWatchdogDelay := Y_WWWWATCHDOGDELAY_INVALID;
    _callbackUrl := Y_CALLBACKURL_INVALID;
    _callbackMethod := Y_CALLBACKMETHOD_INVALID;
    _callbackEncoding := Y_CALLBACKENCODING_INVALID;
    _callbackCredentials := Y_CALLBACKCREDENTIALS_INVALID;
    _callbackMinDelay := Y_CALLBACKMINDELAY_INVALID;
    _callbackMaxDelay := Y_CALLBACKMAXDELAY_INVALID;
+   _poeCurrent := Y_POECURRENT_INVALID;
  end;
 
 {$HINTS OFF}
@@ -995,6 +1139,14 @@ function TYNetwork._parse(j:PJSONRECORD):integer;
        begin
          _adminPassword := string(member^.svalue);
        end else
+      if (member^.name = 'discoverable') then
+       begin
+         _discoverable := member^.ivalue;
+       end else
+      if (member^.name = 'wwwWatchdogDelay') then
+       begin
+         _wwwWatchdogDelay := member^.ivalue;
+       end else
       if (member^.name = 'callbackUrl') then
        begin
          _callbackUrl := string(member^.svalue);
@@ -1018,6 +1170,10 @@ function TYNetwork._parse(j:PJSONRECORD):integer;
       if (member^.name = 'callbackMaxDelay') then
        begin
          _callbackMaxDelay := member^.ivalue;
+       end else
+      if (member^.name = 'poeCurrent') then
+       begin
+         _poeCurrent := member^.ivalue;
        end else
        begin end;
     end;
@@ -1120,13 +1276,13 @@ function TYNetwork.get_advertisedValue():string;
 ///   Level 1 (LIVE_1) is reached when the network is detected, but is not yet connected,
 ///   For a wireless network, this shows that the requested SSID is present.
 ///   Level 2 (LINK_2) is reached when the hardware connection is established.
-///   For a wired network connection, level 2 means that the cable is attached on both ends.
+///   For a wired network connection, level 2 means that the cable is attached at both ends.
 ///   For a connection to a wireless access point, it shows that the security parameters
 ///   are properly configured. For an ad-hoc wireless connection, it means that there is
 ///   at least one other device connected on the ad-hoc network.
 ///   Level 3 (DHCP_3) is reached when an IP address has been obtained using DHCP.
 ///   Level 4 (DNS_4) is reached when the DNS server is reachable on the network.
-///   Level 5 (WWW_5) is reached when global connectivity is demonstrated by properly loading
+///   Level 5 (WWW_5) is reached when global connectivity is demonstrated by properly loading the
 ///   current time from an NTP server.
 /// </para>
 /// <para>
@@ -1284,7 +1440,7 @@ function TYNetwork.set_ipConfig(newval:string):integer;
 ///   IP address received from a DHCP server.
 /// <para>
 ///   Until an address is received from a DHCP
-///   server, the module will use the IP parameters specified to this function.
+///   server, the module uses the IP parameters specified to this function.
 ///   Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
 /// </para>
 /// <para>
@@ -1382,7 +1538,7 @@ function TYNetwork.get_primaryDNS():string;
 /// <summary>
 ///   Changes the IP address of the primary name server to be used by the module.
 /// <para>
-///   When using DHCP, if a value is specified, it will override the value received from the DHCP server.
+///   When using DHCP, if a value is specified, it overrides the value received from the DHCP server.
 ///   Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
 /// </para>
 /// <para>
@@ -1438,7 +1594,7 @@ function TYNetwork.get_secondaryDNS():string;
 /// <summary>
 ///   Changes the IP address of the secondarz name server to be used by the module.
 /// <para>
-///   When using DHCP, if a value is specified, it will override the value received from the DHCP server.
+///   When using DHCP, if a value is specified, it overrides the value received from the DHCP server.
 ///   Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
 /// </para>
 /// <para>
@@ -1466,7 +1622,7 @@ function TYNetwork.set_secondaryDNS(newval:string):integer;
 
 ////
 /// <summary>
-///   Returns a hash string if a password has been set for user "user",
+///   Returns a hash string if a password has been set for "user" user,
 ///   or an empty string otherwise.
 /// <para>
 /// </para>
@@ -1474,7 +1630,7 @@ function TYNetwork.set_secondaryDNS(newval:string):integer;
 /// </para>
 /// </summary>
 /// <returns>
-///   a string corresponding to a hash string if a password has been set for user "user",
+///   a string corresponding to a hash string if a password has been set for "user" user,
 ///   or an empty string otherwise
 /// </returns>
 /// <para>
@@ -1588,6 +1744,129 @@ function TYNetwork.set_adminPassword(newval:string):integer;
 
 ////
 /// <summary>
+///   Returns the activation state of the multicast announce protocols to allow easy
+///   discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
+/// <para>
+/// </para>
+/// <para>
+/// </para>
+/// </summary>
+/// <returns>
+///   either Y_DISCOVERABLE_FALSE or Y_DISCOVERABLE_TRUE, according to the activation state of the
+///   multicast announce protocols to allow easy
+///   discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
+/// </returns>
+/// <para>
+///   On failure, throws an exception or returns Y_DISCOVERABLE_INVALID.
+/// </para>
+///-
+function TYNetwork.get_discoverable():Integer;
+ begin
+   if (_cacheExpiration <= yGetTickCount()) then
+      if (YISERR(load(YAPI_defaultCacheValidity))) then
+       begin
+         result := Y_DISCOVERABLE_INVALID;
+         exit;
+       end;
+   result := _discoverable;
+ end;
+
+////
+/// <summary>
+///   Changes the activation state of the multicast announce protocols to allow easy
+///   discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
+/// <para>
+/// </para>
+/// <para>
+/// </para>
+/// </summary>
+/// <param name="newval">
+///   either Y_DISCOVERABLE_FALSE or Y_DISCOVERABLE_TRUE, according to the activation state of the
+///   multicast announce protocols to allow easy
+///   discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
+/// </param>
+/// <para>
+/// </para>
+/// <returns>
+///   YAPI_SUCCESS if the call succeeds.
+/// </returns>
+/// <para>
+///   On failure, throws an exception or returns a negative error code.
+/// </para>
+///-
+function TYNetwork.set_discoverable(newval:Integer):integer;
+ var
+   rest_val: string;
+ begin
+   if(newval>0) then rest_val := '1' else rest_val := '0';
+   result := _setAttr('discoverable',rest_val);
+ end;
+
+////
+/// <summary>
+///   Returns the allowed downtime of the WWW link (in seconds) before triggering an automated
+///   reboot to try to recover Internet connectivity.
+/// <para>
+///   A zero value disables automated reboot
+///   in case of Internet connectivity loss.
+/// </para>
+/// <para>
+/// </para>
+/// </summary>
+/// <returns>
+///   an integer corresponding to the allowed downtime of the WWW link (in seconds) before triggering an automated
+///   reboot to try to recover Internet connectivity
+/// </returns>
+/// <para>
+///   On failure, throws an exception or returns Y_WWWWATCHDOGDELAY_INVALID.
+/// </para>
+///-
+function TYNetwork.get_wwwWatchdogDelay():LongWord;
+ begin
+   if (_cacheExpiration <= yGetTickCount()) then
+      if (YISERR(load(YAPI_defaultCacheValidity))) then
+       begin
+         result := Y_WWWWATCHDOGDELAY_INVALID;
+         exit;
+       end;
+   result := _wwwWatchdogDelay;
+ end;
+
+////
+/// <summary>
+///   Changes the allowed downtime of the WWW link (in seconds) before triggering an automated
+///   reboot to try to recover Internet connectivity.
+/// <para>
+///   A zero value disable automated reboot
+///   in case of Internet connectivity loss. The smallest valid non-zero timeout is
+///   90 seconds.
+/// </para>
+/// <para>
+/// </para>
+/// </summary>
+/// <param name="newval">
+///   an integer corresponding to the allowed downtime of the WWW link (in seconds) before triggering an automated
+///   reboot to try to recover Internet connectivity
+/// </param>
+/// <para>
+/// </para>
+/// <returns>
+///   YAPI_SUCCESS if the call succeeds.
+/// </returns>
+/// <para>
+///   On failure, throws an exception or returns a negative error code.
+/// </para>
+///-
+function TYNetwork.set_wwwWatchdogDelay(newval:LongWord):integer;
+ var
+   rest_val: string;
+ begin
+   rest_val := inttostr(newval);
+   result := _setAttr('wwwWatchdogDelay',rest_val);
+ end;
+
+////
+/// <summary>
 ///   Returns the callback URL to notify of significant state changes.
 /// <para>
 /// </para>
@@ -1614,7 +1893,7 @@ function TYNetwork.get_callbackUrl():string;
 
 ////
 /// <summary>
-///   Changes the callback URL to notify of significant state changes.
+///   Changes the callback URL to notify significant state changes.
 /// <para>
 ///   Remember to call the
 ///   saveToFlash() method of the module if the modification must be kept.
@@ -1623,7 +1902,7 @@ function TYNetwork.get_callbackUrl():string;
 /// </para>
 /// </summary>
 /// <param name="newval">
-///   a string corresponding to the callback URL to notify of significant state changes
+///   a string corresponding to the callback URL to notify significant state changes
 /// </param>
 /// <para>
 /// </para>
@@ -1644,7 +1923,7 @@ function TYNetwork.set_callbackUrl(newval:string):integer;
 
 ////
 /// <summary>
-///   Returns the HTTP Method used to notify callbacks for significant state changes.
+///   Returns the HTTP method used to notify callbacks for significant state changes.
 /// <para>
 /// </para>
 /// <para>
@@ -1652,7 +1931,7 @@ function TYNetwork.set_callbackUrl(newval:string):integer;
 /// </summary>
 /// <returns>
 ///   a value among Y_CALLBACKMETHOD_POST, Y_CALLBACKMETHOD_GET and Y_CALLBACKMETHOD_PUT corresponding to
-///   the HTTP Method used to notify callbacks for significant state changes
+///   the HTTP method used to notify callbacks for significant state changes
 /// </returns>
 /// <para>
 ///   On failure, throws an exception or returns Y_CALLBACKMETHOD_INVALID.
@@ -1671,7 +1950,7 @@ function TYNetwork.get_callbackMethod():Integer;
 
 ////
 /// <summary>
-///   Changes the HTTP Method used to notify callbacks for significant state changes.
+///   Changes the HTTP method used to notify callbacks for significant state changes.
 /// <para>
 /// </para>
 /// <para>
@@ -1679,7 +1958,7 @@ function TYNetwork.get_callbackMethod():Integer;
 /// </summary>
 /// <param name="newval">
 ///   a value among Y_CALLBACKMETHOD_POST, Y_CALLBACKMETHOD_GET and Y_CALLBACKMETHOD_PUT corresponding to
-///   the HTTP Method used to notify callbacks for significant state changes
+///   the HTTP method used to notify callbacks for significant state changes
 /// </param>
 /// <para>
 /// </para>
@@ -1824,10 +2103,10 @@ function TYNetwork.set_callbackCredentials(newval:string):integer;
 ////
 /// <summary>
 ///   Connects to the notification callback and saves the credentials required to
-///   log in to it.
+///   log into it.
 /// <para>
-///   The password will not be stored into the module, only a hashed
-///   copy of the credentials will be saved. Remember to call the
+///   The password is not stored into the module, only a hashed
+///   copy of the credentials are saved. Remember to call the
 ///   saveToFlash() method of the module if the modification must be kept.
 /// </para>
 /// <para>
@@ -1858,14 +2137,14 @@ function TYNetwork.callbackLogin(username:string;password:string):integer;
 
 ////
 /// <summary>
-///   Returns the minimum wait time between two callback notifications, in seconds.
+///   Returns the minimum waiting time between two callback notifications, in seconds.
 /// <para>
 /// </para>
 /// <para>
 /// </para>
 /// </summary>
 /// <returns>
-///   an integer corresponding to the minimum wait time between two callback notifications, in seconds
+///   an integer corresponding to the minimum waiting time between two callback notifications, in seconds
 /// </returns>
 /// <para>
 ///   On failure, throws an exception or returns Y_CALLBACKMINDELAY_INVALID.
@@ -1884,14 +2163,14 @@ function TYNetwork.get_callbackMinDelay():LongWord;
 
 ////
 /// <summary>
-///   Changes the minimum wait time between two callback notifications, in seconds.
+///   Changes the minimum waiting time between two callback notifications, in seconds.
 /// <para>
 /// </para>
 /// <para>
 /// </para>
 /// </summary>
 /// <param name="newval">
-///   an integer corresponding to the minimum wait time between two callback notifications, in seconds
+///   an integer corresponding to the minimum waiting time between two callback notifications, in seconds
 /// </param>
 /// <para>
 /// </para>
@@ -1912,14 +2191,14 @@ function TYNetwork.set_callbackMinDelay(newval:LongWord):integer;
 
 ////
 /// <summary>
-///   Returns the maximum wait time between two callback notifications, in seconds.
+///   Returns the maximum waiting time between two callback notifications, in seconds.
 /// <para>
 /// </para>
 /// <para>
 /// </para>
 /// </summary>
 /// <returns>
-///   an integer corresponding to the maximum wait time between two callback notifications, in seconds
+///   an integer corresponding to the maximum waiting time between two callback notifications, in seconds
 /// </returns>
 /// <para>
 ///   On failure, throws an exception or returns Y_CALLBACKMAXDELAY_INVALID.
@@ -1938,14 +2217,14 @@ function TYNetwork.get_callbackMaxDelay():LongWord;
 
 ////
 /// <summary>
-///   Changes the maximum wait time between two callback notifications, in seconds.
+///   Changes the maximum waiting time between two callback notifications, in seconds.
 /// <para>
 /// </para>
 /// <para>
 /// </para>
 /// </summary>
 /// <param name="newval">
-///   an integer corresponding to the maximum wait time between two callback notifications, in seconds
+///   an integer corresponding to the maximum waiting time between two callback notifications, in seconds
 /// </param>
 /// <para>
 /// </para>
@@ -1963,6 +2242,62 @@ function TYNetwork.set_callbackMaxDelay(newval:LongWord):integer;
    rest_val := inttostr(newval);
    result := _setAttr('callbackMaxDelay',rest_val);
  end;
+
+////
+/// <summary>
+///   Returns the current consumed by the module from Power-over-Ethernet (PoE), in milli-amps.
+/// <para>
+///   The current consumption is measured after converting PoE source to 5 Volt, and should
+///   never exceed 1800 mA.
+/// </para>
+/// <para>
+/// </para>
+/// </summary>
+/// <returns>
+///   an integer corresponding to the current consumed by the module from Power-over-Ethernet (PoE), in milli-amps
+/// </returns>
+/// <para>
+///   On failure, throws an exception or returns Y_POECURRENT_INVALID.
+/// </para>
+///-
+function TYNetwork.get_poeCurrent():LongWord;
+ begin
+   if (_cacheExpiration <= yGetTickCount()) then
+      if (YISERR(load(YAPI_defaultCacheValidity))) then
+       begin
+         result := Y_POECURRENT_INVALID;
+         exit;
+       end;
+   result := _poeCurrent;
+ end;
+
+////
+/// <summary>
+///   Pings str_host to test the network connectivity.
+/// <para>
+///   Sends four requests ICMP ECHO_REQUEST from the
+///   module to the target str_host. This method returns a string with the result of the
+///   4 ICMP ECHO_REQUEST result.
+/// </para>
+/// </summary>
+/// <param name="host">
+///   the hostname or the IP address of the target
+/// </param>
+/// <para>
+/// </para>
+/// <returns>
+///   a string with the result of the ping.
+/// </returns>
+///-
+function TYNetwork.ping(host:string):string;
+     var
+        content : TBYTEARRAY;
+     begin
+        content := self._download('ping.txt?host='+host);
+        result:= string(content);
+            
+     end;
+
 
 function TYNetwork.nextNetwork(): TYNetwork;
  var

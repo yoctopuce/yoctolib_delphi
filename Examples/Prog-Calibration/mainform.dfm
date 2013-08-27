@@ -125,7 +125,7 @@ object Form1: TForm1
   end
   object RawValueDisplay: TLabel
     Left = 264
-    Top = 116
+    Top = 125
     Width = 3
     Height = 13
     Color = clBtnFace
