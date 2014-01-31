@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pressure.pas 12324 2013-08-13 15:10:31Z mvuilleu $
+ * $Id: yocto_pressure.pas 14701 2014-01-23 15:41:17Z seb $
  *
  * Implements yFindPressure(), the high-level API for Pressure functions
  *
@@ -43,962 +43,487 @@ unit yocto_pressure;
 interface
 
 uses
-   sysutils, classes, windows, yocto_api, yjson;
+  sysutils, classes, windows, yocto_api, yjson;
 
 //--- (YPressure definitions)
 
-const
-   Y_LOGICALNAME_INVALID           = YAPI_INVALID_STRING;
-   Y_ADVERTISEDVALUE_INVALID       = YAPI_INVALID_STRING;
-   Y_UNIT_INVALID                  = YAPI_INVALID_STRING;
-   Y_CURRENTVALUE_INVALID          : double = YAPI_INVALID_DOUBLE;
-   Y_LOWESTVALUE_INVALID           : double = YAPI_INVALID_DOUBLE;
-   Y_HIGHESTVALUE_INVALID          : double = YAPI_INVALID_DOUBLE;
-   Y_CURRENTRAWVALUE_INVALID       : double = YAPI_INVALID_DOUBLE;
-   Y_CALIBRATIONPARAM_INVALID      = YAPI_INVALID_STRING;
-   Y_RESOLUTION_INVALID            : double = YAPI_INVALID_DOUBLE;
 
 
 //--- (end of YPressure definitions)
 
 type
-//--- (YPressure declaration)
- TYPressure = class;
- TUpdateCallback  = procedure(func: TYPressure; value:string);
-////
-/// <summary>
-///   TYPressure Class: Pressure function interface
-/// <para>
-///   The Yoctopuce application programming interface allows you to read an instant
-///   measure of the sensor, as well as the minimal and maximal values observed.
-/// </para>
-/// </summary>
-///-
-TYPressure=class(TYFunction)
-protected
-   // Attributes (function value cache)
-   _logicalName              : string;
-   _advertisedValue          : string;
-   _unit                     : string;
-   _currentValue             : double;
-   _lowestValue              : double;
-   _highestValue             : double;
-   _currentRawValue          : double;
-   _calibrationParam         : string;
-   _resolution               : double;
-   _calibrationOffset        : LongInt;
-   // ValueCallback 
-   _callback                 : TUpdateCallback;
-   // Function-specific method for reading JSON output and caching result
-   function _parse(j:PJSONRECORD):integer; override;
+  TYPressure = class;
+  //--- (YPressure class start)
+  TYPressureValueCallback = procedure(func: TYPressure; value:string);
+  TYPressureTimedReportCallback = procedure(func: TYPressure; value:TYMeasure);
 
-   //--- (end of YPressure declaration)
+  ////
+  /// <summary>
+  ///   TYPressure Class: Pressure function interface
+  /// <para>
+  ///   The Yoctopuce application programming interface allows you to read an instant
+  ///   measure of the sensor, as well as the minimal and maximal values observed.
+  /// </para>
+  /// </summary>
+  ///-
+  TYPressure=class(TYSensor)
+  //--- (end of YPressure class start)
+  protected
+  //--- (YPressure declaration)
+    // Attributes (function value cache)
+    _logicalName              : string;
+    _advertisedValue          : string;
+    _unit                     : string;
+    _currentValue             : double;
+    _lowestValue              : double;
+    _highestValue             : double;
+    _currentRawValue          : double;
+    _logFrequency             : string;
+    _reportFrequency          : string;
+    _calibrationParam         : string;
+    _resolution               : double;
+    _valueCallbackPressure    : TYPressureValueCallback;
+    _timedReportCallbackPressure : TYPressureTimedReportCallback;
+    // Function-specific method for reading JSON output and caching result
+    function _parseAttr(member:PJSONRECORD):integer; override;
 
-public
-   constructor Create(func:string);
+    //--- (end of YPressure declaration)
 
-   ////
-   /// <summary>
-   ///   Continues the enumeration of pressure sensors started using <c>yFirstPressure()</c>.
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a pointer to a <c>YPressure</c> object, corresponding to
-   ///   a pressure sensor currently online, or a <c>null</c> pointer
-   ///   if there are no more pressure sensors to enumerate.
-   /// </returns>
-   ///-
-   function nextPressure():TYPressure;
+  public
+    //--- (YPressure accessors declaration)
+    constructor Create(func:string);
 
-   //--- (YPressure accessors declaration)
-  Procedure registerValueCallback(callback : TUpdateCallback);
-  procedure set_callback(callback : TUpdateCallback);
-  procedure setCallback(callback : TUpdateCallback);
-  procedure advertiseValue(value : String);override;
-   ////
-   /// <summary>
-   ///   Returns the logical name of the pressure sensor.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a string corresponding to the logical name of the pressure sensor
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_LOGICALNAME_INVALID</c>.
-   /// </para>
-   ///-
-   function get_logicalName():string;
+    ////
+    /// <summary>
+    ///   Retrieves $AFUNCTION$ for a given identifier.
+    /// <para>
+    ///   The identifier can be specified using several formats:
+    /// </para>
+    /// <para>
+    /// </para>
+    /// <para>
+    ///   - FunctionLogicalName
+    /// </para>
+    /// <para>
+    ///   - ModuleSerialNumber.FunctionIdentifier
+    /// </para>
+    /// <para>
+    ///   - ModuleSerialNumber.FunctionLogicalName
+    /// </para>
+    /// <para>
+    ///   - ModuleLogicalName.FunctionIdentifier
+    /// </para>
+    /// <para>
+    ///   - ModuleLogicalName.FunctionLogicalName
+    /// </para>
+    /// <para>
+    /// </para>
+    /// <para>
+    ///   This function does not require that $THEFUNCTION$ is online at the time
+    ///   it is invoked. The returned object is nevertheless valid.
+    ///   Use the method <c>YPressure.isOnline()</c> to test if $THEFUNCTION$ is
+    ///   indeed online at a given time. In case of ambiguity when looking for
+    ///   $AFUNCTION$ by logical name, no error is notified: the first instance
+    ///   found is returned. The search is performed first by hardware name,
+    ///   then by logical name.
+    /// </para>
+    /// </summary>
+    /// <param name="func">
+    ///   a string that uniquely characterizes $THEFUNCTION$
+    /// </param>
+    /// <returns>
+    ///   a <c>YPressure</c> object allowing you to drive $THEFUNCTION$.
+    /// </returns>
+    ///-
+    class function FindPressure(func: string):TYPressure;
 
-   ////
-   /// <summary>
-   ///   Changes the logical name of the pressure sensor.
-   /// <para>
-   ///   You can use <c>yCheckLogicalName()</c>
-   ///   prior to this call to make sure that your parameter is valid.
-   ///   Remember to call the <c>saveToFlash()</c> method of the module if the
-   ///   modification must be kept.
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <param name="newval">
-   ///   a string corresponding to the logical name of the pressure sensor
-   /// </param>
-   /// <para>
-   /// </para>
-   /// <returns>
-   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns a negative error code.
-   /// </para>
-   ///-
-   function set_logicalName(newval:string):integer;
+    ////
+    /// <summary>
+    ///   Registers the callback function that is invoked on every change of advertised value.
+    /// <para>
+    ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+    ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+    ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="callback">
+    ///   the callback function to call, or a null pointer. The callback function should take two
+    ///   arguments: the function object of which the value has changed, and the character string describing
+    ///   the new advertised value.
+    /// @noreturn
+    /// </param>
+    ///-
+    function registerValueCallback(callback: TYPressureValueCallback):LongInt; overload;
 
-   ////
-   /// <summary>
-   ///   Returns the current value of the pressure sensor (no more than 6 characters).
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a string corresponding to the current value of the pressure sensor (no more than 6 characters)
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_ADVERTISEDVALUE_INVALID</c>.
-   /// </para>
-   ///-
-   function get_advertisedValue():string;
+    function _invokeValueCallback(value: string):LongInt; override;
 
-   ////
-   /// <summary>
-   ///   Returns the measuring unit for the measured value.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a string corresponding to the measuring unit for the measured value
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_UNIT_INVALID</c>.
-   /// </para>
-   ///-
-   function get_unit():string;
+    ////
+    /// <summary>
+    ///   Registers the callback function that is invoked on every periodic timed notification.
+    /// <para>
+    ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+    ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+    ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="callback">
+    ///   the callback function to call, or a null pointer. The callback function should take two
+    ///   arguments: the function object of which the value has changed, and an YMeasure object describing
+    ///   the new advertised value.
+    /// @noreturn
+    /// </param>
+    ///-
+    function registerTimedReportCallback(callback: TYPressureTimedReportCallback):LongInt; overload;
 
-   ////
-   /// <summary>
-   ///   Returns the current measured value.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a floating point number corresponding to the current measured value
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_CURRENTVALUE_INVALID</c>.
-   /// </para>
-   ///-
-   function get_currentValue():double;
+    function _invokeTimedReportCallback(value: TYMeasure):LongInt; override;
 
-   ////
-   /// <summary>
-   ///   Changes the recorded minimal value observed.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <param name="newval">
-   ///   a floating point number corresponding to the recorded minimal value observed
-   /// </param>
-   /// <para>
-   /// </para>
-   /// <returns>
-   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns a negative error code.
-   /// </para>
-   ///-
-   function set_lowestValue(newval:double):integer;
 
-   ////
-   /// <summary>
-   ///   Returns the minimal value observed.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a floating point number corresponding to the minimal value observed
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_LOWESTVALUE_INVALID</c>.
-   /// </para>
-   ///-
-   function get_lowestValue():double;
-
-   ////
-   /// <summary>
-   ///   Changes the recorded maximal value observed.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <param name="newval">
-   ///   a floating point number corresponding to the recorded maximal value observed
-   /// </param>
-   /// <para>
-   /// </para>
-   /// <returns>
-   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns a negative error code.
-   /// </para>
-   ///-
-   function set_highestValue(newval:double):integer;
-
-   ////
-   /// <summary>
-   ///   Returns the maximal value observed.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a floating point number corresponding to the maximal value observed
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_HIGHESTVALUE_INVALID</c>.
-   /// </para>
-   ///-
-   function get_highestValue():double;
-
-   ////
-   /// <summary>
-   ///   Returns the unrounded and uncalibrated raw value returned by the sensor.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a floating point number corresponding to the unrounded and uncalibrated raw value returned by the sensor
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_CURRENTRAWVALUE_INVALID</c>.
-   /// </para>
-   ///-
-   function get_currentRawValue():double;
-
-   function get_calibrationParam():string;
-
-   function set_calibrationParam(newval:string):integer;
-
-   ////
-   /// <summary>
-   ///   Configures error correction data points, in particular to compensate for
-   ///   a possible perturbation of the measure caused by an enclosure.
-   /// <para>
-   ///   It is possible
-   ///   to configure up to five correction points. Correction points must be provided
-   ///   in ascending order, and be in the range of the sensor. The device will automatically
-   ///   perform a linear interpolation of the error correction between specified
-   ///   points. Remember to call the <c>saveToFlash()</c> method of the module if the
-   ///   modification must be kept.
-   /// </para>
-   /// <para>
-   ///   For more information on advanced capabilities to refine the calibration of
-   ///   sensors, please contact support@yoctopuce.com.
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <param name="rawValues">
-   ///   array of floating point numbers, corresponding to the raw
-   ///   values returned by the sensor for the correction points.
-   /// </param>
-   /// <param name="refValues">
-   ///   array of floating point numbers, corresponding to the corrected
-   ///   values for the correction points.
-   /// </param>
-   /// <para>
-   /// </para>
-   /// <returns>
-   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns a negative error code.
-   /// </para>
-   ///-
-   function calibrateFromPoints(rawValues:floatArr;refValues:floatArr):integer;
-
-   function loadCalibrationPoints(var rawValues:floatArr;var refValues:floatArr):integer;
-
-   ////
-   /// <summary>
-   ///   Returns the resolution of the measured values.
-   /// <para>
-   ///   The resolution corresponds to the numerical precision
-   ///   of the values, which is not always the same as the actual precision of the sensor.
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a floating point number corresponding to the resolution of the measured values
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_RESOLUTION_INVALID</c>.
-   /// </para>
-   ///-
-   function get_resolution():double;
-
-   //--- (end of YPressure accessors declaration)
-end;
+    ////
+    /// <summary>
+    ///   Continues the enumeration of pressure sensors started using <c>yFirstPressure()</c>.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a pointer to a <c>YPressure</c> object, corresponding to
+    ///   a pressure sensor currently online, or a <c>null</c> pointer
+    ///   if there are no more pressure sensors to enumerate.
+    /// </returns>
+    ///-
+    function nextPressure():TYPressure;
+    ////
+    /// <summary>
+    ///   c
+    /// <para>
+    ///   omment from .yc definition
+    /// </para>
+    /// </summary>
+    ///-
+    class function FirstPressure():TYPressure;
+  //--- (end of YPressure accessors declaration)
+  end;
 
 //--- (Pressure functions declaration)
 
-////
-/// <summary>
-///   Retrieves a pressure sensor for a given identifier.
-/// <para>
-///   The identifier can be specified using several formats:
-/// </para>
-/// <para>
-/// </para>
-/// <para>
-///   - FunctionLogicalName
-/// </para>
-/// <para>
-///   - ModuleSerialNumber.FunctionIdentifier
-/// </para>
-/// <para>
-///   - ModuleSerialNumber.FunctionLogicalName
-/// </para>
-/// <para>
-///   - ModuleLogicalName.FunctionIdentifier
-/// </para>
-/// <para>
-///   - ModuleLogicalName.FunctionLogicalName
-/// </para>
-/// <para>
-/// </para>
-/// <para>
-///   This function does not require that the pressure sensor is online at the time
-///   it is invoked. The returned object is nevertheless valid.
-///   Use the method <c>YPressure.isOnline()</c> to test if the pressure sensor is
-///   indeed online at a given time. In case of ambiguity when looking for
-///   a pressure sensor by logical name, no error is notified: the first instance
-///   found is returned. The search is performed first by hardware name,
-///   then by logical name.
-/// </para>
-/// </summary>
-/// <param name="func">
-///   a string that uniquely characterizes the pressure sensor
-/// </param>
-/// <returns>
-///   a <c>YPressure</c> object allowing you to drive the pressure sensor.
-/// </returns>
-///-
-function yFindPressure(func:string):TYPressure;
-////
-/// <summary>
-///   Starts the enumeration of pressure sensors currently accessible.
-/// <para>
-///   Use the method <c>YPressure.nextPressure()</c> to iterate on
-///   next pressure sensors.
-/// </para>
-/// </summary>
-/// <returns>
-///   a pointer to a <c>YPressure</c> object, corresponding to
-///   the first pressure sensor currently online, or a <c>null</c> pointer
-///   if there are none.
-/// </returns>
-///-
-function yFirstPressure():TYPressure;
+  ////
+  /// <summary>
+  ///   Retrieves a pressure sensor for a given identifier.
+  /// <para>
+  ///   The identifier can be specified using several formats:
+  /// </para>
+  /// <para>
+  /// </para>
+  /// <para>
+  ///   - FunctionLogicalName
+  /// </para>
+  /// <para>
+  ///   - ModuleSerialNumber.FunctionIdentifier
+  /// </para>
+  /// <para>
+  ///   - ModuleSerialNumber.FunctionLogicalName
+  /// </para>
+  /// <para>
+  ///   - ModuleLogicalName.FunctionIdentifier
+  /// </para>
+  /// <para>
+  ///   - ModuleLogicalName.FunctionLogicalName
+  /// </para>
+  /// <para>
+  /// </para>
+  /// <para>
+  ///   This function does not require that the pressure sensor is online at the time
+  ///   it is invoked. The returned object is nevertheless valid.
+  ///   Use the method <c>YPressure.isOnline()</c> to test if the pressure sensor is
+  ///   indeed online at a given time. In case of ambiguity when looking for
+  ///   a pressure sensor by logical name, no error is notified: the first instance
+  ///   found is returned. The search is performed first by hardware name,
+  ///   then by logical name.
+  /// </para>
+  /// </summary>
+  /// <param name="func">
+  ///   a string that uniquely characterizes the pressure sensor
+  /// </param>
+  /// <returns>
+  ///   a <c>YPressure</c> object allowing you to drive the pressure sensor.
+  /// </returns>
+  ///-
+  function yFindPressure(func:string):TYPressure;
+  ////
+  /// <summary>
+  ///   Starts the enumeration of pressure sensors currently accessible.
+  /// <para>
+  ///   Use the method <c>YPressure.nextPressure()</c> to iterate on
+  ///   next pressure sensors.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a pointer to a <c>YPressure</c> object, corresponding to
+  ///   the first pressure sensor currently online, or a <c>null</c> pointer
+  ///   if there are none.
+  /// </returns>
+  ///-
+  function yFirstPressure():TYPressure;
 
 //--- (end of Pressure functions declaration)
 
 implementation
 
-//--- (YPressure implementation)
-
-var
-   _PressureCache : TStringList;
-
-constructor TYPressure.Create(func:string);
- begin
-   inherited Create('Pressure', func);
-   _logicalName := Y_LOGICALNAME_INVALID;
-   _advertisedValue := Y_ADVERTISEDVALUE_INVALID;
-   _unit := Y_UNIT_INVALID;
-   _currentValue := Y_CURRENTVALUE_INVALID;
-   _lowestValue := Y_LOWESTVALUE_INVALID;
-   _highestValue := Y_HIGHESTVALUE_INVALID;
-   _currentRawValue := Y_CURRENTRAWVALUE_INVALID;
-   _calibrationParam := Y_CALIBRATIONPARAM_INVALID;
-   _resolution := Y_RESOLUTION_INVALID;
-   _calibrationOffset := 0;
- end;
-
-{$HINTS OFF}
-function TYPressure._parse(j:PJSONRECORD):integer;
- var
-   member,sub : PJSONRECORD;
-   i,l        : integer;
- begin
-   if (j^.recordtype <> JSON_STRUCT) then begin _parse:= -1; exit; end;
-   for i:=0 to j^.membercount-1 do
+  constructor TYPressure.Create(func:string);
     begin
-      member := j^.members[i];
-      if (member^.name = 'logicalName') then
-       begin
-         _logicalName := string(member^.svalue);
-       end else
-      if (member^.name = 'advertisedValue') then
-       begin
-         _advertisedValue := string(member^.svalue);
-       end else
-      if (member^.name = 'unit') then
-       begin
-         _unit := string(member^.svalue);
-       end else
-      if (member^.name = 'currentValue') then
-       begin
-         _currentValue := round(member^.ivalue/6553.6) / 10;
-       end else
-      if (member^.name = 'lowestValue') then
-       begin
-         _lowestValue := round(member^.ivalue/6553.6) / 10;
-       end else
-      if (member^.name = 'highestValue') then
-       begin
-         _highestValue := round(member^.ivalue/6553.6) / 10;
-       end else
-      if (member^.name = 'currentRawValue') then
-       begin
-         _currentRawValue := member^.ivalue/65536.0;
-       end else
-      if (member^.name = 'calibrationParam') then
-       begin
-         _calibrationParam := string(member^.svalue);
-       end else
-      if (member^.name = 'resolution') then
-       begin
-         if (member^.ivalue > 100) then _resolution := 1.0 / round(65536.0/member^.ivalue) else _resolution := 0.001 / round(67.0/member^.ivalue);
-       end else
-       begin end;
+      inherited Create(func);
+      _className := 'Pressure';
+      //--- (YPressure accessors initialization)
+      _valueCallbackPressure := nil;
+      _timedReportCallbackPressure := nil;
+      //--- (end of YPressure accessors initialization)
     end;
-   _parse := 0;
- end;
+
+
+//--- (YPressure implementation)
+{$HINTS OFF}
+  function TYPressure._parseAttr(member:PJSONRECORD):integer;
+    var
+      sub : PJSONRECORD;
+      i,l        : integer;
+    begin
+      result := inherited _parseAttr(member);
+    end;
 {$HINTS ON}
 
-////
-/// <summary>
-///   Returns the logical name of the pressure sensor.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a string corresponding to the logical name of the pressure sensor
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
-/// </para>
-///-
-function TYPressure.get_logicalName():string;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_LOGICALNAME_INVALID;
-         exit;
-       end;
-   result := _logicalName;
- end;
-
-////
-/// <summary>
-///   Changes the logical name of the pressure sensor.
-/// <para>
-///   You can use yCheckLogicalName()
-///   prior to this call to make sure that your parameter is valid.
-///   Remember to call the saveToFlash() method of the module if the
-///   modification must be kept.
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <param name="newval">
-///   a string corresponding to the logical name of the pressure sensor
-/// </param>
-/// <para>
-/// </para>
-/// <returns>
-///   YAPI_SUCCESS if the call succeeds.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns a negative error code.
-/// </para>
-///-
-function TYPressure.set_logicalName(newval:string):integer;
- var
-   rest_val: string;
- begin
-   rest_val := newval;
-   result := _setAttr('logicalName',rest_val);
- end;
-
-////
-/// <summary>
-///   Returns the current value of the pressure sensor (no more than 6 characters).
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a string corresponding to the current value of the pressure sensor (no more than 6 characters)
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
-/// </para>
-///-
-function TYPressure.get_advertisedValue():string;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_ADVERTISEDVALUE_INVALID;
-         exit;
-       end;
-   result := _advertisedValue;
- end;
-
-////
-/// <summary>
-///   Returns the measuring unit for the measured value.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a string corresponding to the measuring unit for the measured value
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_UNIT_INVALID.
-/// </para>
-///-
-function TYPressure.get_unit():string;
- begin
-   if (_unit = Y_UNIT_INVALID) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_UNIT_INVALID;
-         exit;
-       end;
-   result := _unit;
- end;
-
-////
-/// <summary>
-///   Returns the current measured value.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a floating point number corresponding to the current measured value
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_CURRENTVALUE_INVALID.
-/// </para>
-///-
-function TYPressure.get_currentValue():double;
- var res : double;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_CURRENTVALUE_INVALID;
-         exit;
-       end;
-    res := _applyCalibration(_currentRawValue, _calibrationParam, _calibrationOffset, _resolution);
-    if(res <> Y_CURRENTVALUE_INVALID) then
-       begin
-         result := res;
-         exit;
-       end;
-   result := _currentValue;
- end;
-
-////
-/// <summary>
-///   Changes the recorded minimal value observed.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <param name="newval">
-///   a floating point number corresponding to the recorded minimal value observed
-/// </param>
-/// <para>
-/// </para>
-/// <returns>
-///   YAPI_SUCCESS if the call succeeds.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns a negative error code.
-/// </para>
-///-
-function TYPressure.set_lowestValue(newval:double):integer;
- var
-   rest_val: string;
- begin
-   rest_val := inttostr(round(newval*65536.0));
-   result := _setAttr('lowestValue',rest_val);
- end;
-
-////
-/// <summary>
-///   Returns the minimal value observed.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a floating point number corresponding to the minimal value observed
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_LOWESTVALUE_INVALID.
-/// </para>
-///-
-function TYPressure.get_lowestValue():double;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_LOWESTVALUE_INVALID;
-         exit;
-       end;
-   result := _lowestValue;
- end;
-
-////
-/// <summary>
-///   Changes the recorded maximal value observed.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <param name="newval">
-///   a floating point number corresponding to the recorded maximal value observed
-/// </param>
-/// <para>
-/// </para>
-/// <returns>
-///   YAPI_SUCCESS if the call succeeds.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns a negative error code.
-/// </para>
-///-
-function TYPressure.set_highestValue(newval:double):integer;
- var
-   rest_val: string;
- begin
-   rest_val := inttostr(round(newval*65536.0));
-   result := _setAttr('highestValue',rest_val);
- end;
-
-////
-/// <summary>
-///   Returns the maximal value observed.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a floating point number corresponding to the maximal value observed
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_HIGHESTVALUE_INVALID.
-/// </para>
-///-
-function TYPressure.get_highestValue():double;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_HIGHESTVALUE_INVALID;
-         exit;
-       end;
-   result := _highestValue;
- end;
-
-////
-/// <summary>
-///   Returns the unrounded and uncalibrated raw value returned by the sensor.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a floating point number corresponding to the unrounded and uncalibrated raw value returned by the sensor
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_CURRENTRAWVALUE_INVALID.
-/// </para>
-///-
-function TYPressure.get_currentRawValue():double;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_CURRENTRAWVALUE_INVALID;
-         exit;
-       end;
-   result := _currentRawValue;
- end;
-
-function TYPressure.get_calibrationParam():string;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_CALIBRATIONPARAM_INVALID;
-         exit;
-       end;
-   result := _calibrationParam;
- end;
-
-function TYPressure.set_calibrationParam(newval:string):integer;
- var
-   rest_val: string;
- begin
-   rest_val := newval;
-   result := _setAttr('calibrationParam',rest_val);
- end;
-
-////
-/// <summary>
-///   Configures error correction data points, in particular to compensate for
-///   a possible perturbation of the measure caused by an enclosure.
-/// <para>
-///   It is possible
-///   to configure up to five correction points. Correction points must be provided
-///   in ascending order, and be in the range of the sensor. The device will automatically
-///   perform a linear interpolation of the error correction between specified
-///   points. Remember to call the saveToFlash() method of the module if the
-///   modification must be kept.
-/// </para>
-/// <para>
-///   For more information on advanced capabilities to refine the calibration of
-///   sensors, please contact support@yoctopuce.com.
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <param name="rawValues">
-///   array of floating point numbers, corresponding to the raw
-///   values returned by the sensor for the correction points.
-/// </param>
-/// <param name="refValues">
-///   array of floating point numbers, corresponding to the corrected
-///   values for the correction points.
-/// </param>
-/// <para>
-/// </para>
-/// <returns>
-///   YAPI_SUCCESS if the call succeeds.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns a negative error code.
-/// </para>
-///-
-function TYPressure.calibrateFromPoints(rawValues:floatArr;refValues:floatArr):integer;
- var
-   rest_val: string;
- begin
-   rest_val := _encodeCalibrationPoints(rawValues,refValues,_resolution,_calibrationOffset,_calibrationParam);
-   result := _setAttr('calibrationParam', rest_val);
- end;
-
-function TYPressure.loadCalibrationPoints(var rawValues:floatArr;var refValues:floatArr):integer;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := _lastErrorType;
-         exit;
-       end;
-   result := _decodeCalibrationPoints(_calibrationParam,nil,rawValues,refValues,_resolution,_calibrationOffset);
- end;
-
-////
-/// <summary>
-///   Returns the resolution of the measured values.
-/// <para>
-///   The resolution corresponds to the numerical precision
-///   of the values, which is not always the same as the actual precision of the sensor.
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a floating point number corresponding to the resolution of the measured values
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_RESOLUTION_INVALID.
-/// </para>
-///-
-function TYPressure.get_resolution():double;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_RESOLUTION_INVALID;
-         exit;
-       end;
-   result := _resolution;
- end;
-
-function TYPressure.nextPressure(): TYPressure;
- var
-   hwid: string;
- begin
-   if (YISERR(_nextFunction(hwid))) then
+  ////
+  /// <summary>
+  ///   Retrieves $AFUNCTION$ for a given identifier.
+  /// <para>
+  ///   The identifier can be specified using several formats:
+  /// </para>
+  /// <para>
+  /// </para>
+  /// <para>
+  ///   - FunctionLogicalName
+  /// </para>
+  /// <para>
+  ///   - ModuleSerialNumber.FunctionIdentifier
+  /// </para>
+  /// <para>
+  ///   - ModuleSerialNumber.FunctionLogicalName
+  /// </para>
+  /// <para>
+  ///   - ModuleLogicalName.FunctionIdentifier
+  /// </para>
+  /// <para>
+  ///   - ModuleLogicalName.FunctionLogicalName
+  /// </para>
+  /// <para>
+  /// </para>
+  /// <para>
+  ///   This function does not require that $THEFUNCTION$ is online at the time
+  ///   it is invoked. The returned object is nevertheless valid.
+  ///   Use the method <c>YPressure.isOnline()</c> to test if $THEFUNCTION$ is
+  ///   indeed online at a given time. In case of ambiguity when looking for
+  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
+  ///   found is returned. The search is performed first by hardware name,
+  ///   then by logical name.
+  /// </para>
+  /// </summary>
+  /// <param name="func">
+  ///   a string that uniquely characterizes $THEFUNCTION$
+  /// </param>
+  /// <returns>
+  ///   a <c>YPressure</c> object allowing you to drive $THEFUNCTION$.
+  /// </returns>
+  ///-
+  class function TYPressure.FindPressure(func: string):TYPressure;
+    var
+      obj : TYPressure;
     begin
-      nextPressure := nil;
+      obj := TYPressure(TYFunction._FindFromCache('Pressure', func));
+      if obj = nil then
+        begin
+          obj :=  TYPressure.create(func);
+          TYFunction._AddToCache('Pressure',  func, obj)
+        end;
+      result := obj;
       exit;
     end;
-   if (hwid='') then
+
+
+  ////
+  /// <summary>
+  ///   Registers the callback function that is invoked on every change of advertised value.
+  /// <para>
+  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="callback">
+  ///   the callback function to call, or a null pointer. The callback function should take two
+  ///   arguments: the function object of which the value has changed, and the character string describing
+  ///   the new advertised value.
+  /// @noreturn
+  /// </param>
+  ///-
+  function TYPressure.registerValueCallback(callback: TYPressureValueCallback):LongInt;
+    var
+      val : string;
     begin
-      nextPressure := nil;
+      if (addr(callback) <> nil) then
+        begin
+          TYFunction._UpdateValueCallbackList(self, true)
+        end
+      else
+        begin
+          TYFunction._UpdateValueCallbackList(self, false)
+        end;
+      self._valueCallbackPressure := callback;
+      // Immediately invoke value callback with current value
+      if (addr(callback) <> nil) and self.isOnline then
+        begin
+          val := self._advertisedValue;
+          if not((val = '')) then
+            begin
+              self._invokeValueCallback(val)
+            end;
+        end;
+      result := 0;
       exit;
     end;
-    nextPressure := yFindPressure(hwid);
- end;
 
 
-    ////
-    /// <summary>
-    ///   comment from .
-    /// <para>
-    ///   yc definition
-    /// </para>
-    /// </summary>
-    ///-
-  Procedure TYPressure.registerValueCallback(callback : TUpdateCallback);
-  begin
-   If assigned(callback) Then
-     registerFuncCallback(self)
-   else
-     unregisterFuncCallback(self);
-   _callback := callback;
-  End;
+  function TYPressure._invokeValueCallback(value: string):LongInt;
+    begin
+      if (addr(self._valueCallbackPressure) <> nil) then
+        begin
+          self._valueCallbackPressure(self, value)
+        end
+      else
+        begin
+          inherited _invokeValueCallback(value)
+        end;
+      result := 0;
+      exit;
+    end;
 
-  procedure TYPressure.set_callback(callback : TUpdateCallback);
-   Begin
-    registerValueCallback(callback);
-  End;
 
-  procedure  TYPressure.setCallback(callback : TUpdateCallback);
-   Begin
-    registerValueCallback(callback);
-   End;
+  ////
+  /// <summary>
+  ///   Registers the callback function that is invoked on every periodic timed notification.
+  /// <para>
+  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="callback">
+  ///   the callback function to call, or a null pointer. The callback function should take two
+  ///   arguments: the function object of which the value has changed, and an YMeasure object describing
+  ///   the new advertised value.
+  /// @noreturn
+  /// </param>
+  ///-
+  function TYPressure.registerTimedReportCallback(callback: TYPressureTimedReportCallback):LongInt;
+    begin
+      if (addr(callback) <> nil) then
+        begin
+          TYFunction._UpdateTimedReportCallbackList(self, true)
+        end
+      else
+        begin
+          TYFunction._UpdateTimedReportCallbackList(self, false)
+        end;
+      self._timedReportCallbackPressure := callback;
+      result := 0;
+      exit;
+    end;
 
-  procedure  TYPressure.advertiseValue(value : String);
-  Begin
-    If assigned(_callback)  Then _callback(self, value)
-   End;
+
+  function TYPressure._invokeTimedReportCallback(value: TYMeasure):LongInt;
+    begin
+      if (addr(self._timedReportCallbackPressure) <> nil) then
+        begin
+          self._timedReportCallbackPressure(self, value)
+        end
+      else
+        begin
+          inherited _invokeTimedReportCallback(value)
+        end;
+      result := 0;
+      exit;
+    end;
+
+
+  function TYPressure.nextPressure(): TYPressure;
+    var
+      hwid: string;
+    begin
+      if YISERR(_nextFunction(hwid)) then
+        begin
+          nextPressure := nil;
+          exit;
+        end;
+      if hwid = '' then
+        begin
+          nextPressure := nil;
+          exit;
+        end;
+      nextPressure := TYPressure.FindPressure(hwid);
+    end;
+
+  class function TYPressure.FirstPressure(): TYPressure;
+    var
+      v_fundescr      : YFUN_DESCR;
+      dev             : YDEV_DESCR;
+      neededsize, err : integer;
+      serial, funcId, funcName, funcVal, errmsg : string;
+    begin
+      err := yapiGetFunctionsByClass('Pressure', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
+      if (YISERR(err) or (neededsize = 0)) then
+        begin
+          result := nil;
+          exit;
+        end;
+      if (YISERR(yapiGetFunctionInfo(v_fundescr, dev, serial, funcId, funcName, funcVal, errmsg))) then
+        begin
+          result := nil;
+          exit;
+        end;
+     result := TYPressure.FindPressure(serial+'.'+funcId);
+    end;
 
 //--- (end of YPressure implementation)
 
 //--- (Pressure functions)
 
-function yFindPressure(func:string): TYPressure;
- var
-   index: integer;
-   res  : TYPressure;
- begin
-    if (_PressureCache.Find(func, index)) then
-     begin
-       yFindPressure := TYPressure(_PressureCache.objects[index]);
-       exit;
-     end;
-   res := TYPressure.Create(func);
-   _PressureCache.addObject(func, res);
-   yFindPressure := res;
- end;
+  function yFindPressure(func:string): TYPressure;
+    begin
+      result := TYPressure.FindPressure(func);
+    end;
 
-function yFirstPressure(): TYPressure;
- var
-   v_fundescr      : YFUN_DESCR;
-   dev             : YDEV_DESCR;
-   neededsize, err : integer;
-   serial, funcId, funcName, funcVal, errmsg : string;
- begin
-   err := yapiGetFunctionsByClass('Pressure', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
-   if (YISERR(err) or (neededsize = 0)) then
+  function yFirstPressure(): TYPressure;
     begin
-       yFirstPressure := nil;
-       exit;
+      result := TYPressure.FirstPressure();
     end;
-   if (YISERR(yapiGetFunctionInfo(v_fundescr, dev, serial, funcId, funcName, funcVal, errmsg))) then
-    begin
-       yFirstPressure := nil;
-       exit;
-    end;
-   yFirstPressure := yFindPressure(serial+'.'+funcId);
- end;
 
-procedure _PressureCleanup();
-  var i:integer;
-begin
-  for i:=0 to _PressureCache.count-1 do 
+  procedure _PressureCleanup();
     begin
-     _PressureCache.objects[i].free();
-     _PressureCache.objects[i]:=nil;
     end;
-   _PressureCache.free();
-   _PressureCache:=nil;
-end;
 
 //--- (end of Pressure functions)
 
 initialization
-   //--- (Pressure initialization)
-   _PressureCache        := TstringList.create();
-   _PressureCache.sorted := true;
-   //--- (end of Pressure initialization)
+  //--- (Pressure initialization)
+  //--- (end of Pressure initialization)
 
 finalization
-   //--- (Pressure cleanup)
-   _PressureCleanup();
-   //--- (end of Pressure cleanup)
+  //--- (Pressure cleanup)
+  _PressureCleanup();
+  //--- (end of Pressure cleanup)
 end.

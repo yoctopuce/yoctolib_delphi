@@ -4,42 +4,40 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Yocto_api, yocto_datalogger, Grids, StdCtrls, ComCtrls, ExtCtrls, Buttons,
+  Yocto_api,yjson,yocto_datalogger, Grids, StdCtrls, ComCtrls, ExtCtrls, Buttons,
   ImgList;
 
 type
   TForm1 = class(TForm)
     StatusBar1: TStatusBar;
-    deviceComboBox: TComboBox;
+    sensorComboBox: TComboBox;
     Label1: TLabel;
     StringGrid1: TStringGrid;
     Timer1: TTimer;
-    Label2: TLabel;
-    StreamComboBox: TComboBox;
     recordSpeedButton: TSpeedButton;
     StopSpeedButton: TSpeedButton;
     AutoStartCheckBox: TCheckBox;
     ImageList1: TImageList;
     ClearSpeedButton: TSpeedButton;
+    Label2: TLabel;
+    freqCombo: TComboBox;
     procedure FormCreate(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
-    procedure StreamComboBoxChange(Sender: TObject);
-    procedure deviceComboBoxChange(Sender: TObject);
+    procedure sensorComboBoxChange(Sender: TObject);
     procedure AutoStartCheckBoxClick(Sender: TObject);
     procedure recordSpeedButtonClick(Sender: TObject);
     procedure StopSpeedButtonClick(Sender: TObject);
     procedure ClearSpeedButtonClick(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
+    procedure freqComboChange(Sender: TObject);
   private
     { Private declarations }
     Procedure refreshControls();
-    Procedure UpdateStreamList();
-    procedure UpdateStreamData();
-    procedure ClearStreamComboBox();
+    procedure UpdateGridData();
+
     Procedure ClearGrid();
   public
     { Public declarations }
-    Procedure modulesInventory();
+    Procedure functionsInventory();
 
   end;
 
@@ -54,7 +52,7 @@ procedure devicelistchanged(m:TyModule);
  begin
    // something has changed in the devices list
    // lets refresh it, quick and dirty way.
-   form1.modulesInventory();
+   form1.functionsInventory();
  end;
 
  Procedure TForm1.ClearGrid();
@@ -63,83 +61,161 @@ procedure devicelistchanged(m:TyModule);
      StringGrid1.RowCount := 0;
   end;
 
-Procedure TForm1.modulesInventory();
+Procedure TForm1.functionsInventory();
   var
-   module             : TYModule;
-   name,lname         : string;
-   currentModule      : Tymodule;
+   sensor             : TYSensor;
+   currentSensor      : Tysensor;
    index,i            : integer;
-   fctcount           : integer;
-   containsDatalogger : boolean;
-   fctHardwareName    : string;
  begin
    // memorize the current selection
-   currentModule := nil;
-   if (DeviceComboBox.itemindex>=0) then
-       currentModule := TYModule(DeviceComboBox.items.objects[DeviceComboBox.itemindex]);
+   currentsensor := nil;
+   if (SensorComboBox.itemindex>=0) then
+       currentSensor := TYSensor(SensorComboBox.items.objects[SensorComboBox.itemindex]);
 
    // update the list, brute force
-   DeviceComboBox.items.clear;
-   module := yFirstModule();
-   while module<>nil  do
-   begin
-     // does the module contains a datalogger feature ?
-     name               :=  module.get_serialNumber();
-     fctcount           :=  module.functionCount();
-     containsDatalogger := false;
-     for i:=0 to  fctcount-1 do
-      begin
-       fctHardwareName := module.functionid(i);
-       if (fctHardwareName='dataLogger')  then
-         containsDatalogger := true;      // yes
-      end;
-
-     if containsDatalogger then
-      begin
-       lname :=  module.get_logicalName();
-       if (lname<>'') then  name:=name+' ('+lname+')';
-       DeviceComboBox.items.AddObject(name,module);
-      end;
-      module := module.nextModule();
+   SensorComboBox.items.clear;
+   sensor := yFirstSensor();
+   while sensor<>nil  do
+     begin
+      SensorComboBox.items.AddObject(sensor.get_friendlyName(),sensor);
+      sensor := sensor.nextSensor();
    end;
 
    // restore previous selection
-   if (DeviceComboBox.items.count=0) then
+   if (SensorComboBox.items.count=0) then
     begin
-      DeviceComboBox.enabled:=false;
+      SensorComboBox.enabled:=false;
       AutoStartCheckBox.enabled:=false;
-      ClearStreamComboBox();
-      StreamComboBox.enabled:=false;
       ClearGrid();
       refreshControls();
       statusbar1.panels[0].text:='Connect a Yoctopuce sensor device';
-
     end
     else
     begin
-     DeviceComboBox.enabled:=true;
-
+     SensorComboBox.enabled:=true;
      index :=0;
-     for i:=0 to DeviceComboBox.items.count-1 do
-       if  (DeviceComboBox.items.objects[i]=currentModule) then index:=i;
+     for i:=0 to SensorComboBox.items.count-1 do
+       if  (SensorComboBox.items.objects[i]=currentSensor) then index:=i;
 
-     if (DeviceComboBox.items.count =1) then
-       statusbar1.panels[0].text:='One Yoctopuce sensor device connected'
+     if (SensorComboBox.items.count =1) then
+       statusbar1.panels[0].text:='One Yoctopuce sensor function found'
       else
-        statusbar1.panels[0].text:=intToStr(DeviceComboBox.items.count)+' Yoctopuce sensor devices connected';
-      DeviceComboBox.itemindex:=index;
-      if (currentModule <> DeviceComboBox.items.objects[index]) then  // selection has changed
-      UpdateStreamList();
-      refreshControls();
+        statusbar1.panels[0].text:=intToStr(SensorComboBox.items.count)+' Yoctopuce sensor function found';
+      SensorComboBox.itemindex:=index;
+      if (currentSensor <> SensorComboBox.items.objects[index]) then  // selection has changed
+        begin
+         refreshControls();
+         UpdateGridData();
+      end;
     end;
  end;
 
+procedure TForm1.UpdateGridData();
+  var
+  sensor:Tysensor;
+   i:integer;
+   details     : TYMeasureArray;
+   dataset     : TYDataset;
+   progress:integer;
+   m   : TYMeasure;
+   fmt         : string;
+   LastLineLoaded : integer;
+   start : string;
+   sensorunit:string;
+begin
+
+  if (sensorComboBox.items.count>0) then
+    statusbar1.panels[0].text:= 'loading Data'
+   else
+   begin
+     statusbar1.panels[0].text:= 'No sensor function  available';
+     ClearGrid();
+     exit;
+   end;
+  // disable UI, to make sure noone will change the sensor settings while
+  // loading data
+  SensorComboBox.enabled:=false;
+  freqCombo.enabled:=false;
+  recordSpeedButton.enabled:=false;
+  StopSpeedButton.enabled:=false;
+  ClearSpeedButton.enabled:=false;
+
+  // retreive the sensor
+  sensor := Tysensor(SensorComboBox.items.objects[SensorComboBox.itemIndex]);
+  dataset  := sensor.get_recordedData(0, 0);
+
+  // some UI preparation
+  statusbar1.panels[0].text:= 'Loading summary, please wait';
+  application.processMessages;
+  fmt := 'dd mmm yyyy hh:nn:ss,zzz';
+  StringGrid1.ColCount := 4;
+  StringGrid1.RowCount  := 1;
+  StringGrid1.cols[0][0]:='Time';
+  StringGrid1.cols[1][0]:='Avg';
+  StringGrid1.cols[2][0]:='Min';
+  StringGrid1.cols[3][0]:='Max';
+  StringGrid1.ColWidths[0]:=175;
+  StringGrid1.ColWidths[1]:=125;
+  StringGrid1.ColWidths[2]:=125;
+  StringGrid1.ColWidths[3]:=125;
+
+  // no need to call  get_unit() every  time
+  sensorunit := sensor.get_unit();
+
+  // load data
+  LastLineLoaded := -1;
+  repeat
+   progress := dataset.loadMore();
+   statusbar1.panels[0].text:= 'loading Data ('+inttostr(round(progress/2))+'%)';
+   application.processMessages;
+  until progress>=100;
+
+  // how many records ?
+  details := dataset.get_measures();
+  StringGrid1.RowCount  := length(details)+1;
+
+  // fill up the UI
+  for i:=LastLineLoaded+1 to   length(details)-1 do
+    begin
+        m := details[i];
+        DateTimeToString(start, fmt, m.get_startTimeUTC_asTDateTime);
+        StringGrid1.cols[0][i+1]:=start;
+        StringGrid1.cols[1][i+1]:=Format('%.3f %s', [m.get_averageValue(), sensorunit]);
+        StringGrid1.cols[2][i+1]:=Format('%.3f %s', [m.get_minValue(), sensorunit]);
+        StringGrid1.cols[3][i+1]:=Format('%.3f %s', [m.get_maxValue(), sensorunit]);
+        LastLineLoaded := i;
+        if (i mod 1000 =0) then
+         begin
+           statusbar1.panels[0].text:= 'loading Data ('+inttostr(round(50+50*i/length(details)))+'%), '+inttostr(length(details))+' records found';
+           application.processMessages;
+         end;
+
+    end;
+   SensorComboBox.enabled:=true;
+   if (LastLineLoaded>0) then
+      StringGrid1.fixedRows  := 1
+    else
+    begin
+       StringGrid1.ColCount  := 1;
+       StringGrid1.RowCount  := 1;
+       StringGrid1.cols[0][0]:='No data available';
+    end;
+
+   // dataset memory need to be freed
+   dataset.free();
+
+   //re-enable the UI
+   StringGrid1.enableD:=true;
+   freqCombo.enabled:=true;
+   statusbar1.panels[0].text:='';
+   refreshControls();
+end;
 
 
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   
+
    // we wanna know when device list changes
    statusbar1.panels[0].text:='Connect a Yoctopuce sensor device';
   yRegisterDeviceArrivalCallBack( devicelistchanged);
@@ -164,138 +240,26 @@ begin
   Result := Round((date - 25569) * 86400);
 end;
 
-Procedure TForm1.UpdateStreamList();
- var
-   stream : TYdataStream ;
-   m:tymodule;
-   logger:Tydatalogger;
-   datastreams:Tlist;
-   i:integer;
-   description:string;
-   startTimeUTC:longword;
-   count:integer;
-
- begin
-  application.processMessages();
-  ClearStreamComboBox();
-  m   := Tymodule(DeviceComboBox.items.objects[DeviceComboBox.itemIndex]);
-  logger :=  yFindDataLogger(m.get_serialNumber()+'.dataLogger');
-  if (logger.isOnline()) then
-  begin
-    statusbar1.panels[0].text:= 'loading streams list';
-    application.processMessages();
-    datastreams:=tlist.create;
-    if (logger.get_dataStreams(datastreams)=YAPI_SUCCESS) then
-      begin
-        count:=  datastreams.count;
-        if (datastreams.count>0) then
-          begin
-           for i:=0 to count-1 do
-             begin
-               application.processMessages();
-               stream       := TYdataStream(datastreams.items[i]);
-               description  := 'Run #'+inttostr(stream.get_runIndex())+': ';
-               startTimeUTC := stream. get_startTimeUTC() ;
-               if (startTimeUTC>0) then description:=description+DateTimeToStr(UnixTimeStampToDateTime(startTimeUTC))
-                                   else   description:=description+'Device start + '+intToStr(stream. get_startTime())+' sec';
-               StreamComboBox.items.add(description);
-               StreamComboBox.items.objects[StreamComboBox.items.count-1]:= stream;
-             end;
-             StreamComboBox.enabled:=true;
-             StreamComboBox.itemindex:=0;
-             statusbar1.panels[0].text:= '';
-          end
-        else
-          begin
-           StreamComboBox.enableD:=false;
-           statusbar1.panels[0].text:='No data stream available on this device';
-          end;
-      end
-    else statusbar1.panels[0].text:= logger.errMessage();
-    datastreams.free();
-   end ;
-   UpdateStreamData();
- end;
-
-procedure TForm1.UpdateStreamData();
-  var
-   m:tymodule;
-   logger:Tydatalogger;
-   rowcount,colCount :integer;
-   startTimeUTC,starttime :longword;
-   colnames:Tstringlist;
-   i,j:integer;
-   stream : TYdataStream ;
-   data : TYDataLoggerRawData ;
-   interval : integer;
-   description :string;
-begin
-  data :=nil;
-  if (StreamComboBox.items.count>0) then
-    statusbar1.panels[0].text:= 'loading stream #'+intToStr(StreamComboBox.itemindex+1)
-   else
-    statusbar1.panels[0].text:= 'No steam available';
-
-  StringGrid1.enableD:=false;
-  application.processMessages();
-  if (StreamComboBox.items.count<=0)  then
-   begin
-     ClearGrid();
-     exit;
-   end;
-  m   := Tymodule(DeviceComboBox.items.objects[DeviceComboBox.itemIndex]);
-  logger :=  yFindDataLogger(m.get_serialNumber()+'.dataLogger');
-  if (logger.isOnline()) then
-   begin
-    stream   :=  TYdataStream(StreamComboBox.items.objects[StreamComboBox.itemindex]);
-    stream.loadStream(); // force a refresh.
-    data := stream.get_dataRows();
-    colnames :=  stream.get_columnNames();
-    colCount :=  colnames.count;
-    rowcount :=  stream.get_rowCount();
-    StringGrid1.ColCount := colCount+1;
-    StringGrid1.RowCount := rowcount+1;
-    if (colCount>1) then StringGrid1.fixedcols :=1;
-    if (rowCount>1) then StringGrid1.fixedrows :=1;
-    StringGrid1.ColWidths[0]:=150;
-    interval := stream.get_dataSamplesInterval() ;
-    startTimeUTC := stream. get_startTimeUTC() ;
-    starttime    := stream. get_startTime() ;
-    for i:=0 to colnames.count-1 do
-        StringGrid1.cols[i+1][0]:=colnames.strings[i];
-    for j:=0 to RowCount-1 do
-     begin
-      if (startTimeUTC>0) then description:=DateTimeToStr(UnixTimeStampToDateTime(integer(startTimeUTC)+interval*j))
-                          else description:='Device start + '+intToStr(integer(starttime)+interval*j)+' sec';
-      StringGrid1.cols[0][j+1] := description;
-      for i:=0 to colCount-1 do
-         StringGrid1.cols[i+1][j+1]:=  FloatToStrF(data[j][i],ffFixed,15,1);
-     end;
-   end;
-   StringGrid1.enableD:=true;
-   statusbar1.panels[0].text:='';
-end;
-
-procedure TForm1.StreamComboBoxChange(Sender: TObject);
-begin
-  UpdateStreamData();
-end;
-
 Procedure  TForm1.refreshControls();
 var
   module : TYModule;
+  sensor : TYSensor;
   logger:Tydatalogger;
  begin
-  if (DeviceComboBox.items.count<=0) then
+  if (SensorComboBox.items.count<=0) then
    begin
      recordSpeedButton.enabled:=false;
      ClearSpeedButton.enabled:=false;
      StopSpeedButton.enabled:=true;
      AutoStartCheckBox.enabled:=false;
+     freqCombo.enabled:=false;
      exit;
    end;
+  freqCombo.enabled:=true;
+  sensor := Tysensor(SensorComboBox.items.objects[SensorComboBox.itemIndex]);
 
-  module := TYModule(DeviceComboBox.items.objects[DeviceComboBox.itemindex]);
+  freqCombo.text:=sensor.get_logFrequency();
+  module := sensor.get_module();
   logger :=  yFindDataLogger(module.get_serialNumber()+'.dataLogger');
   if (logger.isOnline()) then
     begin
@@ -312,7 +276,7 @@ var
        ClearSpeedButton.enabled:=true;
        StopSpeedButton.enabled:=false;
      end;
-    UpdateStreamData();
+
     AutoStartCheckBox.enabled:=true;
     AutoStartCheckBox.onclick:=nil;       // chanigin the value might call the callback
     AutoStartCheckBox.checked:=(logger.get_autoStart()= Y_AUTOSTART_ON);
@@ -321,23 +285,27 @@ var
 
  end;
 
-procedure TForm1.deviceComboBoxChange(Sender: TObject);
+
+procedure TForm1.sensorComboBoxChange(Sender: TObject);
 
 begin
-  if (DeviceComboBox.itemindex<0) then exit;
-  UpdateStreamList();
-   refreshControls();
+  if (SensorComboBox.itemindex<0) then exit;
+  refreshControls();
+  UpdateGridData();
+
 
 end;
 
 procedure TForm1.AutoStartCheckBoxClick(Sender: TObject);
  var
   module : TYModule;
+  sensor : TYsensor;
   logger:Tydatalogger;
 
 begin
-  if (DeviceComboBox.itemindex<0) then exit;
-  module := Tymodule(DeviceComboBox.items.objects[DeviceComboBox.itemIndex]);
+  if (SensorComboBox.itemindex<0) then exit;
+  sensor := Tysensor(SensorComboBox.items.objects[SensorComboBox.itemIndex]);
+  module := sensor.get_module();
   logger :=  yFindDataLogger(module.get_serialNumber()+'.dataLogger');
   if (logger.isOnline()) then
    begin
@@ -354,9 +322,11 @@ end;
 procedure TForm1.recordSpeedButtonClick(Sender: TObject);
 var
   module : TYModule;
+  sensor : tYsensor;
   logger:Tydatalogger;
 begin
-  module := Tymodule(DeviceComboBox.items.objects[DeviceComboBox.itemIndex]);
+  sensor := Tysensor(SensorComboBox.items.objects[SensorComboBox.itemIndex]);
+  module := sensor.get_module();
   logger :=  yFindDataLogger(module.get_serialNumber()+'.dataLogger');
   if (logger.isOnline()) then
   begin
@@ -371,9 +341,11 @@ end;
 procedure TForm1.StopSpeedButtonClick(Sender: TObject);
 var
   module : TYModule;
+   sensor : tYsensor;
   logger:Tydatalogger;
 begin
-  module := Tymodule(DeviceComboBox.items.objects[DeviceComboBox.itemIndex]);
+  sensor := Tysensor(SensorComboBox.items.objects[SensorComboBox.itemIndex]);
+  module := sensor.get_module();
   logger :=  yFindDataLogger(module.get_serialNumber()+'.dataLogger');
   if (logger.isOnline()) then
   begin
@@ -381,39 +353,28 @@ begin
     recordSpeedButton.enabled:=true;
     StopSpeedButton.enabled:=false;
     ClearSpeedButton.enabled:=true;
-    UpdateStreamList();
-    StreamComboBox.itemIndex:=  StreamComboBox.items.count-1;
-    UpdateStreamData();
+    UpdateGridData();
   end;
 end;
 
-Procedure  TForm1.ClearStreamComboBox();
-  var
-   i:integer;
-   stream : TYdataStream ;
- begin
-   for i:=0 to  StreamComboBox.items.count-1 do
-    begin
-       Stream   :=  TYdataStream(StreamComboBox.items.objects[i]);
-       StreamComboBox.items.objects[i] :=nil;
-       Stream.free;
-    end;
-   StreamComboBox.clear();
- end;
+
 
 procedure TForm1.ClearSpeedButtonClick(Sender: TObject);
 var
   module : TYModule;
+  sensor : tYsensor;
   logger:Tydatalogger;
 begin
   if  MessageDlg('Do you really want to clear device datalogger memory?',mtConfirmation, [mbYes,MbNo] , 0) = mrYes then
   begin
-    module := Tymodule(DeviceComboBox.items.objects[DeviceComboBox.itemIndex]);
+    sensor := Tysensor(SensorComboBox.items.objects[SensorComboBox.itemIndex]);
+    module := sensor.get_module();
     logger :=  yFindDataLogger(module.get_serialNumber()+'.dataLogger');
     if (logger.isOnline()) then
     begin
       logger.forgetAllDataStreams();
-      UpdateStreamList();
+      UpdateGridData();
+      
     end;
    end;
 end;
@@ -422,9 +383,15 @@ var
    errmsg: string;
 
 
-procedure TForm1.FormDestroy(Sender: TObject);
+procedure TForm1.freqComboChange(Sender: TObject);
+var
+  module : TYModule;
+  sensor : tYsensor;
 begin
- ClearStreamComboBox();
+  sensor := Tysensor(SensorComboBox.items.objects[SensorComboBox.itemIndex]);
+  sensor.set_logFrequency(freqCombo.text);
+  module := sensor.get_module();
+  module.saveToFlash();
 end;
 
 initialization

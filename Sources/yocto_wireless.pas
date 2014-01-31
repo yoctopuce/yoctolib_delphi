@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 12337 2013-08-14 15:22:22Z mvuilleu $
+ * $Id: yocto_wireless.pas 14701 2014-01-23 15:41:17Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -47,925 +47,951 @@ uses
 
 //--- (generated code: YWireless definitions)
 
-const
-   Y_LOGICALNAME_INVALID           = YAPI_INVALID_STRING;
-   Y_ADVERTISEDVALUE_INVALID       = YAPI_INVALID_STRING;
-   Y_LINKQUALITY_INVALID           = -1;
-   Y_SSID_INVALID                  = YAPI_INVALID_STRING;
-   Y_CHANNEL_INVALID               = YAPI_INVALID_LONGWORD;
-   Y_SECURITY_UNKNOWN = 0;
-   Y_SECURITY_OPEN = 1;
-   Y_SECURITY_WEP = 2;
-   Y_SECURITY_WPA = 3;
-   Y_SECURITY_WPA2 = 4;
-   Y_SECURITY_INVALID = -1;
+const Y_LINKQUALITY_INVALID           = YAPI_INVALID_UINT;
+const Y_SSID_INVALID                  = YAPI_INVALID_STRING;
+const Y_CHANNEL_INVALID               = YAPI_INVALID_UINT;
+const Y_SECURITY_UNKNOWN = 0;
+const Y_SECURITY_OPEN = 1;
+const Y_SECURITY_WEP = 2;
+const Y_SECURITY_WPA = 3;
+const Y_SECURITY_WPA2 = 4;
+const Y_SECURITY_INVALID = -1;
 
-   Y_MESSAGE_INVALID               = YAPI_INVALID_STRING;
-   Y_WLANCONFIG_INVALID            = YAPI_INVALID_STRING;
+const Y_MESSAGE_INVALID               = YAPI_INVALID_STRING;
+const Y_WLANCONFIG_INVALID            = YAPI_INVALID_STRING;
 
 
 //--- (end of generated code: YWireless definitions)
 
 type
+TYWireless = class;
+TYWlanRecord = class;
+TYWlanRecordArr = array of TYWlanRecord;
 
+  //--- (generated code: YWlanRecord class start)
+  ////
+  /// <summary>
+  ///   TYWlanRecord Class: Description of a wireless network
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  ///-
+  TYWlanRecord=class(TObject)
+  //--- (end of generated code: YWlanRecord class start)
+  protected
 
-//--- (generated code: YWlanRecord declaration)
- TYWlanRecord = class;
-////
-/// <summary>
-///   TYWlanRecord Class: Description of a wireless network
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-///-
-TYWlanRecord=class(TObject)
-protected
-   // Attributes (function value cache)
-   // Function-specific method for reading JSON output and caching result
+    //--- (generated code: YWlanRecord declaration)
+    // Attributes (function value cache)
+    _ssid                     : string;
+    _channel                  : LongInt;
+    _sec                      : string;
+    _rssi                     : LongInt;
 
-   //--- (end of generated code: YWlanRecord declaration)
-   _ssid,_sec:string;
-   _channel,_rssi :integer;
+    //--- (end of generated code: YWlanRecord declaration)
 public
    constructor create(data:string);
    
 
    //--- (generated code: YWlanRecord accessors declaration)
-   function get_ssid():string;
+    function get_ssid():string; overload; virtual;
 
-   function get_channel():integer;
+    function get_channel():LongInt; overload; virtual;
 
-   function get_security():string;
+    function get_security():string; overload; virtual;
 
-   function get_linkQuality():integer;
+    function get_linkQuality():LongInt; overload; virtual;
 
-   //--- (end of generated code: YWlanRecord accessors declaration)
+
+  //--- (end of generated code: YWlanRecord accessors declaration)
 end;
-
 
 
 TYWLANRECORDARRAY = array of TYWlanRecord;
 
+//--- (generated code: YWireless class start)
+  TYWirelessValueCallback = procedure(func: TYWireless; value:string);
+  TYWirelessTimedReportCallback = procedure(func: TYWireless; value:TYMeasure);
 
-//--- (YWireless declaration)
- TYWireless = class;
- TUpdateCallback  = procedure(func: TYWireless; value:string);
-////
-/// <summary>
-///   TYWireless Class: Wireless function interface
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-///-
-TYWireless=class(TYFunction)
-protected
-   // Attributes (function value cache)
-   _logicalName              : string;
-   _advertisedValue          : string;
-   _linkQuality              : LongInt;
-   _ssid                     : string;
-   _channel                  : LongWord;
-   _security                 : Integer;
-   _message                  : string;
-   _wlanConfig               : string;
-   // ValueCallback 
-   _callback                 : TUpdateCallback;
-   // Function-specific method for reading JSON output and caching result
-   function _parse(j:PJSONRECORD):integer; override;
+  ////
+  /// <summary>
+  ///   TYWireless Class: Wireless function interface
+  /// <para>
+  ///   YWireless functions provides control over wireless network parameters
+  ///   and status for devices that are wireless-enabled.
+  /// </para>
+  /// </summary>
+  ///-
+  TYWireless=class(TYFunction)
+  //--- (end of generated code: YWireless class start)
 
-   //--- (end of generated code: YWireless declaration)
+//--- (generated code: YWireless declaration)
+    // Attributes (function value cache)
+    _logicalName              : string;
+    _advertisedValue          : string;
+    _linkQuality              : LongInt;
+    _ssid                     : string;
+    _channel                  : LongInt;
+    _security                 : Integer;
+    _message                  : string;
+    _wlanConfig               : string;
+    _valueCallbackWireless    : TYWirelessValueCallback;
+    // Function-specific method for reading JSON output and caching result
+    function _parseAttr(member:PJSONRECORD):integer; override;
+
+    //--- (end of generated code: YWireless declaration)
 
 public
-   constructor Create(func:string);
-
-   ////
-   /// <summary>
-   ///   Continues the enumeration of wireless lan interfaces started using <c>yFirstWireless()</c>.
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a pointer to a <c>YWireless</c> object, corresponding to
-   ///   a wireless lan interface currently online, or a <c>null</c> pointer
-   ///   if there are no more wireless lan interfaces to enumerate.
-   /// </returns>
-   ///-
-   function nextWireless():TYWireless;
-
    //--- (generated code: YWireless accessors declaration)
-  Procedure registerValueCallback(callback : TUpdateCallback);
-  procedure set_callback(callback : TUpdateCallback);
-  procedure setCallback(callback : TUpdateCallback);
-  procedure advertiseValue(value : String);override;
-   ////
-   /// <summary>
-   ///   Returns the logical name of the wireless lan interface.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a string corresponding to the logical name of the wireless lan interface
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_LOGICALNAME_INVALID</c>.
-   /// </para>
-   ///-
-   function get_logicalName():string;
+    constructor Create(func:string);
 
-   ////
-   /// <summary>
-   ///   Changes the logical name of the wireless lan interface.
-   /// <para>
-   ///   You can use <c>yCheckLogicalName()</c>
-   ///   prior to this call to make sure that your parameter is valid.
-   ///   Remember to call the <c>saveToFlash()</c> method of the module if the
-   ///   modification must be kept.
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <param name="newval">
-   ///   a string corresponding to the logical name of the wireless lan interface
-   /// </param>
-   /// <para>
-   /// </para>
-   /// <returns>
-   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns a negative error code.
-   /// </para>
-   ///-
-   function set_logicalName(newval:string):integer;
+    ////
+    /// <summary>
+    ///   Returns the link quality, expressed in percent.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the link quality, expressed in percent
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_LINKQUALITY_INVALID</c>.
+    /// </para>
+    ///-
+    function get_linkQuality():LongInt;
 
-   ////
-   /// <summary>
-   ///   Returns the current value of the wireless lan interface (no more than 6 characters).
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a string corresponding to the current value of the wireless lan interface (no more than 6 characters)
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_ADVERTISEDVALUE_INVALID</c>.
-   /// </para>
-   ///-
-   function get_advertisedValue():string;
+    ////
+    /// <summary>
+    ///   Returns the wireless network name (SSID).
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the wireless network name (SSID)
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_SSID_INVALID</c>.
+    /// </para>
+    ///-
+    function get_ssid():string;
 
-   ////
-   /// <summary>
-   ///   Returns the link quality, expressed in per cents.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   an integer corresponding to the link quality, expressed in per cents
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_LINKQUALITY_INVALID</c>.
-   /// </para>
-   ///-
-   function get_linkQuality():LongInt;
+    ////
+    /// <summary>
+    ///   Returns the 802.11 channel currently used, or 0 when the selected network has not been found.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the 802.11 channel currently used, or 0 when the selected network has not been found
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_CHANNEL_INVALID</c>.
+    /// </para>
+    ///-
+    function get_channel():LongInt;
 
-   ////
-   /// <summary>
-   ///   Returns the wireless network name (SSID).
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a string corresponding to the wireless network name (SSID)
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_SSID_INVALID</c>.
-   /// </para>
-   ///-
-   function get_ssid():string;
+    ////
+    /// <summary>
+    ///   Returns the security algorithm used by the selected wireless network.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a value among <c>Y_SECURITY_UNKNOWN</c>, <c>Y_SECURITY_OPEN</c>, <c>Y_SECURITY_WEP</c>,
+    ///   <c>Y_SECURITY_WPA</c> and <c>Y_SECURITY_WPA2</c> corresponding to the security algorithm used by
+    ///   the selected wireless network
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_SECURITY_INVALID</c>.
+    /// </para>
+    ///-
+    function get_security():Integer;
 
-   ////
-   /// <summary>
-   ///   Returns the 802.
-   /// <para>
-   ///   11 channel currently used, or 0 when the selected network has not been found.
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   an integer corresponding to the 802
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_CHANNEL_INVALID</c>.
-   /// </para>
-   ///-
-   function get_channel():LongWord;
+    ////
+    /// <summary>
+    ///   Returns the latest status message from the wireless interface.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the latest status message from the wireless interface
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_MESSAGE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_message():string;
 
-   ////
-   /// <summary>
-   ///   Returns the security algorithm used by the selected wireless network.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a value among <c>Y_SECURITY_UNKNOWN</c>, <c>Y_SECURITY_OPEN</c>, <c>Y_SECURITY_WEP</c>,
-   ///   <c>Y_SECURITY_WPA</c> and <c>Y_SECURITY_WPA2</c> corresponding to the security algorithm used by
-   ///   the selected wireless network
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_SECURITY_INVALID</c>.
-   /// </para>
-   ///-
-   function get_security():Integer;
+    function get_wlanConfig():string;
 
-   ////
-   /// <summary>
-   ///   Returns the last status message from the wireless interface.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a string corresponding to the last status message from the wireless interface
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_MESSAGE_INVALID</c>.
-   /// </para>
-   ///-
-   function get_message():string;
+    function set_wlanConfig(newval:string):integer;
 
-   function get_wlanConfig():string;
+    ////
+    /// <summary>
+    ///   Changes the configuration of the wireless lan interface to connect to an existing
+    ///   access point (infrastructure mode).
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="ssid">
+    ///   the name of the network to connect to
+    /// </param>
+    /// <param name="securityKey">
+    ///   the network key, as a character string
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function joinNetwork(ssid: string; securityKey: string):integer;
 
-   function set_wlanConfig(newval:string):integer;
+    ////
+    /// <summary>
+    ///   Changes the configuration of the wireless lan interface to create an ad-hoc
+    ///   wireless network, without using an access point.
+    /// <para>
+    ///   If a security key is specified,
+    ///   the network is protected by WEP128, since WPA is not standardized for
+    ///   ad-hoc networks.
+    ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="ssid">
+    ///   the name of the network to connect to
+    /// </param>
+    /// <param name="securityKey">
+    ///   the network key, as a character string
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function adhocNetwork(ssid: string; securityKey: string):integer;
 
-   ////
-   /// <summary>
-   ///   Changes the configuration of the wireless lan interface to connect to an existing
-   ///   access point (infrastructure mode).
-   /// <para>
-   ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <param name="ssid">
-   ///   the name of the network to connect to
-   /// </param>
-   /// <param name="securityKey">
-   ///   the network key, as a character string
-   /// </param>
-   /// <para>
-   /// </para>
-   /// <returns>
-   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns a negative error code.
-   /// </para>
-   ///-
-   function joinNetwork(ssid:string;securityKey:string):integer;
+    ////
+    /// <summary>
+    ///   Retrieves $AFUNCTION$ for a given identifier.
+    /// <para>
+    ///   The identifier can be specified using several formats:
+    /// </para>
+    /// <para>
+    /// </para>
+    /// <para>
+    ///   - FunctionLogicalName
+    /// </para>
+    /// <para>
+    ///   - ModuleSerialNumber.FunctionIdentifier
+    /// </para>
+    /// <para>
+    ///   - ModuleSerialNumber.FunctionLogicalName
+    /// </para>
+    /// <para>
+    ///   - ModuleLogicalName.FunctionIdentifier
+    /// </para>
+    /// <para>
+    ///   - ModuleLogicalName.FunctionLogicalName
+    /// </para>
+    /// <para>
+    /// </para>
+    /// <para>
+    ///   This function does not require that $THEFUNCTION$ is online at the time
+    ///   it is invoked. The returned object is nevertheless valid.
+    ///   Use the method <c>YWireless.isOnline()</c> to test if $THEFUNCTION$ is
+    ///   indeed online at a given time. In case of ambiguity when looking for
+    ///   $AFUNCTION$ by logical name, no error is notified: the first instance
+    ///   found is returned. The search is performed first by hardware name,
+    ///   then by logical name.
+    /// </para>
+    /// </summary>
+    /// <param name="func">
+    ///   a string that uniquely characterizes $THEFUNCTION$
+    /// </param>
+    /// <returns>
+    ///   a <c>YWireless</c> object allowing you to drive $THEFUNCTION$.
+    /// </returns>
+    ///-
+    class function FindWireless(func: string):TYWireless;
 
-   ////
-   /// <summary>
-   ///   Changes the configuration of the wireless lan interface to create an ad-hoc
-   ///   wireless network, without using an access point.
-   /// <para>
-   ///   If a security key is specified,
-   ///   the network is protected by WEP128, since WPA is not standardized for
-   ///   ad-hoc networks.
-   ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <param name="ssid">
-   ///   the name of the network to connect to
-   /// </param>
-   /// <param name="securityKey">
-   ///   the network key, as a character string
-   /// </param>
-   /// <para>
-   /// </para>
-   /// <returns>
-   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns a negative error code.
-   /// </para>
-   ///-
-   function adhocNetwork(ssid:string;securityKey:string):integer;
+    ////
+    /// <summary>
+    ///   Registers the callback function that is invoked on every change of advertised value.
+    /// <para>
+    ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+    ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+    ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="callback">
+    ///   the callback function to call, or a null pointer. The callback function should take two
+    ///   arguments: the function object of which the value has changed, and the character string describing
+    ///   the new advertised value.
+    /// @noreturn
+    /// </param>
+    ///-
+    function registerValueCallback(callback: TYWirelessValueCallback):LongInt; overload;
 
-   ////
-   /// <summary>
-   ///   Returns a list of YWlanRecord objects which describe detected Wireless networks.
-   /// <para>
-   ///   This list is not updated when the module is already connected to an acces point (infrastructure mode).
-   ///   To force an update of this list, <c>adhocNetwork()</c> must be called to disconnect
-   ///   the module from the current network. The returned list must be unallocated by caller,
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a list of <c>YWlanRecord</c> objects, containing the SSID, channel,
-   ///   link quality and the type of security of the wireless network.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns an empty list.
-   /// </para>
-   ///-
-   function get_detectedWlans():TYWLANRECORDARRAY;
+    function _invokeValueCallback(value: string):LongInt; override;
 
-   //--- (end of generated code: YWireless accessors declaration)
+    ////
+    /// <summary>
+    ///   Returns a list of YWlanRecord objects that describe detected Wireless networks.
+    /// <para>
+    ///   This list is not updated when the module is already connected to an acces point (infrastructure mode).
+    ///   To force an update of this list, <c>adhocNetwork()</c> must be called to disconnect
+    ///   the module from the current network. The returned list must be unallocated by the caller.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a list of <c>YWlanRecord</c> objects, containing the SSID, channel,
+    ///   link quality and the type of security of the wireless network.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty list.
+    /// </para>
+    ///-
+    function get_detectedWlans():TYWlanRecordArray; overload; virtual;
+
+
+    ////
+    /// <summary>
+    ///   Continues the enumeration of wireless lan interfaces started using <c>yFirstWireless()</c>.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a pointer to a <c>YWireless</c> object, corresponding to
+    ///   a wireless lan interface currently online, or a <c>null</c> pointer
+    ///   if there are no more wireless lan interfaces to enumerate.
+    /// </returns>
+    ///-
+    function nextWireless():TYWireless;
+    ////
+    /// <summary>
+    ///   c
+    /// <para>
+    ///   omment from .yc definition
+    /// </para>
+    /// </summary>
+    ///-
+    class function FirstWireless():TYWireless;
+  //--- (end of generated code: YWireless accessors declaration)
 end;
 
 procedure freeWlanRecordArray(var list:TYWLANRECORDARRAY);
 
 //--- (generated code: Wireless functions declaration)
 
-////
-/// <summary>
-///   Retrieves a wireless lan interface for a given identifier.
-/// <para>
-///   The identifier can be specified using several formats:
-/// </para>
-/// <para>
-/// </para>
-/// <para>
-///   - FunctionLogicalName
-/// </para>
-/// <para>
-///   - ModuleSerialNumber.FunctionIdentifier
-/// </para>
-/// <para>
-///   - ModuleSerialNumber.FunctionLogicalName
-/// </para>
-/// <para>
-///   - ModuleLogicalName.FunctionIdentifier
-/// </para>
-/// <para>
-///   - ModuleLogicalName.FunctionLogicalName
-/// </para>
-/// <para>
-/// </para>
-/// <para>
-///   This function does not require that the wireless lan interface is online at the time
-///   it is invoked. The returned object is nevertheless valid.
-///   Use the method <c>YWireless.isOnline()</c> to test if the wireless lan interface is
-///   indeed online at a given time. In case of ambiguity when looking for
-///   a wireless lan interface by logical name, no error is notified: the first instance
-///   found is returned. The search is performed first by hardware name,
-///   then by logical name.
-/// </para>
-/// </summary>
-/// <param name="func">
-///   a string that uniquely characterizes the wireless lan interface
-/// </param>
-/// <returns>
-///   a <c>YWireless</c> object allowing you to drive the wireless lan interface.
-/// </returns>
-///-
-function yFindWireless(func:string):TYWireless;
-////
-/// <summary>
-///   Starts the enumeration of wireless lan interfaces currently accessible.
-/// <para>
-///   Use the method <c>YWireless.nextWireless()</c> to iterate on
-///   next wireless lan interfaces.
-/// </para>
-/// </summary>
-/// <returns>
-///   a pointer to a <c>YWireless</c> object, corresponding to
-///   the first wireless lan interface currently online, or a <c>null</c> pointer
-///   if there are none.
-/// </returns>
-///-
-function yFirstWireless():TYWireless;
+  ////
+  /// <summary>
+  ///   Retrieves a wireless lan interface for a given identifier.
+  /// <para>
+  ///   The identifier can be specified using several formats:
+  /// </para>
+  /// <para>
+  /// </para>
+  /// <para>
+  ///   - FunctionLogicalName
+  /// </para>
+  /// <para>
+  ///   - ModuleSerialNumber.FunctionIdentifier
+  /// </para>
+  /// <para>
+  ///   - ModuleSerialNumber.FunctionLogicalName
+  /// </para>
+  /// <para>
+  ///   - ModuleLogicalName.FunctionIdentifier
+  /// </para>
+  /// <para>
+  ///   - ModuleLogicalName.FunctionLogicalName
+  /// </para>
+  /// <para>
+  /// </para>
+  /// <para>
+  ///   This function does not require that the wireless lan interface is online at the time
+  ///   it is invoked. The returned object is nevertheless valid.
+  ///   Use the method <c>YWireless.isOnline()</c> to test if the wireless lan interface is
+  ///   indeed online at a given time. In case of ambiguity when looking for
+  ///   a wireless lan interface by logical name, no error is notified: the first instance
+  ///   found is returned. The search is performed first by hardware name,
+  ///   then by logical name.
+  /// </para>
+  /// </summary>
+  /// <param name="func">
+  ///   a string that uniquely characterizes the wireless lan interface
+  /// </param>
+  /// <returns>
+  ///   a <c>YWireless</c> object allowing you to drive the wireless lan interface.
+  /// </returns>
+  ///-
+  function yFindWireless(func:string):TYWireless;
+  ////
+  /// <summary>
+  ///   Starts the enumeration of wireless lan interfaces currently accessible.
+  /// <para>
+  ///   Use the method <c>YWireless.nextWireless()</c> to iterate on
+  ///   next wireless lan interfaces.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a pointer to a <c>YWireless</c> object, corresponding to
+  ///   the first wireless lan interface currently online, or a <c>null</c> pointer
+  ///   if there are none.
+  /// </returns>
+  ///-
+  function yFirstWireless():TYWireless;
 
 //--- (end of generated code: Wireless functions declaration)
 
 implementation
 
-//--- (generated code: YWireless implementation)
-
-var
-   _WirelessCache : TStringList;
-
-constructor TYWireless.Create(func:string);
- begin
-   inherited Create('Wireless', func);
-   _logicalName := Y_LOGICALNAME_INVALID;
-   _advertisedValue := Y_ADVERTISEDVALUE_INVALID;
-   _linkQuality := Y_LINKQUALITY_INVALID;
-   _ssid := Y_SSID_INVALID;
-   _channel := Y_CHANNEL_INVALID;
-   _security := Y_SECURITY_INVALID;
-   _message := Y_MESSAGE_INVALID;
-   _wlanConfig := Y_WLANCONFIG_INVALID;
- end;
-
-{$HINTS OFF}
-function TYWireless._parse(j:PJSONRECORD):integer;
- var
-   member,sub : PJSONRECORD;
-   i,l        : integer;
- begin
-   if (j^.recordtype <> JSON_STRUCT) then begin _parse:= -1; exit; end;
-   for i:=0 to j^.membercount-1 do
+  constructor TYWireless.Create(func:string);
     begin
-      member := j^.members[i];
-      if (member^.name = 'logicalName') then
-       begin
-         _logicalName := string(member^.svalue);
-       end else
-      if (member^.name = 'advertisedValue') then
-       begin
-         _advertisedValue := string(member^.svalue);
-       end else
-      if (member^.name = 'linkQuality') then
-       begin
-         _linkQuality := member^.ivalue;
-       end else
-      if (member^.name = 'ssid') then
-       begin
-         _ssid := string(member^.svalue);
-       end else
-      if (member^.name = 'channel') then
-       begin
-         _channel := member^.ivalue;
-       end else
-      if (member^.name = 'security') then
-       begin
-         _security := member^.ivalue;
-       end else
-      if (member^.name = 'message') then
-       begin
-         _message := string(member^.svalue);
-       end else
-      if (member^.name = 'wlanConfig') then
-       begin
-         _wlanConfig := string(member^.svalue);
-       end else
-       begin end;
+      inherited Create(func);
+      _className := 'Wireless';
+      //--- (generated code: YWireless accessors initialization)
+      _linkQuality := Y_LINKQUALITY_INVALID;
+      _ssid := Y_SSID_INVALID;
+      _channel := Y_CHANNEL_INVALID;
+      _security := Y_SECURITY_INVALID;
+      _message := Y_MESSAGE_INVALID;
+      _wlanConfig := Y_WLANCONFIG_INVALID;
+      _valueCallbackWireless := nil;
+      //--- (end of generated code: YWireless accessors initialization)
     end;
-   _parse := 0;
- end;
+
+//--- (generated code: YWireless implementation)
+{$HINTS OFF}
+  function TYWireless._parseAttr(member:PJSONRECORD):integer;
+    var
+      sub : PJSONRECORD;
+      i,l        : integer;
+    begin
+      if (member^.name = 'linkQuality') then
+        begin
+          _linkQuality := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'ssid') then
+        begin
+          _ssid := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'channel') then
+        begin
+          _channel := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'security') then
+        begin
+          _security := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'message') then
+        begin
+          _message := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'wlanConfig') then
+        begin
+          _wlanConfig := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      result := inherited _parseAttr(member);
+    end;
 {$HINTS ON}
 
-////
-/// <summary>
-///   Returns the logical name of the wireless lan interface.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a string corresponding to the logical name of the wireless lan interface
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
-/// </para>
-///-
-function TYWireless.get_logicalName():string;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_LOGICALNAME_INVALID;
-         exit;
-       end;
-   result := _logicalName;
- end;
-
-////
-/// <summary>
-///   Changes the logical name of the wireless lan interface.
-/// <para>
-///   You can use yCheckLogicalName()
-///   prior to this call to make sure that your parameter is valid.
-///   Remember to call the saveToFlash() method of the module if the
-///   modification must be kept.
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <param name="newval">
-///   a string corresponding to the logical name of the wireless lan interface
-/// </param>
-/// <para>
-/// </para>
-/// <returns>
-///   YAPI_SUCCESS if the call succeeds.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns a negative error code.
-/// </para>
-///-
-function TYWireless.set_logicalName(newval:string):integer;
- var
-   rest_val: string;
- begin
-   rest_val := newval;
-   result := _setAttr('logicalName',rest_val);
- end;
-
-////
-/// <summary>
-///   Returns the current value of the wireless lan interface (no more than 6 characters).
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a string corresponding to the current value of the wireless lan interface (no more than 6 characters)
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
-/// </para>
-///-
-function TYWireless.get_advertisedValue():string;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_ADVERTISEDVALUE_INVALID;
-         exit;
-       end;
-   result := _advertisedValue;
- end;
-
-////
-/// <summary>
-///   Returns the link quality, expressed in per cents.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   an integer corresponding to the link quality, expressed in per cents
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_LINKQUALITY_INVALID.
-/// </para>
-///-
-function TYWireless.get_linkQuality():LongInt;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_LINKQUALITY_INVALID;
-         exit;
-       end;
-   result := _linkQuality;
- end;
-
-////
-/// <summary>
-///   Returns the wireless network name (SSID).
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a string corresponding to the wireless network name (SSID)
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_SSID_INVALID.
-/// </para>
-///-
-function TYWireless.get_ssid():string;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_SSID_INVALID;
-         exit;
-       end;
-   result := _ssid;
- end;
-
-////
-/// <summary>
-///   Returns the 802.
-/// <para>
-///   11 channel currently used, or 0 when the selected network has not been found.
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   an integer corresponding to the 802
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_CHANNEL_INVALID.
-/// </para>
-///-
-function TYWireless.get_channel():LongWord;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_CHANNEL_INVALID;
-         exit;
-       end;
-   result := _channel;
- end;
-
-////
-/// <summary>
-///   Returns the security algorithm used by the selected wireless network.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a value among Y_SECURITY_UNKNOWN, Y_SECURITY_OPEN, Y_SECURITY_WEP, Y_SECURITY_WPA and
-///   Y_SECURITY_WPA2 corresponding to the security algorithm used by the selected wireless network
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_SECURITY_INVALID.
-/// </para>
-///-
-function TYWireless.get_security():Integer;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_SECURITY_INVALID;
-         exit;
-       end;
-   result := _security;
- end;
-
-////
-/// <summary>
-///   Returns the last status message from the wireless interface.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a string corresponding to the last status message from the wireless interface
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_MESSAGE_INVALID.
-/// </para>
-///-
-function TYWireless.get_message():string;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_MESSAGE_INVALID;
-         exit;
-       end;
-   result := _message;
- end;
-
-function TYWireless.get_wlanConfig():string;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_WLANCONFIG_INVALID;
-         exit;
-       end;
-   result := _wlanConfig;
- end;
-
-function TYWireless.set_wlanConfig(newval:string):integer;
- var
-   rest_val: string;
- begin
-   rest_val := newval;
-   result := _setAttr('wlanConfig',rest_val);
- end;
-
-////
-/// <summary>
-///   Changes the configuration of the wireless lan interface to connect to an existing
-///   access point (infrastructure mode).
-/// <para>
-///   Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <param name="ssid">
-///   the name of the network to connect to
-/// </param>
-/// <param name="securityKey">
-///   the network key, as a character string
-/// </param>
-/// <para>
-/// </para>
-/// <returns>
-///   YAPI_SUCCESS if the call succeeds.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns a negative error code.
-/// </para>
-///-
-function TYWireless.joinNetwork(ssid:string;securityKey:string):integer;
- var
-   rest_val: string;
- begin
-   rest_val := 'INFRA:'+ssid+'\\'+securityKey;
-   result := _setAttr('wlanConfig', rest_val);
- end;
-
-////
-/// <summary>
-///   Changes the configuration of the wireless lan interface to create an ad-hoc
-///   wireless network, without using an access point.
-/// <para>
-///   If a security key is specified,
-///   the network is protected by WEP128, since WPA is not standardized for
-///   ad-hoc networks.
-///   Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <param name="ssid">
-///   the name of the network to connect to
-/// </param>
-/// <param name="securityKey">
-///   the network key, as a character string
-/// </param>
-/// <para>
-/// </para>
-/// <returns>
-///   YAPI_SUCCESS if the call succeeds.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns a negative error code.
-/// </para>
-///-
-function TYWireless.adhocNetwork(ssid:string;securityKey:string):integer;
- var
-   rest_val: string;
- begin
-   rest_val := 'ADHOC:'+ssid+'\\'+securityKey;
-   result := _setAttr('wlanConfig', rest_val);
- end;
-
-////
-/// <summary>
-///   Returns a list of YWlanRecord objects which describe detected Wireless networks.
-/// <para>
-///   This list is not updated when the module is already connected to an acces point (infrastructure mode).
-///   To force an update of this list, <c>adhocNetwork()</c> must be called to disconnect
-///   the module from the current network. The returned list must be unallocated by caller,
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a list of <c>YWlanRecord</c> objects, containing the SSID, channel,
-///   link quality and the type of security of the wireless network.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns an empty list.
-/// </para>
-///-
-function TYWireless.get_detectedWlans():TYWLANRECORDARRAY;
-     var
-        json : TBYTEARRAY;
-         list : TSTRINGARRAY;
-         res : TYWLANRECORDARRAY;
-        i_i : integer;
-     begin
-        json := self._download('wlan.json?by=name');
-        list := self._json_get_array(json);
-        for i_i:=0 to length(list)-1 do begin SetLength(res, length(res)+1); res[length(res)-1]:= TYWlanRecord.create(list[i_i]);end;
-        result:= res;
-            
-     end;
-
-
-function TYWireless.nextWireless(): TYWireless;
- var
-   hwid: string;
- begin
-   if (YISERR(_nextFunction(hwid))) then
+  ////
+  /// <summary>
+  ///   Returns the link quality, expressed in percent.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the link quality, expressed in percent
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_LINKQUALITY_INVALID.
+  /// </para>
+  ///-
+  function TYWireless.get_linkQuality():LongInt;
     begin
-      nextWireless := nil;
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_LINKQUALITY_INVALID;
+              exit
+            end;
+        end;
+      result := self._linkQuality;
       exit;
     end;
-   if (hwid='') then
+
+
+  ////
+  /// <summary>
+  ///   Returns the wireless network name (SSID).
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a string corresponding to the wireless network name (SSID)
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_SSID_INVALID.
+  /// </para>
+  ///-
+  function TYWireless.get_ssid():string;
     begin
-      nextWireless := nil;
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_SSID_INVALID;
+              exit
+            end;
+        end;
+      result := self._ssid;
       exit;
     end;
-    nextWireless := yFindWireless(hwid);
- end;
 
 
-    ////
-    /// <summary>
-    ///   comment from .
-    /// <para>
-    ///   yc definition
-    /// </para>
-    /// </summary>
-    ///-
-  Procedure TYWireless.registerValueCallback(callback : TUpdateCallback);
-  begin
-   If assigned(callback) Then
-     registerFuncCallback(self)
-   else
-     unregisterFuncCallback(self);
-   _callback := callback;
-  End;
+  ////
+  /// <summary>
+  ///   Returns the 802.11 channel currently used, or 0 when the selected network has not been found.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the 802.11 channel currently used, or 0 when the selected network has not been found
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_CHANNEL_INVALID.
+  /// </para>
+  ///-
+  function TYWireless.get_channel():LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_CHANNEL_INVALID;
+              exit
+            end;
+        end;
+      result := self._channel;
+      exit;
+    end;
 
-  procedure TYWireless.set_callback(callback : TUpdateCallback);
-   Begin
-    registerValueCallback(callback);
-  End;
 
-  procedure  TYWireless.setCallback(callback : TUpdateCallback);
-   Begin
-    registerValueCallback(callback);
-   End;
+  ////
+  /// <summary>
+  ///   Returns the security algorithm used by the selected wireless network.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a value among Y_SECURITY_UNKNOWN, Y_SECURITY_OPEN, Y_SECURITY_WEP, Y_SECURITY_WPA and
+  ///   Y_SECURITY_WPA2 corresponding to the security algorithm used by the selected wireless network
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_SECURITY_INVALID.
+  /// </para>
+  ///-
+  function TYWireless.get_security():Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_SECURITY_INVALID;
+              exit
+            end;
+        end;
+      result := self._security;
+      exit;
+    end;
 
-  procedure  TYWireless.advertiseValue(value : String);
-  Begin
-    If assigned(_callback)  Then _callback(self, value)
-   End;
+
+  ////
+  /// <summary>
+  ///   Returns the latest status message from the wireless interface.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a string corresponding to the latest status message from the wireless interface
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_MESSAGE_INVALID.
+  /// </para>
+  ///-
+  function TYWireless.get_message():string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_MESSAGE_INVALID;
+              exit
+            end;
+        end;
+      result := self._message;
+      exit;
+    end;
+
+
+  function TYWireless.get_wlanConfig():string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_WLANCONFIG_INVALID;
+              exit
+            end;
+        end;
+      result := self._wlanConfig;
+      exit;
+    end;
+
+
+  function TYWireless.set_wlanConfig(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('wlanConfig',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Changes the configuration of the wireless lan interface to connect to an existing
+  ///   access point (infrastructure mode).
+  /// <para>
+  ///   Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="ssid">
+  ///   the name of the network to connect to
+  /// </param>
+  /// <param name="securityKey">
+  ///   the network key, as a character string
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYWireless.joinNetwork(ssid: string; securityKey: string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := 'INFRA:'+ssid+'\\'+securityKey;
+      result := _setAttr('wlanConfig', rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Changes the configuration of the wireless lan interface to create an ad-hoc
+  ///   wireless network, without using an access point.
+  /// <para>
+  ///   If a security key is specified,
+  ///   the network is protected by WEP128, since WPA is not standardized for
+  ///   ad-hoc networks.
+  ///   Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="ssid">
+  ///   the name of the network to connect to
+  /// </param>
+  /// <param name="securityKey">
+  ///   the network key, as a character string
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYWireless.adhocNetwork(ssid: string; securityKey: string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := 'ADHOC:'+ssid+'\\'+securityKey;
+      result := _setAttr('wlanConfig', rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Retrieves $AFUNCTION$ for a given identifier.
+  /// <para>
+  ///   The identifier can be specified using several formats:
+  /// </para>
+  /// <para>
+  /// </para>
+  /// <para>
+  ///   - FunctionLogicalName
+  /// </para>
+  /// <para>
+  ///   - ModuleSerialNumber.FunctionIdentifier
+  /// </para>
+  /// <para>
+  ///   - ModuleSerialNumber.FunctionLogicalName
+  /// </para>
+  /// <para>
+  ///   - ModuleLogicalName.FunctionIdentifier
+  /// </para>
+  /// <para>
+  ///   - ModuleLogicalName.FunctionLogicalName
+  /// </para>
+  /// <para>
+  /// </para>
+  /// <para>
+  ///   This function does not require that $THEFUNCTION$ is online at the time
+  ///   it is invoked. The returned object is nevertheless valid.
+  ///   Use the method <c>YWireless.isOnline()</c> to test if $THEFUNCTION$ is
+  ///   indeed online at a given time. In case of ambiguity when looking for
+  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
+  ///   found is returned. The search is performed first by hardware name,
+  ///   then by logical name.
+  /// </para>
+  /// </summary>
+  /// <param name="func">
+  ///   a string that uniquely characterizes $THEFUNCTION$
+  /// </param>
+  /// <returns>
+  ///   a <c>YWireless</c> object allowing you to drive $THEFUNCTION$.
+  /// </returns>
+  ///-
+  class function TYWireless.FindWireless(func: string):TYWireless;
+    var
+      obj : TYWireless;
+    begin
+      obj := TYWireless(TYFunction._FindFromCache('Wireless', func));
+      if obj = nil then
+        begin
+          obj :=  TYWireless.create(func);
+          TYFunction._AddToCache('Wireless',  func, obj)
+        end;
+      result := obj;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Registers the callback function that is invoked on every change of advertised value.
+  /// <para>
+  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="callback">
+  ///   the callback function to call, or a null pointer. The callback function should take two
+  ///   arguments: the function object of which the value has changed, and the character string describing
+  ///   the new advertised value.
+  /// @noreturn
+  /// </param>
+  ///-
+  function TYWireless.registerValueCallback(callback: TYWirelessValueCallback):LongInt;
+    var
+      val : string;
+    begin
+      if (addr(callback) <> nil) then
+        begin
+          TYFunction._UpdateValueCallbackList(self, true)
+        end
+      else
+        begin
+          TYFunction._UpdateValueCallbackList(self, false)
+        end;
+      self._valueCallbackWireless := callback;
+      // Immediately invoke value callback with current value
+      if (addr(callback) <> nil) and self.isOnline then
+        begin
+          val := self._advertisedValue;
+          if not((val = '')) then
+            begin
+              self._invokeValueCallback(val)
+            end;
+        end;
+      result := 0;
+      exit;
+    end;
+
+
+  function TYWireless._invokeValueCallback(value: string):LongInt;
+    begin
+      if (addr(self._valueCallbackWireless) <> nil) then
+        begin
+          self._valueCallbackWireless(self, value)
+        end
+      else
+        begin
+          inherited _invokeValueCallback(value)
+        end;
+      result := 0;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns a list of YWlanRecord objects that describe detected Wireless networks.
+  /// <para>
+  ///   This list is not updated when the module is already connected to an acces point (infrastructure mode).
+  ///   To force an update of this list, <c>adhocNetwork()</c> must be called to disconnect
+  ///   the module from the current network. The returned list must be unallocated by the caller.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a list of <c>YWlanRecord</c> objects, containing the SSID, channel,
+  ///   link quality and the type of security of the wireless network.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns an empty list.
+  /// </para>
+  ///-
+  function TYWireless.get_detectedWlans():TYWlanRecordArray;
+    var
+      json : TByteArray;
+      wlanlist : TStringArray;
+      res : TYWlanRecordArray;
+      res_pos : LongInt;
+      i_i : LongInt;
+    begin
+      json := self._download('wlan.json?by=name');
+      wlanlist := self._json_get_array(json);
+      res_pos := 0;
+      SetLength(res, length(wlanlist));;
+      for i_i:=0 to length(wlanlist)-1 do
+        begin
+          res[res_pos]:=TYWlanRecord.create(wlanlist[i_i]);
+          inc(res_pos)
+        end;
+      result := res;
+      exit;
+    end;
+
+
+  function TYWireless.nextWireless(): TYWireless;
+    var
+      hwid: string;
+    begin
+      if YISERR(_nextFunction(hwid)) then
+        begin
+          nextWireless := nil;
+          exit;
+        end;
+      if hwid = '' then
+        begin
+          nextWireless := nil;
+          exit;
+        end;
+      nextWireless := TYWireless.FindWireless(hwid);
+    end;
+
+  class function TYWireless.FirstWireless(): TYWireless;
+    var
+      v_fundescr      : YFUN_DESCR;
+      dev             : YDEV_DESCR;
+      neededsize, err : integer;
+      serial, funcId, funcName, funcVal, errmsg : string;
+    begin
+      err := yapiGetFunctionsByClass('Wireless', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
+      if (YISERR(err) or (neededsize = 0)) then
+        begin
+          result := nil;
+          exit;
+        end;
+      if (YISERR(yapiGetFunctionInfo(v_fundescr, dev, serial, funcId, funcName, funcVal, errmsg))) then
+        begin
+          result := nil;
+          exit;
+        end;
+     result := TYWireless.FindWireless(serial+'.'+funcId);
+    end;
 
 //--- (end of generated code: YWireless implementation)
 
 //--- (generated code: Wireless functions)
 
-function yFindWireless(func:string): TYWireless;
- var
-   index: integer;
-   res  : TYWireless;
- begin
-    if (_WirelessCache.Find(func, index)) then
-     begin
-       yFindWireless := TYWireless(_WirelessCache.objects[index]);
-       exit;
-     end;
-   res := TYWireless.Create(func);
-   _WirelessCache.addObject(func, res);
-   yFindWireless := res;
- end;
+  function yFindWireless(func:string): TYWireless;
+    begin
+      result := TYWireless.FindWireless(func);
+    end;
 
-function yFirstWireless(): TYWireless;
- var
-   v_fundescr      : YFUN_DESCR;
-   dev             : YDEV_DESCR;
-   neededsize, err : integer;
-   serial, funcId, funcName, funcVal, errmsg : string;
- begin
-   err := yapiGetFunctionsByClass('Wireless', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
-   if (YISERR(err) or (neededsize = 0)) then
+  function yFirstWireless(): TYWireless;
     begin
-       yFirstWireless := nil;
-       exit;
+      result := TYWireless.FirstWireless();
     end;
-   if (YISERR(yapiGetFunctionInfo(v_fundescr, dev, serial, funcId, funcName, funcVal, errmsg))) then
-    begin
-       yFirstWireless := nil;
-       exit;
-    end;
-   yFirstWireless := yFindWireless(serial+'.'+funcId);
- end;
 
-procedure _WirelessCleanup();
-  var i:integer;
-begin
-  for i:=0 to _WirelessCache.count-1 do 
+  procedure _WirelessCleanup();
     begin
-     _WirelessCache.objects[i].free();
-     _WirelessCache.objects[i]:=nil;
     end;
-   _WirelessCache.free();
-   _WirelessCache:=nil;
-end;
 
 //--- (end of generated code: Wireless functions)
 
@@ -973,40 +999,34 @@ end;
 
 //--- (generated code: YWlanRecord implementation)
 
-
-function TYWlanRecord.get_ssid():string;
-     begin
-        result:= self._ssid; 
-     end;
-
-
-function TYWlanRecord.get_channel():integer;
-     begin
-        result:= self._channel; 
-     end;
+  function TYWlanRecord.get_ssid():string;
+    begin
+      result := self._ssid;
+      exit;
+    end;
 
 
-function TYWlanRecord.get_security():string;
-     begin
-        result:= self._sec; 
-     end;
+  function TYWlanRecord.get_channel():LongInt;
+    begin
+      result := self._channel;
+      exit;
+    end;
 
 
-function TYWlanRecord.get_linkQuality():integer;
-     begin
-        result:= self._rssi; 
-     end;
+  function TYWlanRecord.get_security():string;
+    begin
+      result := self._sec;
+      exit;
+    end;
 
 
+  function TYWlanRecord.get_linkQuality():LongInt;
+    begin
+      result := self._rssi;
+      exit;
+    end;
 
-    ////
-    /// <summary>
-    ///   comment from .
-    /// <para>
-    ///   yc definition
-    /// </para>
-    /// </summary>
-    ///-
+
 //--- (end of generated code: YWlanRecord implementation)
 
 
@@ -1027,8 +1047,13 @@ constructor TYWlanRecord.create(data:string);
    p.free;
  end;
 
-//--- (generated code: YWlanRecord functions)
-//--- (end of generated code: YWlanRecord functions)
+//--- (generated code: WlanRecord functions)
+
+  procedure _WlanRecordCleanup();
+    begin
+    end;
+
+//--- (end of generated code: WlanRecord functions)
 
 procedure freeWlanRecordArray(var list:TYWLANRECORDARRAY);
  var i:integer;
@@ -1041,12 +1066,10 @@ procedure freeWlanRecordArray(var list:TYWLANRECORDARRAY);
 
 initialization
    //--- (generated code: Wireless initialization)
-   _WirelessCache        := TstringList.create();
-   _WirelessCache.sorted := true;
-   //--- (end of generated code: Wireless initialization)
+  //--- (end of generated code: Wireless initialization)
 
 finalization
    //--- (generated code: Wireless cleanup)
-   _WirelessCleanup();
-   //--- (end of generated code: Wireless cleanup)
+  _WirelessCleanup();
+  //--- (end of generated code: Wireless cleanup)
 end.

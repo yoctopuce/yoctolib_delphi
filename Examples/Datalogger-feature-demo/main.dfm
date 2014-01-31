@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 347
-  Top = 136
-  Width = 500
+  Left = 330
+  Top = 187
+  Width = 666
   Height = 400
   Caption = 'Datalogger demo'
   Color = clBtnFace
@@ -14,30 +14,21 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 16
-    Top = 18
-    Width = 37
+    Left = 8
+    Top = 6
+    Width = 36
     Height = 13
-    Caption = 'Device:'
-  end
-  object Label2: TLabel
-    Left = 17
-    Top = 52
-    Width = 33
-    Height = 13
-    Caption = 'Stream'
+    Caption = 'Sensor:'
   end
   object recordSpeedButton: TSpeedButton
-    Left = 364
-    Top = 16
+    Left = 12
+    Top = 32
     Width = 34
     Height = 32
     Hint = 'Start data recording'
-    Anchors = [akTop, akRight]
     Enabled = False
     Glyph.Data = {
       B60D0000424DB60D000000000000360000002800000030000000180000000100
@@ -156,12 +147,11 @@ object Form1: TForm1
     OnClick = recordSpeedButtonClick
   end
   object StopSpeedButton: TSpeedButton
-    Left = 404
-    Top = 16
+    Left = 52
+    Top = 32
     Width = 34
     Height = 32
     Hint = 'Stop data recording'
-    Anchors = [akTop, akRight]
     Enabled = False
     Glyph.Data = {
       B60D0000424DB60D000000000000360000002800000030000000180000000100
@@ -280,12 +270,11 @@ object Form1: TForm1
     OnClick = StopSpeedButtonClick
   end
   object ClearSpeedButton: TSpeedButton
-    Left = 444
-    Top = 16
+    Left = 92
+    Top = 32
     Width = 34
     Height = 32
     Hint = 'Clear all streams'
-    Anchors = [akTop, akRight]
     Enabled = False
     Glyph.Data = {
       B60D0000424DB60D000000000000360000002800000030000000180000000100
@@ -403,10 +392,17 @@ object Form1: TForm1
     ShowHint = True
     OnClick = ClearSpeedButtonClick
   end
+  object Label2: TLabel
+    Left = 332
+    Top = 43
+    Width = 53
+    Height = 13
+    Caption = 'Frequency:'
+  end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 336
-    Width = 484
+    Top = 347
+    Width = 658
     Height = 26
     Panels = <
       item
@@ -414,22 +410,22 @@ object Form1: TForm1
       end>
     SimplePanel = False
   end
-  object deviceComboBox: TComboBox
-    Left = 64
-    Top = 16
-    Width = 285
+  object sensorComboBox: TComboBox
+    Left = 56
+    Top = 4
+    Width = 591
     Height = 21
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
     Enabled = False
     ItemHeight = 13
     TabOrder = 1
-    OnChange = deviceComboBoxChange
+    OnChange = sensorComboBoxChange
   end
   object StringGrid1: TStringGrid
     Left = 5
     Top = 80
-    Width = 474
+    Width = 640
     Height = 252
     Anchors = [akLeft, akTop, akRight, akBottom]
     ColCount = 1
@@ -443,23 +439,11 @@ object Form1: TForm1
     ShowHint = True
     TabOrder = 2
   end
-  object StreamComboBox: TComboBox
-    Left = 64
-    Top = 48
-    Width = 285
-    Height = 21
-    Style = csDropDownList
-    Anchors = [akLeft, akTop, akRight]
-    Enabled = False
-    ItemHeight = 13
-    TabOrder = 3
-    OnChange = StreamComboBoxChange
-  end
   object AutoStartCheckBox: TCheckBox
-    Left = 364
-    Top = 54
+    Left = 560
+    Top = 38
     Width = 500
-    Height = 17
+    Height = 24
     Hint = 'Device will automatically start to record at power up'
     Anchors = [akTop, akRight]
     Caption = 'AutoStart'
@@ -468,7 +452,25 @@ object Form1: TForm1
     Enabled = False
     ParentShowHint = False
     ShowHint = True
+    TabOrder = 3
+  end
+  object freqCombo: TComboBox
+    Left = 400
+    Top = 40
+    Width = 145
+    Height = 21
+    Enabled = False
+    ItemHeight = 13
     TabOrder = 4
+    OnChange = freqComboChange
+    Items.Strings = (
+      '100/s'
+      '10/s'
+      '1/s'
+      '10/m'
+      '1/m'
+      '10/h'
+      '1/h')
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
@@ -481,7 +483,7 @@ object Form1: TForm1
     Left = 40
     Top = 392
     Bitmap = {
-      494C010102000400040018001800FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000400080018001800FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000600000001800000001002000000000000024
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

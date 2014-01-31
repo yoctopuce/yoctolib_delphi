@@ -1,77 +1,73 @@
 program demo;
 {$APPTYPE CONSOLE}
 uses
-  SysUtils,yocto_api,yocto_anButton,yocto_temperature,yocto_lightsensor;
+  SysUtils,yocto_api,yocto_anButton;
 
-  Procedure anButtonChangeCallBack(fct :TYAnButton; value:string);
+  Procedure anButtonValueChangeCallBack(fct:TYAnButton; value:string);
    begin
-    writeln('Position change         : ' + fct.toString() + ' = ' + value);
+    writeln(fct.get_hardwareId() + ' : ' + value + ' (new value)');
    end;
 
-  Procedure temperatureChangeCallBack(fct :TYTemperature; value:string);
+  Procedure sensorValueChangeCallBack(fct:TYSensor; value:string);
    begin
-    writeln('Temperature change      : ' + fct.toString() + ' = ' + value + ''+chr(248)+'C');
+    writeln(fct.get_hardwareId() + ' : ' + value + ' ' + fct.get_unit() + ' (new value)');
    end;
 
-  Procedure lightSensorChangeCallBack(fct :TYLightSensor; value:string);
+  Procedure sensorTimedReportCallBack(fct:TYSensor; measure:TYMeasure);
    begin
-    writeln('Light change            : ' + fct.toString() + ' = ' + value + 'lx');
+    writeln(fct.get_hardwareId() + ' : ' + FloatToStr(measure.get_averageValue()) + ' ' + fct.get_unit() + ' (timed report)');
    end;
 
-  Procedure deviceArrival(m:Tymodule);
+  Procedure deviceArrival(m:TYModule);
    var
-     fctName, fctFullName :string;
-     fctcount,i :integer;
-     bt :  TYAnButton;
-     t  : TYtemperature;
-     l  : TYLightSensor;
+     serial     : string;
+     hardwareId : string;
+     fctcount,i : integer;
+     anButton   : TYAnButton;
+     sensor     : TYSensor;
 
    begin
-     writeln('Device arrival          : ' + m.ToString());
+     serial := m.get_serialNumber();
+     writeln('Device arrival : ' + serial);
+
+     // First solution: look for a specific type of function (eg. anButton)
      fctcount := m.functionCount();
-     for  i := 0 to fctcount-1 do
-      begin
-        fctName := m.functionId(i);
-        fctFullName := m.get_serialNumber() + '.' + fctName;
+     for i := 0 to fctcount-1 do
+       begin
+         hardwareId := serial + '.' + m.functionId(i);
+         if (pos('.anButton',hardwareId) > 0) then
+         begin
+           writeln('- ' + hardwareId);
+           anButton := yFindAnButton(hardwareId);
+           anButton.registerValueCallback(anButtonValueChangeCallBack);
+         end;
+       end;
 
-        // register call back for anbuttons
-        if (pos ('anButton',fctName)=1) then
-        begin
-          bt := YFindAnButton(fctFullName);
-          if(bt.isOnline()) then  bt.registerValueCallback(anButtonChangeCallBack);
-          writeln('Callback registered for : ' + fctFullName);
-        end;
-
-        // register call back for temperature sensors
-        if (pos ('temperature',fctName)=1) then
-        begin
-          t := YFindTemperature(fctFullName);
-          if(t.isOnline()) then t.registerValueCallback(temperatureChangeCallBack);
-          writeln('Callback registered for : ' + fctFullName);
-        end;
-
-         // register call back for light sensors
-        if (pos ('lightSensor',fctName)=1) then
-        begin
-          l := YFindLightSensor(fctFullName);
-          if (l.isOnline()) then l.registerValueCallback(lightSensorChangeCallBack);
-          writeln('Callback registered for : ' + fctFullName);
-        end;
-
-         // and so on for other sensor type.....
-      end;
+     // Alternate solution: register any kind of sensor on the device
+     sensor := yFirstSensor();
+     while sensor<>nil do
+       begin
+         if(sensor.get_module().get_serialNumber() = serial) then
+         begin
+           hardwareId := sensor.get_hardwareId();
+           writeln('- ' + hardwareId);
+           sensor.registerValueCallback(sensorValueChangeCallBack);
+           sensor.registerTimedReportCallback(sensorTimedReportCallBack);
+         end;
+         sensor := sensor.nextSensor();
+       end
    end;
 
-   procedure deviceRemoval( m: TYmodule);
+  Procedure deviceRemoval( m: TYmodule);
    begin
-      Writeln('Device removal          : ' + m.get_serialNumber());
+      Writeln('Device removal : ' + m.get_serialNumber());
    end;
 
 var
    errmsg:string;
-begin
 
- if (yRegisterHub('usb',  errmsg) <> YAPI_SUCCESS) then
+begin
+  if (yRegisterHub('usb',  errmsg) <> YAPI_SUCCESS) then
    begin
      WriteLn('RegisterHub error : ' + errmsg);
      halt;
@@ -79,7 +75,6 @@ begin
 
   yRegisterDeviceArrivalCallback(deviceArrival);
   yRegisterDeviceRemovalCallback(deviceRemoval);
-
 
   WriteLn('Hit Ctrl-C to Stop ');
 

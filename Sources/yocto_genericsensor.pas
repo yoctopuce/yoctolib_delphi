@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_genericsensor.pas 12324 2013-08-13 15:10:31Z mvuilleu $
+ * $Id: yocto_genericsensor.pas 14701 2014-01-23 15:41:17Z seb $
  *
  * Implements yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -43,1374 +43,869 @@ unit yocto_genericsensor;
 interface
 
 uses
-   sysutils, classes, windows, yocto_api, yjson;
+  sysutils, classes, windows, yocto_api, yjson;
 
 //--- (YGenericSensor definitions)
 
-const
-   Y_LOGICALNAME_INVALID           = YAPI_INVALID_STRING;
-   Y_ADVERTISEDVALUE_INVALID       = YAPI_INVALID_STRING;
-   Y_UNIT_INVALID                  = YAPI_INVALID_STRING;
-   Y_CURRENTVALUE_INVALID          : double = YAPI_INVALID_DOUBLE;
-   Y_LOWESTVALUE_INVALID           : double = YAPI_INVALID_DOUBLE;
-   Y_HIGHESTVALUE_INVALID          : double = YAPI_INVALID_DOUBLE;
-   Y_CURRENTRAWVALUE_INVALID       : double = YAPI_INVALID_DOUBLE;
-   Y_CALIBRATIONPARAM_INVALID      = YAPI_INVALID_STRING;
-   Y_SIGNALVALUE_INVALID           : double = YAPI_INVALID_DOUBLE;
-   Y_SIGNALUNIT_INVALID            = YAPI_INVALID_STRING;
-   Y_SIGNALRANGE_INVALID           = YAPI_INVALID_STRING;
-   Y_VALUERANGE_INVALID            = YAPI_INVALID_STRING;
-   Y_RESOLUTION_INVALID            : double = YAPI_INVALID_DOUBLE;
+const Y_SIGNALVALUE_INVALID           = YAPI_INVALID_DOUBLE;
+const Y_SIGNALUNIT_INVALID            = YAPI_INVALID_STRING;
+const Y_SIGNALRANGE_INVALID           = YAPI_INVALID_STRING;
+const Y_VALUERANGE_INVALID            = YAPI_INVALID_STRING;
 
 
 //--- (end of YGenericSensor definitions)
 
 type
-//--- (YGenericSensor declaration)
- TYGenericSensor = class;
- TUpdateCallback  = procedure(func: TYGenericSensor; value:string);
-////
-/// <summary>
-///   TYGenericSensor Class: GenericSensor function interface
-/// <para>
-///   The Yoctopuce application programming interface allows you to read an instant
-///   measure of the sensor, as well as the minimal and maximal values observed.
-/// </para>
-/// </summary>
-///-
-TYGenericSensor=class(TYFunction)
-protected
-   // Attributes (function value cache)
-   _logicalName              : string;
-   _advertisedValue          : string;
-   _unit                     : string;
-   _currentValue             : double;
-   _lowestValue              : double;
-   _highestValue             : double;
-   _currentRawValue          : double;
-   _calibrationParam         : string;
-   _signalValue              : double;
-   _signalUnit               : string;
-   _signalRange              : string;
-   _valueRange               : string;
-   _resolution               : double;
-   _calibrationOffset        : LongInt;
-   // ValueCallback 
-   _callback                 : TUpdateCallback;
-   // Function-specific method for reading JSON output and caching result
-   function _parse(j:PJSONRECORD):integer; override;
+  TYGenericSensor = class;
+  //--- (YGenericSensor class start)
+  TYGenericSensorValueCallback = procedure(func: TYGenericSensor; value:string);
+  TYGenericSensorTimedReportCallback = procedure(func: TYGenericSensor; value:TYMeasure);
 
-   //--- (end of YGenericSensor declaration)
+  ////
+  /// <summary>
+  ///   TYGenericSensor Class: GenericSensor function interface
+  /// <para>
+  ///   The Yoctopuce application programming interface allows you to read an instant
+  ///   measure of the sensor, as well as the minimal and maximal values observed.
+  /// </para>
+  /// </summary>
+  ///-
+  TYGenericSensor=class(TYSensor)
+  //--- (end of YGenericSensor class start)
+  protected
+  //--- (YGenericSensor declaration)
+    // Attributes (function value cache)
+    _logicalName              : string;
+    _advertisedValue          : string;
+    _unit                     : string;
+    _currentValue             : double;
+    _lowestValue              : double;
+    _highestValue             : double;
+    _currentRawValue          : double;
+    _logFrequency             : string;
+    _reportFrequency          : string;
+    _calibrationParam         : string;
+    _resolution               : double;
+    _signalValue              : double;
+    _signalUnit               : string;
+    _signalRange              : string;
+    _valueRange               : string;
+    _valueCallbackGenericSensor : TYGenericSensorValueCallback;
+    _timedReportCallbackGenericSensor : TYGenericSensorTimedReportCallback;
+    // Function-specific method for reading JSON output and caching result
+    function _parseAttr(member:PJSONRECORD):integer; override;
 
-public
-   constructor Create(func:string);
+    //--- (end of YGenericSensor declaration)
 
-   ////
-   /// <summary>
-   ///   Continues the enumeration of generic sensors started using <c>yFirstGenericSensor()</c>.
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a pointer to a <c>YGenericSensor</c> object, corresponding to
-   ///   a generic sensor currently online, or a <c>null</c> pointer
-   ///   if there are no more generic sensors to enumerate.
-   /// </returns>
-   ///-
-   function nextGenericSensor():TYGenericSensor;
+  public
+    //--- (YGenericSensor accessors declaration)
+    constructor Create(func:string);
 
-   //--- (YGenericSensor accessors declaration)
-  Procedure registerValueCallback(callback : TUpdateCallback);
-  procedure set_callback(callback : TUpdateCallback);
-  procedure setCallback(callback : TUpdateCallback);
-  procedure advertiseValue(value : String);override;
-   ////
-   /// <summary>
-   ///   Returns the logical name of the generic sensor.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a string corresponding to the logical name of the generic sensor
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_LOGICALNAME_INVALID</c>.
-   /// </para>
-   ///-
-   function get_logicalName():string;
+    ////
+    /// <summary>
+    ///   Changes the measuring unit for the measured value.
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a string corresponding to the measuring unit for the measured value
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_unit(newval:string):integer;
 
-   ////
-   /// <summary>
-   ///   Changes the logical name of the generic sensor.
-   /// <para>
-   ///   You can use <c>yCheckLogicalName()</c>
-   ///   prior to this call to make sure that your parameter is valid.
-   ///   Remember to call the <c>saveToFlash()</c> method of the module if the
-   ///   modification must be kept.
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <param name="newval">
-   ///   a string corresponding to the logical name of the generic sensor
-   /// </param>
-   /// <para>
-   /// </para>
-   /// <returns>
-   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns a negative error code.
-   /// </para>
-   ///-
-   function set_logicalName(newval:string):integer;
+    ////
+    /// <summary>
+    ///   Returns the measured value of the electrical signal used by the sensor.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a floating point number corresponding to the measured value of the electrical signal used by the sensor
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_SIGNALVALUE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_signalValue():double;
 
-   ////
-   /// <summary>
-   ///   Returns the current value of the generic sensor (no more than 6 characters).
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a string corresponding to the current value of the generic sensor (no more than 6 characters)
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_ADVERTISEDVALUE_INVALID</c>.
-   /// </para>
-   ///-
-   function get_advertisedValue():string;
+    ////
+    /// <summary>
+    ///   Returns the measuring unit of the electrical signal used by the sensor.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the measuring unit of the electrical signal used by the sensor
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_SIGNALUNIT_INVALID</c>.
+    /// </para>
+    ///-
+    function get_signalUnit():string;
 
-   ////
-   /// <summary>
-   ///   Returns the measuring unit for the measured value.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a string corresponding to the measuring unit for the measured value
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_UNIT_INVALID</c>.
-   /// </para>
-   ///-
-   function get_unit():string;
+    ////
+    /// <summary>
+    ///   Returns the electric signal range used by the sensor.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the electric signal range used by the sensor
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_SIGNALRANGE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_signalRange():string;
 
-   ////
-   /// <summary>
-   ///   Changes the measuring unit for the measured value.
-   /// <para>
-   ///   Remember to call the <c>saveToFlash()</c> method of the module if the
-   ///   modification must be kept.
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <param name="newval">
-   ///   a string corresponding to the measuring unit for the measured value
-   /// </param>
-   /// <para>
-   /// </para>
-   /// <returns>
-   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns a negative error code.
-   /// </para>
-   ///-
-   function set_unit(newval:string):integer;
+    ////
+    /// <summary>
+    ///   Changes the electric signal range used by the sensor.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a string corresponding to the electric signal range used by the sensor
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_signalRange(newval:string):integer;
 
-   ////
-   /// <summary>
-   ///   Returns the current measured value.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a floating point number corresponding to the current measured value
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_CURRENTVALUE_INVALID</c>.
-   /// </para>
-   ///-
-   function get_currentValue():double;
+    ////
+    /// <summary>
+    ///   Returns the physical value range measured by the sensor.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the physical value range measured by the sensor
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_VALUERANGE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_valueRange():string;
 
-   ////
-   /// <summary>
-   ///   Changes the recorded minimal value observed.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <param name="newval">
-   ///   a floating point number corresponding to the recorded minimal value observed
-   /// </param>
-   /// <para>
-   /// </para>
-   /// <returns>
-   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns a negative error code.
-   /// </para>
-   ///-
-   function set_lowestValue(newval:double):integer;
+    ////
+    /// <summary>
+    ///   Changes the physical value range measured by the sensor.
+    /// <para>
+    ///   The range change may have a side effect
+    ///   on the display resolution, as it may be adapted automatically.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a string corresponding to the physical value range measured by the sensor
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_valueRange(newval:string):integer;
 
-   ////
-   /// <summary>
-   ///   Returns the minimal value observed.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a floating point number corresponding to the minimal value observed
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_LOWESTVALUE_INVALID</c>.
-   /// </para>
-   ///-
-   function get_lowestValue():double;
+    ////
+    /// <summary>
+    ///   Retrieves $AFUNCTION$ for a given identifier.
+    /// <para>
+    ///   The identifier can be specified using several formats:
+    /// </para>
+    /// <para>
+    /// </para>
+    /// <para>
+    ///   - FunctionLogicalName
+    /// </para>
+    /// <para>
+    ///   - ModuleSerialNumber.FunctionIdentifier
+    /// </para>
+    /// <para>
+    ///   - ModuleSerialNumber.FunctionLogicalName
+    /// </para>
+    /// <para>
+    ///   - ModuleLogicalName.FunctionIdentifier
+    /// </para>
+    /// <para>
+    ///   - ModuleLogicalName.FunctionLogicalName
+    /// </para>
+    /// <para>
+    /// </para>
+    /// <para>
+    ///   This function does not require that $THEFUNCTION$ is online at the time
+    ///   it is invoked. The returned object is nevertheless valid.
+    ///   Use the method <c>YGenericSensor.isOnline()</c> to test if $THEFUNCTION$ is
+    ///   indeed online at a given time. In case of ambiguity when looking for
+    ///   $AFUNCTION$ by logical name, no error is notified: the first instance
+    ///   found is returned. The search is performed first by hardware name,
+    ///   then by logical name.
+    /// </para>
+    /// </summary>
+    /// <param name="func">
+    ///   a string that uniquely characterizes $THEFUNCTION$
+    /// </param>
+    /// <returns>
+    ///   a <c>YGenericSensor</c> object allowing you to drive $THEFUNCTION$.
+    /// </returns>
+    ///-
+    class function FindGenericSensor(func: string):TYGenericSensor;
 
-   ////
-   /// <summary>
-   ///   Changes the recorded maximal value observed.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <param name="newval">
-   ///   a floating point number corresponding to the recorded maximal value observed
-   /// </param>
-   /// <para>
-   /// </para>
-   /// <returns>
-   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns a negative error code.
-   /// </para>
-   ///-
-   function set_highestValue(newval:double):integer;
+    ////
+    /// <summary>
+    ///   Registers the callback function that is invoked on every change of advertised value.
+    /// <para>
+    ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+    ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+    ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="callback">
+    ///   the callback function to call, or a null pointer. The callback function should take two
+    ///   arguments: the function object of which the value has changed, and the character string describing
+    ///   the new advertised value.
+    /// @noreturn
+    /// </param>
+    ///-
+    function registerValueCallback(callback: TYGenericSensorValueCallback):LongInt; overload;
 
-   ////
-   /// <summary>
-   ///   Returns the maximal value observed.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a floating point number corresponding to the maximal value observed
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_HIGHESTVALUE_INVALID</c>.
-   /// </para>
-   ///-
-   function get_highestValue():double;
+    function _invokeValueCallback(value: string):LongInt; override;
 
-   ////
-   /// <summary>
-   ///   Returns the uncalibrated, unrounded raw value returned by the sensor.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a floating point number corresponding to the uncalibrated, unrounded raw value returned by the sensor
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_CURRENTRAWVALUE_INVALID</c>.
-   /// </para>
-   ///-
-   function get_currentRawValue():double;
+    ////
+    /// <summary>
+    ///   Registers the callback function that is invoked on every periodic timed notification.
+    /// <para>
+    ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+    ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+    ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="callback">
+    ///   the callback function to call, or a null pointer. The callback function should take two
+    ///   arguments: the function object of which the value has changed, and an YMeasure object describing
+    ///   the new advertised value.
+    /// @noreturn
+    /// </param>
+    ///-
+    function registerTimedReportCallback(callback: TYGenericSensorTimedReportCallback):LongInt; overload;
 
-   function get_calibrationParam():string;
+    function _invokeTimedReportCallback(value: TYMeasure):LongInt; override;
 
-   function set_calibrationParam(newval:string):integer;
 
-   ////
-   /// <summary>
-   ///   Configures error correction data points, in particular to compensate for
-   ///   a possible perturbation of the measure caused by an enclosure.
-   /// <para>
-   ///   It is possible
-   ///   to configure up to five correction points. Correction points must be provided
-   ///   in ascending order, and be in the range of the sensor. The device will automatically
-   ///   perform a linear interpolation of the error correction between specified
-   ///   points. Remember to call the <c>saveToFlash()</c> method of the module if the
-   ///   modification must be kept.
-   /// </para>
-   /// <para>
-   ///   For more information on advanced capabilities to refine the calibration of
-   ///   sensors, please contact support@yoctopuce.com.
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <param name="rawValues">
-   ///   array of floating point numbers, corresponding to the raw
-   ///   values returned by the sensor for the correction points.
-   /// </param>
-   /// <param name="refValues">
-   ///   array of floating point numbers, corresponding to the corrected
-   ///   values for the correction points.
-   /// </param>
-   /// <para>
-   /// </para>
-   /// <returns>
-   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns a negative error code.
-   /// </para>
-   ///-
-   function calibrateFromPoints(rawValues:floatArr;refValues:floatArr):integer;
-
-   function loadCalibrationPoints(var rawValues:floatArr;var refValues:floatArr):integer;
-
-   ////
-   /// <summary>
-   ///   Returns the measured value of the electrical signal used by the sensor.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a floating point number corresponding to the measured value of the electrical signal used by the sensor
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_SIGNALVALUE_INVALID</c>.
-   /// </para>
-   ///-
-   function get_signalValue():double;
-
-   ////
-   /// <summary>
-   ///   Returns the measuring unit of the electrical signal used by the sensor.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a string corresponding to the measuring unit of the electrical signal used by the sensor
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_SIGNALUNIT_INVALID</c>.
-   /// </para>
-   ///-
-   function get_signalUnit():string;
-
-   ////
-   /// <summary>
-   ///   Returns the electric signal range used by the sensor.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a string corresponding to the electric signal range used by the sensor
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_SIGNALRANGE_INVALID</c>.
-   /// </para>
-   ///-
-   function get_signalRange():string;
-
-   ////
-   /// <summary>
-   ///   Changes the electric signal range used by the sensor.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <param name="newval">
-   ///   a string corresponding to the electric signal range used by the sensor
-   /// </param>
-   /// <para>
-   /// </para>
-   /// <returns>
-   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns a negative error code.
-   /// </para>
-   ///-
-   function set_signalRange(newval:string):integer;
-
-   ////
-   /// <summary>
-   ///   Returns the physical value range measured by the sensor.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a string corresponding to the physical value range measured by the sensor
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_VALUERANGE_INVALID</c>.
-   /// </para>
-   ///-
-   function get_valueRange():string;
-
-   ////
-   /// <summary>
-   ///   Changes the physical value range measured by the sensor.
-   /// <para>
-   ///   The range change may have a side effect
-   ///   on the display resolution, as it may be adapted automatically.
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <param name="newval">
-   ///   a string corresponding to the physical value range measured by the sensor
-   /// </param>
-   /// <para>
-   /// </para>
-   /// <returns>
-   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns a negative error code.
-   /// </para>
-   ///-
-   function set_valueRange(newval:string):integer;
-
-   ////
-   /// <summary>
-   ///   Changes the resolution of the measured physical values.
-   /// <para>
-   ///   The resolution corresponds to the numerical precision
-   ///   when displaying value. It does not change the precision of the measure itself.
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <param name="newval">
-   ///   a floating point number corresponding to the resolution of the measured physical values
-   /// </param>
-   /// <para>
-   /// </para>
-   /// <returns>
-   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns a negative error code.
-   /// </para>
-   ///-
-   function set_resolution(newval:double):integer;
-
-   ////
-   /// <summary>
-   ///   Returns the resolution of the measured values.
-   /// <para>
-   ///   The resolution corresponds to the numerical precision
-   ///   of the values, which is not always the same as the actual precision of the sensor.
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a floating point number corresponding to the resolution of the measured values
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_RESOLUTION_INVALID</c>.
-   /// </para>
-   ///-
-   function get_resolution():double;
-
-   //--- (end of YGenericSensor accessors declaration)
-end;
+    ////
+    /// <summary>
+    ///   Continues the enumeration of generic sensors started using <c>yFirstGenericSensor()</c>.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a pointer to a <c>YGenericSensor</c> object, corresponding to
+    ///   a generic sensor currently online, or a <c>null</c> pointer
+    ///   if there are no more generic sensors to enumerate.
+    /// </returns>
+    ///-
+    function nextGenericSensor():TYGenericSensor;
+    ////
+    /// <summary>
+    ///   c
+    /// <para>
+    ///   omment from .yc definition
+    /// </para>
+    /// </summary>
+    ///-
+    class function FirstGenericSensor():TYGenericSensor;
+  //--- (end of YGenericSensor accessors declaration)
+  end;
 
 //--- (GenericSensor functions declaration)
 
-////
-/// <summary>
-///   Retrieves a generic sensor for a given identifier.
-/// <para>
-///   The identifier can be specified using several formats:
-/// </para>
-/// <para>
-/// </para>
-/// <para>
-///   - FunctionLogicalName
-/// </para>
-/// <para>
-///   - ModuleSerialNumber.FunctionIdentifier
-/// </para>
-/// <para>
-///   - ModuleSerialNumber.FunctionLogicalName
-/// </para>
-/// <para>
-///   - ModuleLogicalName.FunctionIdentifier
-/// </para>
-/// <para>
-///   - ModuleLogicalName.FunctionLogicalName
-/// </para>
-/// <para>
-/// </para>
-/// <para>
-///   This function does not require that the generic sensor is online at the time
-///   it is invoked. The returned object is nevertheless valid.
-///   Use the method <c>YGenericSensor.isOnline()</c> to test if the generic sensor is
-///   indeed online at a given time. In case of ambiguity when looking for
-///   a generic sensor by logical name, no error is notified: the first instance
-///   found is returned. The search is performed first by hardware name,
-///   then by logical name.
-/// </para>
-/// </summary>
-/// <param name="func">
-///   a string that uniquely characterizes the generic sensor
-/// </param>
-/// <returns>
-///   a <c>YGenericSensor</c> object allowing you to drive the generic sensor.
-/// </returns>
-///-
-function yFindGenericSensor(func:string):TYGenericSensor;
-////
-/// <summary>
-///   Starts the enumeration of generic sensors currently accessible.
-/// <para>
-///   Use the method <c>YGenericSensor.nextGenericSensor()</c> to iterate on
-///   next generic sensors.
-/// </para>
-/// </summary>
-/// <returns>
-///   a pointer to a <c>YGenericSensor</c> object, corresponding to
-///   the first generic sensor currently online, or a <c>null</c> pointer
-///   if there are none.
-/// </returns>
-///-
-function yFirstGenericSensor():TYGenericSensor;
+  ////
+  /// <summary>
+  ///   Retrieves a generic sensor for a given identifier.
+  /// <para>
+  ///   The identifier can be specified using several formats:
+  /// </para>
+  /// <para>
+  /// </para>
+  /// <para>
+  ///   - FunctionLogicalName
+  /// </para>
+  /// <para>
+  ///   - ModuleSerialNumber.FunctionIdentifier
+  /// </para>
+  /// <para>
+  ///   - ModuleSerialNumber.FunctionLogicalName
+  /// </para>
+  /// <para>
+  ///   - ModuleLogicalName.FunctionIdentifier
+  /// </para>
+  /// <para>
+  ///   - ModuleLogicalName.FunctionLogicalName
+  /// </para>
+  /// <para>
+  /// </para>
+  /// <para>
+  ///   This function does not require that the generic sensor is online at the time
+  ///   it is invoked. The returned object is nevertheless valid.
+  ///   Use the method <c>YGenericSensor.isOnline()</c> to test if the generic sensor is
+  ///   indeed online at a given time. In case of ambiguity when looking for
+  ///   a generic sensor by logical name, no error is notified: the first instance
+  ///   found is returned. The search is performed first by hardware name,
+  ///   then by logical name.
+  /// </para>
+  /// </summary>
+  /// <param name="func">
+  ///   a string that uniquely characterizes the generic sensor
+  /// </param>
+  /// <returns>
+  ///   a <c>YGenericSensor</c> object allowing you to drive the generic sensor.
+  /// </returns>
+  ///-
+  function yFindGenericSensor(func:string):TYGenericSensor;
+  ////
+  /// <summary>
+  ///   Starts the enumeration of generic sensors currently accessible.
+  /// <para>
+  ///   Use the method <c>YGenericSensor.nextGenericSensor()</c> to iterate on
+  ///   next generic sensors.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a pointer to a <c>YGenericSensor</c> object, corresponding to
+  ///   the first generic sensor currently online, or a <c>null</c> pointer
+  ///   if there are none.
+  /// </returns>
+  ///-
+  function yFirstGenericSensor():TYGenericSensor;
 
 //--- (end of GenericSensor functions declaration)
 
 implementation
 
-//--- (YGenericSensor implementation)
-
-var
-   _GenericSensorCache : TStringList;
-
-constructor TYGenericSensor.Create(func:string);
- begin
-   inherited Create('GenericSensor', func);
-   _logicalName := Y_LOGICALNAME_INVALID;
-   _advertisedValue := Y_ADVERTISEDVALUE_INVALID;
-   _unit := Y_UNIT_INVALID;
-   _currentValue := Y_CURRENTVALUE_INVALID;
-   _lowestValue := Y_LOWESTVALUE_INVALID;
-   _highestValue := Y_HIGHESTVALUE_INVALID;
-   _currentRawValue := Y_CURRENTRAWVALUE_INVALID;
-   _calibrationParam := Y_CALIBRATIONPARAM_INVALID;
-   _signalValue := Y_SIGNALVALUE_INVALID;
-   _signalUnit := Y_SIGNALUNIT_INVALID;
-   _signalRange := Y_SIGNALRANGE_INVALID;
-   _valueRange := Y_VALUERANGE_INVALID;
-   _resolution := Y_RESOLUTION_INVALID;
-   _calibrationOffset := 0;
- end;
-
-{$HINTS OFF}
-function TYGenericSensor._parse(j:PJSONRECORD):integer;
- var
-   member,sub : PJSONRECORD;
-   i,l        : integer;
- begin
-   if (j^.recordtype <> JSON_STRUCT) then begin _parse:= -1; exit; end;
-   for i:=0 to j^.membercount-1 do
+  constructor TYGenericSensor.Create(func:string);
     begin
-      member := j^.members[i];
-      if (member^.name = 'logicalName') then
-       begin
-         _logicalName := string(member^.svalue);
-       end else
-      if (member^.name = 'advertisedValue') then
-       begin
-         _advertisedValue := string(member^.svalue);
-       end else
-      if (member^.name = 'unit') then
-       begin
-         _unit := string(member^.svalue);
-       end else
-      if (member^.name = 'currentValue') then
-       begin
-         _currentValue := round(member^.ivalue/65.536) / 1000;
-       end else
-      if (member^.name = 'lowestValue') then
-       begin
-         _lowestValue := round(member^.ivalue/65.536) / 1000;
-       end else
-      if (member^.name = 'highestValue') then
-       begin
-         _highestValue := round(member^.ivalue/65.536) / 1000;
-       end else
-      if (member^.name = 'currentRawValue') then
-       begin
-         _currentRawValue := member^.ivalue/65536.0;
-       end else
-      if (member^.name = 'calibrationParam') then
-       begin
-         _calibrationParam := string(member^.svalue);
-       end else
-      if (member^.name = 'signalValue') then
-       begin
-         _signalValue := round(member^.ivalue/65.536) / 1000;
-       end else
-      if (member^.name = 'signalUnit') then
-       begin
-         _signalUnit := string(member^.svalue);
-       end else
-      if (member^.name = 'signalRange') then
-       begin
-         _signalRange := string(member^.svalue);
-       end else
-      if (member^.name = 'valueRange') then
-       begin
-         _valueRange := string(member^.svalue);
-       end else
-      if (member^.name = 'resolution') then
-       begin
-         if (member^.ivalue > 100) then _resolution := 1.0 / round(65536.0/member^.ivalue) else _resolution := 0.001 / round(67.0/member^.ivalue);
-       end else
-       begin end;
+      inherited Create(func);
+      _className := 'GenericSensor';
+      //--- (YGenericSensor accessors initialization)
+      _signalValue := Y_SIGNALVALUE_INVALID;
+      _signalUnit := Y_SIGNALUNIT_INVALID;
+      _signalRange := Y_SIGNALRANGE_INVALID;
+      _valueRange := Y_VALUERANGE_INVALID;
+      _valueCallbackGenericSensor := nil;
+      _timedReportCallbackGenericSensor := nil;
+      //--- (end of YGenericSensor accessors initialization)
     end;
-   _parse := 0;
- end;
+
+
+//--- (YGenericSensor implementation)
+{$HINTS OFF}
+  function TYGenericSensor._parseAttr(member:PJSONRECORD):integer;
+    var
+      sub : PJSONRECORD;
+      i,l        : integer;
+    begin
+      if (member^.name = 'signalValue') then
+        begin
+          _signalValue := member^.ivalue/65536.0;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'signalUnit') then
+        begin
+          _signalUnit := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'signalRange') then
+        begin
+          _signalRange := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'valueRange') then
+        begin
+          _valueRange := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      result := inherited _parseAttr(member);
+    end;
 {$HINTS ON}
 
-////
-/// <summary>
-///   Returns the logical name of the generic sensor.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a string corresponding to the logical name of the generic sensor
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
-/// </para>
-///-
-function TYGenericSensor.get_logicalName():string;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_LOGICALNAME_INVALID;
-         exit;
-       end;
-   result := _logicalName;
- end;
-
-////
-/// <summary>
-///   Changes the logical name of the generic sensor.
-/// <para>
-///   You can use yCheckLogicalName()
-///   prior to this call to make sure that your parameter is valid.
-///   Remember to call the saveToFlash() method of the module if the
-///   modification must be kept.
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <param name="newval">
-///   a string corresponding to the logical name of the generic sensor
-/// </param>
-/// <para>
-/// </para>
-/// <returns>
-///   YAPI_SUCCESS if the call succeeds.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns a negative error code.
-/// </para>
-///-
-function TYGenericSensor.set_logicalName(newval:string):integer;
- var
-   rest_val: string;
- begin
-   rest_val := newval;
-   result := _setAttr('logicalName',rest_val);
- end;
-
-////
-/// <summary>
-///   Returns the current value of the generic sensor (no more than 6 characters).
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a string corresponding to the current value of the generic sensor (no more than 6 characters)
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
-/// </para>
-///-
-function TYGenericSensor.get_advertisedValue():string;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_ADVERTISEDVALUE_INVALID;
-         exit;
-       end;
-   result := _advertisedValue;
- end;
-
-////
-/// <summary>
-///   Returns the measuring unit for the measured value.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a string corresponding to the measuring unit for the measured value
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_UNIT_INVALID.
-/// </para>
-///-
-function TYGenericSensor.get_unit():string;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_UNIT_INVALID;
-         exit;
-       end;
-   result := _unit;
- end;
-
-////
-/// <summary>
-///   Changes the measuring unit for the measured value.
-/// <para>
-///   Remember to call the saveToFlash() method of the module if the
-///   modification must be kept.
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <param name="newval">
-///   a string corresponding to the measuring unit for the measured value
-/// </param>
-/// <para>
-/// </para>
-/// <returns>
-///   YAPI_SUCCESS if the call succeeds.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns a negative error code.
-/// </para>
-///-
-function TYGenericSensor.set_unit(newval:string):integer;
- var
-   rest_val: string;
- begin
-   rest_val := newval;
-   result := _setAttr('unit',rest_val);
- end;
-
-////
-/// <summary>
-///   Returns the current measured value.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a floating point number corresponding to the current measured value
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_CURRENTVALUE_INVALID.
-/// </para>
-///-
-function TYGenericSensor.get_currentValue():double;
- var res : double;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_CURRENTVALUE_INVALID;
-         exit;
-       end;
-    res := _applyCalibration(_currentRawValue, _calibrationParam, _calibrationOffset, _resolution);
-    if(res <> Y_CURRENTVALUE_INVALID) then
-       begin
-         result := res;
-         exit;
-       end;
-   result := _currentValue;
- end;
-
-////
-/// <summary>
-///   Changes the recorded minimal value observed.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <param name="newval">
-///   a floating point number corresponding to the recorded minimal value observed
-/// </param>
-/// <para>
-/// </para>
-/// <returns>
-///   YAPI_SUCCESS if the call succeeds.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns a negative error code.
-/// </para>
-///-
-function TYGenericSensor.set_lowestValue(newval:double):integer;
- var
-   rest_val: string;
- begin
-   rest_val := inttostr(round(newval*65536.0));
-   result := _setAttr('lowestValue',rest_val);
- end;
-
-////
-/// <summary>
-///   Returns the minimal value observed.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a floating point number corresponding to the minimal value observed
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_LOWESTVALUE_INVALID.
-/// </para>
-///-
-function TYGenericSensor.get_lowestValue():double;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_LOWESTVALUE_INVALID;
-         exit;
-       end;
-   result := _lowestValue;
- end;
-
-////
-/// <summary>
-///   Changes the recorded maximal value observed.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <param name="newval">
-///   a floating point number corresponding to the recorded maximal value observed
-/// </param>
-/// <para>
-/// </para>
-/// <returns>
-///   YAPI_SUCCESS if the call succeeds.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns a negative error code.
-/// </para>
-///-
-function TYGenericSensor.set_highestValue(newval:double):integer;
- var
-   rest_val: string;
- begin
-   rest_val := inttostr(round(newval*65536.0));
-   result := _setAttr('highestValue',rest_val);
- end;
-
-////
-/// <summary>
-///   Returns the maximal value observed.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a floating point number corresponding to the maximal value observed
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_HIGHESTVALUE_INVALID.
-/// </para>
-///-
-function TYGenericSensor.get_highestValue():double;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_HIGHESTVALUE_INVALID;
-         exit;
-       end;
-   result := _highestValue;
- end;
-
-////
-/// <summary>
-///   Returns the uncalibrated, unrounded raw value returned by the sensor.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a floating point number corresponding to the uncalibrated, unrounded raw value returned by the sensor
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_CURRENTRAWVALUE_INVALID.
-/// </para>
-///-
-function TYGenericSensor.get_currentRawValue():double;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_CURRENTRAWVALUE_INVALID;
-         exit;
-       end;
-   result := _currentRawValue;
- end;
-
-function TYGenericSensor.get_calibrationParam():string;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_CALIBRATIONPARAM_INVALID;
-         exit;
-       end;
-   result := _calibrationParam;
- end;
-
-function TYGenericSensor.set_calibrationParam(newval:string):integer;
- var
-   rest_val: string;
- begin
-   rest_val := newval;
-   result := _setAttr('calibrationParam',rest_val);
- end;
-
-////
-/// <summary>
-///   Configures error correction data points, in particular to compensate for
-///   a possible perturbation of the measure caused by an enclosure.
-/// <para>
-///   It is possible
-///   to configure up to five correction points. Correction points must be provided
-///   in ascending order, and be in the range of the sensor. The device will automatically
-///   perform a linear interpolation of the error correction between specified
-///   points. Remember to call the saveToFlash() method of the module if the
-///   modification must be kept.
-/// </para>
-/// <para>
-///   For more information on advanced capabilities to refine the calibration of
-///   sensors, please contact support@yoctopuce.com.
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <param name="rawValues">
-///   array of floating point numbers, corresponding to the raw
-///   values returned by the sensor for the correction points.
-/// </param>
-/// <param name="refValues">
-///   array of floating point numbers, corresponding to the corrected
-///   values for the correction points.
-/// </param>
-/// <para>
-/// </para>
-/// <returns>
-///   YAPI_SUCCESS if the call succeeds.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns a negative error code.
-/// </para>
-///-
-function TYGenericSensor.calibrateFromPoints(rawValues:floatArr;refValues:floatArr):integer;
- var
-   rest_val: string;
- begin
-   rest_val := _encodeCalibrationPoints(rawValues,refValues,_resolution,_calibrationOffset,_calibrationParam);
-   result := _setAttr('calibrationParam', rest_val);
- end;
-
-function TYGenericSensor.loadCalibrationPoints(var rawValues:floatArr;var refValues:floatArr):integer;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := _lastErrorType;
-         exit;
-       end;
-   result := _decodeCalibrationPoints(_calibrationParam,nil,rawValues,refValues,_resolution,_calibrationOffset);
- end;
-
-////
-/// <summary>
-///   Returns the measured value of the electrical signal used by the sensor.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a floating point number corresponding to the measured value of the electrical signal used by the sensor
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_SIGNALVALUE_INVALID.
-/// </para>
-///-
-function TYGenericSensor.get_signalValue():double;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_SIGNALVALUE_INVALID;
-         exit;
-       end;
-   result := _signalValue;
- end;
-
-////
-/// <summary>
-///   Returns the measuring unit of the electrical signal used by the sensor.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a string corresponding to the measuring unit of the electrical signal used by the sensor
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_SIGNALUNIT_INVALID.
-/// </para>
-///-
-function TYGenericSensor.get_signalUnit():string;
- begin
-   if (_signalUnit = Y_SIGNALUNIT_INVALID) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_SIGNALUNIT_INVALID;
-         exit;
-       end;
-   result := _signalUnit;
- end;
-
-////
-/// <summary>
-///   Returns the electric signal range used by the sensor.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a string corresponding to the electric signal range used by the sensor
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_SIGNALRANGE_INVALID.
-/// </para>
-///-
-function TYGenericSensor.get_signalRange():string;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_SIGNALRANGE_INVALID;
-         exit;
-       end;
-   result := _signalRange;
- end;
-
-////
-/// <summary>
-///   Changes the electric signal range used by the sensor.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <param name="newval">
-///   a string corresponding to the electric signal range used by the sensor
-/// </param>
-/// <para>
-/// </para>
-/// <returns>
-///   YAPI_SUCCESS if the call succeeds.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns a negative error code.
-/// </para>
-///-
-function TYGenericSensor.set_signalRange(newval:string):integer;
- var
-   rest_val: string;
- begin
-   rest_val := newval;
-   result := _setAttr('signalRange',rest_val);
- end;
-
-////
-/// <summary>
-///   Returns the physical value range measured by the sensor.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a string corresponding to the physical value range measured by the sensor
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_VALUERANGE_INVALID.
-/// </para>
-///-
-function TYGenericSensor.get_valueRange():string;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_VALUERANGE_INVALID;
-         exit;
-       end;
-   result := _valueRange;
- end;
-
-////
-/// <summary>
-///   Changes the physical value range measured by the sensor.
-/// <para>
-///   The range change may have a side effect
-///   on the display resolution, as it may be adapted automatically.
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <param name="newval">
-///   a string corresponding to the physical value range measured by the sensor
-/// </param>
-/// <para>
-/// </para>
-/// <returns>
-///   YAPI_SUCCESS if the call succeeds.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns a negative error code.
-/// </para>
-///-
-function TYGenericSensor.set_valueRange(newval:string):integer;
- var
-   rest_val: string;
- begin
-   rest_val := newval;
-   result := _setAttr('valueRange',rest_val);
- end;
-
-////
-/// <summary>
-///   Changes the resolution of the measured physical values.
-/// <para>
-///   The resolution corresponds to the numerical precision
-///   when displaying value. It does not change the precision of the measure itself.
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <param name="newval">
-///   a floating point number corresponding to the resolution of the measured physical values
-/// </param>
-/// <para>
-/// </para>
-/// <returns>
-///   YAPI_SUCCESS if the call succeeds.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns a negative error code.
-/// </para>
-///-
-function TYGenericSensor.set_resolution(newval:double):integer;
- var
-   rest_val: string;
- begin
-   rest_val := inttostr(round(newval*65536.0));
-   result := _setAttr('resolution',rest_val);
- end;
-
-////
-/// <summary>
-///   Returns the resolution of the measured values.
-/// <para>
-///   The resolution corresponds to the numerical precision
-///   of the values, which is not always the same as the actual precision of the sensor.
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a floating point number corresponding to the resolution of the measured values
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_RESOLUTION_INVALID.
-/// </para>
-///-
-function TYGenericSensor.get_resolution():double;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_RESOLUTION_INVALID;
-         exit;
-       end;
-   result := _resolution;
- end;
-
-function TYGenericSensor.nextGenericSensor(): TYGenericSensor;
- var
-   hwid: string;
- begin
-   if (YISERR(_nextFunction(hwid))) then
+  ////
+  /// <summary>
+  ///   Changes the measuring unit for the measured value.
+  /// <para>
+  ///   Remember to call the saveToFlash() method of the module if the
+  ///   modification must be kept.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a string corresponding to the measuring unit for the measured value
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYGenericSensor.set_unit(newval:string):integer;
+    var
+      rest_val: string;
     begin
-      nextGenericSensor := nil;
+      rest_val := newval;
+      result := _setAttr('unit',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the measured value of the electrical signal used by the sensor.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a floating point number corresponding to the measured value of the electrical signal used by the sensor
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_SIGNALVALUE_INVALID.
+  /// </para>
+  ///-
+  function TYGenericSensor.get_signalValue():double;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_SIGNALVALUE_INVALID;
+              exit
+            end;
+        end;
+      result := round(self._signalValue * 1000) / 1000;
       exit;
     end;
-   if (hwid='') then
+
+
+  ////
+  /// <summary>
+  ///   Returns the measuring unit of the electrical signal used by the sensor.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a string corresponding to the measuring unit of the electrical signal used by the sensor
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_SIGNALUNIT_INVALID.
+  /// </para>
+  ///-
+  function TYGenericSensor.get_signalUnit():string;
     begin
-      nextGenericSensor := nil;
+      if self._cacheExpiration = 0 then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_SIGNALUNIT_INVALID;
+              exit
+            end;
+        end;
+      result := self._signalUnit;
       exit;
     end;
-    nextGenericSensor := yFindGenericSensor(hwid);
- end;
 
 
-    ////
-    /// <summary>
-    ///   comment from .
-    /// <para>
-    ///   yc definition
-    /// </para>
-    /// </summary>
-    ///-
-  Procedure TYGenericSensor.registerValueCallback(callback : TUpdateCallback);
-  begin
-   If assigned(callback) Then
-     registerFuncCallback(self)
-   else
-     unregisterFuncCallback(self);
-   _callback := callback;
-  End;
+  ////
+  /// <summary>
+  ///   Returns the electric signal range used by the sensor.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a string corresponding to the electric signal range used by the sensor
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_SIGNALRANGE_INVALID.
+  /// </para>
+  ///-
+  function TYGenericSensor.get_signalRange():string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_SIGNALRANGE_INVALID;
+              exit
+            end;
+        end;
+      result := self._signalRange;
+      exit;
+    end;
 
-  procedure TYGenericSensor.set_callback(callback : TUpdateCallback);
-   Begin
-    registerValueCallback(callback);
-  End;
 
-  procedure  TYGenericSensor.setCallback(callback : TUpdateCallback);
-   Begin
-    registerValueCallback(callback);
-   End;
+  ////
+  /// <summary>
+  ///   Changes the electric signal range used by the sensor.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a string corresponding to the electric signal range used by the sensor
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYGenericSensor.set_signalRange(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('signalRange',rest_val);
+    end;
 
-  procedure  TYGenericSensor.advertiseValue(value : String);
-  Begin
-    If assigned(_callback)  Then _callback(self, value)
-   End;
+  ////
+  /// <summary>
+  ///   Returns the physical value range measured by the sensor.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a string corresponding to the physical value range measured by the sensor
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_VALUERANGE_INVALID.
+  /// </para>
+  ///-
+  function TYGenericSensor.get_valueRange():string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_VALUERANGE_INVALID;
+              exit
+            end;
+        end;
+      result := self._valueRange;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the physical value range measured by the sensor.
+  /// <para>
+  ///   The range change may have a side effect
+  ///   on the display resolution, as it may be adapted automatically.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a string corresponding to the physical value range measured by the sensor
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYGenericSensor.set_valueRange(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('valueRange',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Retrieves $AFUNCTION$ for a given identifier.
+  /// <para>
+  ///   The identifier can be specified using several formats:
+  /// </para>
+  /// <para>
+  /// </para>
+  /// <para>
+  ///   - FunctionLogicalName
+  /// </para>
+  /// <para>
+  ///   - ModuleSerialNumber.FunctionIdentifier
+  /// </para>
+  /// <para>
+  ///   - ModuleSerialNumber.FunctionLogicalName
+  /// </para>
+  /// <para>
+  ///   - ModuleLogicalName.FunctionIdentifier
+  /// </para>
+  /// <para>
+  ///   - ModuleLogicalName.FunctionLogicalName
+  /// </para>
+  /// <para>
+  /// </para>
+  /// <para>
+  ///   This function does not require that $THEFUNCTION$ is online at the time
+  ///   it is invoked. The returned object is nevertheless valid.
+  ///   Use the method <c>YGenericSensor.isOnline()</c> to test if $THEFUNCTION$ is
+  ///   indeed online at a given time. In case of ambiguity when looking for
+  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
+  ///   found is returned. The search is performed first by hardware name,
+  ///   then by logical name.
+  /// </para>
+  /// </summary>
+  /// <param name="func">
+  ///   a string that uniquely characterizes $THEFUNCTION$
+  /// </param>
+  /// <returns>
+  ///   a <c>YGenericSensor</c> object allowing you to drive $THEFUNCTION$.
+  /// </returns>
+  ///-
+  class function TYGenericSensor.FindGenericSensor(func: string):TYGenericSensor;
+    var
+      obj : TYGenericSensor;
+    begin
+      obj := TYGenericSensor(TYFunction._FindFromCache('GenericSensor', func));
+      if obj = nil then
+        begin
+          obj :=  TYGenericSensor.create(func);
+          TYFunction._AddToCache('GenericSensor',  func, obj)
+        end;
+      result := obj;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Registers the callback function that is invoked on every change of advertised value.
+  /// <para>
+  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="callback">
+  ///   the callback function to call, or a null pointer. The callback function should take two
+  ///   arguments: the function object of which the value has changed, and the character string describing
+  ///   the new advertised value.
+  /// @noreturn
+  /// </param>
+  ///-
+  function TYGenericSensor.registerValueCallback(callback: TYGenericSensorValueCallback):LongInt;
+    var
+      val : string;
+    begin
+      if (addr(callback) <> nil) then
+        begin
+          TYFunction._UpdateValueCallbackList(self, true)
+        end
+      else
+        begin
+          TYFunction._UpdateValueCallbackList(self, false)
+        end;
+      self._valueCallbackGenericSensor := callback;
+      // Immediately invoke value callback with current value
+      if (addr(callback) <> nil) and self.isOnline then
+        begin
+          val := self._advertisedValue;
+          if not((val = '')) then
+            begin
+              self._invokeValueCallback(val)
+            end;
+        end;
+      result := 0;
+      exit;
+    end;
+
+
+  function TYGenericSensor._invokeValueCallback(value: string):LongInt;
+    begin
+      if (addr(self._valueCallbackGenericSensor) <> nil) then
+        begin
+          self._valueCallbackGenericSensor(self, value)
+        end
+      else
+        begin
+          inherited _invokeValueCallback(value)
+        end;
+      result := 0;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Registers the callback function that is invoked on every periodic timed notification.
+  /// <para>
+  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="callback">
+  ///   the callback function to call, or a null pointer. The callback function should take two
+  ///   arguments: the function object of which the value has changed, and an YMeasure object describing
+  ///   the new advertised value.
+  /// @noreturn
+  /// </param>
+  ///-
+  function TYGenericSensor.registerTimedReportCallback(callback: TYGenericSensorTimedReportCallback):LongInt;
+    begin
+      if (addr(callback) <> nil) then
+        begin
+          TYFunction._UpdateTimedReportCallbackList(self, true)
+        end
+      else
+        begin
+          TYFunction._UpdateTimedReportCallbackList(self, false)
+        end;
+      self._timedReportCallbackGenericSensor := callback;
+      result := 0;
+      exit;
+    end;
+
+
+  function TYGenericSensor._invokeTimedReportCallback(value: TYMeasure):LongInt;
+    begin
+      if (addr(self._timedReportCallbackGenericSensor) <> nil) then
+        begin
+          self._timedReportCallbackGenericSensor(self, value)
+        end
+      else
+        begin
+          inherited _invokeTimedReportCallback(value)
+        end;
+      result := 0;
+      exit;
+    end;
+
+
+  function TYGenericSensor.nextGenericSensor(): TYGenericSensor;
+    var
+      hwid: string;
+    begin
+      if YISERR(_nextFunction(hwid)) then
+        begin
+          nextGenericSensor := nil;
+          exit;
+        end;
+      if hwid = '' then
+        begin
+          nextGenericSensor := nil;
+          exit;
+        end;
+      nextGenericSensor := TYGenericSensor.FindGenericSensor(hwid);
+    end;
+
+  class function TYGenericSensor.FirstGenericSensor(): TYGenericSensor;
+    var
+      v_fundescr      : YFUN_DESCR;
+      dev             : YDEV_DESCR;
+      neededsize, err : integer;
+      serial, funcId, funcName, funcVal, errmsg : string;
+    begin
+      err := yapiGetFunctionsByClass('GenericSensor', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
+      if (YISERR(err) or (neededsize = 0)) then
+        begin
+          result := nil;
+          exit;
+        end;
+      if (YISERR(yapiGetFunctionInfo(v_fundescr, dev, serial, funcId, funcName, funcVal, errmsg))) then
+        begin
+          result := nil;
+          exit;
+        end;
+     result := TYGenericSensor.FindGenericSensor(serial+'.'+funcId);
+    end;
 
 //--- (end of YGenericSensor implementation)
 
 //--- (GenericSensor functions)
 
-function yFindGenericSensor(func:string): TYGenericSensor;
- var
-   index: integer;
-   res  : TYGenericSensor;
- begin
-    if (_GenericSensorCache.Find(func, index)) then
-     begin
-       yFindGenericSensor := TYGenericSensor(_GenericSensorCache.objects[index]);
-       exit;
-     end;
-   res := TYGenericSensor.Create(func);
-   _GenericSensorCache.addObject(func, res);
-   yFindGenericSensor := res;
- end;
+  function yFindGenericSensor(func:string): TYGenericSensor;
+    begin
+      result := TYGenericSensor.FindGenericSensor(func);
+    end;
 
-function yFirstGenericSensor(): TYGenericSensor;
- var
-   v_fundescr      : YFUN_DESCR;
-   dev             : YDEV_DESCR;
-   neededsize, err : integer;
-   serial, funcId, funcName, funcVal, errmsg : string;
- begin
-   err := yapiGetFunctionsByClass('GenericSensor', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
-   if (YISERR(err) or (neededsize = 0)) then
+  function yFirstGenericSensor(): TYGenericSensor;
     begin
-       yFirstGenericSensor := nil;
-       exit;
+      result := TYGenericSensor.FirstGenericSensor();
     end;
-   if (YISERR(yapiGetFunctionInfo(v_fundescr, dev, serial, funcId, funcName, funcVal, errmsg))) then
-    begin
-       yFirstGenericSensor := nil;
-       exit;
-    end;
-   yFirstGenericSensor := yFindGenericSensor(serial+'.'+funcId);
- end;
 
-procedure _GenericSensorCleanup();
-  var i:integer;
-begin
-  for i:=0 to _GenericSensorCache.count-1 do 
+  procedure _GenericSensorCleanup();
     begin
-     _GenericSensorCache.objects[i].free();
-     _GenericSensorCache.objects[i]:=nil;
     end;
-   _GenericSensorCache.free();
-   _GenericSensorCache:=nil;
-end;
 
 //--- (end of GenericSensor functions)
 
 initialization
-   //--- (GenericSensor initialization)
-   _GenericSensorCache        := TstringList.create();
-   _GenericSensorCache.sorted := true;
-   //--- (end of GenericSensor initialization)
+  //--- (GenericSensor initialization)
+  //--- (end of GenericSensor initialization)
 
 finalization
-   //--- (GenericSensor cleanup)
-   _GenericSensorCleanup();
-   //--- (end of GenericSensor cleanup)
+  //--- (GenericSensor cleanup)
+  _GenericSensorCleanup();
+  //--- (end of GenericSensor cleanup)
 end.

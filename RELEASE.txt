@@ -1,9 +1,2 @@
-- clarify license agreement
-- Improve robustness of low-level USB stack 
-- fix 5 seconds timeout on yFreeAPI() when connected through the network
-- fix value notifications that were dropped on plugged devices
-- fix possible 100% CPU load when the API was connecting to an IP Hub
-- fix potential segmentation fault when unplugging device in bootloader
-- fix memory leak
-- remove some unnecessary file of VisualStudio projects
-- minor fixes for mono compatibility
+- add YAPI.RegisterHubDiscoveryCallback and YAPI.TriggerHubDiscovery
+- minor bug fixes

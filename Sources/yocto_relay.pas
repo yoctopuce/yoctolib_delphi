@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_relay.pas 12324 2013-08-13 15:10:31Z mvuilleu $
+ * $Id: yocto_relay.pas 14701 2014-01-23 15:41:17Z seb $
  *
  * Implements yFindRelay(), the high-level API for Relay functions
  *
@@ -43,927 +43,1279 @@ unit yocto_relay;
 interface
 
 uses
-   sysutils, classes, windows, yocto_api, yjson;
+  sysutils, classes, windows, yocto_api, yjson;
 
 //--- (YRelay definitions)
-type TYRelayDelayedPulse = class(TObject)
-public
-   target      : longint;
-   ms          : longint;
-   moving      : longint;
-   constructor Create();
-end;
+type  TYRelayDelayedPulse = class(TObject)
+  public
+      target      : LongInt;
+      ms          : LongInt;
+      moving      : LongInt;
+      constructor Create();
+    end;
 
-const
-   Y_LOGICALNAME_INVALID           = YAPI_INVALID_STRING;
-   Y_ADVERTISEDVALUE_INVALID       = YAPI_INVALID_STRING;
-   Y_STATE_A = 0;
-   Y_STATE_B = 1;
-   Y_STATE_INVALID = -1;
+const Y_STATE_A = 0;
+const Y_STATE_B = 1;
+const Y_STATE_INVALID = -1;
 
-   Y_OUTPUT_OFF = 0;
-   Y_OUTPUT_ON = 1;
-   Y_OUTPUT_INVALID = -1;
+const Y_STATEATPOWERON_UNCHANGED = 0;
+const Y_STATEATPOWERON_A = 1;
+const Y_STATEATPOWERON_B = 2;
+const Y_STATEATPOWERON_INVALID = -1;
 
-   Y_PULSETIMER_INVALID            = YAPI_INVALID_LONGWORD;
-   Y_COUNTDOWN_INVALID             = YAPI_INVALID_LONGWORD;
+const Y_MAXTIMEONSTATEA_INVALID       = YAPI_INVALID_LONG;
+const Y_MAXTIMEONSTATEB_INVALID       = YAPI_INVALID_LONG;
+const Y_OUTPUT_OFF = 0;
+const Y_OUTPUT_ON = 1;
+const Y_OUTPUT_INVALID = -1;
+
+const Y_PULSETIMER_INVALID            = YAPI_INVALID_LONG;
+const Y_COUNTDOWN_INVALID             = YAPI_INVALID_LONG;
 
 var Y_DELAYEDPULSETIMER_INVALID : TYRelayDelayedPulse;
 
 //--- (end of YRelay definitions)
 
 type
-//--- (YRelay declaration)
- TYRelay = class;
- TUpdateCallback  = procedure(func: TYRelay; value:string);
-////
-/// <summary>
-///   TYRelay Class: Relay function interface
-/// <para>
-///   The Yoctopuce application programming interface allows you to switch the relay state.
-///   This change is not persistent: the relay will automatically return to its idle position
-///   whenever power is lost or if the module is restarted.
-///   The library can also generate automatically short pulses of determined duration.
-///   On devices with two output for each relay (double throw), the two outputs are named A and B,
-///   with output A corresponding to the idle position (at power off) and the output B corresponding to the
-///   active state. If you prefer the alternate default state, simply switch your cables on the board.
-/// </para>
-/// </summary>
-///-
-TYRelay=class(TYFunction)
-protected
-   // Attributes (function value cache)
-   _logicalName              : string;
-   _advertisedValue          : string;
-   _state                    : Integer;
-   _output                   : Integer;
-   _pulseTimer               : LongWord;
-   _delayedPulseTimer        : TYRelayDelayedPulse;
-   _countdown                : LongWord;
-   // ValueCallback 
-   _callback                 : TUpdateCallback;
-   // Function-specific method for reading JSON output and caching result
-   function _parse(j:PJSONRECORD):integer; override;
+  TYRelay = class;
+  //--- (YRelay class start)
+  TYRelayValueCallback = procedure(func: TYRelay; value:string);
+  TYRelayTimedReportCallback = procedure(func: TYRelay; value:TYMeasure);
 
-   //--- (end of YRelay declaration)
+  ////
+  /// <summary>
+  ///   TYRelay Class: Relay function interface
+  /// <para>
+  ///   The Yoctopuce application programming interface allows you to switch the relay state.
+  ///   This change is not persistent: the relay will automatically return to its idle position
+  ///   whenever power is lost or if the module is restarted.
+  ///   The library can also generate automatically short pulses of determined duration.
+  ///   On devices with two output for each relay (double throw), the two outputs are named A and B,
+  ///   with output A corresponding to the idle position (at power off) and the output B corresponding to the
+  ///   active state. If you prefer the alternate default state, simply switch your cables on the board.
+  /// </para>
+  /// </summary>
+  ///-
+  TYRelay=class(TYFunction)
+  //--- (end of YRelay class start)
+  protected
+  //--- (YRelay declaration)
+    // Attributes (function value cache)
+    _logicalName              : string;
+    _advertisedValue          : string;
+    _state                    : Integer;
+    _stateAtPowerOn           : Integer;
+    _maxTimeOnStateA          : int64;
+    _maxTimeOnStateB          : int64;
+    _output                   : Integer;
+    _pulseTimer               : int64;
+    _delayedPulseTimer        : TYRelayDelayedPulse;
+    _countdown                : int64;
+    _valueCallbackRelay       : TYRelayValueCallback;
+    // Function-specific method for reading JSON output and caching result
+    function _parseAttr(member:PJSONRECORD):integer; override;
 
-public
-   constructor Create(func:string);
+    //--- (end of YRelay declaration)
 
-   ////
-   /// <summary>
-   ///   Continues the enumeration of relays started using <c>yFirstRelay()</c>.
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a pointer to a <c>YRelay</c> object, corresponding to
-   ///   a relay currently online, or a <c>null</c> pointer
-   ///   if there are no more relays to enumerate.
-   /// </returns>
-   ///-
-   function nextRelay():TYRelay;
+  public
+    //--- (YRelay accessors declaration)
+    constructor Create(func:string);
 
-   //--- (YRelay accessors declaration)
-  Procedure registerValueCallback(callback : TUpdateCallback);
-  procedure set_callback(callback : TUpdateCallback);
-  procedure setCallback(callback : TUpdateCallback);
-  procedure advertiseValue(value : String);override;
-   ////
-   /// <summary>
-   ///   Returns the logical name of the relay.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a string corresponding to the logical name of the relay
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_LOGICALNAME_INVALID</c>.
-   /// </para>
-   ///-
-   function get_logicalName():string;
+    ////
+    /// <summary>
+    ///   Returns the state of the relays (A for the idle position, B for the active position).
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   either <c>Y_STATE_A</c> or <c>Y_STATE_B</c>, according to the state of the relays (A for the idle
+    ///   position, B for the active position)
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_STATE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_state():Integer;
 
-   ////
-   /// <summary>
-   ///   Changes the logical name of the relay.
-   /// <para>
-   ///   You can use <c>yCheckLogicalName()</c>
-   ///   prior to this call to make sure that your parameter is valid.
-   ///   Remember to call the <c>saveToFlash()</c> method of the module if the
-   ///   modification must be kept.
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <param name="newval">
-   ///   a string corresponding to the logical name of the relay
-   /// </param>
-   /// <para>
-   /// </para>
-   /// <returns>
-   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns a negative error code.
-   /// </para>
-   ///-
-   function set_logicalName(newval:string):integer;
+    ////
+    /// <summary>
+    ///   Changes the state of the relays (A for the idle position, B for the active position).
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   either <c>Y_STATE_A</c> or <c>Y_STATE_B</c>, according to the state of the relays (A for the idle
+    ///   position, B for the active position)
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_state(newval:Integer):integer;
 
-   ////
-   /// <summary>
-   ///   Returns the current value of the relay (no more than 6 characters).
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   a string corresponding to the current value of the relay (no more than 6 characters)
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_ADVERTISEDVALUE_INVALID</c>.
-   /// </para>
-   ///-
-   function get_advertisedValue():string;
+    ////
+    /// <summary>
+    ///   Returns the state of the relays at device startup (A for the idle position, B for the active position, UNCHANGED for no change).
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a value among <c>Y_STATEATPOWERON_UNCHANGED</c>, <c>Y_STATEATPOWERON_A</c> and
+    ///   <c>Y_STATEATPOWERON_B</c> corresponding to the state of the relays at device startup (A for the
+    ///   idle position, B for the active position, UNCHANGED for no change)
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_STATEATPOWERON_INVALID</c>.
+    /// </para>
+    ///-
+    function get_stateAtPowerOn():Integer;
 
-   ////
-   /// <summary>
-   ///   Returns the state of the relays (A for the idle position, B for the active position).
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   either <c>Y_STATE_A</c> or <c>Y_STATE_B</c>, according to the state of the relays (A for the idle
-   ///   position, B for the active position)
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_STATE_INVALID</c>.
-   /// </para>
-   ///-
-   function get_state():Integer;
+    ////
+    /// <summary>
+    ///   Preset the state of the relays at device startup (A for the idle position,
+    ///   B for the active position, UNCHANGED for no modification).
+    /// <para>
+    ///   Remember to call the matching module <c>saveToFlash()</c>
+    ///   method, otherwise this call will have no effect.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a value among <c>Y_STATEATPOWERON_UNCHANGED</c>, <c>Y_STATEATPOWERON_A</c> and <c>Y_STATEATPOWERON_B</c>
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_stateAtPowerOn(newval:Integer):integer;
 
-   ////
-   /// <summary>
-   ///   Changes the state of the relays (A for the idle position, B for the active position).
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <param name="newval">
-   ///   either <c>Y_STATE_A</c> or <c>Y_STATE_B</c>, according to the state of the relays (A for the idle
-   ///   position, B for the active position)
-   /// </param>
-   /// <para>
-   /// </para>
-   /// <returns>
-   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns a negative error code.
-   /// </para>
-   ///-
-   function set_state(newval:Integer):integer;
+    ////
+    /// <summary>
+    ///   Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically switching back in to B state.
+    /// <para>
+    ///   Zero means no maximum time.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_MAXTIMEONSTATEA_INVALID</c>.
+    /// </para>
+    ///-
+    function get_maxTimeOnStateA():int64;
 
-   ////
-   /// <summary>
-   ///   Returns the output state of the relays, when used as a simple switch (single throw).
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   either <c>Y_OUTPUT_OFF</c> or <c>Y_OUTPUT_ON</c>, according to the output state of the relays, when
-   ///   used as a simple switch (single throw)
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_OUTPUT_INVALID</c>.
-   /// </para>
-   ///-
-   function get_output():Integer;
+    ////
+    /// <summary>
+    ///   Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically switching back in to B state.
+    /// <para>
+    ///   Use zero for no maximum time.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_maxTimeOnStateA(newval:int64):integer;
 
-   ////
-   /// <summary>
-   ///   Changes the output state of the relays, when used as a simple switch (single throw).
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <param name="newval">
-   ///   either <c>Y_OUTPUT_OFF</c> or <c>Y_OUTPUT_ON</c>, according to the output state of the relays, when
-   ///   used as a simple switch (single throw)
-   /// </param>
-   /// <para>
-   /// </para>
-   /// <returns>
-   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns a negative error code.
-   /// </para>
-   ///-
-   function set_output(newval:Integer):integer;
+    ////
+    /// <summary>
+    ///   Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically switching back in to A state.
+    /// <para>
+    ///   Zero means no maximum time.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_MAXTIMEONSTATEB_INVALID</c>.
+    /// </para>
+    ///-
+    function get_maxTimeOnStateB():int64;
 
-   ////
-   /// <summary>
-   ///   Returns the number of milliseconds remaining before the relays is returned to idle position
-   ///   (state A), during a measured pulse generation.
-   /// <para>
-   ///   When there is no ongoing pulse, returns zero.
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   an integer corresponding to the number of milliseconds remaining before the relays is returned to idle position
-   ///   (state A), during a measured pulse generation
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_PULSETIMER_INVALID</c>.
-   /// </para>
-   ///-
-   function get_pulseTimer():LongWord;
+    ////
+    /// <summary>
+    ///   Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically switching back in to A state.
+    /// <para>
+    ///   Use zero for no maximum time.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_maxTimeOnStateB(newval:int64):integer;
 
-   function set_pulseTimer(newval:LongWord):integer;
+    ////
+    /// <summary>
+    ///   Returns the output state of the relays, when used as a simple switch (single throw).
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   either <c>Y_OUTPUT_OFF</c> or <c>Y_OUTPUT_ON</c>, according to the output state of the relays, when
+    ///   used as a simple switch (single throw)
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_OUTPUT_INVALID</c>.
+    /// </para>
+    ///-
+    function get_output():Integer;
 
-   ////
-   /// <summary>
-   ///   Sets the relay to output B (active) for a specified duration, then brings it
-   ///   automatically back to output A (idle state).
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <param name="ms_duration">
-   ///   pulse duration, in millisecondes
-   /// </param>
-   /// <para>
-   /// </para>
-   /// <returns>
-   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns a negative error code.
-   /// </para>
-   ///-
-   function pulse(ms_duration:integer):integer;
+    ////
+    /// <summary>
+    ///   Changes the output state of the relays, when used as a simple switch (single throw).
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   either <c>Y_OUTPUT_OFF</c> or <c>Y_OUTPUT_ON</c>, according to the output state of the relays, when
+    ///   used as a simple switch (single throw)
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_output(newval:Integer):integer;
 
-   function get_delayedPulseTimer():TYRelayDelayedPulse;
+    ////
+    /// <summary>
+    ///   Returns the number of milliseconds remaining before the relays is returned to idle position
+    ///   (state A), during a measured pulse generation.
+    /// <para>
+    ///   When there is no ongoing pulse, returns zero.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the number of milliseconds remaining before the relays is returned to idle position
+    ///   (state A), during a measured pulse generation
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_PULSETIMER_INVALID</c>.
+    /// </para>
+    ///-
+    function get_pulseTimer():int64;
 
-   function set_delayedPulseTimer(newval:TYRelayDelayedPulse):integer;
+    function set_pulseTimer(newval:int64):integer;
 
-   ////
-   /// <summary>
-   ///   Schedules a pulse.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <param name="ms_delay">
-   ///   waiting time before the pulse, in millisecondes
-   /// </param>
-   /// <param name="ms_duration">
-   ///   pulse duration, in millisecondes
-   /// </param>
-   /// <para>
-   /// </para>
-   /// <returns>
-   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns a negative error code.
-   /// </para>
-   ///-
-   function delayedPulse(ms_delay:integer;ms_duration:integer):integer;
+    ////
+    /// <summary>
+    ///   Sets the relay to output B (active) for a specified duration, then brings it
+    ///   automatically back to output A (idle state).
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="ms_duration">
+    ///   pulse duration, in millisecondes
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function pulse(ms_duration: LongInt):integer;
 
-   ////
-   /// <summary>
-   ///   Returns the number of milliseconds remaining before a pulse (delayedPulse() call)
-   ///   When there is no scheduled pulse, returns zero.
-   /// <para>
-   /// </para>
-   /// <para>
-   /// </para>
-   /// </summary>
-   /// <returns>
-   ///   an integer corresponding to the number of milliseconds remaining before a pulse (delayedPulse() call)
-   ///   When there is no scheduled pulse, returns zero
-   /// </returns>
-   /// <para>
-   ///   On failure, throws an exception or returns <c>Y_COUNTDOWN_INVALID</c>.
-   /// </para>
-   ///-
-   function get_countdown():LongWord;
+    function get_delayedPulseTimer():TYRelayDelayedPulse;
 
-   //--- (end of YRelay accessors declaration)
-end;
+    function set_delayedPulseTimer(newval:TYRelayDelayedPulse):integer;
+
+    ////
+    /// <summary>
+    ///   Schedules a pulse.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="ms_delay">
+    ///   waiting time before the pulse, in millisecondes
+    /// </param>
+    /// <param name="ms_duration">
+    ///   pulse duration, in millisecondes
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function delayedPulse(ms_delay: LongInt; ms_duration: LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the number of milliseconds remaining before a pulse (delayedPulse() call)
+    ///   When there is no scheduled pulse, returns zero.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the number of milliseconds remaining before a pulse (delayedPulse() call)
+    ///   When there is no scheduled pulse, returns zero
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_COUNTDOWN_INVALID</c>.
+    /// </para>
+    ///-
+    function get_countdown():int64;
+
+    ////
+    /// <summary>
+    ///   Retrieves $AFUNCTION$ for a given identifier.
+    /// <para>
+    ///   The identifier can be specified using several formats:
+    /// </para>
+    /// <para>
+    /// </para>
+    /// <para>
+    ///   - FunctionLogicalName
+    /// </para>
+    /// <para>
+    ///   - ModuleSerialNumber.FunctionIdentifier
+    /// </para>
+    /// <para>
+    ///   - ModuleSerialNumber.FunctionLogicalName
+    /// </para>
+    /// <para>
+    ///   - ModuleLogicalName.FunctionIdentifier
+    /// </para>
+    /// <para>
+    ///   - ModuleLogicalName.FunctionLogicalName
+    /// </para>
+    /// <para>
+    /// </para>
+    /// <para>
+    ///   This function does not require that $THEFUNCTION$ is online at the time
+    ///   it is invoked. The returned object is nevertheless valid.
+    ///   Use the method <c>YRelay.isOnline()</c> to test if $THEFUNCTION$ is
+    ///   indeed online at a given time. In case of ambiguity when looking for
+    ///   $AFUNCTION$ by logical name, no error is notified: the first instance
+    ///   found is returned. The search is performed first by hardware name,
+    ///   then by logical name.
+    /// </para>
+    /// </summary>
+    /// <param name="func">
+    ///   a string that uniquely characterizes $THEFUNCTION$
+    /// </param>
+    /// <returns>
+    ///   a <c>YRelay</c> object allowing you to drive $THEFUNCTION$.
+    /// </returns>
+    ///-
+    class function FindRelay(func: string):TYRelay;
+
+    ////
+    /// <summary>
+    ///   Registers the callback function that is invoked on every change of advertised value.
+    /// <para>
+    ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+    ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+    ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="callback">
+    ///   the callback function to call, or a null pointer. The callback function should take two
+    ///   arguments: the function object of which the value has changed, and the character string describing
+    ///   the new advertised value.
+    /// @noreturn
+    /// </param>
+    ///-
+    function registerValueCallback(callback: TYRelayValueCallback):LongInt; overload;
+
+    function _invokeValueCallback(value: string):LongInt; override;
+
+
+    ////
+    /// <summary>
+    ///   Continues the enumeration of relays started using <c>yFirstRelay()</c>.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a pointer to a <c>YRelay</c> object, corresponding to
+    ///   a relay currently online, or a <c>null</c> pointer
+    ///   if there are no more relays to enumerate.
+    /// </returns>
+    ///-
+    function nextRelay():TYRelay;
+    ////
+    /// <summary>
+    ///   c
+    /// <para>
+    ///   omment from .yc definition
+    /// </para>
+    /// </summary>
+    ///-
+    class function FirstRelay():TYRelay;
+  //--- (end of YRelay accessors declaration)
+  end;
 
 //--- (Relay functions declaration)
 
-////
-/// <summary>
-///   Retrieves a relay for a given identifier.
-/// <para>
-///   The identifier can be specified using several formats:
-/// </para>
-/// <para>
-/// </para>
-/// <para>
-///   - FunctionLogicalName
-/// </para>
-/// <para>
-///   - ModuleSerialNumber.FunctionIdentifier
-/// </para>
-/// <para>
-///   - ModuleSerialNumber.FunctionLogicalName
-/// </para>
-/// <para>
-///   - ModuleLogicalName.FunctionIdentifier
-/// </para>
-/// <para>
-///   - ModuleLogicalName.FunctionLogicalName
-/// </para>
-/// <para>
-/// </para>
-/// <para>
-///   This function does not require that the relay is online at the time
-///   it is invoked. The returned object is nevertheless valid.
-///   Use the method <c>YRelay.isOnline()</c> to test if the relay is
-///   indeed online at a given time. In case of ambiguity when looking for
-///   a relay by logical name, no error is notified: the first instance
-///   found is returned. The search is performed first by hardware name,
-///   then by logical name.
-/// </para>
-/// </summary>
-/// <param name="func">
-///   a string that uniquely characterizes the relay
-/// </param>
-/// <returns>
-///   a <c>YRelay</c> object allowing you to drive the relay.
-/// </returns>
-///-
-function yFindRelay(func:string):TYRelay;
-////
-/// <summary>
-///   Starts the enumeration of relays currently accessible.
-/// <para>
-///   Use the method <c>YRelay.nextRelay()</c> to iterate on
-///   next relays.
-/// </para>
-/// </summary>
-/// <returns>
-///   a pointer to a <c>YRelay</c> object, corresponding to
-///   the first relay currently online, or a <c>null</c> pointer
-///   if there are none.
-/// </returns>
-///-
-function yFirstRelay():TYRelay;
+  ////
+  /// <summary>
+  ///   Retrieves a relay for a given identifier.
+  /// <para>
+  ///   The identifier can be specified using several formats:
+  /// </para>
+  /// <para>
+  /// </para>
+  /// <para>
+  ///   - FunctionLogicalName
+  /// </para>
+  /// <para>
+  ///   - ModuleSerialNumber.FunctionIdentifier
+  /// </para>
+  /// <para>
+  ///   - ModuleSerialNumber.FunctionLogicalName
+  /// </para>
+  /// <para>
+  ///   - ModuleLogicalName.FunctionIdentifier
+  /// </para>
+  /// <para>
+  ///   - ModuleLogicalName.FunctionLogicalName
+  /// </para>
+  /// <para>
+  /// </para>
+  /// <para>
+  ///   This function does not require that the relay is online at the time
+  ///   it is invoked. The returned object is nevertheless valid.
+  ///   Use the method <c>YRelay.isOnline()</c> to test if the relay is
+  ///   indeed online at a given time. In case of ambiguity when looking for
+  ///   a relay by logical name, no error is notified: the first instance
+  ///   found is returned. The search is performed first by hardware name,
+  ///   then by logical name.
+  /// </para>
+  /// </summary>
+  /// <param name="func">
+  ///   a string that uniquely characterizes the relay
+  /// </param>
+  /// <returns>
+  ///   a <c>YRelay</c> object allowing you to drive the relay.
+  /// </returns>
+  ///-
+  function yFindRelay(func:string):TYRelay;
+  ////
+  /// <summary>
+  ///   Starts the enumeration of relays currently accessible.
+  /// <para>
+  ///   Use the method <c>YRelay.nextRelay()</c> to iterate on
+  ///   next relays.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a pointer to a <c>YRelay</c> object, corresponding to
+  ///   the first relay currently online, or a <c>null</c> pointer
+  ///   if there are none.
+  /// </returns>
+  ///-
+  function yFirstRelay():TYRelay;
 
 //--- (end of Relay functions declaration)
 
 implementation
 
-//--- (YRelay implementation)
-
-var
-   _RelayCache : TStringList;
-
-constructor TYRelayDelayedPulse.Create();
- begin
-   target := YAPI_INVALID_LONGINT;
-   ms := YAPI_INVALID_LONGINT;
-   moving := YAPI_INVALID_LONGINT;
- end;
-
-constructor TYRelay.Create(func:string);
- begin
-   inherited Create('Relay', func);
-   _logicalName := Y_LOGICALNAME_INVALID;
-   _advertisedValue := Y_ADVERTISEDVALUE_INVALID;
-   _state := Y_STATE_INVALID;
-   _output := Y_OUTPUT_INVALID;
-   _pulseTimer := Y_PULSETIMER_INVALID;
-   _delayedPulseTimer := TYRelayDelayedPulse.Create();
-   _countdown := Y_COUNTDOWN_INVALID;
- end;
-
-{$HINTS OFF}
-function TYRelay._parse(j:PJSONRECORD):integer;
- var
-   member,sub : PJSONRECORD;
-   i,l        : integer;
- begin
-   if (j^.recordtype <> JSON_STRUCT) then begin _parse:= -1; exit; end;
-   for i:=0 to j^.membercount-1 do
+    constructor TYRelayDelayedPulse.Create();
     begin
-      member := j^.members[i];
-      if (member^.name = 'logicalName') then
-       begin
-         _logicalName := string(member^.svalue);
-       end else
-      if (member^.name = 'advertisedValue') then
-       begin
-         _advertisedValue := string(member^.svalue);
-       end else
-      if (member^.name = 'state') then
-       begin
-         _state := member^.ivalue;
-       end else
-      if (member^.name = 'output') then
-       begin
-         _output := member^.ivalue;
-       end else
-      if (member^.name = 'pulseTimer') then
-       begin
-         _pulseTimer := member^.ivalue;
-       end else
-      if (member^.name = 'delayedPulseTimer') then
-       begin
-         if (member^.recordtype <> JSON_STRUCT) then begin _parse:= -1; exit; end;
-         for l:=0 to member^.membercount-1 do
-          begin
-            sub := member^.members[l];
-            if (sub^.name = 'moving') then
-               _delayedPulseTimer.moving := sub^.ivalue else
-            if (sub^.name = 'target') then
-               _delayedPulseTimer.target := sub^.ivalue else
-            if (sub^.name = 'ms') then
-               _delayedPulseTimer.ms := sub^.ivalue;
-          end; 
-         
-       end else
-      if (member^.name = 'countdown') then
-       begin
-         _countdown := member^.ivalue;
-       end else
-       begin end;
+      target := YAPI_INVALID_INT;
+      ms := YAPI_INVALID_INT;
+      moving := YAPI_INVALID_UINT;
+  end;
+
+  constructor TYRelay.Create(func:string);
+    begin
+      inherited Create(func);
+      _className := 'Relay';
+      //--- (YRelay accessors initialization)
+      _state := Y_STATE_INVALID;
+      _stateAtPowerOn := Y_STATEATPOWERON_INVALID;
+      _maxTimeOnStateA := Y_MAXTIMEONSTATEA_INVALID;
+      _maxTimeOnStateB := Y_MAXTIMEONSTATEB_INVALID;
+      _output := Y_OUTPUT_INVALID;
+      _pulseTimer := Y_PULSETIMER_INVALID;
+      _delayedPulseTimer := Y_DELAYEDPULSETIMER_INVALID;
+      _countdown := Y_COUNTDOWN_INVALID;
+      _valueCallbackRelay := nil;
+      //--- (end of YRelay accessors initialization)
     end;
-   _parse := 0;
- end;
+
+
+//--- (YRelay implementation)
+{$HINTS OFF}
+  function TYRelay._parseAttr(member:PJSONRECORD):integer;
+    var
+      sub : PJSONRECORD;
+      i,l        : integer;
+    begin
+      if (member^.name = 'state') then
+        begin
+          _state := member^.ivalue;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'stateAtPowerOn') then
+        begin
+          _stateAtPowerOn := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'maxTimeOnStateA') then
+        begin
+          _maxTimeOnStateA := member^.ivalue;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'maxTimeOnStateB') then
+        begin
+          _maxTimeOnStateB := member^.ivalue;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'output') then
+        begin
+          _output := member^.ivalue;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'pulseTimer') then
+        begin
+          _pulseTimer := member^.ivalue;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'delayedPulseTimer') then
+        begin
+          if member^.recordtype = JSON_STRUCT then
+            begin
+              for l:=0 to member^.membercount-1 do
+               begin
+                 sub := member^.members[l];
+                 if (sub^.name = 'moving') then
+                    _delayedPulseTimer.moving := sub^.ivalue else
+                 if (sub^.name = 'target') then
+                    _delayedPulseTimer.target := sub^.ivalue else
+                 if (sub^.name = 'ms') then
+                    _delayedPulseTimer.ms := sub^.ivalue;
+               end;
+            end;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'countdown') then
+        begin
+          _countdown := member^.ivalue;
+         result := 1;
+         exit;
+         end;
+      result := inherited _parseAttr(member);
+    end;
 {$HINTS ON}
 
-////
-/// <summary>
-///   Returns the logical name of the relay.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a string corresponding to the logical name of the relay
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
-/// </para>
-///-
-function TYRelay.get_logicalName():string;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_LOGICALNAME_INVALID;
-         exit;
-       end;
-   result := _logicalName;
- end;
-
-////
-/// <summary>
-///   Changes the logical name of the relay.
-/// <para>
-///   You can use yCheckLogicalName()
-///   prior to this call to make sure that your parameter is valid.
-///   Remember to call the saveToFlash() method of the module if the
-///   modification must be kept.
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <param name="newval">
-///   a string corresponding to the logical name of the relay
-/// </param>
-/// <para>
-/// </para>
-/// <returns>
-///   YAPI_SUCCESS if the call succeeds.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns a negative error code.
-/// </para>
-///-
-function TYRelay.set_logicalName(newval:string):integer;
- var
-   rest_val: string;
- begin
-   rest_val := newval;
-   result := _setAttr('logicalName',rest_val);
- end;
-
-////
-/// <summary>
-///   Returns the current value of the relay (no more than 6 characters).
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   a string corresponding to the current value of the relay (no more than 6 characters)
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
-/// </para>
-///-
-function TYRelay.get_advertisedValue():string;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_ADVERTISEDVALUE_INVALID;
-         exit;
-       end;
-   result := _advertisedValue;
- end;
-
-////
-/// <summary>
-///   Returns the state of the relays (A for the idle position, B for the active position).
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   either Y_STATE_A or Y_STATE_B, according to the state of the relays (A for the idle position, B for
-///   the active position)
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_STATE_INVALID.
-/// </para>
-///-
-function TYRelay.get_state():Integer;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_STATE_INVALID;
-         exit;
-       end;
-   result := _state;
- end;
-
-////
-/// <summary>
-///   Changes the state of the relays (A for the idle position, B for the active position).
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <param name="newval">
-///   either Y_STATE_A or Y_STATE_B, according to the state of the relays (A for the idle position, B for
-///   the active position)
-/// </param>
-/// <para>
-/// </para>
-/// <returns>
-///   YAPI_SUCCESS if the call succeeds.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns a negative error code.
-/// </para>
-///-
-function TYRelay.set_state(newval:Integer):integer;
- var
-   rest_val: string;
- begin
-   if(newval>0) then rest_val := '1' else rest_val := '0';
-   result := _setAttr('state',rest_val);
- end;
-
-////
-/// <summary>
-///   Returns the output state of the relays, when used as a simple switch (single throw).
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   either Y_OUTPUT_OFF or Y_OUTPUT_ON, according to the output state of the relays, when used as a
-///   simple switch (single throw)
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_OUTPUT_INVALID.
-/// </para>
-///-
-function TYRelay.get_output():Integer;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_OUTPUT_INVALID;
-         exit;
-       end;
-   result := _output;
- end;
-
-////
-/// <summary>
-///   Changes the output state of the relays, when used as a simple switch (single throw).
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <param name="newval">
-///   either Y_OUTPUT_OFF or Y_OUTPUT_ON, according to the output state of the relays, when used as a
-///   simple switch (single throw)
-/// </param>
-/// <para>
-/// </para>
-/// <returns>
-///   YAPI_SUCCESS if the call succeeds.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns a negative error code.
-/// </para>
-///-
-function TYRelay.set_output(newval:Integer):integer;
- var
-   rest_val: string;
- begin
-   if(newval>0) then rest_val := '1' else rest_val := '0';
-   result := _setAttr('output',rest_val);
- end;
-
-////
-/// <summary>
-///   Returns the number of milliseconds remaining before the relays is returned to idle position
-///   (state A), during a measured pulse generation.
-/// <para>
-///   When there is no ongoing pulse, returns zero.
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   an integer corresponding to the number of milliseconds remaining before the relays is returned to idle position
-///   (state A), during a measured pulse generation
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_PULSETIMER_INVALID.
-/// </para>
-///-
-function TYRelay.get_pulseTimer():LongWord;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_PULSETIMER_INVALID;
-         exit;
-       end;
-   result := _pulseTimer;
- end;
-
-function TYRelay.set_pulseTimer(newval:LongWord):integer;
- var
-   rest_val: string;
- begin
-   rest_val := inttostr(newval);
-   result := _setAttr('pulseTimer',rest_val);
- end;
-
-////
-/// <summary>
-///   Sets the relay to output B (active) for a specified duration, then brings it
-///   automatically back to output A (idle state).
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <param name="ms_duration">
-///   pulse duration, in millisecondes
-/// </param>
-/// <para>
-/// </para>
-/// <returns>
-///   YAPI_SUCCESS if the call succeeds.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns a negative error code.
-/// </para>
-///-
-function TYRelay.pulse(ms_duration:integer):integer;
- var
-   rest_val: string;
- begin
-   rest_val := inttostr(ms_duration);
-   result := _setAttr('pulseTimer', rest_val);
- end;
-
-function TYRelay.get_delayedPulseTimer():TYRelayDelayedPulse;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_DELAYEDPULSETIMER_INVALID;
-         exit;
-       end;
-   result := _delayedPulseTimer;
- end;
-
-function TYRelay.set_delayedPulseTimer(newval:TYRelayDelayedPulse):integer;
- var
-   rest_val: string;
- begin
-   rest_val := inttostr(newval.target)+':'+inttostr(newval.ms);
-   result := _setAttr('delayedPulseTimer',rest_val);
- end;
-
-////
-/// <summary>
-///   Schedules a pulse.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <param name="ms_delay">
-///   waiting time before the pulse, in millisecondes
-/// </param>
-/// <param name="ms_duration">
-///   pulse duration, in millisecondes
-/// </param>
-/// <para>
-/// </para>
-/// <returns>
-///   YAPI_SUCCESS if the call succeeds.
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns a negative error code.
-/// </para>
-///-
-function TYRelay.delayedPulse(ms_delay:integer;ms_duration:integer):integer;
- var
-   rest_val: string;
- begin
-   rest_val := inttostr(ms_delay)+':'+inttostr(ms_duration);
-   result := _setAttr('delayedPulseTimer', rest_val);
- end;
-
-////
-/// <summary>
-///   Returns the number of milliseconds remaining before a pulse (delayedPulse() call)
-///   When there is no scheduled pulse, returns zero.
-/// <para>
-/// </para>
-/// <para>
-/// </para>
-/// </summary>
-/// <returns>
-///   an integer corresponding to the number of milliseconds remaining before a pulse (delayedPulse() call)
-///   When there is no scheduled pulse, returns zero
-/// </returns>
-/// <para>
-///   On failure, throws an exception or returns Y_COUNTDOWN_INVALID.
-/// </para>
-///-
-function TYRelay.get_countdown():LongWord;
- begin
-   if (_cacheExpiration <= yGetTickCount()) then
-      if (YISERR(load(YAPI_defaultCacheValidity))) then
-       begin
-         result := Y_COUNTDOWN_INVALID;
-         exit;
-       end;
-   result := _countdown;
- end;
-
-function TYRelay.nextRelay(): TYRelay;
- var
-   hwid: string;
- begin
-   if (YISERR(_nextFunction(hwid))) then
+  ////
+  /// <summary>
+  ///   Returns the state of the relays (A for the idle position, B for the active position).
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   either Y_STATE_A or Y_STATE_B, according to the state of the relays (A for the idle position, B for
+  ///   the active position)
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_STATE_INVALID.
+  /// </para>
+  ///-
+  function TYRelay.get_state():Integer;
     begin
-      nextRelay := nil;
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_STATE_INVALID;
+              exit
+            end;
+        end;
+      result := self._state;
       exit;
     end;
-   if (hwid='') then
+
+
+  ////
+  /// <summary>
+  ///   Changes the state of the relays (A for the idle position, B for the active position).
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   either Y_STATE_A or Y_STATE_B, according to the state of the relays (A for the idle position, B for
+  ///   the active position)
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYRelay.set_state(newval:Integer):integer;
+    var
+      rest_val: string;
     begin
-      nextRelay := nil;
+      if(newval>0) then rest_val := '1' else rest_val := '0';
+      result := _setAttr('state',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the state of the relays at device startup (A for the idle position, B for the active position, UNCHANGED for no change).
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B corresponding
+  ///   to the state of the relays at device startup (A for the idle position, B for the active position,
+  ///   UNCHANGED for no change)
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_STATEATPOWERON_INVALID.
+  /// </para>
+  ///-
+  function TYRelay.get_stateAtPowerOn():Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_STATEATPOWERON_INVALID;
+              exit
+            end;
+        end;
+      result := self._stateAtPowerOn;
       exit;
     end;
-    nextRelay := yFindRelay(hwid);
- end;
 
 
-    ////
-    /// <summary>
-    ///   comment from .
-    /// <para>
-    ///   yc definition
-    /// </para>
-    /// </summary>
-    ///-
-  Procedure TYRelay.registerValueCallback(callback : TUpdateCallback);
-  begin
-   If assigned(callback) Then
-     registerFuncCallback(self)
-   else
-     unregisterFuncCallback(self);
-   _callback := callback;
-  End;
+  ////
+  /// <summary>
+  ///   Preset the state of the relays at device startup (A for the idle position,
+  ///   B for the active position, UNCHANGED for no modification).
+  /// <para>
+  ///   Remember to call the matching module saveToFlash()
+  ///   method, otherwise this call will have no effect.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYRelay.set_stateAtPowerOn(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('stateAtPowerOn',rest_val);
+    end;
 
-  procedure TYRelay.set_callback(callback : TUpdateCallback);
-   Begin
-    registerValueCallback(callback);
-  End;
+  ////
+  /// <summary>
+  ///   Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically switching back in to B state.
+  /// <para>
+  ///   Zero means no maximum time.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_MAXTIMEONSTATEA_INVALID.
+  /// </para>
+  ///-
+  function TYRelay.get_maxTimeOnStateA():int64;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_MAXTIMEONSTATEA_INVALID;
+              exit
+            end;
+        end;
+      result := self._maxTimeOnStateA;
+      exit;
+    end;
 
-  procedure  TYRelay.setCallback(callback : TUpdateCallback);
-   Begin
-    registerValueCallback(callback);
-   End;
 
-  procedure  TYRelay.advertiseValue(value : String);
-  Begin
-    If assigned(_callback)  Then _callback(self, value)
-   End;
+  ////
+  /// <summary>
+  ///   Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically switching back in to B state.
+  /// <para>
+  ///   Use zero for no maximum time.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   an integer
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYRelay.set_maxTimeOnStateA(newval:int64):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('maxTimeOnStateA',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically switching back in to A state.
+  /// <para>
+  ///   Zero means no maximum time.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_MAXTIMEONSTATEB_INVALID.
+  /// </para>
+  ///-
+  function TYRelay.get_maxTimeOnStateB():int64;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_MAXTIMEONSTATEB_INVALID;
+              exit
+            end;
+        end;
+      result := self._maxTimeOnStateB;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically switching back in to A state.
+  /// <para>
+  ///   Use zero for no maximum time.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   an integer
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYRelay.set_maxTimeOnStateB(newval:int64):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('maxTimeOnStateB',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the output state of the relays, when used as a simple switch (single throw).
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   either Y_OUTPUT_OFF or Y_OUTPUT_ON, according to the output state of the relays, when used as a
+  ///   simple switch (single throw)
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_OUTPUT_INVALID.
+  /// </para>
+  ///-
+  function TYRelay.get_output():Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_OUTPUT_INVALID;
+              exit
+            end;
+        end;
+      result := self._output;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the output state of the relays, when used as a simple switch (single throw).
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   either Y_OUTPUT_OFF or Y_OUTPUT_ON, according to the output state of the relays, when used as a
+  ///   simple switch (single throw)
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYRelay.set_output(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      if(newval>0) then rest_val := '1' else rest_val := '0';
+      result := _setAttr('output',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the number of milliseconds remaining before the relays is returned to idle position
+  ///   (state A), during a measured pulse generation.
+  /// <para>
+  ///   When there is no ongoing pulse, returns zero.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the number of milliseconds remaining before the relays is returned to idle position
+  ///   (state A), during a measured pulse generation
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_PULSETIMER_INVALID.
+  /// </para>
+  ///-
+  function TYRelay.get_pulseTimer():int64;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_PULSETIMER_INVALID;
+              exit
+            end;
+        end;
+      result := self._pulseTimer;
+      exit;
+    end;
+
+
+  function TYRelay.set_pulseTimer(newval:int64):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('pulseTimer',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Sets the relay to output B (active) for a specified duration, then brings it
+  ///   automatically back to output A (idle state).
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="ms_duration">
+  ///   pulse duration, in millisecondes
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYRelay.pulse(ms_duration: LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(ms_duration);
+      result := _setAttr('pulseTimer', rest_val);
+    end;
+
+  function TYRelay.get_delayedPulseTimer():TYRelayDelayedPulse;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_DELAYEDPULSETIMER_INVALID;
+              exit
+            end;
+        end;
+      result := self._delayedPulseTimer;
+      exit;
+    end;
+
+
+  function TYRelay.set_delayedPulseTimer(newval:TYRelayDelayedPulse):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval.target)+':'+inttostr(newval.ms);
+      result := _setAttr('delayedPulseTimer',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Schedules a pulse.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="ms_delay">
+  ///   waiting time before the pulse, in millisecondes
+  /// </param>
+  /// <param name="ms_duration">
+  ///   pulse duration, in millisecondes
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYRelay.delayedPulse(ms_delay: LongInt; ms_duration: LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(ms_delay)+':'+inttostr(ms_duration);
+      result := _setAttr('delayedPulseTimer', rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the number of milliseconds remaining before a pulse (delayedPulse() call)
+  ///   When there is no scheduled pulse, returns zero.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the number of milliseconds remaining before a pulse (delayedPulse() call)
+  ///   When there is no scheduled pulse, returns zero
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_COUNTDOWN_INVALID.
+  /// </para>
+  ///-
+  function TYRelay.get_countdown():int64;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_COUNTDOWN_INVALID;
+              exit
+            end;
+        end;
+      result := self._countdown;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Retrieves $AFUNCTION$ for a given identifier.
+  /// <para>
+  ///   The identifier can be specified using several formats:
+  /// </para>
+  /// <para>
+  /// </para>
+  /// <para>
+  ///   - FunctionLogicalName
+  /// </para>
+  /// <para>
+  ///   - ModuleSerialNumber.FunctionIdentifier
+  /// </para>
+  /// <para>
+  ///   - ModuleSerialNumber.FunctionLogicalName
+  /// </para>
+  /// <para>
+  ///   - ModuleLogicalName.FunctionIdentifier
+  /// </para>
+  /// <para>
+  ///   - ModuleLogicalName.FunctionLogicalName
+  /// </para>
+  /// <para>
+  /// </para>
+  /// <para>
+  ///   This function does not require that $THEFUNCTION$ is online at the time
+  ///   it is invoked. The returned object is nevertheless valid.
+  ///   Use the method <c>YRelay.isOnline()</c> to test if $THEFUNCTION$ is
+  ///   indeed online at a given time. In case of ambiguity when looking for
+  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
+  ///   found is returned. The search is performed first by hardware name,
+  ///   then by logical name.
+  /// </para>
+  /// </summary>
+  /// <param name="func">
+  ///   a string that uniquely characterizes $THEFUNCTION$
+  /// </param>
+  /// <returns>
+  ///   a <c>YRelay</c> object allowing you to drive $THEFUNCTION$.
+  /// </returns>
+  ///-
+  class function TYRelay.FindRelay(func: string):TYRelay;
+    var
+      obj : TYRelay;
+    begin
+      obj := TYRelay(TYFunction._FindFromCache('Relay', func));
+      if obj = nil then
+        begin
+          obj :=  TYRelay.create(func);
+          TYFunction._AddToCache('Relay',  func, obj)
+        end;
+      result := obj;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Registers the callback function that is invoked on every change of advertised value.
+  /// <para>
+  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
+  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="callback">
+  ///   the callback function to call, or a null pointer. The callback function should take two
+  ///   arguments: the function object of which the value has changed, and the character string describing
+  ///   the new advertised value.
+  /// @noreturn
+  /// </param>
+  ///-
+  function TYRelay.registerValueCallback(callback: TYRelayValueCallback):LongInt;
+    var
+      val : string;
+    begin
+      if (addr(callback) <> nil) then
+        begin
+          TYFunction._UpdateValueCallbackList(self, true)
+        end
+      else
+        begin
+          TYFunction._UpdateValueCallbackList(self, false)
+        end;
+      self._valueCallbackRelay := callback;
+      // Immediately invoke value callback with current value
+      if (addr(callback) <> nil) and self.isOnline then
+        begin
+          val := self._advertisedValue;
+          if not((val = '')) then
+            begin
+              self._invokeValueCallback(val)
+            end;
+        end;
+      result := 0;
+      exit;
+    end;
+
+
+  function TYRelay._invokeValueCallback(value: string):LongInt;
+    begin
+      if (addr(self._valueCallbackRelay) <> nil) then
+        begin
+          self._valueCallbackRelay(self, value)
+        end
+      else
+        begin
+          inherited _invokeValueCallback(value)
+        end;
+      result := 0;
+      exit;
+    end;
+
+
+  function TYRelay.nextRelay(): TYRelay;
+    var
+      hwid: string;
+    begin
+      if YISERR(_nextFunction(hwid)) then
+        begin
+          nextRelay := nil;
+          exit;
+        end;
+      if hwid = '' then
+        begin
+          nextRelay := nil;
+          exit;
+        end;
+      nextRelay := TYRelay.FindRelay(hwid);
+    end;
+
+  class function TYRelay.FirstRelay(): TYRelay;
+    var
+      v_fundescr      : YFUN_DESCR;
+      dev             : YDEV_DESCR;
+      neededsize, err : integer;
+      serial, funcId, funcName, funcVal, errmsg : string;
+    begin
+      err := yapiGetFunctionsByClass('Relay', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
+      if (YISERR(err) or (neededsize = 0)) then
+        begin
+          result := nil;
+          exit;
+        end;
+      if (YISERR(yapiGetFunctionInfo(v_fundescr, dev, serial, funcId, funcName, funcVal, errmsg))) then
+        begin
+          result := nil;
+          exit;
+        end;
+     result := TYRelay.FindRelay(serial+'.'+funcId);
+    end;
 
 //--- (end of YRelay implementation)
 
 //--- (Relay functions)
 
-function yFindRelay(func:string): TYRelay;
- var
-   index: integer;
-   res  : TYRelay;
- begin
-    if (_RelayCache.Find(func, index)) then
-     begin
-       yFindRelay := TYRelay(_RelayCache.objects[index]);
-       exit;
-     end;
-   res := TYRelay.Create(func);
-   _RelayCache.addObject(func, res);
-   yFindRelay := res;
- end;
+  function yFindRelay(func:string): TYRelay;
+    begin
+      result := TYRelay.FindRelay(func);
+    end;
 
-function yFirstRelay(): TYRelay;
- var
-   v_fundescr      : YFUN_DESCR;
-   dev             : YDEV_DESCR;
-   neededsize, err : integer;
-   serial, funcId, funcName, funcVal, errmsg : string;
- begin
-   err := yapiGetFunctionsByClass('Relay', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
-   if (YISERR(err) or (neededsize = 0)) then
+  function yFirstRelay(): TYRelay;
     begin
-       yFirstRelay := nil;
-       exit;
+      result := TYRelay.FirstRelay();
     end;
-   if (YISERR(yapiGetFunctionInfo(v_fundescr, dev, serial, funcId, funcName, funcVal, errmsg))) then
-    begin
-       yFirstRelay := nil;
-       exit;
-    end;
-   yFirstRelay := yFindRelay(serial+'.'+funcId);
- end;
 
-procedure _RelayCleanup();
-  var i:integer;
-begin
-  for i:=0 to _RelayCache.count-1 do 
+  procedure _RelayCleanup();
     begin
-     _RelayCache.objects[i].free();
-     _RelayCache.objects[i]:=nil;
     end;
-   _RelayCache.free();
-   _RelayCache:=nil;
-end;
 
 //--- (end of Relay functions)
 
 initialization
-   //--- (Relay initialization)
-   _RelayCache        := TstringList.create();
-   _RelayCache.sorted := true;
-   Y_DELAYEDPULSETIMER_INVALID := TYRelayDelayedPulse.Create();
-   //--- (end of Relay initialization)
+  //--- (Relay initialization)
+    Y_DELAYEDPULSETIMER_INVALID := TYRelayDelayedPulse.Create();
+  //--- (end of Relay initialization)
 
 finalization
-   //--- (Relay cleanup)
-   _RelayCleanup();
-   //--- (end of Relay cleanup)
+  //--- (Relay cleanup)
+  _RelayCleanup();
+  //--- (end of Relay cleanup)
 end.

@@ -45,7 +45,7 @@ procedure recursiveLine(layer:TYDisplaylayer; x0,y0,x1,y1 :double; deep :integer
 
 var
   disp              : TYDisplay;
-  l1,l2             : TYDisplayLayer;
+  l1                : TYDisplayLayer;
   errmsg            : string;
   centerX,CenterY   : double;
   radius,a          : double;
@@ -61,7 +61,6 @@ begin
     Write('RegisterHub error: '+errmsg);
     exit;
   end;
-
 
   // first one of the two RBG leds
   if paramstr(1)='any' then
@@ -89,7 +88,6 @@ begin
   disp.resetAll();
 
   l1 := disp.get_displayLayer(1);
-  l2 := disp.get_displayLayer(2);
   l1.hide();    // L1 is hidden, l2 stay visible
   centerX := disp.get_displayWidth() / 2;
   centerY := disp.get_displayHeight() / 2;

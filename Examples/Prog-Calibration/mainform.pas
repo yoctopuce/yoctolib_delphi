@@ -72,8 +72,8 @@ type
     procedure  DisplayCarbonDioxideCalPoints(fct:TYcarbondioxide);
     procedure  DisplayVoltageCalPoints(fct:TYvoltage);
     procedure  DisplayCurrentCalPoints(fct:TyCurrent);
-    procedure  displayValue(value,rawvalue:double;resolution:double;valunit:string);
-    procedure DisplayCalPoints(ValuesRaw,ValuesCal : floatArr;resolution:double ) ;
+    procedure  DisplayValue(value,rawvalue:double;resolution:double;valunit:string);
+    procedure  DisplayCalPoints(ValuesRaw,ValuesCal : floatArr;resolution:double ) ;
     Procedure  EnableCalibrationUI(state:boolean);
   public
     { Public declarations }

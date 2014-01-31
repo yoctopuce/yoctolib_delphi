@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yjson.pas 12326 2013-08-13 15:52:20Z mvuilleu $
+ * $Id: yjson.pas 14628 2014-01-19 09:54:40Z martinm $
  *
  * Simple JSON parser to parse the output of Yoctopuce devices
  *
@@ -46,12 +46,12 @@ const
   JSONGRANULARITY = 10;
 
 type
-  TSTRINGARRAY =  array of string;
+  TStringArrayJson =  array of string;
   PJSONRECORD  = ^TJSONRECORD;
   PASONRECORD  = ^ASONRECORD;
   APJSONRECORD =  array of PJSONRECORD;
   TJSONRECORDTYPE = (JSON_STRING,JSON_INTEGER,JSON_BOOLEAN,JSON_STRUCT,JSON_ARRAY);
-  ASONRECORD   = array[0..31] of PJSONRECORD;     // the 0..31 means nothing, the stuff is dynamicaly allocated
+  ASONRECORD   = array[0..4095] of PJSONRECORD;     // the 0..4095 means nothing, the stuff is dynamicaly allocated
   TJSONRECORD = record
    name : string [64];
    case recordtype :  TJSONRECORDTYPE OF
@@ -102,7 +102,7 @@ type
    constructor create(jsonData:string; withHTTPHeader : boolean);   overload;
    function    GetHTTPcode(var msg:string):integer;
    function    GetChildNode(parent:PJSONRECORD; nodename:string):PJSONRECORD;
-   function    GetAllChilds(parent:PJSONRECORD):TSTRINGARRAY;
+   function    GetAllChilds(parent:PJSONRECORD):TStringArrayJson;
    function    GetRootNode():PJSONRECORD;
    procedure   SetLogFunction(fct:Tjsonlogfct);
    procedure   DumpStructure( logfct: Tjsonlogfct);
@@ -252,14 +252,16 @@ function  TJsonParser.createStrRecord(name,value:string):PJSONRECORD;
  var
    res : PJSONRECORD;
    avalue : ansistring;
+   l: integer;
  begin
    getmem(res,sizeof(TJSONRECORD)) ;
    res^.name       :=  shortstring(name);
    res^.recordtype :=  JSON_STRING;
-   getmem(res^.svalue,length(value)+1);
+   l               :=  length(value);
+   getmem(res^.svalue,l+1);
    avalue := ansistring(value);
-   move(avalue[1],res^.svalue^,length(value));
-   res^.svalue[length(value)] := #0;
+   if l>0 then move(avalue[1],res^.svalue^,l);
+   res^.svalue[l] := #0;
    createStrRecord := res;
  end;
 
@@ -643,11 +645,11 @@ function  TJsonParser.GetChildNode(parent:PJSONRECORD;nodename:string):PJSONRECO
     GetChildNode :=  NIL;
   end;
 
-function TJsonParser.GetAllChilds(parent:PJSONRECORD):  TSTRINGARRAY;
+function TJsonParser.GetAllChilds(parent:PJSONRECORD):  TStringArrayJson;
  var
   p : PJSONRECORD ;
   i : integer;
-  res : TSTRINGARRAY;
+  res : TStringArrayJson;
  begin
 
   p := parent;
