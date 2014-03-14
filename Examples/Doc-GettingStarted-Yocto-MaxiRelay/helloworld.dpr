@@ -31,7 +31,6 @@ begin
   target  :=  UpperCase(paramstr(1));
   channel := paramstr(2);
   state   :=  UpperCase(paramstr(3));
-  writeln('state='+state);
 
   if (YRegisterHub('usb', errmsg) <> YAPI_SUCCESS)  then
     begin
@@ -56,7 +55,8 @@ begin
 
   if (relay.isOnline()) then
     begin
-      relay.set_output(Y_OUTPUT_ON)
+      if (state = 'ON') then  relay.set_output(Y_OUTPUT_ON)
+                        else relay.set_output(Y_OUTPUT_OFF);
     end
    else writeln('Module not connected (check identification and USB cable)');
 

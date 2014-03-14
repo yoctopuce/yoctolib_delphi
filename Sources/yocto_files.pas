@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 14701 2014-01-23 15:41:17Z seb $
+ * $Id: yocto_files.pas 15345 2014-03-08 08:18:19Z mvuilleu $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -716,7 +716,7 @@ implementation
       SetLength(res, length(filelist));;
       for i_i:=0 to length(filelist)-1 do
         begin
-          res[res_pos]:=TYFileRecord.create(filelist[i_i]);
+          res[res_pos] := TYFileRecord.create(filelist[i_i]);
           inc(res_pos)
         end;
       result := res;

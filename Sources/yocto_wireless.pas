@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 14701 2014-01-23 15:41:17Z seb $
+ * $Id: yocto_wireless.pas 15345 2014-03-08 08:18:19Z mvuilleu $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -929,7 +929,7 @@ implementation
       SetLength(res, length(wlanlist));;
       for i_i:=0 to length(wlanlist)-1 do
         begin
-          res[res_pos]:=TYWlanRecord.create(wlanlist[i_i]);
+          res[res_pos] := TYWlanRecord.create(wlanlist[i_i]);
           inc(res_pos)
         end;
       result := res;

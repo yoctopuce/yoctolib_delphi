@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 14799 2014-01-31 14:59:44Z seb $
+ * $Id: yocto_api.pas 15331 2014-03-07 15:57:19Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -116,7 +116,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '14801';
+  YOCTO_API_BUILD_NO        = '15466';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -413,7 +413,7 @@ type
 
     ////
     /// <summary>
-    ///   Returns a short text that describes the function in the form <c>TYPE(NAME)=SERIAL&#46;FUNCTIONID</c>.
+    ///   Returns a short text that describes unambiguously the instance of the function in the form <c>TYPE(NAME)=SERIAL&#46;FUNCTIONID</c>.
     /// <para>
     ///   More precisely,
     ///   <c>TYPE</c>       is the type of the function,
@@ -793,6 +793,7 @@ type
 
 
   //--- (generated code: YModule class start)
+  TYModuleLogCallback = procedure(func: TYModule; logline:string);
   TYModuleValueCallback = procedure(func: TYModule; value:string);
   TYModuleTimedReportCallback = procedure(func: TYModule; value:TYMeasure);
 
@@ -825,6 +826,7 @@ type
     _rebootCountdown          : LongInt;
     _usbBandwidth             : Integer;
     _valueCallbackModule      : TYModuleValueCallback;
+    _logCallback              : TYModuleLogCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
 
@@ -924,6 +926,15 @@ type
     function     get_friendlyName():string;
 
     procedure setImmutableAttributes(var infos : yDeviceSt);
+
+
+    ///
+    ///
+    ///
+    function registerLogCallback(callback : TYModuleLogCallback): integer;
+
+    function get_logCallback(): TYModuleLogCallback;
+
 
     //--- (generated code: YModule accessors declaration)
     constructor Create(func:string);
@@ -1899,6 +1910,12 @@ end;
     ///   array of floating point numbers, corresponding to the corrected
     ///   values for the correction points.
     /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
     function calibrateFromPoints(rawValues: TDoubleArray; refValues: TDoubleArray):LongInt; overload; virtual;
 
@@ -3145,7 +3162,9 @@ type
   ////
   /// <summary>
   ///   Force a hub discovery, if a callback as been registered with <c>yRegisterDeviceRemovalCallback</c> it
-  ///   will be called for each net work hub that will respond to the discovery
+  ///   will be called for each net work hub that will respond to the discovery.
+  /// <para>
+  /// </para>
   /// </summary>
   /// <param name="errmsg">
   ///   a string passed by reference to receive any error message.
@@ -3395,6 +3414,7 @@ type
   _yapiFunctionUpdateFunc = procedure (func:YFUN_DESCR; value:pansichar);cdecl;
   _yapiTimedReportFunc    = procedure (func:YFUN_DESCR; timestamp:double; bytes:pansichar; len:integer);cdecl;
   _yapiHubDiscoveryCallback = procedure (serial:pansichar; url:pansichar);cdecl;
+  _yapiDeviceLogCallback  = procedure (dev:YDEV_DESCR; line:pansichar);cdecl;
 
 var
   ylog:     yLogFunc;
@@ -3535,6 +3555,7 @@ const
   function  _yapiInitAPI(mode:integer; errmsg : pansichar):integer;cdecl; external;
   procedure _yapiFreeAPI();cdecl;  external ;
   procedure _yapiRegisterLogFunction(fct:_yLogFunc); cdecl; external ;
+  procedure _yapiRegisterDeviceLogCallback(fct:_yapiDeviceLogCallback); cdecl; external ;
   procedure _yapiRegisterDeviceArrivalCallback(fct:_yDeviceUpdateFunc); cdecl; external ;
   procedure _yapiRegisterDeviceRemovalCallback(fct:_yDeviceUpdateFunc); cdecl; external;
   procedure _yapiRegisterDeviceChangeCallback(fct:_yDeviceUpdateFunc); cdecl; external;
@@ -3583,6 +3604,8 @@ const
   function  _yapiInitAPI(mode:integer; errmsg : pansichar):integer;cdecl; external dllfile name 'yapiInitAPI';
   procedure _yapiFreeAPI();cdecl;  external dllfile name 'yapiFreeAPI';
   procedure _yapiRegisterLogFunction(fct:_yapiLogFunc); cdecl; external dllfile name 'yapiRegisterLogFunction';
+  procedure _yapiRegisterDeviceLogCallback(fct:_yapiDeviceLogCallback); cdecl; external dllfile name 'yapiRegisterDeviceLogCallback';
+  procedure _yapiStartStopDeviceLogCallback(serial:pansichar; startstop:integer); cdecl; external dllfile name 'yapiStartStopDeviceLogCallback';
   procedure _yapiRegisterDeviceArrivalCallback(fct:_yapiDeviceUpdateFunc); cdecl; external dllfile name 'yapiRegisterDeviceArrivalCallback';
   procedure _yapiRegisterDeviceRemovalCallback(fct:_yapiDeviceUpdateFunc); cdecl; external dllfile name 'yapiRegisterDeviceRemovalCallback';
   procedure _yapiRegisterDeviceChangeCallback(fct:_yapiDeviceUpdateFunc); cdecl; external dllfile name 'yapiRegisterDeviceChangeCallback';
@@ -3631,7 +3654,7 @@ const
     end;
 
 
-  
+
   procedure yDisableExceptions();
     begin
       YAPI_ExceptionsDisabled :=true;
@@ -3647,6 +3670,24 @@ const
     begin
       if assigned(ylog) then ylog(string(log));
     end;
+
+  procedure native_yDeviceLogCallback (devdescr:YDEV_DESCR; line:pansichar);cdecl;
+    var
+        infos: yDeviceSt;
+        modul: TYModule;
+        errmsg: string;
+        callback: TYModuleLogCallback;
+    begin
+
+        if (yapiGetDeviceInfo(devdescr, infos, errmsg) <> YAPI_SUCCESS)then exit;
+        modul := yFindModule(infos.serial + '.module');
+        callback := modul.get_logCallback();
+        if (addr(callback) <> nil) then
+          begin
+            callback(modul, string(line));
+          end;
+    end;
+
 
 
   procedure yRegisterLogFunction(logfun: yLogFunc);
@@ -4094,6 +4135,7 @@ var
           exit;
         end;
       _yapiRegisterLogFunction(native_yLogFunction);
+      _yapiRegisterDeviceLogCallback(native_yDeviceLogCallback);
       _yapiRegisterDeviceArrivalCallback(native_yDeviceArrivalCallback);
       _yapiRegisterDeviceRemovalCallback(native_yDeviceRemovalCallback);
       _yapiRegisterDeviceChangeCallback(native_yDeviceChangeCallback);
@@ -5734,7 +5776,19 @@ const
       setlength(st,size);
       for i:=0 to size-1 do
         st[i+1]:=chr(data[i]);
-      p := TJSONparser.create(st,false);
+
+      if not(YAPI_ExceptionsDisabled) then  p := TJsonParser.create(st, false)
+      else
+      try
+        p := TJsonParser.create(st, false)
+      except
+        on E: Exception do
+          begin
+            result:='';
+            exit;
+          end;
+      end;
+
       node := p.GetChildNode(nil,key);
       p.free();
       _json_get_key := string(node^.svalue);
@@ -5751,7 +5805,21 @@ const
       setlength(st,size);
       for i:=0 to size-1 do
         st[i+1]:=chr(data[i]);
-      p := TJSONparser.create(st,false);
+
+
+      if not(YAPI_ExceptionsDisabled) then  p := TJsonParser.create(st, false)
+      else
+      try
+        p := TJsonParser.create(st, false)
+      except
+        on E: Exception do
+          begin
+            result:=nil;
+            exit;
+          end;
+      end;
+
+
       res:=TStringArray(p.GetAllChilds(nil));
       p.free();
       _json_get_array := res;
@@ -5900,6 +5968,25 @@ const
       _productName  := string(pansichar(addr(infos.productname)));
       _productId    := infos.deviceid;
     end;
+
+    function TYModule.registerLogCallback(callback : TYModuleLogCallback): integer;
+      begin
+        _logCallback := callback;
+        if (addr(_logCallback) = nil) then
+          begin
+            _yapiStartStopDeviceLogCallback(pansiChar(ansistring(_serial)), 0)
+          end
+        else
+          begin
+            _yapiStartStopDeviceLogCallback(pansiChar(ansistring(_serial)), 1)
+          end;
+        result := YAPI_SUCCESS;
+      end;
+
+    function TYModule.get_logCallback(): TYModuleLogCallback;
+      begin
+        result := _logCallback;
+      end;
 
 
   // Return the properties of the nth function of our device
@@ -6242,6 +6329,7 @@ var
       _rebootCountdown := Y_REBOOTCOUNTDOWN_INVALID;
       _usbBandwidth := Y_USBBANDWIDTH_INVALID;
       _valueCallbackModule := nil;
+      _logCallback := nil;
       //--- (end of generated code: YModule accessors initialization)
     end;
 
@@ -7910,9 +7998,9 @@ var
         begin
           iRaw := iCalib[position];
           iRef := iCalib[position + 1];
-          self._calpar[calpar_pos]:=iRaw;
+          self._calpar[calpar_pos] := iRaw;
           inc(calpar_pos);
-          self._calpar[calpar_pos]:=iRef;
+          self._calpar[calpar_pos] := iRef;
           inc(calpar_pos);
           if self._isScal then
             begin
@@ -7920,16 +8008,16 @@ var
               fRaw := (fRaw - self._offset) / self._scale;
               fRef := iRef;
               fRef := (fRef - self._offset) / self._scale;
-              self._calraw[calraw_pos]:=fRaw;
+              self._calraw[calraw_pos] := fRaw;
               inc(calraw_pos);
-              self._calref[calref_pos]:=fRef;
+              self._calref[calref_pos] := fRef;
               inc(calref_pos)
             end
           else
             begin
-              self._calraw[calraw_pos]:=_decimalToDouble(iRaw);
+              self._calraw[calraw_pos] := _decimalToDouble(iRaw);
               inc(calraw_pos);
-              self._calref[calref_pos]:=_decimalToDouble(iRef);
+              self._calref[calref_pos] := _decimalToDouble(iRef);
               inc(calref_pos)
             end;
           position := position + 2
@@ -8067,6 +8155,12 @@ var
   ///   array of floating point numbers, corresponding to the corrected
   ///   values for the correction points.
   /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
   function TYSensor.calibrateFromPoints(rawValues: TDoubleArray; refValues: TDoubleArray):LongInt;
     var
@@ -8133,12 +8227,12 @@ var
       SetLength(refValues, length(self._calref));;
       for i_i:=0 to length(self._calraw)-1 do
         begin
-          rawValues[rawValues_pos]:=self._calraw[i_i];
+          rawValues[rawValues_pos] := self._calraw[i_i];
           inc(rawValues_pos)
         end;
       for i_i:=0 to length(self._calref)-1 do
         begin
-          refValues[refValues_pos]:=self._calref[i_i];
+          refValues[refValues_pos] := self._calref[i_i];
           inc(refValues_pos)
         end;
       result := YAPI_SUCCESS;
@@ -8511,9 +8605,9 @@ var
             begin
               iRaw := iCalib[i];
               iRef := iCalib[i + 1];
-              self._calpar[calpar_pos]:=iRaw;
+              self._calpar[calpar_pos] := iRaw;
               inc(calpar_pos);
-              self._calpar[calpar_pos]:=iRef;
+              self._calpar[calpar_pos] := iRef;
               inc(calpar_pos);
               if self._isScal then
                 begin
@@ -8521,16 +8615,16 @@ var
                   fRaw := (fRaw - self._offset) / self._scale;
                   fRef := iRef;
                   fRef := (fRef - self._offset) / self._scale;
-                  self._calraw[calraw_pos]:=fRaw;
+                  self._calraw[calraw_pos] := fRaw;
                   inc(calraw_pos);
-                  self._calref[calref_pos]:=fRef;
+                  self._calref[calref_pos] := fRef;
                   inc(calref_pos)
                 end
               else
                 begin
-                  self._calraw[calraw_pos]:=_decimalToDouble(iRaw);
+                  self._calraw[calraw_pos] := _decimalToDouble(iRaw);
                   inc(calraw_pos);
-                  self._calref[calref_pos]:=_decimalToDouble(iRef);
+                  self._calref[calref_pos] := _decimalToDouble(iRef);
                   inc(calref_pos)
                 end;
               i := i + 2
@@ -8545,11 +8639,11 @@ var
         begin
           columnNames_pos := 0;
           SetLength(self._columnNames, 3);
-          self._columnNames[columnNames_pos]:=''+self._functionId+'_min';
+          self._columnNames[columnNames_pos] := ''+self._functionId+'_min';
           inc(columnNames_pos);
-          self._columnNames[columnNames_pos]:=''+self._functionId+'_avg';
+          self._columnNames[columnNames_pos] := ''+self._functionId+'_avg';
           inc(columnNames_pos);
-          self._columnNames[columnNames_pos]:=''+self._functionId+'_max';
+          self._columnNames[columnNames_pos] := ''+self._functionId+'_max';
           inc(columnNames_pos);
           SetLength(self._columnNames, columnNames_pos);
           self._nCols := 3
@@ -8558,7 +8652,7 @@ var
         begin
           columnNames_pos := 0;
           SetLength(self._columnNames, 1);
-          self._columnNames[columnNames_pos]:=self._functionId;
+          self._columnNames[columnNames_pos] := self._functionId;
           inc(columnNames_pos);
           SetLength(self._columnNames, columnNames_pos);
           self._nCols := 1
@@ -8593,14 +8687,14 @@ var
             begin
               dat_pos := 0;
               SetLength(dat, 3);
-              dat[dat_pos]:=self._decodeVal(udat[idx]);
+              dat[dat_pos] := self._decodeVal(udat[idx]);
               inc(dat_pos);
-              dat[dat_pos]:=self._decodeAvg(udat[idx + 2] + (((udat[idx + 3]) shl 16)), 1);
+              dat[dat_pos] := self._decodeAvg(udat[idx + 2] + (((udat[idx + 3]) shl 16)), 1);
               inc(dat_pos);
-              dat[dat_pos]:=self._decodeVal(udat[idx + 1]);
+              dat[dat_pos] := self._decodeVal(udat[idx + 1]);
               inc(dat_pos);
               SetLength(dat, dat_pos);
-              self._values[values_pos]:=dat;
+              self._values[values_pos] := dat;
               inc(values_pos);
               idx := idx + 4
             end;
@@ -8613,10 +8707,10 @@ var
                 begin
                   dat_pos := 0;
                   SetLength(dat, 1);
-                  dat[dat_pos]:=self._decodeVal(udat[idx]);
+                  dat[dat_pos] := self._decodeVal(udat[idx]);
                   inc(dat_pos);
                   SetLength(dat, dat_pos);
-                  self._values[values_pos]:=dat;
+                  self._values[values_pos] := dat;
                   inc(values_pos);
                   idx := idx + 1
                 end;
@@ -8627,10 +8721,10 @@ var
                 begin
                   dat_pos := 0;
                   SetLength(dat, 1);
-                  dat[dat_pos]:=self._decodeAvg(udat[idx] + (((udat[idx + 1]) shl 16)), 1);
+                  dat[dat_pos] := self._decodeAvg(udat[idx] + (((udat[idx + 1]) shl 16)), 1);
                   inc(dat_pos);
                   SetLength(dat, dat_pos);
-                  self._values[values_pos]:=dat;
+                  self._values[values_pos] := dat;
                   inc(values_pos);
                   idx := idx + 2
                 end;
@@ -9292,7 +9386,19 @@ var
       endtime, startTime: LongWord;
       rec :  TYMeasure;
     begin
-      p := TJsonParser.create(data, false);
+      if not(YAPI_ExceptionsDisabled) then  p := TJsonParser.create(data, false)
+      else
+      try
+        p := TJsonParser.create(data, false)
+      except
+        on E: Exception do
+          begin
+            result:=YAPI_NOT_SUPPORTED;
+            exit;
+          end;
+      end;
+
+
       summaryMinVal := +InfinityAndBeyond;
       summaryMaxVal := -InfinityAndBeyond;
       summaryTotalTime := 0;
@@ -9346,7 +9452,7 @@ var
                 end;
             end;
         end;
-      if length(self._streams) > 0 then
+      if (length(self._streams)>0)  and (summaryTotalTime>0) then
         begin      
           // update time boundaries with actual data
           stream := self._streams[length(self._streams) - 1];
@@ -9449,7 +9555,7 @@ var
         begin
           if (tim >= self._startTime) and((self._endTime = 0) or(tim <= self._endTime)) then
             begin
-              self._measures[measures_pos]:=TYMeasure.create(tim - itv, tim, dataRows[i_i][minCol], dataRows[i_i][avgCol], dataRows[i_i][maxCol]);
+              self._measures[measures_pos] := TYMeasure.create(tim - itv, tim, dataRows[i_i][minCol], dataRows[i_i][avgCol], dataRows[i_i][maxCol]);
               inc(measures_pos);
               tim := tim + itv
             end;

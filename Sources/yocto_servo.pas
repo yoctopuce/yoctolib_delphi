@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_servo.pas 14701 2014-01-23 15:41:17Z seb $
+ * $Id: yocto_servo.pas 15254 2014-03-06 10:16:24Z seb $
  *
  * Implements yFindServo(), the high-level API for Servo functions
  *
@@ -10,24 +10,24 @@
  *
  *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
  *  non-exclusive license to use, modify, copy and integrate this
- *  file into your software for the sole purpose of interfacing 
- *  with Yoctopuce products. 
+ *  file into your software for the sole purpose of interfacing
+ *  with Yoctopuce products.
  *
- *  You may reproduce and distribute copies of this file in 
+ *  You may reproduce and distribute copies of this file in
  *  source or object form, as long as the sole purpose of this
- *  code is to interface with Yoctopuce products. You must retain 
+ *  code is to interface with Yoctopuce products. You must retain
  *  this notice in the distributed source file.
  *
  *  You should refer to Yoctopuce General Terms and Conditions
- *  for additional information regarding your rights and 
+ *  for additional information regarding your rights and
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
  *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
  *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
  *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
@@ -55,8 +55,17 @@ type  TYServoMove = class(TObject)
     end;
 
 const Y_POSITION_INVALID              = YAPI_INVALID_INT;
+const Y_ENABLED_FALSE = 0;
+const Y_ENABLED_TRUE = 1;
+const Y_ENABLED_INVALID = -1;
+
 const Y_RANGE_INVALID                 = YAPI_INVALID_UINT;
 const Y_NEUTRAL_INVALID               = YAPI_INVALID_UINT;
+const Y_POSITIONATPOWERON_INVALID     = YAPI_INVALID_INT;
+const Y_ENABLEDATPOWERON_FALSE = 0;
+const Y_ENABLEDATPOWERON_TRUE = 1;
+const Y_ENABLEDATPOWERON_INVALID = -1;
+
 
 var Y_MOVE_INVALID : TYServoMove;
 
@@ -87,9 +96,12 @@ type
     _logicalName              : string;
     _advertisedValue          : string;
     _position                 : LongInt;
+    _enabled                  : Integer;
     _range                    : LongInt;
     _neutral                  : LongInt;
     _move                     : TYServoMove;
+    _positionAtPowerOn        : LongInt;
+    _enabledAtPowerOn         : Integer;
     _valueCallbackServo       : TYServoValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
@@ -138,6 +150,45 @@ type
     /// </para>
     ///-
     function set_position(newval:LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the state of the servos.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   either <c>Y_ENABLED_FALSE</c> or <c>Y_ENABLED_TRUE</c>, according to the state of the servos
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_ENABLED_INVALID</c>.
+    /// </para>
+    ///-
+    function get_enabled():Integer;
+
+    ////
+    /// <summary>
+    ///   Stops or starts the servo.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   either <c>Y_ENABLED_FALSE</c> or <c>Y_ENABLED_TRUE</c>
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_enabled(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -254,6 +305,89 @@ type
     /// </para>
     ///-
     function move(target: LongInt; ms_duration: LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the servo position at device power up.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the servo position at device power up
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_POSITIONATPOWERON_INVALID</c>.
+    /// </para>
+    ///-
+    function get_positionAtPowerOn():LongInt;
+
+    ////
+    /// <summary>
+    ///   Configure the servo position at device power up.
+    /// <para>
+    ///   Remember to call the matching
+    ///   module <c>saveToFlash()</c> method, otherwise this call will have no effect.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_positionAtPowerOn(newval:LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the servo signal generator state at power up.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   either <c>Y_ENABLEDATPOWERON_FALSE</c> or <c>Y_ENABLEDATPOWERON_TRUE</c>, according to the servo
+    ///   signal generator state at power up
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_ENABLEDATPOWERON_INVALID</c>.
+    /// </para>
+    ///-
+    function get_enabledAtPowerOn():Integer;
+
+    ////
+    /// <summary>
+    ///   Configure the servo signal generator state at power up.
+    /// <para>
+    ///   Remember to call the matching module <c>saveToFlash()</c>
+    ///   method, otherwise this call will have no effect.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   either <c>Y_ENABLEDATPOWERON_FALSE</c> or <c>Y_ENABLEDATPOWERON_TRUE</c>
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_enabledAtPowerOn(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -425,9 +559,12 @@ implementation
       _className := 'Servo';
       //--- (YServo accessors initialization)
       _position := Y_POSITION_INVALID;
+      _enabled := Y_ENABLED_INVALID;
       _range := Y_RANGE_INVALID;
       _neutral := Y_NEUTRAL_INVALID;
       _move := Y_MOVE_INVALID;
+      _positionAtPowerOn := Y_POSITIONATPOWERON_INVALID;
+      _enabledAtPowerOn := Y_ENABLEDATPOWERON_INVALID;
       _valueCallbackServo := nil;
       //--- (end of YServo accessors initialization)
     end;
@@ -443,6 +580,12 @@ implementation
       if (member^.name = 'position') then
         begin
           _position := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'enabled') then
+        begin
+          _enabled := member^.ivalue;
          result := 1;
          exit;
          end;
@@ -473,6 +616,18 @@ implementation
                     _move.ms := sub^.ivalue;
                end;
             end;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'positionAtPowerOn') then
+        begin
+          _positionAtPowerOn := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'enabledAtPowerOn') then
+        begin
+          _enabledAtPowerOn := member^.ivalue;
          result := 1;
          exit;
          end;
@@ -536,6 +691,64 @@ implementation
     begin
       rest_val := inttostr(newval);
       result := _setAttr('position',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the state of the servos.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the state of the servos
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_ENABLED_INVALID.
+  /// </para>
+  ///-
+  function TYServo.get_enabled():Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_ENABLED_INVALID;
+              exit
+            end;
+        end;
+      result := self._enabled;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Stops or starts the servo.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   either Y_ENABLED_FALSE or Y_ENABLED_TRUE
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYServo.set_enabled(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      if(newval>0) then rest_val := '1' else rest_val := '0';
+      result := _setAttr('enabled',rest_val);
     end;
 
   ////
@@ -715,6 +928,127 @@ implementation
     begin
       rest_val := inttostr(target)+':'+inttostr(ms_duration);
       result := _setAttr('move', rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the servo position at device power up.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the servo position at device power up
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_POSITIONATPOWERON_INVALID.
+  /// </para>
+  ///-
+  function TYServo.get_positionAtPowerOn():LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_POSITIONATPOWERON_INVALID;
+              exit
+            end;
+        end;
+      result := self._positionAtPowerOn;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Configure the servo position at device power up.
+  /// <para>
+  ///   Remember to call the matching
+  ///   module saveToFlash() method, otherwise this call will have no effect.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   an integer
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYServo.set_positionAtPowerOn(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('positionAtPowerOn',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the servo signal generator state at power up.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE, according to the servo signal generator
+  ///   state at power up
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_ENABLEDATPOWERON_INVALID.
+  /// </para>
+  ///-
+  function TYServo.get_enabledAtPowerOn():Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_ENABLEDATPOWERON_INVALID;
+              exit
+            end;
+        end;
+      result := self._enabledAtPowerOn;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Configure the servo signal generator state at power up.
+  /// <para>
+  ///   Remember to call the matching module saveToFlash()
+  ///   method, otherwise this call will have no effect.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYServo.set_enabledAtPowerOn(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      if(newval>0) then rest_val := '1' else rest_val := '0';
+      result := _setAttr('enabledAtPowerOn',rest_val);
     end;
 
   ////

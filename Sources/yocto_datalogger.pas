@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_datalogger.pas 14701 2014-01-23 15:41:17Z seb $
+ * $Id: yocto_datalogger.pas 15330 2014-03-07 15:34:36Z mvuilleu $
  *
  * Implements yFindDataLogger(), the high-level API for DataLogger functions
  *
@@ -1131,7 +1131,7 @@ const
       SetLength(res, length(dslist));;
       for i_i:=0 to length(dslist)-1 do
         begin
-          res[res_pos]:=TYDataSet.create(self, dslist[i_i]);
+          res[res_pos] := TYDataSet.create(self, dslist[i_i]);
           inc(res_pos)
         end;
       result := res;
