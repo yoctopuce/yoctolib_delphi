@@ -18,6 +18,7 @@ Procedure  Usage();
     WriteLn(exe+' <serial_number>');
     WriteLn(exe+' <logical_name>');
     WriteLn(exe+' any');
+    sleep(2500);
     halt;
   End;
 

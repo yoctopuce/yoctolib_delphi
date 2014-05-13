@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 15331 2014-03-07 15:57:19Z mvuilleu $
+ * $Id: yocto_api.pas 16091 2014-05-08 12:10:31Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -116,7 +116,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '15466';
+  YOCTO_API_BUILD_NO        = '16182';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -1198,31 +1198,6 @@ type
     /// </para>
     ///-
     function get_usbBandwidth():Integer;
-
-    ////
-    /// <summary>
-    ///   Changes the number of USB interfaces used by the module.
-    /// <para>
-    ///   You must reboot the module
-    ///   after changing this setting.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="newval">
-    ///   either <c>Y_USBBANDWIDTH_SIMPLE</c> or <c>Y_USBBANDWIDTH_DOUBLE</c>, according to the number of USB
-    ///   interfaces used by the module
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_usbBandwidth(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -2397,7 +2372,7 @@ end;
     ///   Returns the end time of the measure, relative to the Jan 1, 1970 UTC
     ///   (Unix timestamp).
     /// <para>
-    ///   When the recording rate is higher then 1 sample
+    ///   When the recording rate is higher than 1 sample
     ///   per second, the timestamp may have a fractional part.
     /// </para>
     /// <para>
@@ -5015,7 +4990,7 @@ const
                   uchangeval:=uchangeval+c;
               end;
           end;
-        request := request+ uchangeval+' '#13#10#13#10;     // no HTTP/1.1 to get light headers
+         request := request+ uchangeval+'&. '#13#10#13#10;     // no HTTP/1.1 to get light headers
         _buildSetRequest:= YAPI_SUCCESS;
       end;
 
@@ -5088,7 +5063,10 @@ const
               exit;
             end;
         end;
-      _cacheExpiration := 0;
+      if (_cacheExpiration <> 0) then
+        begin
+          _cacheExpiration := yGetTickCount;
+        end;
       _setAttr := YAPI_SUCCESS;
     end;
 
@@ -6860,37 +6838,6 @@ var
 
   ////
   /// <summary>
-  ///   Changes the number of USB interfaces used by the module.
-  /// <para>
-  ///   You must reboot the module
-  ///   after changing this setting.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_USBBANDWIDTH_SIMPLE or Y_USBBANDWIDTH_DOUBLE, according to the number of USB interfaces
-  ///   used by the module
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYModule.set_usbBandwidth(newval:Integer):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := inttostr(newval);
-      result := _setAttr('usbBandwidth',rest_val);
-    end;
-
-  ////
-  /// <summary>
   ///   Retrieves $AFUNCTION$ for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
@@ -8286,8 +8233,8 @@ var
           idx := 0;
           while idx < npt do
             begin
-              iRaw := round(rawValues[idx] * self._scale - self._offset);
-              iRef := round(refValues[idx] * self._scale - self._offset);
+              iRaw := round(rawValues[idx] * self._scale + self._offset);
+              iRef := round(refValues[idx] * self._scale + self._offset);
               res := ''+ res+','+inttostr( iRaw)+','+inttostr(iRef);
               idx := idx + 1
             end;
@@ -9259,7 +9206,7 @@ var
   ///   Returns the end time of the measure, relative to the Jan 1, 1970 UTC
   ///   (Unix timestamp).
   /// <para>
-  ///   When the recording rate is higher then 1 sample
+  ///   When the recording rate is higher than 1 sample
   ///   per second, the timestamp may have a fractional part.
   /// </para>
   /// <para>

@@ -2,6 +2,7 @@ program helloworld;
 {$APPTYPE CONSOLE}
 uses
   SysUtils,
+  Windows,
   yocto_api,
   yocto_watchdog;
 
@@ -14,6 +15,7 @@ Procedure  Usage();
     WriteLn(exe+' <serial_number> [on|off]');
     WriteLn(exe+' <logical_name> [on|off]');
     WriteLn(exe+' any [on|off]');
+    sleep(2500);
     halt;
   End;
   

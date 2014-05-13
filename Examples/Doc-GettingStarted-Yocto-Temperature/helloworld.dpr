@@ -14,6 +14,7 @@ Procedure  Usage();
     WriteLn(exe+' <serial_number>');
     WriteLn(exe+' <logical_name>');
     WriteLn(exe+' any');
+    sleep(2500);
     halt;
   End;
 
@@ -23,6 +24,8 @@ var
   done   : boolean;
 
 begin
+
+  YdisableExceptions();
 
   if (paramcount<1) then usage();
 

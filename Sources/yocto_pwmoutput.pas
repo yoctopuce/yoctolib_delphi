@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: pic24config.php 15411 2014-03-13 12:08:37Z mvuilleu $
+ * $Id: yocto_pwmoutput.pas 15545 2014-03-21 10:55:55Z seb $
  *
  * Implements yFindPwmOutput(), the high-level API for PwmOutput functions
  *
@@ -145,14 +145,14 @@ type
 
     ////
     /// <summary>
-    ///   Configures the PWMs duty cyle.
+    ///   Changes the PWM duty cycle, in per cents.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a floating point number
+    ///   a floating point number corresponding to the PWM duty cycle, in per cents
     /// </param>
     /// <para>
     /// </para>
@@ -167,14 +167,14 @@ type
 
     ////
     /// <summary>
-    ///   Returns the PWMs dutty cyle as a floating point number between 0 an 1.
+    ///   Returns the PWM duty cycle, in per cents.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a floating point number corresponding to the PWMs dutty cyle as a floating point number between 0 an 1
+    ///   a floating point number corresponding to the PWM duty cycle, in per cents
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_DUTYCYCLE_INVALID</c>.
@@ -184,7 +184,7 @@ type
 
     ////
     /// <summary>
-    ///   Configures the PWM pluses length.
+    ///   Changes the PWM pulse length, in milliseconds.
     /// <para>
     ///   A pulse length cannot be longer than period, otherwise it is truncated.
     /// </para>
@@ -192,7 +192,7 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a floating point number
+    ///   a floating point number corresponding to the PWM pulse length, in milliseconds
     /// </param>
     /// <para>
     /// </para>
@@ -241,7 +241,7 @@ type
 
     ////
     /// <summary>
-    ///   Configures the PWM frequency.
+    ///   Changes the PWM frequency.
     /// <para>
     ///   The duty cycle is kept unchanged thanks to an
     ///   automatic pulse width change.
@@ -250,7 +250,7 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer
+    ///   an integer corresponding to the PWM frequency
     /// </param>
     /// <para>
     /// </para>
@@ -265,14 +265,14 @@ type
 
     ////
     /// <summary>
-    ///   Configures the PWM period.
+    ///   Changes the PWM period.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a floating point number
+    ///   a floating point number corresponding to the PWM period
     /// </param>
     /// <para>
     /// </para>
@@ -287,14 +287,14 @@ type
 
     ////
     /// <summary>
-    ///   Returns the PWM period in nonaseconde.
+    ///   Returns the PWM period in milliseconds.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a floating point number corresponding to the PWM period in nonaseconde
+    ///   a floating point number corresponding to the PWM period in milliseconds
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_PERIOD_INVALID</c>.
@@ -308,7 +308,7 @@ type
 
     ////
     /// <summary>
-    ///   Returns the state of the PWMs at device power on.
+    ///   Returns the state of the PWM at device power on.
     /// <para>
     /// </para>
     /// <para>
@@ -316,7 +316,7 @@ type
     /// </summary>
     /// <returns>
     ///   either <c>Y_ENABLEDATPOWERON_FALSE</c> or <c>Y_ENABLEDATPOWERON_TRUE</c>, according to the state of
-    ///   the PWMs at device power on
+    ///   the PWM at device power on
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_ENABLEDATPOWERON_INVALID</c>.
@@ -326,7 +326,7 @@ type
 
     ////
     /// <summary>
-    ///   Configures the state of PWM at device power on.
+    ///   Changes the state of the PWM at device power on.
     /// <para>
     ///   Remember to call the matching module <c>saveToFlash()</c>
     ///   method, otherwise this call will have no effect.
@@ -335,7 +335,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_ENABLEDATPOWERON_FALSE</c> or <c>Y_ENABLEDATPOWERON_TRUE</c>
+    ///   either <c>Y_ENABLEDATPOWERON_FALSE</c> or <c>Y_ENABLEDATPOWERON_TRUE</c>, according to the state of
+    ///   the PWM at device power on
     /// </param>
     /// <para>
     /// </para>
@@ -350,7 +351,7 @@ type
 
     ////
     /// <summary>
-    ///   Configures the PWMs duty cycle at device power on.
+    ///   Changes the PWM duty cycle at device power on.
     /// <para>
     ///   Remember to call the matching
     ///   module <c>saveToFlash()</c> method, otherwise this call will have no effect.
@@ -359,7 +360,7 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a floating point number
+    ///   a floating point number corresponding to the PWM duty cycle at device power on
     /// </param>
     /// <para>
     /// </para>
@@ -374,16 +375,13 @@ type
 
     ////
     /// <summary>
-    ///   Returns the PWMs duty cycle at device power on as a floating point number between 0.0 and 100.
-    /// <para>
-    ///   0%
-    /// </para>
+    ///   Returns the PWMs duty cycle at device power on as a floating point number between 0 and 100
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
     ///   a floating point number corresponding to the PWMs duty cycle at device power on as a floating point
-    ///   number between 0.0 and 100
+    ///   number between 0 and 100
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_DUTYCYCLEATPOWERON_INVALID</c>.
@@ -459,8 +457,10 @@ type
 
     ////
     /// <summary>
-    ///   Performs a smooth change of the pulse duration toward a given value.
+    ///   Performs a smooth transistion of the pulse duration toward a given value.
     /// <para>
+    ///   Any period,
+    ///   frequency, duty cycle or pulse width change will cancel any ongoing transition process.
     /// </para>
     /// </summary>
     /// <param name="ms_target">
@@ -729,14 +729,14 @@ implementation
 
   ////
   /// <summary>
-  ///   Configures the PWMs duty cyle.
+  ///   Changes the PWM duty cycle, in per cents.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   a floating point number
+  ///   a floating point number corresponding to the PWM duty cycle, in per cents
   /// </param>
   /// <para>
   /// </para>
@@ -757,14 +757,14 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the PWMs dutty cyle as a floating point number between 0 an 1.
+  ///   Returns the PWM duty cycle, in per cents.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a floating point number corresponding to the PWMs dutty cyle as a floating point number between 0 an 1
+  ///   a floating point number corresponding to the PWM duty cycle, in per cents
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_DUTYCYCLE_INVALID.
@@ -787,7 +787,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Configures the PWM pluses length.
+  ///   Changes the PWM pulse length, in milliseconds.
   /// <para>
   ///   A pulse length cannot be longer than period, otherwise it is truncated.
   /// </para>
@@ -795,7 +795,7 @@ implementation
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   a floating point number
+  ///   a floating point number corresponding to the PWM pulse length, in milliseconds
   /// </param>
   /// <para>
   /// </para>
@@ -876,7 +876,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Configures the PWM frequency.
+  ///   Changes the PWM frequency.
   /// <para>
   ///   The duty cycle is kept unchanged thanks to an
   ///   automatic pulse width change.
@@ -885,7 +885,7 @@ implementation
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   an integer
+  ///   an integer corresponding to the PWM frequency
   /// </param>
   /// <para>
   /// </para>
@@ -906,14 +906,14 @@ implementation
 
   ////
   /// <summary>
-  ///   Configures the PWM period.
+  ///   Changes the PWM period.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   a floating point number
+  ///   a floating point number corresponding to the PWM period
   /// </param>
   /// <para>
   /// </para>
@@ -934,14 +934,14 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the PWM period in nonaseconde.
+  ///   Returns the PWM period in milliseconds.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a floating point number corresponding to the PWM period in nonaseconde
+  ///   a floating point number corresponding to the PWM period in milliseconds
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_PERIOD_INVALID.
@@ -987,15 +987,14 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the state of the PWMs at device power on.
+  ///   Returns the state of the PWM at device power on.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE, according to the state of the PWMs at
-  ///   device power on
+  ///   either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE, according to the state of the PWM at device power on
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_ENABLEDATPOWERON_INVALID.
@@ -1018,7 +1017,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Configures the state of PWM at device power on.
+  ///   Changes the state of the PWM at device power on.
   /// <para>
   ///   Remember to call the matching module saveToFlash()
   ///   method, otherwise this call will have no effect.
@@ -1027,7 +1026,7 @@ implementation
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE
+  ///   either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE, according to the state of the PWM at device power on
   /// </param>
   /// <para>
   /// </para>
@@ -1048,7 +1047,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Configures the PWMs duty cycle at device power on.
+  ///   Changes the PWM duty cycle at device power on.
   /// <para>
   ///   Remember to call the matching
   ///   module saveToFlash() method, otherwise this call will have no effect.
@@ -1057,7 +1056,7 @@ implementation
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   a floating point number
+  ///   a floating point number corresponding to the PWM duty cycle at device power on
   /// </param>
   /// <para>
   /// </para>
@@ -1078,16 +1077,13 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the PWMs duty cycle at device power on as a floating point number between 0.0 and 100.
-  /// <para>
-  ///   0%
-  /// </para>
+  ///   Returns the PWMs duty cycle at device power on as a floating point number between 0 and 100
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
   ///   a floating point number corresponding to the PWMs duty cycle at device power on as a floating point
-  ///   number between 0.0 and 100
+  ///   number between 0 and 100
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_DUTYCYCLEATPOWERON_INVALID.
@@ -1227,8 +1223,10 @@ implementation
 
   ////
   /// <summary>
-  ///   Performs a smooth change of the pulse duration toward a given value.
+  ///   Performs a smooth transistion of the pulse duration toward a given value.
   /// <para>
+  ///   Any period,
+  ///   frequency, duty cycle or pulse width change will cancel any ongoing transition process.
   /// </para>
   /// </summary>
   /// <param name="ms_target">

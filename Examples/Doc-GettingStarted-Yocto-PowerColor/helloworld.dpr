@@ -2,6 +2,7 @@ program helloworld;
 {$APPTYPE CONSOLE}
 uses
   SysUtils,
+  Windows,
   yocto_api,
   yocto_colorled;
 
