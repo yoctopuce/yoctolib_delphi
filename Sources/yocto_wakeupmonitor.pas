@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_wakeupmonitor.pas 16424 2014-06-04 14:26:41Z seb $
  *
  * Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -373,7 +373,7 @@ type
     /// </para>
     /// </summary>
     /// <param name="secUntilWakeUp">
-    ///   sleep duration, in secondes
+    ///   number of seconds before next wake up
     /// </param>
     /// <param name="secBeforeSleep">
     ///   number of seconds before going into sleep mode
@@ -1012,7 +1012,7 @@ implementation
   /// </para>
   /// </summary>
   /// <param name="secUntilWakeUp">
-  ///   sleep duration, in secondes
+  ///   number of seconds before next wake up
   /// </param>
   /// <param name="secBeforeSleep">
   ///   number of seconds before going into sleep mode

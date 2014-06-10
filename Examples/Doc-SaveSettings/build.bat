@@ -20,6 +20,5 @@ dcc32.exe %BDS_STDOPTS% %BDS_PATHOPTS% savesettings.dpr
 
 IF "%1" == "" goto end
 :clean
-del  *.dcu 
-del  *.exe
+del /Q /F *.dcu *.exe
 :end

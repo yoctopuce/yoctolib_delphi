@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 16091 2014-05-08 12:10:31Z seb $
+ * $Id: yocto_api.pas 16246 2014-05-16 12:09:39Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -116,7 +116,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '16182';
+  YOCTO_API_BUILD_NO        = '16490';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -5345,6 +5345,12 @@ const
     var
       rest_val: string;
     begin
+      if (Not(yCheckLogicalName(newval))) then
+        begin
+          _throw(YAPI_INVALID_ARGUMENT,'Invalid name :' + newval);
+          result := YAPI_INVALID_ARGUMENT;
+          exit;
+        end;
       rest_val := newval;
       result := _setAttr('logicalName',rest_val);
     end;

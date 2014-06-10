@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 14701 2014-01-23 15:41:17Z seb $
+ * $Id: yocto_display.pas 16340 2014-05-30 10:41:54Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -484,6 +484,10 @@ public
     ////
     /// <summary>
     ///   Clears the display screen and resets all display layers to their default state.
+    /// <para>
+    ///   Using this function in a sequence will kill the sequence play-back. Don't use that
+    ///   function to reset the display at sequence start-up.
+    /// </para>
     /// <para>
     /// </para>
     /// </summary>
@@ -2167,6 +2171,10 @@ destructor TYDisplay.destroy();
   ////
   /// <summary>
   ///   Clears the display screen and resets all display layers to their default state.
+  /// <para>
+  ///   Using this function in a sequence will kill the sequence play-back. Don't use that
+  ///   function to reset the display at sequence start-up.
+  /// </para>
   /// <para>
   /// </para>
   /// </summary>

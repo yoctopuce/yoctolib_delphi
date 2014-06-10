@@ -22,5 +22,5 @@ dcc32.exe %BDS_STDOPTS% %BDS_PATHOPTS% Yocto_knob_demo.dpr
 
 IF "%1" == "" goto end
 :clean
-del  *.dcu 
+del /Q /F *.dcu *.exe
 :end
