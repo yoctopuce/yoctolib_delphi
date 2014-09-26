@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_magnetometer.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_magnetometer.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindMagnetometer(), the high-level API for Magnetometer functions
  *
@@ -265,7 +265,6 @@ type
   end;
 
 //--- (Magnetometer functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a magnetometer for a given identifier.
@@ -328,6 +327,8 @@ type
 //--- (end of Magnetometer functions declaration)
 
 implementation
+//--- (YMagnetometer dlldef)
+//--- (end of YMagnetometer dlldef)
 
   constructor TYMagnetometer.Create(func:string);
     begin
@@ -352,19 +353,19 @@ implementation
     begin
       if (member^.name = 'xValue') then
         begin
-          _xValue := member^.ivalue/65536.0;
+          _xValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'yValue') then
         begin
-          _yValue := member^.ivalue/65536.0;
+          _yValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'zValue') then
         begin
-          _zValue := member^.ivalue/65536.0;
+          _zValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 15345 2014-03-08 08:18:19Z mvuilleu $
+ * $Id: yocto_wireless.pas 17594 2014-09-10 21:15:55Z mvuilleu $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -239,63 +239,6 @@ public
 
     ////
     /// <summary>
-    ///   Changes the configuration of the wireless lan interface to connect to an existing
-    ///   access point (infrastructure mode).
-    /// <para>
-    ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="ssid">
-    ///   the name of the network to connect to
-    /// </param>
-    /// <param name="securityKey">
-    ///   the network key, as a character string
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function joinNetwork(ssid: string; securityKey: string):integer;
-
-    ////
-    /// <summary>
-    ///   Changes the configuration of the wireless lan interface to create an ad-hoc
-    ///   wireless network, without using an access point.
-    /// <para>
-    ///   If a security key is specified,
-    ///   the network is protected by WEP128, since WPA is not standardized for
-    ///   ad-hoc networks.
-    ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="ssid">
-    ///   the name of the network to connect to
-    /// </param>
-    /// <param name="securityKey">
-    ///   the network key, as a character string
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function adhocNetwork(ssid: string; securityKey: string):integer;
-
-    ////
-    /// <summary>
     ///   Retrieves $AFUNCTION$ for a given identifier.
     /// <para>
     ///   The identifier can be specified using several formats:
@@ -362,6 +305,93 @@ public
 
     ////
     /// <summary>
+    ///   Changes the configuration of the wireless lan interface to connect to an existing
+    ///   access point (infrastructure mode).
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
+    /// </para>
+    /// </summary>
+    /// <param name="ssid">
+    ///   the name of the network to connect to
+    /// </param>
+    /// <param name="securityKey">
+    ///   the network key, as a character string
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function joinNetwork(ssid: string; securityKey: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Changes the configuration of the wireless lan interface to create an ad-hoc
+    ///   wireless network, without using an access point.
+    /// <para>
+    ///   On the YoctoHub-Wireless-g,
+    ///   it is best to use softAPNetworkInstead(), which emulates an access point
+    ///   (Soft AP) which is more efficient and more widely supported than ad-hoc networks.
+    /// </para>
+    /// <para>
+    ///   When a security key is specified for an ad-hoc network, the network is protected
+    ///   by a WEP40 key (5 characters or 10 hexadecimal digits) or WEP128 key (13 characters
+    ///   or 26 hexadecimal digits). It is recommended to use a well-randomized WEP128 key
+    ///   using 26 hexadecimal digits to maximize security.
+    ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module
+    ///   to apply this setting.
+    /// </para>
+    /// </summary>
+    /// <param name="ssid">
+    ///   the name of the network to connect to
+    /// </param>
+    /// <param name="securityKey">
+    ///   the network key, as a character string
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function adhocNetwork(ssid: string; securityKey: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Changes the configuration of the wireless lan interface to create a new wireless
+    ///   network by emulating a WiFi access point (Soft AP).
+    /// <para>
+    ///   This function can only be
+    ///   used with the YoctoHub-Wireless-g.
+    /// </para>
+    /// <para>
+    ///   When a security key is specified for a SoftAP network, the network is protected
+    ///   by a WEP40 key (5 characters or 10 hexadecimal digits) or WEP128 key (13 characters
+    ///   or 26 hexadecimal digits). It is recommended to use a well-randomized WEP128 key
+    ///   using 26 hexadecimal digits to maximize security.
+    ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
+    /// </para>
+    /// </summary>
+    /// <param name="ssid">
+    ///   the name of the network to connect to
+    /// </param>
+    /// <param name="securityKey">
+    ///   the network key, as a character string
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function softAPNetwork(ssid: string; securityKey: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Returns a list of YWlanRecord objects that describe detected Wireless networks.
     /// <para>
     ///   This list is not updated when the module is already connected to an acces point (infrastructure mode).
@@ -410,7 +440,6 @@ end;
 procedure freeWlanRecordArray(var list:TYWLANRECORDARRAY);
 
 //--- (generated code: Wireless functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a wireless lan interface for a given identifier.
@@ -712,75 +741,6 @@ implementation
 
   ////
   /// <summary>
-  ///   Changes the configuration of the wireless lan interface to connect to an existing
-  ///   access point (infrastructure mode).
-  /// <para>
-  ///   Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="ssid">
-  ///   the name of the network to connect to
-  /// </param>
-  /// <param name="securityKey">
-  ///   the network key, as a character string
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYWireless.joinNetwork(ssid: string; securityKey: string):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := 'INFRA:'+ssid+'\\'+securityKey;
-      result := _setAttr('wlanConfig', rest_val);
-    end;
-
-  ////
-  /// <summary>
-  ///   Changes the configuration of the wireless lan interface to create an ad-hoc
-  ///   wireless network, without using an access point.
-  /// <para>
-  ///   If a security key is specified,
-  ///   the network is protected by WEP128, since WPA is not standardized for
-  ///   ad-hoc networks.
-  ///   Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="ssid">
-  ///   the name of the network to connect to
-  /// </param>
-  /// <param name="securityKey">
-  ///   the network key, as a character string
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYWireless.adhocNetwork(ssid: string; securityKey: string):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := 'ADHOC:'+ssid+'\\'+securityKey;
-      result := _setAttr('wlanConfig', rest_val);
-    end;
-
-  ////
-  /// <summary>
   ///   Retrieves $AFUNCTION$ for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
@@ -892,6 +852,108 @@ implementation
           inherited _invokeValueCallback(value)
         end;
       result := 0;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the configuration of the wireless lan interface to connect to an existing
+  ///   access point (infrastructure mode).
+  /// <para>
+  ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
+  /// </para>
+  /// </summary>
+  /// <param name="ssid">
+  ///   the name of the network to connect to
+  /// </param>
+  /// <param name="securityKey">
+  ///   the network key, as a character string
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYWireless.joinNetwork(ssid: string; securityKey: string):LongInt;
+    begin
+      result := self.set_wlanConfig('INFRA:'+ ssid+'\\'+securityKey);
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the configuration of the wireless lan interface to create an ad-hoc
+  ///   wireless network, without using an access point.
+  /// <para>
+  ///   On the YoctoHub-Wireless-g,
+  ///   it is best to use softAPNetworkInstead(), which emulates an access point
+  ///   (Soft AP) which is more efficient and more widely supported than ad-hoc networks.
+  /// </para>
+  /// <para>
+  ///   When a security key is specified for an ad-hoc network, the network is protected
+  ///   by a WEP40 key (5 characters or 10 hexadecimal digits) or WEP128 key (13 characters
+  ///   or 26 hexadecimal digits). It is recommended to use a well-randomized WEP128 key
+  ///   using 26 hexadecimal digits to maximize security.
+  ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module
+  ///   to apply this setting.
+  /// </para>
+  /// </summary>
+  /// <param name="ssid">
+  ///   the name of the network to connect to
+  /// </param>
+  /// <param name="securityKey">
+  ///   the network key, as a character string
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYWireless.adhocNetwork(ssid: string; securityKey: string):LongInt;
+    begin
+      result := self.set_wlanConfig('ADHOC:'+ ssid+'\\'+securityKey);
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the configuration of the wireless lan interface to create a new wireless
+  ///   network by emulating a WiFi access point (Soft AP).
+  /// <para>
+  ///   This function can only be
+  ///   used with the YoctoHub-Wireless-g.
+  /// </para>
+  /// <para>
+  ///   When a security key is specified for a SoftAP network, the network is protected
+  ///   by a WEP40 key (5 characters or 10 hexadecimal digits) or WEP128 key (13 characters
+  ///   or 26 hexadecimal digits). It is recommended to use a well-randomized WEP128 key
+  ///   using 26 hexadecimal digits to maximize security.
+  ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
+  /// </para>
+  /// </summary>
+  /// <param name="ssid">
+  ///   the name of the network to connect to
+  /// </param>
+  /// <param name="securityKey">
+  ///   the network key, as a character string
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYWireless.softAPNetwork(ssid: string; securityKey: string):LongInt;
+    begin
+      result := self.set_wlanConfig('SOFTAP:'+ ssid+'\\'+securityKey);
       exit;
     end;
 

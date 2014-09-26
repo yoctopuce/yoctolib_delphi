@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_carbondioxide.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_carbondioxide.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
@@ -208,7 +208,6 @@ type
   end;
 
 //--- (CarbonDioxide functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a CO2 sensor for a given identifier.
@@ -271,6 +270,8 @@ type
 //--- (end of CarbonDioxide functions declaration)
 
 implementation
+//--- (YCarbonDioxide dlldef)
+//--- (end of YCarbonDioxide dlldef)
 
   constructor TYCarbonDioxide.Create(func:string);
     begin

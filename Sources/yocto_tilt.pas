@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_tilt.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_tilt.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindTilt(), the high-level API for Tilt functions
  *
@@ -216,7 +216,6 @@ type
   end;
 
 //--- (Tilt functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a tilt sensor for a given identifier.
@@ -279,6 +278,8 @@ type
 //--- (end of Tilt functions declaration)
 
 implementation
+//--- (YTilt dlldef)
+//--- (end of YTilt dlldef)
 
   constructor TYTilt.Create(func:string);
     begin

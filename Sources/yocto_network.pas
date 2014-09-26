@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_network.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_network.pas 17594 2014-09-10 21:15:55Z mvuilleu $
  *
  * Implements yFindNetwork(), the high-level API for Network functions
  *
@@ -247,68 +247,6 @@ type
     function get_ipConfig():string;
 
     function set_ipConfig(newval:string):integer;
-
-    ////
-    /// <summary>
-    ///   Changes the configuration of the network interface to enable the use of an
-    ///   IP address received from a DHCP server.
-    /// <para>
-    ///   Until an address is received from a DHCP
-    ///   server, the module uses the IP parameters specified to this function.
-    ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="fallbackIpAddr">
-    ///   fallback IP address, to be used when no DHCP reply is received
-    /// </param>
-    /// <param name="fallbackSubnetMaskLen">
-    ///   fallback subnet mask length when no DHCP reply is received, as an
-    ///   integer (eg. 24 means 255.255.255.0)
-    /// </param>
-    /// <param name="fallbackRouter">
-    ///   fallback router IP address, to be used when no DHCP reply is received
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function useDHCP(fallbackIpAddr: string; fallbackSubnetMaskLen: LongInt; fallbackRouter: string):integer;
-
-    ////
-    /// <summary>
-    ///   Changes the configuration of the network interface to use a static IP address.
-    /// <para>
-    ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="ipAddress">
-    ///   device IP address
-    /// </param>
-    /// <param name="subnetMaskLen">
-    ///   subnet mask length, as an integer (eg. 24 means 255.255.255.0)
-    /// </param>
-    /// <param name="router">
-    ///   router IP address (default gateway)
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function useStaticIP(ipAddress: string; subnetMaskLen: LongInt; router: string):integer;
 
     ////
     /// <summary>
@@ -950,6 +888,60 @@ type
 
     ////
     /// <summary>
+    ///   Changes the configuration of the network interface to enable the use of an
+    ///   IP address received from a DHCP server.
+    /// <para>
+    ///   Until an address is received from a DHCP
+    ///   server, the module uses the IP parameters specified to this function.
+    ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
+    /// </para>
+    /// </summary>
+    /// <param name="fallbackIpAddr">
+    ///   fallback IP address, to be used when no DHCP reply is received
+    /// </param>
+    /// <param name="fallbackSubnetMaskLen">
+    ///   fallback subnet mask length when no DHCP reply is received, as an
+    ///   integer (eg. 24 means 255.255.255.0)
+    /// </param>
+    /// <param name="fallbackRouter">
+    ///   fallback router IP address, to be used when no DHCP reply is received
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function useDHCP(fallbackIpAddr: string; fallbackSubnetMaskLen: LongInt; fallbackRouter: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Changes the configuration of the network interface to use a static IP address.
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
+    /// </para>
+    /// </summary>
+    /// <param name="ipAddress">
+    ///   device IP address
+    /// </param>
+    /// <param name="subnetMaskLen">
+    ///   subnet mask length, as an integer (eg. 24 means 255.255.255.0)
+    /// </param>
+    /// <param name="router">
+    ///   router IP address (default gateway)
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function useStaticIP(ipAddress: string; subnetMaskLen: LongInt; router: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Pings str_host to test the network connectivity.
     /// <para>
     ///   Sends four ICMP ECHO_REQUEST requests from the
@@ -995,7 +987,6 @@ type
   end;
 
 //--- (Network functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a network interface for a given identifier.
@@ -1058,6 +1049,8 @@ type
 //--- (end of Network functions declaration)
 
 implementation
+//--- (YNetwork dlldef)
+//--- (end of YNetwork dlldef)
 
   constructor TYNetwork.Create(func:string);
     begin
@@ -1402,80 +1395,6 @@ implementation
     begin
       rest_val := newval;
       result := _setAttr('ipConfig',rest_val);
-    end;
-
-  ////
-  /// <summary>
-  ///   Changes the configuration of the network interface to enable the use of an
-  ///   IP address received from a DHCP server.
-  /// <para>
-  ///   Until an address is received from a DHCP
-  ///   server, the module uses the IP parameters specified to this function.
-  ///   Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="fallbackIpAddr">
-  ///   fallback IP address, to be used when no DHCP reply is received
-  /// </param>
-  /// <param name="fallbackSubnetMaskLen">
-  ///   fallback subnet mask length when no DHCP reply is received, as an
-  ///   integer (eg. 24 means 255.255.255.0)
-  /// </param>
-  /// <param name="fallbackRouter">
-  ///   fallback router IP address, to be used when no DHCP reply is received
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYNetwork.useDHCP(fallbackIpAddr: string; fallbackSubnetMaskLen: LongInt; fallbackRouter: string):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := 'DHCP:'+fallbackIpAddr+'/'+string(fallbackSubnetMaskLen)+'/'+fallbackRouter;
-      result := _setAttr('ipConfig', rest_val);
-    end;
-
-  ////
-  /// <summary>
-  ///   Changes the configuration of the network interface to use a static IP address.
-  /// <para>
-  ///   Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="ipAddress">
-  ///   device IP address
-  /// </param>
-  /// <param name="subnetMaskLen">
-  ///   subnet mask length, as an integer (eg. 24 means 255.255.255.0)
-  /// </param>
-  /// <param name="router">
-  ///   router IP address (default gateway)
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYNetwork.useStaticIP(ipAddress: string; subnetMaskLen: LongInt; router: string):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := 'STATIC:'+ipAddress+'/'+string(subnetMaskLen)+'/'+router;
-      result := _setAttr('ipConfig', rest_val);
     end;
 
   ////
@@ -2406,6 +2325,70 @@ implementation
           inherited _invokeValueCallback(value)
         end;
       result := 0;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the configuration of the network interface to enable the use of an
+  ///   IP address received from a DHCP server.
+  /// <para>
+  ///   Until an address is received from a DHCP
+  ///   server, the module uses the IP parameters specified to this function.
+  ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
+  /// </para>
+  /// </summary>
+  /// <param name="fallbackIpAddr">
+  ///   fallback IP address, to be used when no DHCP reply is received
+  /// </param>
+  /// <param name="fallbackSubnetMaskLen">
+  ///   fallback subnet mask length when no DHCP reply is received, as an
+  ///   integer (eg. 24 means 255.255.255.0)
+  /// </param>
+  /// <param name="fallbackRouter">
+  ///   fallback router IP address, to be used when no DHCP reply is received
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYNetwork.useDHCP(fallbackIpAddr: string; fallbackSubnetMaskLen: LongInt; fallbackRouter: string):LongInt;
+    begin
+      result := self.set_ipConfig('DHCP:'+ fallbackIpAddr+'/'+inttostr( fallbackSubnetMaskLen)+'/'+fallbackRouter);
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the configuration of the network interface to use a static IP address.
+  /// <para>
+  ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
+  /// </para>
+  /// </summary>
+  /// <param name="ipAddress">
+  ///   device IP address
+  /// </param>
+  /// <param name="subnetMaskLen">
+  ///   subnet mask length, as an integer (eg. 24 means 255.255.255.0)
+  /// </param>
+  /// <param name="router">
+  ///   router IP address (default gateway)
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYNetwork.useStaticIP(ipAddress: string; subnetMaskLen: LongInt; router: string):LongInt;
+    begin
+      result := self.set_ipConfig('STATIC:'+ ipAddress+'/'+inttostr( subnetMaskLen)+'/'+router);
       exit;
     end;
 

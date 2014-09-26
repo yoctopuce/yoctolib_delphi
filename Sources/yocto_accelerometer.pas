@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_accelerometer.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_accelerometer.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindAccelerometer(), the high-level API for Accelerometer functions
  *
@@ -50,6 +50,10 @@ uses
 const Y_XVALUE_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_YVALUE_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_ZVALUE_INVALID                = YAPI_INVALID_DOUBLE;
+const Y_GRAVITYCANCELLATION_OFF = 0;
+const Y_GRAVITYCANCELLATION_ON = 1;
+const Y_GRAVITYCANCELLATION_INVALID = -1;
+
 
 
 //--- (end of YAccelerometer definitions)
@@ -88,6 +92,7 @@ type
     _xValue                   : double;
     _yValue                   : double;
     _zValue                   : double;
+    _gravityCancellation      : Integer;
     _valueCallbackAccelerometer : TYAccelerometerValueCallback;
     _timedReportCallbackAccelerometer : TYAccelerometerTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
@@ -149,6 +154,10 @@ type
     /// </para>
     ///-
     function get_zValue():double;
+
+    function get_gravityCancellation():Integer;
+
+    function set_gravityCancellation(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -265,7 +274,6 @@ type
   end;
 
 //--- (Accelerometer functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves an accelerometer for a given identifier.
@@ -328,6 +336,8 @@ type
 //--- (end of Accelerometer functions declaration)
 
 implementation
+//--- (YAccelerometer dlldef)
+//--- (end of YAccelerometer dlldef)
 
   constructor TYAccelerometer.Create(func:string);
     begin
@@ -337,6 +347,7 @@ implementation
       _xValue := Y_XVALUE_INVALID;
       _yValue := Y_YVALUE_INVALID;
       _zValue := Y_ZVALUE_INVALID;
+      _gravityCancellation := Y_GRAVITYCANCELLATION_INVALID;
       _valueCallbackAccelerometer := nil;
       _timedReportCallbackAccelerometer := nil;
       //--- (end of YAccelerometer accessors initialization)
@@ -352,19 +363,25 @@ implementation
     begin
       if (member^.name = 'xValue') then
         begin
-          _xValue := member^.ivalue/65536.0;
+          _xValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'yValue') then
         begin
-          _yValue := member^.ivalue/65536.0;
+          _yValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'zValue') then
         begin
-          _zValue := member^.ivalue/65536.0;
+          _zValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'gravityCancellation') then
+        begin
+          _gravityCancellation := member^.ivalue;
          result := 1;
          exit;
          end;
@@ -461,6 +478,29 @@ implementation
       exit;
     end;
 
+
+  function TYAccelerometer.get_gravityCancellation():Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_GRAVITYCANCELLATION_INVALID;
+              exit
+            end;
+        end;
+      result := self._gravityCancellation;
+      exit;
+    end;
+
+
+  function TYAccelerometer.set_gravityCancellation(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      if(newval>0) then rest_val := '1' else rest_val := '0';
+      result := _setAttr('gravityCancellation',rest_val);
+    end;
 
   ////
   /// <summary>

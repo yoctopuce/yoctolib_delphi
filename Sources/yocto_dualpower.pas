@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_dualpower.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_dualpower.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindDualPower(), the high-level API for DualPower functions
  *
@@ -273,7 +273,6 @@ type
   end;
 
 //--- (DualPower functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a dual power control for a given identifier.
@@ -336,6 +335,8 @@ type
 //--- (end of DualPower functions declaration)
 
 implementation
+//--- (YDualPower dlldef)
+//--- (end of YDualPower dlldef)
 
   constructor TYDualPower.Create(func:string);
     begin

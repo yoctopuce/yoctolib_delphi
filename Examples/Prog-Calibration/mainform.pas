@@ -11,8 +11,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls,yocto_api,yocto_temperature,yocto_pressure,yocto_lightsensor,yocto_carbondioxide,
-  yocto_humidity,yocto_voltage,yocto_current,ExtCtrls, ComCtrls,math;
+  StdCtrls, ExtCtrls, ComCtrls, math, yocto_api;
 
 type
   TForm1 = class(TForm)
@@ -58,22 +57,8 @@ type
     Procedure  removal(module:TYModule);
     procedure  choosenDeviceChanged();
     procedure  refreshFctUI(newone:boolean);
-    procedure  DisplayTemperature(fct:TYTemperature);
-    procedure  DisplayHumidity(fct:TYhumidity);
-    procedure  DisplayPressure(fct:TYPressure);
-    procedure  DisplayLightSensor(fct:TYlightSensor);
-    procedure  DisplayCarbonDioxide(fct:TYcarbondioxide);
-    procedure  DisplayVoltage(fct:TYvoltage);
-    procedure  DisplayCurrent(fct:TyCurrent);
-    procedure  DisplayTemperatureCalPoints(fct:TYTemperature);
-    procedure  DisplayHumidityCalPoints(fct:TYhumidity);
-    procedure  DisplayPressureCalPoints(fct:TYPressure);
-    procedure  DisplayLightSensorCalPoints(fct:TYlightSensor);
-    procedure  DisplayCarbonDioxideCalPoints(fct:TYcarbondioxide);
-    procedure  DisplayVoltageCalPoints(fct:TYvoltage);
-    procedure  DisplayCurrentCalPoints(fct:TyCurrent);
-    procedure  DisplayValue(value,rawvalue:double;resolution:double;valunit:string);
-    procedure  DisplayCalPoints(ValuesRaw,ValuesCal : floatArr;resolution:double ) ;
+    procedure  DisplayValue(fct: TYSensor);
+    procedure  DisplayCalPoints(fct: TYSensor);
     Procedure  EnableCalibrationUI(state:boolean);
   public
     { Public declarations }
@@ -120,8 +105,7 @@ Procedure    TForm1.removal(module:TYModule);
    if devicesList.items.objects[i]=module then index :=i;
 
   // if we removed the current module, we must fully refresh the ui
-  mustrefresh :=  index =  devicesList.itemindex;
-
+  mustrefresh := index = devicesList.itemindex;
 
   if (index>=0) then
    begin
@@ -140,9 +124,9 @@ Procedure    TForm1.removal(module:TYModule);
 procedure  TForm1.choosenDeviceChanged();
 
  var
-  currentDevice  : Tymodule;
+  currentDevice  : TYModule;
   fctount,i      : integer;
-  fct            : TYfunction;
+  fct            : TYSensor;
   fctName        : string;
   fctFullName    : string;
 
@@ -160,7 +144,7 @@ procedure  TForm1.choosenDeviceChanged();
      exit;  // no device at all connected,
   end;
   if (devicesList.itemindex<0)  then devicesList.itemindex:=0;
-  currentDevice := TYmodule(devicesList.items.objects[devicesList.itemindex]);
+  currentDevice := TYModule(devicesList.items.objects[devicesList.itemindex]);
 
   // populate the second drop down
   if (currentDevice.isOnline()) then
@@ -171,18 +155,9 @@ procedure  TForm1.choosenDeviceChanged();
       begin
        fctName := currentDevice.functionId(i);
        fctFullName := currentDevice.get_serialNumber() + '.' + fctName;
-       fct:=nil;
-       // We have to have handle each sensor type independtly, (sorry about that)
-       if  (pos ('temperature',fctName)=1)  then fct:=TYfunction(YfindTemperature(fctFullName));
-       if  (pos ('humidity',fctName)=1)     then fct:=TYfunction(YfindHumidity(fctFullName));
-       if  (pos ('pressure',fctName)=1)     then fct:=TYfunction(YfindPressure(fctFullName));
-       if  (pos ('lightSensor',fctName)=1)  then fct:=TYfunction(YfindLightSensor(fctFullName));
-       if  (pos ('carbonDiodyde',fctName)=1)then fct:=TYfunction(YfindCarbonDioxide(fctFullName));
-       if  (pos ('voltage',fctName)=1)      then fct:=TYfunction(YfindVoltage(fctFullName));
-       if  (pos ('current',fctName)=1)      then fct:=TYfunction(YfindCurrent(fctFullName));
-
+       fct := YFindSensor(fctFullName);
        // add the function in the second drop down
-       if (fct<>nil) then functionsList.items.addObject(fctName,fct);
+       if (fct.isOnline()) then functionsList.items.addObject(fctName,fct);
      end;
    end;
 
@@ -196,7 +171,7 @@ procedure  TForm1.choosenDeviceChanged();
 
 procedure TForm1.refreshFctUI(newone:boolean);
 var
- fct:Tyfunction;
+ fct:TYSensor;
  fctname:string;
  i:integer;
  begin
@@ -217,7 +192,7 @@ var
     exit;
    end;
 
-  fct     := TYfunction(functionsList.items.objects[functionsList.itemindex]);
+  fct     := TYSensor(functionsList.items.objects[functionsList.itemindex]);
   fctname := functionsList.items[functionsList.itemindex];
 
   if (newone) then
@@ -231,36 +206,26 @@ var
        rawedit[i].text:='';
        rawedit[i].color:=clwindow;
       end;
-     if  (pos ('temperature',fctName)=1)   then DisplayTemperatureCalPoints(TYTemperature(fct));
-     if  (pos ('pressure',fctName)=1)      then DisplayPressureCalPoints(TYPressure(fct));
-     if  (pos ('humidity',fctName)=1)      then DisplayHumidityCalPoints(TYHumidity(fct));
-     if  (pos ('lightSensor',fctName)=1)   then DisplayLightSensorCalPoints(TYlightSensor(fct));
-     if  (pos ('carbonDioxide',fctName)=1) then DisplayCarbonDioxideCalPoints(TYcarbondioxide(fct));
-     if  (pos ('voltage',fctName)=1)       then DisplayVoltageCalPoints(TYvoltage(fct));
-     if  (pos ('current',fctName)=1)       then DisplayCurrentCalPoints(TyCurrent(fct));
+    DisplayCalPoints(fct)
    end;
-
-  if (fct.isOnline) then
-   begin
-    if  (pos ('temperature',fctName)=1)  then DisplayTemperature(TYTemperature(fct));
-    if  (pos ('pressure',fctName)=1)     then DisplayPressure(TYPressure(fct));
-    if  (pos ('humidity',fctName)=1)     then DisplayHumidity(TYhumidity(fct));
-    if  (pos ('lightSensor',fctName)=1)  then DisplayLightSensor(TYlightSensor(fct));
-    if  (pos ('carbonDioxide',fctName)=1)then DisplayCarbonDioxide(TYcarbondioxide(fct));
-    if  (pos ('voltage',fctName)=1)      then DisplayVoltage(TYvoltage(fct));
-    if  (pos ('current',fctName)=1)      then DisplayCurrent(TyCurrent(fct));
-   end;
+  if (fct.isOnline()) then DisplayValue(fct);
  end;
 
- procedure Tform1.displayValue(value,rawvalue:double;resolution:double;valunit:string);
+ procedure Tform1.displayValue(fct: TYSensor);
    var
+    value,rawvalue,resolution:double;
+    valunit:string;
     l:double;
    begin
+    value := fct.get_currentValue();
+    rawvalue := fct.get_currentRawValue();
+    resolution := fct.get_resolution();
+    valunit :=fct.get_unit();
     // displays the sensor value on the ui
     ValueDisplayUnits.caption:=valunit;
     if resolution<>Y_RESOLUTION_INVALID  then
      begin
-      // if resolution is available on the device the use it to  round the value
+      // if resolution is available on the device the use it to round the value
       l := round(log10(resolution));
       resolution := power(10,trunc(l));
       RawValueDisplay.caption:='(raw value: '+floatToStr(resolution*round(rawvalue/resolution))+')';
@@ -271,7 +236,6 @@ var
       ValueDisplay.caption:=floatToStr(value);
       RawValueDisplay.caption:='';
      end;
-
    end;
 
 
@@ -297,12 +261,15 @@ var
     cancelBtn.enabled:=state;
  end;
 
- procedure Tform1.DisplayCalPoints(ValuesRaw,ValuesCal : floatArr;resolution:double ) ;
- var i:integer;
-  begin
+ procedure Tform1.DisplayCalPoints(fct:TYSensor);
+ var  i:integer;
+      retcode: LongInt;
+      ValuesRaw,ValuesCal : floatArr;
+ begin
   // little trick: if resolution is not available on the device, the
   // calibration in not available either
-  if   resolution=Y_RESOLUTION_INVALID then
+  retcode := fct.loadCalibrationPoints(ValuesRaw,ValuesCal);
+  if retcode = YAPI_NOT_SUPPORTED then
    begin
      EnableCalibrationUI(false);
      unsupported_warning.visible:=true;
@@ -313,15 +280,12 @@ var
   unsupported_warning.visible:=false;
   for i:=0 to high(ValuesRaw) do
    begin
-     rawedit[i].text:=floattostr(ValuesRaw[i]);
-     caledit[i].text:=floattostr(Valuescal[i]);
+     rawedit[i].text:=_yapiFloatToStr(ValuesRaw[i]);
+     caledit[i].text:=_yapiFloatToStr(Valuescal[i]);
      rawedit[i].color:=$a0FFa0;
      caledit[i].color:=$a0FFa0;
    end;
  end;
-
-
-
 
 procedure TForm1.FormCreate(Sender: TObject);
  var errsmg:string;
@@ -378,11 +342,12 @@ end;
 
 procedure TForm1.CalibrationChange(Sender: TObject);
 var
+ parseRaw  : TLongIntArray;
+ parseCal  : TLongIntArray;
  ValuesRaw : floatArr;
  ValuesCal : floatArr;
- fct       : tyfunction;
- stop      : boolean;
- i,j :integer;
+ fct       : TYSensor;
+ i,j       : integer;
  fctname   : string;
 
 begin
@@ -398,23 +363,21 @@ begin
   setlength(ValuesRaw,0);
   setlength(ValuesCal,0);
   i:=0;
-  stop:=false;
   try
-  while  (i<5) and (caledit[i].text<>'') and (rawedit[i].text<>'') and not(Stop) do
+  while  (i<5) and (caledit[i].text<>'') and (rawedit[i].text<>'') do
    begin
-     setlength(ValuesRaw,i+1); setlength(ValuesCal,i+1);
-     ValuesCal[i]:=strtofloat(caledit[i].text);
-     ValuesRaw[i]:=strtofloat(rawedit[i].text);
+     parseRaw := _decodeFloats(rawedit[i].text);
+     parseCal := _decodeFloats(caledit[i].text);
+     if (length(parseRaw) <> 1) or (length(parseCal) <> 1) then break;
      if (i>0) then
-       if ValuesRaw[i]<= ValuesRaw[i-1] then
-        begin
-          stop:=true;
-          setlength(ValuesRaw,i);
-          setlength(ValuesCal,i);
-          dec(i);
+       begin
+         if parseRaw[0] / 1000.0 <= ValuesRaw[i-1] then break;
        end;
+     setlength(ValuesRaw,i+1); setlength(ValuesCal,i+1);
+     ValuesRaw[i]:= parseRaw[0] / 1000.0;
+     ValuesCal[i]:= parseCal[0] / 1000.0;
      inc(i);
-   end
+   end;
   except
    setlength(ValuesRaw,i);
    setlength(ValuesCal,i);
@@ -433,22 +396,9 @@ begin
   end;
 
  // send the calibration point to the device
- fct     := TYfunction(functionsList.items.objects[functionsList.itemindex]);
+ fct     := TYSensor(functionsList.items.objects[functionsList.itemindex]);
  fctname := functionsList.items[functionsList.itemindex];
-
- if (fct.isOnline) then
-   begin
-    if  (pos ('temperature',fctName)=1)   then TYTemperature(fct).calibrateFromPoints(ValuesRaw,ValuesCal);
-    if  (pos ('pressure',fctName)=1)      then TYhumidity(fct).calibrateFromPoints(ValuesRaw,ValuesCal);
-    if  (pos ('lightSensor',fctName)=1)   then TYlightSensor(fct).calibrateFromPoints(ValuesRaw,ValuesCal);
-    if  (pos ('carbonDioxide',fctName)=1) then TYcarbondioxide(fct).calibrateFromPoints(ValuesRaw,ValuesCal);
-    if  (pos ('voltage',fctName)=1)       then TYvoltage(fct).calibrateFromPoints(ValuesRaw,ValuesCal);
-    if  (pos ('current',fctName)=1)       then TYCurrent(fct).calibrateFromPoints(ValuesRaw,ValuesCal);
-    if  (pos ('humidity',fctName)=1)      then TYHumidity(fct).calibrateFromPoints(ValuesRaw,ValuesCal);
-
-   end;
-
-
+ if (fct.isOnline) then fct.calibrateFromPoints(ValuesRaw,ValuesCal);
 end;
 
 procedure TForm1.saveBtnClick(Sender: TObject);
@@ -469,84 +419,6 @@ begin
    if module.isOnline() then module.revertfromflash();
    refreshFctUI(true);
 end;
-
-// this the weak point of the API, methods get_currentValue,
-// get_resolution,  get_unit etc... are present in all sensor classes, but
-// are  not inherited from the parent class (to keep the object model
-// simple) we have to handle them independtly for each sensor type.
-
- procedure  TForm1.DisplayTemperature(fct:TYTemperature);
-   begin displayValue(fct.get_currentValue(),fct.get_currentRawValue(),fct.get_resolution(),fct.get_unit());end;
-
- procedure  TForm1.DisplayPressure(fct:TYPressure);
-   begin displayValue(fct.get_currentValue(),fct.get_currentRawValue(),fct.get_resolution(),fct.get_unit());end;
-
-
- procedure  TForm1.DisplayHumidity(fct:TYhumidity);
-   begin displayValue(fct.get_currentValue(),fct.get_currentRawValue(),fct.get_resolution(),fct.get_unit());end;
-
- procedure  TForm1.DisplayLightSensor(fct:TYlightSensor);
-   begin displayValue(fct.get_currentValue(),fct.get_currentRawValue(),fct.get_resolution(),fct.get_unit());end;
-
- procedure  TForm1.DisplayCarbonDioxide(fct:TYcarbondioxide);
-   begin displayValue(fct.get_currentValue(),fct.get_currentRawValue(),fct.get_resolution(),fct.get_unit());end;
-
- procedure  TForm1.DisplayVoltage(fct:TYvoltage);
-   begin displayValue(fct.get_currentValue(),fct.get_currentRawValue(),fct.get_resolution(),fct.get_unit());end;
-
- procedure  TForm1.DisplayCurrent(fct:TyCurrent);
-   begin displayValue(fct.get_currentValue(),fct.get_currentRawValue(),fct.get_resolution(),fct.get_unit());end;
-
-
-
- procedure   TForm1.DisplayTemperatureCalPoints(fct:TYTemperature);
- var  ValuesRaw,ValuesCal : floatArr;
- begin
-    fct.loadCalibrationPoints(ValuesRaw,ValuesCal);
-    DisplayCalPoints(ValuesRaw,ValuesCal,fct.get_resolution());
-  end;
-
- procedure   TForm1.DisplayPressureCalPoints(fct:TYPressure);
- var  ValuesRaw,ValuesCal : floatArr;
- begin
-    fct.loadCalibrationPoints(ValuesRaw,ValuesCal);
-    DisplayCalPoints(ValuesRaw,ValuesCal,fct.get_resolution());
-  end;
-
- procedure  TForm1.DisplayHumidityCalPoints(fct:TYhumidity);
- var  ValuesRaw,ValuesCal : floatArr;
- begin
-    fct.loadCalibrationPoints(ValuesRaw,ValuesCal);
-    DisplayCalPoints(ValuesRaw,ValuesCal,fct.get_resolution());
-  end;
-
- procedure  TForm1.DisplayLightSensorCalPoints(fct:TYlightSensor);
- var  ValuesRaw,ValuesCal : floatArr;
- begin
-    fct.loadCalibrationPoints(ValuesRaw,ValuesCal);
-    DisplayCalPoints(ValuesRaw,ValuesCal,fct.get_resolution());
-  end;
-
- procedure  TForm1.DisplayCarbonDioxideCalPoints(fct:TYcarbondioxide);
- var  ValuesRaw,ValuesCal : floatArr;
- begin
-    fct.loadCalibrationPoints(ValuesRaw,ValuesCal);
-    DisplayCalPoints(ValuesRaw,ValuesCal,fct.get_resolution());
-  end;
-
- procedure  TForm1.DisplayVoltageCalPoints(fct:TYvoltage);
- var  ValuesRaw,ValuesCal : floatArr;
- begin
-    fct.loadCalibrationPoints(ValuesRaw,ValuesCal);
-    DisplayCalPoints(ValuesRaw,ValuesCal,fct.get_resolution());
-  end;
-
- procedure  TForm1.DisplayCurrentCalPoints(fct:TyCurrent);
- var  ValuesRaw,ValuesCal : floatArr;
- begin
-    fct.loadCalibrationPoints(ValuesRaw,ValuesCal);
-    DisplayCalPoints(ValuesRaw,ValuesCal,fct.get_resolution());
-  end;
 
 
 end.

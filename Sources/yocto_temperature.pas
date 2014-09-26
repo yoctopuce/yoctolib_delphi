@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_temperature.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_temperature.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindTemperature(), the high-level API for Temperature functions
  *
@@ -273,7 +273,6 @@ type
   end;
 
 //--- (Temperature functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a temperature sensor for a given identifier.
@@ -336,6 +335,8 @@ type
 //--- (end of Temperature functions declaration)
 
 implementation
+//--- (YTemperature dlldef)
+//--- (end of YTemperature dlldef)
 
   constructor TYTemperature.Create(func:string);
     begin

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_lightsensor.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_lightsensor.pas 17655 2014-09-16 12:24:27Z mvuilleu $
  *
  * Implements yFindLightSensor(), the high-level API for LightSensor functions
  *
@@ -47,6 +47,13 @@ uses
 
 //--- (YLightSensor definitions)
 
+const Y_MEASURETYPE_HUMAN_EYE = 0;
+const Y_MEASURETYPE_WIDE_SPECTRUM = 1;
+const Y_MEASURETYPE_INFRARED = 2;
+const Y_MEASURETYPE_HIGH_RATE = 3;
+const Y_MEASURETYPE_HIGH_ENERGY = 4;
+const Y_MEASURETYPE_INVALID = -1;
+
 
 
 //--- (end of YLightSensor definitions)
@@ -82,6 +89,7 @@ type
     _reportFrequency          : string;
     _calibrationParam         : string;
     _resolution               : double;
+    _measureType              : Integer;
     _valueCallbackLightSensor : TYLightSensorValueCallback;
     _timedReportCallbackLightSensor : TYLightSensorTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
@@ -121,6 +129,53 @@ type
     /// </para>
     ///-
     function calibrate(calibratedVal: double):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the type of light measure.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a value among <c>Y_MEASURETYPE_HUMAN_EYE</c>, <c>Y_MEASURETYPE_WIDE_SPECTRUM</c>,
+    ///   <c>Y_MEASURETYPE_INFRARED</c>, <c>Y_MEASURETYPE_HIGH_RATE</c> and <c>Y_MEASURETYPE_HIGH_ENERGY</c>
+    ///   corresponding to the type of light measure
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_MEASURETYPE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_measureType():Integer;
+
+    ////
+    /// <summary>
+    ///   Modify the light sensor type used in the device.
+    /// <para>
+    ///   The measure can either
+    ///   approximate the response of the human eye, focus on a specific light
+    ///   spectrum, depending on the capabilities of the light-sensitive cell.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a value among <c>Y_MEASURETYPE_HUMAN_EYE</c>, <c>Y_MEASURETYPE_WIDE_SPECTRUM</c>,
+    ///   <c>Y_MEASURETYPE_INFRARED</c>, <c>Y_MEASURETYPE_HIGH_RATE</c> and <c>Y_MEASURETYPE_HIGH_ENERGY</c>
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_measureType(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -237,7 +292,6 @@ type
   end;
 
 //--- (LightSensor functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a light sensor for a given identifier.
@@ -300,12 +354,15 @@ type
 //--- (end of LightSensor functions declaration)
 
 implementation
+//--- (YLightSensor dlldef)
+//--- (end of YLightSensor dlldef)
 
   constructor TYLightSensor.Create(func:string);
     begin
       inherited Create(func);
       _className := 'LightSensor';
       //--- (YLightSensor accessors initialization)
+      _measureType := Y_MEASURETYPE_INVALID;
       _valueCallbackLightSensor := nil;
       _timedReportCallbackLightSensor := nil;
       //--- (end of YLightSensor accessors initialization)
@@ -319,6 +376,12 @@ implementation
       sub : PJSONRECORD;
       i,l        : integer;
     begin
+      if (member^.name = 'measureType') then
+        begin
+          _measureType := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
@@ -327,7 +390,7 @@ implementation
     var
       rest_val: string;
     begin
-      rest_val := inttostr(round(newval*65536.0));
+      rest_val := inttostr(round(newval * 65536.0));
       result := _setAttr('currentValue',rest_val);
     end;
 
@@ -360,8 +423,73 @@ implementation
     var
       rest_val: string;
     begin
-      rest_val := inttostr(round(calibratedVal*65536.0));
+      rest_val := inttostr(round(calibratedVal * 65536.0));
       result := _setAttr('currentValue', rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the type of light measure.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a value among Y_MEASURETYPE_HUMAN_EYE, Y_MEASURETYPE_WIDE_SPECTRUM, Y_MEASURETYPE_INFRARED,
+  ///   Y_MEASURETYPE_HIGH_RATE and Y_MEASURETYPE_HIGH_ENERGY corresponding to the type of light measure
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_MEASURETYPE_INVALID.
+  /// </para>
+  ///-
+  function TYLightSensor.get_measureType():Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_MEASURETYPE_INVALID;
+              exit
+            end;
+        end;
+      result := self._measureType;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Modify the light sensor type used in the device.
+  /// <para>
+  ///   The measure can either
+  ///   approximate the response of the human eye, focus on a specific light
+  ///   spectrum, depending on the capabilities of the light-sensitive cell.
+  ///   Remember to call the saveToFlash() method of the module if the
+  ///   modification must be kept.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a value among Y_MEASURETYPE_HUMAN_EYE, Y_MEASURETYPE_WIDE_SPECTRUM, Y_MEASURETYPE_INFRARED,
+  ///   Y_MEASURETYPE_HIGH_RATE and Y_MEASURETYPE_HIGH_ENERGY
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYLightSensor.set_measureType(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('measureType',rest_val);
     end;
 
   ////

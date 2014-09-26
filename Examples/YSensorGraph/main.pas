@@ -2,15 +2,35 @@ unit main;
 
 interface
 
+{$IFDEF VER230}
+{$DEFINE UNITSCOPE}
+{$ENDIF}
+{$IFDEF VER240}
+{$DEFINE UNITSCOPE}
+{$ENDIF}
+{$IFDEF VER250}
+{$DEFINE UNITSCOPE}
+{$ENDIF}
+{$IFDEF VER260}
+{$DEFINE UNITSCOPE}
+{$ENDIF}
+{$IFDEF VER270}
+{$DEFINE UNITSCOPE}
+{$ENDIF}
+{$IFDEF VER280}
+{$DEFINE UNITSCOPE}
+{$ENDIF}
+{$IFDEF VER290}
+{$DEFINE UNITSCOPE}
+{$ENDIF}
+
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ExtCtrls,
-  {$IFDEF CONDITIONALEXPRESSIONS}
-     {$IF RTLVersion >= 16.0}
-        VCLTee.TeeProcs, VCLTee.TeEngine, VCLTee.Chart, VCLTee.Series,
-     {$ELSE}
-        TeeProcs, TeEngine, Chart, Series,
-     {$IFEND}
+  {$IFDEF UNITSCOPE}
+     VCLTee.TeeProcs, VCLTee.TeEngine, VCLTee.Chart, VCLTee.Series,
+  {$ELSE}
+     TeeProcs, TeEngine, Chart, Series,
   {$ENDIF}
   ComCtrls, Buttons,yocto_api,Yocto_datalogger;
 
@@ -331,7 +351,7 @@ begin
       statusBar1.repaint();
       setGraphScale;
       setSensorCount();
-      s.set_reportFrequency('3/s');
+      s.set_reportFrequency('100/s');
       s.registerTimedReportCallback(newSensorValueCallback);
       loading.Visible := false;
       chart1.Visible:=true;

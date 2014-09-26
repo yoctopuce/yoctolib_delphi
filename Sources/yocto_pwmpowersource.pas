@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwmpowersource.pas 15545 2014-03-21 10:55:55Z seb $
+ * $Id: yocto_pwmpowersource.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
  *
@@ -229,7 +229,6 @@ type
   end;
 
 //--- (PwmPowerSource functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a voltage source for a given identifier.
@@ -292,6 +291,8 @@ type
 //--- (end of PwmPowerSource functions declaration)
 
 implementation
+//--- (YPwmPowerSource dlldef)
+//--- (end of YPwmPowerSource dlldef)
 
   constructor TYPwmPowerSource.Create(func:string);
     begin

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wakeupschedule.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_wakeupschedule.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
@@ -467,7 +467,6 @@ type
   end;
 
 //--- (WakeUpSchedule functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a wake up schedule for a given identifier.
@@ -530,6 +529,8 @@ type
 //--- (end of WakeUpSchedule functions declaration)
 
 implementation
+//--- (YWakeUpSchedule dlldef)
+//--- (end of YWakeUpSchedule dlldef)
 
   constructor TYWakeUpSchedule.Create(func:string);
     begin

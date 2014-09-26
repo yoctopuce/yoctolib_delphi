@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_motor.pas 16185 2014-05-12 16:00:20Z seb $
+ * $Id: yocto_motor.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindMotor(), the high-level API for Motor functions
  *
@@ -48,7 +48,7 @@ uses
 //--- (YMotor definitions)
 
 const Y_MOTORSTATUS_IDLE = 0;
-const Y_MOTORSTATUS_BREAK = 1;
+const Y_MOTORSTATUS_BRAKE = 1;
 const Y_MOTORSTATUS_FORWD = 2;
 const Y_MOTORSTATUS_BACKWD = 3;
 const Y_MOTORSTATUS_LOVOLT = 4;
@@ -58,10 +58,10 @@ const Y_MOTORSTATUS_FAILSF = 7;
 const Y_MOTORSTATUS_INVALID = -1;
 
 const Y_DRIVINGFORCE_INVALID          = YAPI_INVALID_DOUBLE;
-const Y_BREAKINGFORCE_INVALID         = YAPI_INVALID_DOUBLE;
+const Y_BRAKINGFORCE_INVALID          = YAPI_INVALID_DOUBLE;
 const Y_CUTOFFVOLTAGE_INVALID         = YAPI_INVALID_DOUBLE;
 const Y_OVERCURRENTLIMIT_INVALID      = YAPI_INVALID_INT;
-const Y_FREQUENCY_INVALID             = YAPI_INVALID_UINT;
+const Y_FREQUENCY_INVALID             = YAPI_INVALID_DOUBLE;
 const Y_STARTERTIME_INVALID           = YAPI_INVALID_INT;
 const Y_FAILSAFETIMEOUT_INVALID       = YAPI_INVALID_UINT;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
@@ -80,10 +80,10 @@ type
   ///   TYMotor Class: Motor function interface
   /// <para>
   ///   Yoctopuce application programming interface allows you to drive the
-  ///   power sent to motor to make it turn both ways, but also to drive accelerations
+  ///   power sent to the motor to make it turn both ways, but also to drive accelerations
   ///   and decelerations. The motor will then accelerate automatically: you will not
   ///   have to monitor it. The API also allows to slow down the motor by shortening
-  ///   its terminals: the motor will then act as an electromagnetic break.
+  ///   its terminals: the motor will then act as an electromagnetic brake.
   /// </para>
   /// </summary>
   ///-
@@ -96,10 +96,10 @@ type
     _advertisedValue          : string;
     _motorStatus              : Integer;
     _drivingForce             : double;
-    _breakingForce            : double;
+    _brakingForce             : double;
     _cutOffVoltage            : double;
     _overCurrentLimit         : LongInt;
-    _frequency                : LongInt;
+    _frequency                : double;
     _starterTime              : LongInt;
     _failSafeTimeout          : LongInt;
     _command                  : string;
@@ -121,10 +121,10 @@ type
     ///   IDLE   when the motor is stopped/in free wheel, ready to start;
     ///   FORWD  when the controller is driving the motor forward;
     ///   BACKWD when the controller is driving the motor backward;
-    ///   BREAK  when the controller is breaking;
+    ///   BRAKE  when the controller is braking;
     ///   LOVOLT when the controller has detected a low voltage condition;
     ///   HICURR when the controller has detected an overcurrent condition;
-    ///   HIHEAT when the controller detected an overheat condition;
+    ///   HIHEAT when the controller has detected an overheat condition;
     ///   FAILSF when the controller switched on the failsafe security.
     /// </para>
     /// <para>
@@ -135,7 +135,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_MOTORSTATUS_IDLE</c>, <c>Y_MOTORSTATUS_BREAK</c>, <c>Y_MOTORSTATUS_FORWD</c>,
+    ///   a value among <c>Y_MOTORSTATUS_IDLE</c>, <c>Y_MOTORSTATUS_BRAKE</c>, <c>Y_MOTORSTATUS_FORWD</c>,
     ///   <c>Y_MOTORSTATUS_BACKWD</c>, <c>Y_MOTORSTATUS_LOVOLT</c>, <c>Y_MOTORSTATUS_HICURR</c>,
     ///   <c>Y_MOTORSTATUS_HIHEAT</c> and <c>Y_MOTORSTATUS_FAILSF</c>
     /// </returns>
@@ -155,7 +155,7 @@ type
     ///   to 100%. If you want go easy on your mechanics and avoid excessive current consumption,
     ///   try to avoid brutal power changes. For example, immediate transition from forward full power
     ///   to reverse full power is a very bad idea. Each time the driving power is modified, the
-    ///   breaking power is set to zero.
+    ///   braking power is set to zero.
     /// </para>
     /// <para>
     /// </para>
@@ -193,16 +193,16 @@ type
 
     ////
     /// <summary>
-    ///   Changes immediately the breaking force applied to the motor (in per cents).
+    ///   Changes immediately the braking force applied to the motor (in percents).
     /// <para>
-    ///   The value 0 corresponds to no breaking (free wheel). When the breaking force
+    ///   The value 0 corresponds to no braking (free wheel). When the braking force
     ///   is changed, the driving power is set to zero. The value is a percentage.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a floating point number corresponding to immediately the breaking force applied to the motor (in per cents)
+    ///   a floating point number corresponding to immediately the braking force applied to the motor (in percents)
     /// </param>
     /// <para>
     /// </para>
@@ -213,43 +213,43 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function set_breakingForce(newval:double):integer;
+    function set_brakingForce(newval:double):integer;
 
     ////
     /// <summary>
-    ///   Returns the breaking force applied to the motor, as a percentage.
+    ///   Returns the braking force applied to the motor, as a percentage.
     /// <para>
-    ///   The value 0 corresponds to no breaking (free wheel).
+    ///   The value 0 corresponds to no braking (free wheel).
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a floating point number corresponding to the breaking force applied to the motor, as a percentage
+    ///   a floating point number corresponding to the braking force applied to the motor, as a percentage
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_BREAKINGFORCE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>Y_BRAKINGFORCE_INVALID</c>.
     /// </para>
     ///-
-    function get_breakingForce():double;
+    function get_brakingForce():double;
 
     ////
     /// <summary>
-    ///   Changes the threshold voltage under which the controller will automatically switch to error state
-    ///   and prevent further current draw.
+    ///   Changes the threshold voltage under which the controller automatically switches to error state
+    ///   and prevents further current draw.
     /// <para>
     ///   This setting prevent damage to a battery that can
     ///   occur when drawing current from an "empty" battery.
-    ///   Note that whatever the cutoff threshold, the controller will switch to undervoltage
+    ///   Note that whatever the cutoff threshold, the controller switches to undervoltage
     ///   error state if the power supply goes under 3V, even for a very brief time.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a floating point number corresponding to the threshold voltage under which the controller will
-    ///   automatically switch to error state
-    ///   and prevent further current draw
+    ///   a floating point number corresponding to the threshold voltage under which the controller
+    ///   automatically switches to error state
+    ///   and prevents further current draw
     /// </param>
     /// <para>
     /// </para>
@@ -264,19 +264,19 @@ type
 
     ////
     /// <summary>
-    ///   Returns the threshold voltage under which the controller will automatically switch to error state
-    ///   and prevent further current draw.
+    ///   Returns the threshold voltage under which the controller automatically switches to error state
+    ///   and prevents further current draw.
     /// <para>
-    ///   This setting prevent damage to a battery that can
+    ///   This setting prevents damage to a battery that can
     ///   occur when drawing current from an "empty" battery.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a floating point number corresponding to the threshold voltage under which the controller will
-    ///   automatically switch to error state
-    ///   and prevent further current draw
+    ///   a floating point number corresponding to the threshold voltage under which the controller
+    ///   automatically switches to error state
+    ///   and prevents further current draw
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_CUTOFFVOLTAGE_INVALID</c>.
@@ -286,8 +286,8 @@ type
 
     ////
     /// <summary>
-    ///   Returns the current threshold (in mA) above which the controller will automatically
-    ///   switch to error state.
+    ///   Returns the current threshold (in mA) above which the controller automatically
+    ///   switches to error state.
     /// <para>
     ///   A zero value means that there is no limit.
     /// </para>
@@ -295,8 +295,8 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the current threshold (in mA) above which the controller will automatically
-    ///   switch to error state
+    ///   an integer corresponding to the current threshold (in mA) above which the controller automatically
+    ///   switches to error state
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_OVERCURRENTLIMIT_INVALID</c>.
@@ -306,19 +306,19 @@ type
 
     ////
     /// <summary>
-    ///   Changes tthe current threshold (in mA) above which the controller will automatically
-    ///   switch to error state.
+    ///   Changes the current threshold (in mA) above which the controller automatically
+    ///   switches to error state.
     /// <para>
     ///   A zero value means that there is no limit. Note that whatever the
-    ///   current limit is, the controller will switch to OVERCURRENT status if the current
+    ///   current limit is, the controller switches to OVERCURRENT status if the current
     ///   goes above 32A, even for a very brief time.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer corresponding to tthe current threshold (in mA) above which the controller will automatically
-    ///   switch to error state
+    ///   an integer corresponding to the current threshold (in mA) above which the controller automatically
+    ///   switches to error state
     /// </param>
     /// <para>
     /// </para>
@@ -333,23 +333,6 @@ type
 
     ////
     /// <summary>
-    ///   Returns the PWM frequency used to control the motor.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   an integer corresponding to the PWM frequency used to control the motor
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>Y_FREQUENCY_INVALID</c>.
-    /// </para>
-    ///-
-    function get_frequency():LongInt;
-
-    ////
-    /// <summary>
     ///   Changes the PWM frequency used to control the motor.
     /// <para>
     ///   Low frequency is usually
@@ -361,7 +344,7 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer corresponding to the PWM frequency used to control the motor
+    ///   a floating point number corresponding to the PWM frequency used to control the motor
     /// </param>
     /// <para>
     /// </para>
@@ -372,7 +355,24 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function set_frequency(newval:LongInt):integer;
+    function set_frequency(newval:double):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the PWM frequency used to control the motor.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a floating point number corresponding to the PWM frequency used to control the motor
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_FREQUENCY_INVALID</c>.
+    /// </para>
+    ///-
+    function get_frequency():double;
 
     ////
     /// <summary>
@@ -422,8 +422,8 @@ type
     ///   Returns the delay in milliseconds allowed for the controller to run autonomously without
     ///   receiving any instruction from the control process.
     /// <para>
-    ///   Once this delay is elapsed,
-    ///   the controller will automatically stop the motor and switch to FAILSAFE error.
+    ///   When this delay has elapsed,
+    ///   the controller automatically stops the motor and switches to FAILSAFE error.
     ///   Failsafe security is disabled when the value is zero.
     /// </para>
     /// <para>
@@ -444,8 +444,8 @@ type
     ///   Changes the delay in milliseconds allowed for the controller to run autonomously without
     ///   receiving any instruction from the control process.
     /// <para>
-    ///   Once this delay is elapsed,
-    ///   the controller will automatically stop the motor and switch to FAILSAFE error.
+    ///   When this delay has elapsed,
+    ///   the controller automatically stops the motor and switches to FAILSAFE error.
     ///   Failsafe security is disabled when the value is zero.
     /// </para>
     /// <para>
@@ -542,7 +542,7 @@ type
     /// <para>
     ///   When the motor is running and the failsafe feature
     ///   is active, this function should be called periodically to prove that the control process
-    ///   is running properly. Otherwise, the motor will be automatically stopped after the specified
+    ///   is running properly. Otherwise, the motor is automatically stopped after the specified
     ///   timeout. Calling a motor <i>set</i> function implicitely rearms the failsafe timer.
     /// </para>
     /// </summary>
@@ -567,7 +567,7 @@ type
     /// </para>
     /// </summary>
     /// <param name="targetPower">
-    ///   desired motor power, in per cents (between -100% and +100%)
+    ///   desired motor power, in percents (between -100% and +100%)
     /// </param>
     /// <param name="delay">
     ///   duration (in ms) of the transition
@@ -583,12 +583,12 @@ type
 
     ////
     /// <summary>
-    ///   Changes progressively the breaking force applied to the motor for a specific duration.
+    ///   Changes progressively the braking force applied to the motor for a specific duration.
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="targetPower">
-    ///   desired breaking force, in per cents
+    ///   desired braking force, in percents
     /// </param>
     /// <param name="delay">
     ///   duration (in ms) of the transition
@@ -600,7 +600,7 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function breakingForceMove(targetPower: double; delay: LongInt):LongInt; overload; virtual;
+    function brakingForceMove(targetPower: double; delay: LongInt):LongInt; overload; virtual;
 
 
     ////
@@ -629,7 +629,6 @@ type
   end;
 
 //--- (Motor functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a motor for a given identifier.
@@ -692,6 +691,8 @@ type
 //--- (end of Motor functions declaration)
 
 implementation
+//--- (YMotor dlldef)
+//--- (end of YMotor dlldef)
 
   constructor TYMotor.Create(func:string);
     begin
@@ -700,7 +701,7 @@ implementation
       //--- (YMotor accessors initialization)
       _motorStatus := Y_MOTORSTATUS_INVALID;
       _drivingForce := Y_DRIVINGFORCE_INVALID;
-      _breakingForce := Y_BREAKINGFORCE_INVALID;
+      _brakingForce := Y_BRAKINGFORCE_INVALID;
       _cutOffVoltage := Y_CUTOFFVOLTAGE_INVALID;
       _overCurrentLimit := Y_OVERCURRENTLIMIT_INVALID;
       _frequency := Y_FREQUENCY_INVALID;
@@ -727,19 +728,19 @@ implementation
          end;
       if (member^.name = 'drivingForce') then
         begin
-          _drivingForce := member^.ivalue/65536.0;
+          _drivingForce := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
-      if (member^.name = 'breakingForce') then
+      if (member^.name = 'brakingForce') then
         begin
-          _breakingForce := member^.ivalue/65536.0;
+          _brakingForce := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'cutOffVoltage') then
         begin
-          _cutOffVoltage := member^.ivalue/65536.0;
+          _cutOffVoltage := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
@@ -751,7 +752,7 @@ implementation
          end;
       if (member^.name = 'frequency') then
         begin
-          _frequency := integer(member^.ivalue);
+          _frequency := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
@@ -785,10 +786,10 @@ implementation
   ///   IDLE   when the motor is stopped/in free wheel, ready to start;
   ///   FORWD  when the controller is driving the motor forward;
   ///   BACKWD when the controller is driving the motor backward;
-  ///   BREAK  when the controller is breaking;
+  ///   BRAKE  when the controller is braking;
   ///   LOVOLT when the controller has detected a low voltage condition;
   ///   HICURR when the controller has detected an overcurrent condition;
-  ///   HIHEAT when the controller detected an overheat condition;
+  ///   HIHEAT when the controller has detected an overheat condition;
   ///   FAILSF when the controller switched on the failsafe security.
   /// </para>
   /// <para>
@@ -799,7 +800,7 @@ implementation
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a value among Y_MOTORSTATUS_IDLE, Y_MOTORSTATUS_BREAK, Y_MOTORSTATUS_FORWD, Y_MOTORSTATUS_BACKWD,
+  ///   a value among Y_MOTORSTATUS_IDLE, Y_MOTORSTATUS_BRAKE, Y_MOTORSTATUS_FORWD, Y_MOTORSTATUS_BACKWD,
   ///   Y_MOTORSTATUS_LOVOLT, Y_MOTORSTATUS_HICURR, Y_MOTORSTATUS_HIHEAT and Y_MOTORSTATUS_FAILSF
   /// </returns>
   /// <para>
@@ -837,7 +838,7 @@ implementation
   ///   to 100%. If you want go easy on your mechanics and avoid excessive current consumption,
   ///   try to avoid brutal power changes. For example, immediate transition from forward full power
   ///   to reverse full power is a very bad idea. Each time the driving power is modified, the
-  ///   breaking power is set to zero.
+  ///   braking power is set to zero.
   /// </para>
   /// <para>
   /// </para>
@@ -858,7 +859,7 @@ implementation
     var
       rest_val: string;
     begin
-      rest_val := inttostr(round(newval*65536.0));
+      rest_val := inttostr(round(newval * 65536.0));
       result := _setAttr('drivingForce',rest_val);
     end;
 
@@ -894,16 +895,16 @@ implementation
 
   ////
   /// <summary>
-  ///   Changes immediately the breaking force applied to the motor (in per cents).
+  ///   Changes immediately the braking force applied to the motor (in percents).
   /// <para>
-  ///   The value 0 corresponds to no breaking (free wheel). When the breaking force
+  ///   The value 0 corresponds to no braking (free wheel). When the braking force
   ///   is changed, the driving power is set to zero. The value is a percentage.
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   a floating point number corresponding to immediately the breaking force applied to the motor (in per cents)
+  ///   a floating point number corresponding to immediately the braking force applied to the motor (in percents)
   /// </param>
   /// <para>
   /// </para>
@@ -914,62 +915,62 @@ implementation
   ///   On failure, throws an exception or returns a negative error code.
   /// </para>
   ///-
-  function TYMotor.set_breakingForce(newval:double):integer;
+  function TYMotor.set_brakingForce(newval:double):integer;
     var
       rest_val: string;
     begin
-      rest_val := inttostr(round(newval*65536.0));
-      result := _setAttr('breakingForce',rest_val);
+      rest_val := inttostr(round(newval * 65536.0));
+      result := _setAttr('brakingForce',rest_val);
     end;
 
   ////
   /// <summary>
-  ///   Returns the breaking force applied to the motor, as a percentage.
+  ///   Returns the braking force applied to the motor, as a percentage.
   /// <para>
-  ///   The value 0 corresponds to no breaking (free wheel).
+  ///   The value 0 corresponds to no braking (free wheel).
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a floating point number corresponding to the breaking force applied to the motor, as a percentage
+  ///   a floating point number corresponding to the braking force applied to the motor, as a percentage
   /// </returns>
   /// <para>
-  ///   On failure, throws an exception or returns Y_BREAKINGFORCE_INVALID.
+  ///   On failure, throws an exception or returns Y_BRAKINGFORCE_INVALID.
   /// </para>
   ///-
-  function TYMotor.get_breakingForce():double;
+  function TYMotor.get_brakingForce():double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
-              result := Y_BREAKINGFORCE_INVALID;
+              result := Y_BRAKINGFORCE_INVALID;
               exit
             end;
         end;
-      result := self._breakingForce;
+      result := self._brakingForce;
       exit;
     end;
 
 
   ////
   /// <summary>
-  ///   Changes the threshold voltage under which the controller will automatically switch to error state
-  ///   and prevent further current draw.
+  ///   Changes the threshold voltage under which the controller automatically switches to error state
+  ///   and prevents further current draw.
   /// <para>
   ///   This setting prevent damage to a battery that can
   ///   occur when drawing current from an "empty" battery.
-  ///   Note that whatever the cutoff threshold, the controller will switch to undervoltage
+  ///   Note that whatever the cutoff threshold, the controller switches to undervoltage
   ///   error state if the power supply goes under 3V, even for a very brief time.
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   a floating point number corresponding to the threshold voltage under which the controller will
-  ///   automatically switch to error state
-  ///   and prevent further current draw
+  ///   a floating point number corresponding to the threshold voltage under which the controller
+  ///   automatically switches to error state
+  ///   and prevents further current draw
   /// </param>
   /// <para>
   /// </para>
@@ -984,25 +985,25 @@ implementation
     var
       rest_val: string;
     begin
-      rest_val := inttostr(round(newval*65536.0));
+      rest_val := inttostr(round(newval * 65536.0));
       result := _setAttr('cutOffVoltage',rest_val);
     end;
 
   ////
   /// <summary>
-  ///   Returns the threshold voltage under which the controller will automatically switch to error state
-  ///   and prevent further current draw.
+  ///   Returns the threshold voltage under which the controller automatically switches to error state
+  ///   and prevents further current draw.
   /// <para>
-  ///   This setting prevent damage to a battery that can
+  ///   This setting prevents damage to a battery that can
   ///   occur when drawing current from an "empty" battery.
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a floating point number corresponding to the threshold voltage under which the controller will
-  ///   automatically switch to error state
-  ///   and prevent further current draw
+  ///   a floating point number corresponding to the threshold voltage under which the controller
+  ///   automatically switches to error state
+  ///   and prevents further current draw
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_CUTOFFVOLTAGE_INVALID.
@@ -1025,8 +1026,8 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the current threshold (in mA) above which the controller will automatically
-  ///   switch to error state.
+  ///   Returns the current threshold (in mA) above which the controller automatically
+  ///   switches to error state.
   /// <para>
   ///   A zero value means that there is no limit.
   /// </para>
@@ -1034,8 +1035,8 @@ implementation
   /// </para>
   /// </summary>
   /// <returns>
-  ///   an integer corresponding to the current threshold (in mA) above which the controller will automatically
-  ///   switch to error state
+  ///   an integer corresponding to the current threshold (in mA) above which the controller automatically
+  ///   switches to error state
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_OVERCURRENTLIMIT_INVALID.
@@ -1058,19 +1059,19 @@ implementation
 
   ////
   /// <summary>
-  ///   Changes tthe current threshold (in mA) above which the controller will automatically
-  ///   switch to error state.
+  ///   Changes the current threshold (in mA) above which the controller automatically
+  ///   switches to error state.
   /// <para>
   ///   A zero value means that there is no limit. Note that whatever the
-  ///   current limit is, the controller will switch to OVERCURRENT status if the current
+  ///   current limit is, the controller switches to OVERCURRENT status if the current
   ///   goes above 32A, even for a very brief time.
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   an integer corresponding to tthe current threshold (in mA) above which the controller will automatically
-  ///   switch to error state
+  ///   an integer corresponding to the current threshold (in mA) above which the controller automatically
+  ///   switches to error state
   /// </param>
   /// <para>
   /// </para>
@@ -1091,6 +1092,38 @@ implementation
 
   ////
   /// <summary>
+  ///   Changes the PWM frequency used to control the motor.
+  /// <para>
+  ///   Low frequency is usually
+  ///   more efficient and may help the motor to start, but an audible noise might be
+  ///   generated. A higher frequency reduces the noise, but more energy is converted
+  ///   into heat.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a floating point number corresponding to the PWM frequency used to control the motor
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYMotor.set_frequency(newval:double):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(round(newval * 65536.0));
+      result := _setAttr('frequency',rest_val);
+    end;
+
+  ////
+  /// <summary>
   ///   Returns the PWM frequency used to control the motor.
   /// <para>
   /// </para>
@@ -1098,13 +1131,13 @@ implementation
   /// </para>
   /// </summary>
   /// <returns>
-  ///   an integer corresponding to the PWM frequency used to control the motor
+  ///   a floating point number corresponding to the PWM frequency used to control the motor
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_FREQUENCY_INVALID.
   /// </para>
   ///-
-  function TYMotor.get_frequency():LongInt;
+  function TYMotor.get_frequency():double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1118,38 +1151,6 @@ implementation
       exit;
     end;
 
-
-  ////
-  /// <summary>
-  ///   Changes the PWM frequency used to control the motor.
-  /// <para>
-  ///   Low frequency is usually
-  ///   more efficient and may help the motor to start, but an audible noise might be
-  ///   generated. A higher frequency reduces the noise, but more energy is converted
-  ///   into heat.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the PWM frequency used to control the motor
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYMotor.set_frequency(newval:LongInt):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := inttostr(newval);
-      result := _setAttr('frequency',rest_val);
-    end;
 
   ////
   /// <summary>
@@ -1218,8 +1219,8 @@ implementation
   ///   Returns the delay in milliseconds allowed for the controller to run autonomously without
   ///   receiving any instruction from the control process.
   /// <para>
-  ///   Once this delay is elapsed,
-  ///   the controller will automatically stop the motor and switch to FAILSAFE error.
+  ///   When this delay has elapsed,
+  ///   the controller automatically stops the motor and switches to FAILSAFE error.
   ///   Failsafe security is disabled when the value is zero.
   /// </para>
   /// <para>
@@ -1253,8 +1254,8 @@ implementation
   ///   Changes the delay in milliseconds allowed for the controller to run autonomously without
   ///   receiving any instruction from the control process.
   /// <para>
-  ///   Once this delay is elapsed,
-  ///   the controller will automatically stop the motor and switch to FAILSAFE error.
+  ///   When this delay has elapsed,
+  ///   the controller automatically stops the motor and switches to FAILSAFE error.
   ///   Failsafe security is disabled when the value is zero.
   /// </para>
   /// <para>
@@ -1427,7 +1428,7 @@ implementation
   /// <para>
   ///   When the motor is running and the failsafe feature
   ///   is active, this function should be called periodically to prove that the control process
-  ///   is running properly. Otherwise, the motor will be automatically stopped after the specified
+  ///   is running properly. Otherwise, the motor is automatically stopped after the specified
   ///   timeout. Calling a motor <i>set</i> function implicitely rearms the failsafe timer.
   /// </para>
   /// </summary>
@@ -1462,7 +1463,7 @@ implementation
   /// </para>
   /// </summary>
   /// <param name="targetPower">
-  ///   desired motor power, in per cents (between -100% and +100%)
+  ///   desired motor power, in percents (between -100% and +100%)
   /// </param>
   /// <param name="delay">
   ///   duration (in ms) of the transition
@@ -1483,12 +1484,12 @@ implementation
 
   ////
   /// <summary>
-  ///   Changes progressively the breaking force applied to the motor for a specific duration.
+  ///   Changes progressively the braking force applied to the motor for a specific duration.
   /// <para>
   /// </para>
   /// </summary>
   /// <param name="targetPower">
-  ///   desired breaking force, in per cents
+  ///   desired braking force, in percents
   /// </param>
   /// <param name="delay">
   ///   duration (in ms) of the transition
@@ -1500,7 +1501,7 @@ implementation
   ///   On failure, throws an exception or returns a negative error code.
   /// </para>
   ///-
-  function TYMotor.breakingForceMove(targetPower: double; delay: LongInt):LongInt;
+  function TYMotor.brakingForceMove(targetPower: double; delay: LongInt):LongInt;
     begin
       result := self.set_command('B'+inttostr(round(targetPower*10))+','+inttostr(delay));
       exit;

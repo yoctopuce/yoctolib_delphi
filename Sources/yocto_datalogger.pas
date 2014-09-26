@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_datalogger.pas 15330 2014-03-07 15:34:36Z mvuilleu $
+ * $Id: yocto_datalogger.pas 17673 2014-09-16 16:15:44Z seb $
  *
  * Implements yFindDataLogger(), the high-level API for DataLogger functions
  *
@@ -56,6 +56,10 @@ const Y_RECORDING_INVALID = -1;
 const Y_AUTOSTART_OFF = 0;
 const Y_AUTOSTART_ON = 1;
 const Y_AUTOSTART_INVALID = -1;
+
+const Y_BEACONDRIVEN_OFF = 0;
+const Y_BEACONDRIVEN_ON = 1;
+const Y_BEACONDRIVEN_INVALID = -1;
 
 const Y_CLEARHISTORY_FALSE = 0;
 const Y_CLEARHISTORY_TRUE = 1;
@@ -158,6 +162,7 @@ type
     _timeUTC                  : int64;
     _recording                : Integer;
     _autoStart                : Integer;
+    _beaconDriven             : Integer;
     _clearHistory             : Integer;
     _valueCallbackDataLogger  : TYDataLoggerValueCallback;
     // Function-specific method for reading JSON output and caching result
@@ -344,6 +349,48 @@ type
     ///-
     function set_autoStart(newval:Integer):integer;
 
+    ////
+    /// <summary>
+    ///   Return true if the data logger is synchronised with the localization beacon.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   either <c>Y_BEACONDRIVEN_OFF</c> or <c>Y_BEACONDRIVEN_ON</c>
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_BEACONDRIVEN_INVALID</c>.
+    /// </para>
+    ///-
+    function get_beaconDriven():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the type of synchronisation of the data logger.
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   either <c>Y_BEACONDRIVEN_OFF</c> or <c>Y_BEACONDRIVEN_ON</c>, according to the type of
+    ///   synchronisation of the data logger
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_beaconDriven(newval:Integer):integer;
+
     function get_clearHistory():Integer;
 
     function set_clearHistory(newval:Integer):integer;
@@ -482,7 +529,6 @@ type
 end;
 
 //--- (generated code: DataLogger functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a data logger for a given identifier.
@@ -559,6 +605,7 @@ const
       _timeUTC := Y_TIMEUTC_INVALID;
       _recording := Y_RECORDING_INVALID;
       _autoStart := Y_AUTOSTART_INVALID;
+      _beaconDriven := Y_BEACONDRIVEN_INVALID;
       _clearHistory := Y_CLEARHISTORY_INVALID;
       _valueCallbackDataLogger := nil;
       //--- (end of generated code: YDataLogger accessors initialization)
@@ -706,6 +753,12 @@ const
       if (member^.name = 'autoStart') then
         begin
           _autoStart := member^.ivalue;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'beaconDriven') then
+        begin
+          _beaconDriven := member^.ivalue;
          result := 1;
          exit;
          end;
@@ -928,6 +981,66 @@ const
     begin
       if(newval>0) then rest_val := '1' else rest_val := '0';
       result := _setAttr('autoStart',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Return true if the data logger is synchronised with the localization beacon.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   either Y_BEACONDRIVEN_OFF or Y_BEACONDRIVEN_ON
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_BEACONDRIVEN_INVALID.
+  /// </para>
+  ///-
+  function TYDataLogger.get_beaconDriven():Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_BEACONDRIVEN_INVALID;
+              exit
+            end;
+        end;
+      result := self._beaconDriven;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the type of synchronisation of the data logger.
+  /// <para>
+  ///   Remember to call the saveToFlash() method of the module if the
+  ///   modification must be kept.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   either Y_BEACONDRIVEN_OFF or Y_BEACONDRIVEN_ON, according to the type of synchronisation of the data logger
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYDataLogger.set_beaconDriven(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      if(newval>0) then rest_val := '1' else rest_val := '0';
+      result := _setAttr('beaconDriven',rest_val);
     end;
 
   function TYDataLogger.get_clearHistory():Integer;

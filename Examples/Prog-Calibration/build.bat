@@ -1,4 +1,3 @@
-@ECHO OFF
 REM --
 REM -- BUILD SCRIPT FOR DELPHI XE2 PRO 
 REM --
@@ -19,8 +18,16 @@ SET BDS_LIBPATH="%BDS%\lib\%Platform%\release";"%BDS%\Imports";"%BDS%\include";"
 SET BDS_PATHOPTS=-A%BDS_COLL% -I%BDS_LIBPATH% -LE"%BDSCOMMONDIR%\Bpl" -LN"%BDSCOMMONDIR%\Dcp" -NS%BDS_NS% -O%BDS_LIBPATH% -R%BDS_LIBPATH% -U%BDS_LIBPATH% -NB"%BDS%\Dcp" -NH"%BDSCOMMONDIR%\hpp"
 SET BDS_STDOPTS=-$O- -$W+ --no-config -B -Q -DDEBUG -K00400000
 dcc32.exe %BDS_STDOPTS% %BDS_PATHOPTS% calibration.dpr
+IF ERRORLEVEL 1 goto error
 
-IF "%1" == "" goto end
+del /Q /F *.dcu
+IF "%1" == noexe goto clean
+copy ..\..\Sources\dll\yapi.dll .
+goto end
 :clean
 del /Q /F *.dcu *.exe
+goto error
+:error
+echo error
+exit /b 1
 :end

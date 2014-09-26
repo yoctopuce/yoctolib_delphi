@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_genericsensor.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_genericsensor.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -51,6 +51,7 @@ const Y_SIGNALVALUE_INVALID           = YAPI_INVALID_DOUBLE;
 const Y_SIGNALUNIT_INVALID            = YAPI_INVALID_STRING;
 const Y_SIGNALRANGE_INVALID           = YAPI_INVALID_STRING;
 const Y_VALUERANGE_INVALID            = YAPI_INVALID_STRING;
+const Y_SIGNALBIAS_INVALID            = YAPI_INVALID_DOUBLE;
 
 
 //--- (end of YGenericSensor definitions)
@@ -90,6 +91,7 @@ type
     _signalUnit               : string;
     _signalRange              : string;
     _valueRange               : string;
+    _signalBias               : double;
     _valueCallbackGenericSensor : TYGenericSensorValueCallback;
     _timedReportCallbackGenericSensor : TYGenericSensorTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
@@ -219,8 +221,8 @@ type
     /// <summary>
     ///   Changes the physical value range measured by the sensor.
     /// <para>
-    ///   The range change may have a side effect
-    ///   on the display resolution, as it may be adapted automatically.
+    ///   As a side effect, the range modification may
+    ///   automatically modify the display resolution.
     /// </para>
     /// <para>
     /// </para>
@@ -238,6 +240,49 @@ type
     /// </para>
     ///-
     function set_valueRange(newval:string):integer;
+
+    ////
+    /// <summary>
+    ///   Changes the electric signal bias for zero shift adjustment.
+    /// <para>
+    ///   If your electric signal reads positif when it should be zero, setup
+    ///   a positive signalBias of the same value to fix the zero shift.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a floating point number corresponding to the electric signal bias for zero shift adjustment
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_signalBias(newval:double):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the electric signal bias for zero shift adjustment.
+    /// <para>
+    ///   A positive bias means that the signal is over-reporting the measure,
+    ///   while a negative bias means that the signal is underreporting the measure.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a floating point number corresponding to the electric signal bias for zero shift adjustment
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_SIGNALBIAS_INVALID</c>.
+    /// </para>
+    ///-
+    function get_signalBias():double;
 
     ////
     /// <summary>
@@ -327,6 +372,24 @@ type
 
     function _invokeTimedReportCallback(value: TYMeasure):LongInt; override;
 
+    ////
+    /// <summary>
+    ///   Adjusts the signal bias so that the current signal value is need
+    ///   precisely as zero.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function zeroAdjust():LongInt; overload; virtual;
+
 
     ////
     /// <summary>
@@ -354,7 +417,6 @@ type
   end;
 
 //--- (GenericSensor functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a generic sensor for a given identifier.
@@ -417,6 +479,8 @@ type
 //--- (end of GenericSensor functions declaration)
 
 implementation
+//--- (YGenericSensor dlldef)
+//--- (end of YGenericSensor dlldef)
 
   constructor TYGenericSensor.Create(func:string);
     begin
@@ -427,6 +491,7 @@ implementation
       _signalUnit := Y_SIGNALUNIT_INVALID;
       _signalRange := Y_SIGNALRANGE_INVALID;
       _valueRange := Y_VALUERANGE_INVALID;
+      _signalBias := Y_SIGNALBIAS_INVALID;
       _valueCallbackGenericSensor := nil;
       _timedReportCallbackGenericSensor := nil;
       //--- (end of YGenericSensor accessors initialization)
@@ -442,7 +507,7 @@ implementation
     begin
       if (member^.name = 'signalValue') then
         begin
-          _signalValue := member^.ivalue/65536.0;
+          _signalValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
@@ -461,6 +526,12 @@ implementation
       if (member^.name = 'valueRange') then
         begin
           _valueRange := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'signalBias') then
+        begin
+          _signalBias := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
@@ -650,8 +721,8 @@ implementation
   /// <summary>
   ///   Changes the physical value range measured by the sensor.
   /// <para>
-  ///   The range change may have a side effect
-  ///   on the display resolution, as it may be adapted automatically.
+  ///   As a side effect, the range modification may
+  ///   automatically modify the display resolution.
   /// </para>
   /// <para>
   /// </para>
@@ -675,6 +746,68 @@ implementation
       rest_val := newval;
       result := _setAttr('valueRange',rest_val);
     end;
+
+  ////
+  /// <summary>
+  ///   Changes the electric signal bias for zero shift adjustment.
+  /// <para>
+  ///   If your electric signal reads positif when it should be zero, setup
+  ///   a positive signalBias of the same value to fix the zero shift.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a floating point number corresponding to the electric signal bias for zero shift adjustment
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYGenericSensor.set_signalBias(newval:double):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(round(newval * 65536.0));
+      result := _setAttr('signalBias',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the electric signal bias for zero shift adjustment.
+  /// <para>
+  ///   A positive bias means that the signal is over-reporting the measure,
+  ///   while a negative bias means that the signal is underreporting the measure.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a floating point number corresponding to the electric signal bias for zero shift adjustment
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_SIGNALBIAS_INVALID.
+  /// </para>
+  ///-
+  function TYGenericSensor.get_signalBias():double;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_SIGNALBIAS_INVALID;
+              exit
+            end;
+        end;
+      result := self._signalBias;
+      exit;
+    end;
+
 
   ////
   /// <summary>
@@ -838,6 +971,34 @@ implementation
           inherited _invokeTimedReportCallback(value)
         end;
       result := 0;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Adjusts the signal bias so that the current signal value is need
+  ///   precisely as zero.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYGenericSensor.zeroAdjust():LongInt;
+    var
+      currSignal : double;
+      currBias : double;
+    begin
+      currSignal := self.get_signalValue;
+      currBias := self.get_signalBias;
+      result := self.set_signalBias(currSignal + currBias);
       exit;
     end;
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_power.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_power.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindPower(), the high-level API for Power functions
  *
@@ -286,7 +286,6 @@ type
   end;
 
 //--- (Power functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a electrical power sensor for a given identifier.
@@ -349,6 +348,8 @@ type
 //--- (end of Power functions declaration)
 
 implementation
+//--- (YPower dlldef)
+//--- (end of YPower dlldef)
 
   constructor TYPower.Create(func:string);
     begin
@@ -373,13 +374,13 @@ implementation
     begin
       if (member^.name = 'cosPhi') then
         begin
-          _cosPhi := member^.ivalue/65536.0;
+          _cosPhi := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'meter') then
         begin
-          _meter := member^.ivalue/65536.0;
+          _meter := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
@@ -429,7 +430,7 @@ implementation
     var
       rest_val: string;
     begin
-      rest_val := inttostr(round(newval*65536.0));
+      rest_val := inttostr(round(newval * 65536.0));
       result := _setAttr('meter',rest_val);
     end;
 

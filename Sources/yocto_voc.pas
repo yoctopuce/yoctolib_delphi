@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_voc.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_voc.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindVoc(), the high-level API for Voc functions
  *
@@ -208,7 +208,6 @@ type
   end;
 
 //--- (Voc functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a Volatile Organic Compound sensor for a given identifier.
@@ -271,6 +270,8 @@ type
 //--- (end of Voc functions declaration)
 
 implementation
+//--- (YVoc dlldef)
+//--- (end of YVoc dlldef)
 
   constructor TYVoc.Create(func:string);
     begin

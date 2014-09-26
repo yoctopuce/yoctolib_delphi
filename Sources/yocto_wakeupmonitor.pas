@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.pas 16424 2014-06-04 14:26:41Z seb $
+ * $Id: yocto_wakeupmonitor.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -54,15 +54,8 @@ const Y_WAKEUPREASON_USBPOWER = 0;
 const Y_WAKEUPREASON_EXTPOWER = 1;
 const Y_WAKEUPREASON_ENDOFSLEEP = 2;
 const Y_WAKEUPREASON_EXTSIG1 = 3;
-const Y_WAKEUPREASON_EXTSIG2 = 4;
-const Y_WAKEUPREASON_EXTSIG3 = 5;
-const Y_WAKEUPREASON_EXTSIG4 = 6;
-const Y_WAKEUPREASON_SCHEDULE1 = 7;
-const Y_WAKEUPREASON_SCHEDULE2 = 8;
-const Y_WAKEUPREASON_SCHEDULE3 = 9;
-const Y_WAKEUPREASON_SCHEDULE4 = 10;
-const Y_WAKEUPREASON_SCHEDULE5 = 11;
-const Y_WAKEUPREASON_SCHEDULE6 = 12;
+const Y_WAKEUPREASON_SCHEDULE1 = 4;
+const Y_WAKEUPREASON_SCHEDULE2 = 5;
 const Y_WAKEUPREASON_INVALID = -1;
 
 const Y_WAKEUPSTATE_SLEEPING = 0;
@@ -238,10 +231,8 @@ type
     /// </summary>
     /// <returns>
     ///   a value among <c>Y_WAKEUPREASON_USBPOWER</c>, <c>Y_WAKEUPREASON_EXTPOWER</c>,
-    ///   <c>Y_WAKEUPREASON_ENDOFSLEEP</c>, <c>Y_WAKEUPREASON_EXTSIG1</c>, <c>Y_WAKEUPREASON_EXTSIG2</c>,
-    ///   <c>Y_WAKEUPREASON_EXTSIG3</c>, <c>Y_WAKEUPREASON_EXTSIG4</c>, <c>Y_WAKEUPREASON_SCHEDULE1</c>,
-    ///   <c>Y_WAKEUPREASON_SCHEDULE2</c>, <c>Y_WAKEUPREASON_SCHEDULE3</c>, <c>Y_WAKEUPREASON_SCHEDULE4</c>,
-    ///   <c>Y_WAKEUPREASON_SCHEDULE5</c> and <c>Y_WAKEUPREASON_SCHEDULE6</c> corresponding to the latest wake up reason
+    ///   <c>Y_WAKEUPREASON_ENDOFSLEEP</c>, <c>Y_WAKEUPREASON_EXTSIG1</c>, <c>Y_WAKEUPREASON_SCHEDULE1</c>
+    ///   and <c>Y_WAKEUPREASON_SCHEDULE2</c> corresponding to the latest wake up reason
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_WAKEUPREASON_INVALID</c>.
@@ -451,7 +442,6 @@ type
   end;
 
 //--- (WakeUpMonitor functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a monitor for a given identifier.
@@ -514,6 +504,8 @@ type
 //--- (end of WakeUpMonitor functions declaration)
 
 implementation
+//--- (YWakeUpMonitor dlldef)
+//--- (end of YWakeUpMonitor dlldef)
 
   constructor TYWakeUpMonitor.Create(func:string);
     begin
@@ -761,10 +753,8 @@ implementation
   /// </summary>
   /// <returns>
   ///   a value among Y_WAKEUPREASON_USBPOWER, Y_WAKEUPREASON_EXTPOWER, Y_WAKEUPREASON_ENDOFSLEEP,
-  ///   Y_WAKEUPREASON_EXTSIG1, Y_WAKEUPREASON_EXTSIG2, Y_WAKEUPREASON_EXTSIG3, Y_WAKEUPREASON_EXTSIG4,
-  ///   Y_WAKEUPREASON_SCHEDULE1, Y_WAKEUPREASON_SCHEDULE2, Y_WAKEUPREASON_SCHEDULE3,
-  ///   Y_WAKEUPREASON_SCHEDULE4, Y_WAKEUPREASON_SCHEDULE5 and Y_WAKEUPREASON_SCHEDULE6 corresponding to
-  ///   the latest wake up reason
+  ///   Y_WAKEUPREASON_EXTSIG1, Y_WAKEUPREASON_SCHEDULE1 and Y_WAKEUPREASON_SCHEDULE2 corresponding to the
+  ///   latest wake up reason
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_WAKEUPREASON_INVALID.

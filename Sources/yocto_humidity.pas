@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_humidity.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_humidity.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindHumidity(), the high-level API for Humidity functions
  *
@@ -208,7 +208,6 @@ type
   end;
 
 //--- (Humidity functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a humidity sensor for a given identifier.
@@ -271,6 +270,8 @@ type
 //--- (end of Humidity functions declaration)
 
 implementation
+//--- (YHumidity dlldef)
+//--- (end of YHumidity dlldef)
 
   constructor TYHumidity.Create(func:string);
     begin

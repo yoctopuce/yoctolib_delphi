@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_voltage.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_voltage.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindVoltage(), the high-level API for Voltage functions
  *
@@ -208,7 +208,6 @@ type
   end;
 
 //--- (Voltage functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a voltage sensor for a given identifier.
@@ -271,6 +270,8 @@ type
 //--- (end of Voltage functions declaration)
 
 implementation
+//--- (YVoltage dlldef)
+//--- (end of YVoltage dlldef)
 
   constructor TYVoltage.Create(func:string);
     begin

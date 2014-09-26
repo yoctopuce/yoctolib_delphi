@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_altitude.pas 16185 2014-05-12 16:00:20Z seb $
+ * $Id: yocto_altitude.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindAltitude(), the high-level API for Altitude functions
  *
@@ -279,7 +279,6 @@ type
   end;
 
 //--- (Altitude functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves an altimeter for a given identifier.
@@ -342,6 +341,8 @@ type
 //--- (end of Altitude functions declaration)
 
 implementation
+//--- (YAltitude dlldef)
+//--- (end of YAltitude dlldef)
 
   constructor TYAltitude.Create(func:string);
     begin
@@ -364,7 +365,7 @@ implementation
     begin
       if (member^.name = 'qnh') then
         begin
-          _qnh := member^.ivalue/65536.0;
+          _qnh := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
@@ -398,7 +399,7 @@ implementation
     var
       rest_val: string;
     begin
-      rest_val := inttostr(round(newval*65536.0));
+      rest_val := inttostr(round(newval * 65536.0));
       result := _setAttr('currentValue',rest_val);
     end;
 
@@ -430,7 +431,7 @@ implementation
     var
       rest_val: string;
     begin
-      rest_val := inttostr(round(newval*65536.0));
+      rest_val := inttostr(round(newval * 65536.0));
       result := _setAttr('qnh',rest_val);
     end;
 

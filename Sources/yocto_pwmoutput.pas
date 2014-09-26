@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwmoutput.pas 15545 2014-03-21 10:55:55Z seb $
+ * $Id: yocto_pwmoutput.pas 17481 2014-09-03 09:38:35Z mvuilleu $
  *
  * Implements yFindPwmOutput(), the high-level API for PwmOutput functions
  *
@@ -51,10 +51,10 @@ const Y_ENABLED_FALSE = 0;
 const Y_ENABLED_TRUE = 1;
 const Y_ENABLED_INVALID = -1;
 
+const Y_FREQUENCY_INVALID             = YAPI_INVALID_DOUBLE;
+const Y_PERIOD_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_DUTYCYCLE_INVALID             = YAPI_INVALID_DOUBLE;
 const Y_PULSEDURATION_INVALID         = YAPI_INVALID_DOUBLE;
-const Y_FREQUENCY_INVALID             = YAPI_INVALID_UINT;
-const Y_PERIOD_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_PWMTRANSITION_INVALID         = YAPI_INVALID_STRING;
 const Y_ENABLEDATPOWERON_FALSE = 0;
 const Y_ENABLEDATPOWERON_TRUE = 1;
@@ -87,10 +87,10 @@ type
     _logicalName              : string;
     _advertisedValue          : string;
     _enabled                  : Integer;
+    _frequency                : double;
+    _period                   : double;
     _dutyCycle                : double;
     _pulseDuration            : double;
-    _frequency                : LongInt;
-    _period                   : double;
     _pwmTransition            : string;
     _enabledAtPowerOn         : Integer;
     _dutyCycleAtPowerOn       : double;
@@ -142,6 +142,86 @@ type
     /// </para>
     ///-
     function set_enabled(newval:Integer):integer;
+
+    ////
+    /// <summary>
+    ///   Changes the PWM frequency.
+    /// <para>
+    ///   The duty cycle is kept unchanged thanks to an
+    ///   automatic pulse width change.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a floating point number corresponding to the PWM frequency
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_frequency(newval:double):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the PWM frequency in Hz.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a floating point number corresponding to the PWM frequency in Hz
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_FREQUENCY_INVALID</c>.
+    /// </para>
+    ///-
+    function get_frequency():double;
+
+    ////
+    /// <summary>
+    ///   Changes the PWM period in milliseconds.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a floating point number corresponding to the PWM period in milliseconds
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_period(newval:double):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the PWM period in milliseconds.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a floating point number corresponding to the PWM period in milliseconds
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_PERIOD_INVALID</c>.
+    /// </para>
+    ///-
+    function get_period():double;
 
     ////
     /// <summary>
@@ -207,100 +287,20 @@ type
 
     ////
     /// <summary>
-    ///   Returns the PWM pulse length in milliseconds.
+    ///   Returns the PWM pulse length in milliseconds, as a floating point number.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a floating point number corresponding to the PWM pulse length in milliseconds
+    ///   a floating point number corresponding to the PWM pulse length in milliseconds, as a floating point number
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_PULSEDURATION_INVALID</c>.
     /// </para>
     ///-
     function get_pulseDuration():double;
-
-    ////
-    /// <summary>
-    ///   Returns the PWM frequency in Hz.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   an integer corresponding to the PWM frequency in Hz
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>Y_FREQUENCY_INVALID</c>.
-    /// </para>
-    ///-
-    function get_frequency():LongInt;
-
-    ////
-    /// <summary>
-    ///   Changes the PWM frequency.
-    /// <para>
-    ///   The duty cycle is kept unchanged thanks to an
-    ///   automatic pulse width change.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="newval">
-    ///   an integer corresponding to the PWM frequency
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_frequency(newval:LongInt):integer;
-
-    ////
-    /// <summary>
-    ///   Changes the PWM period.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="newval">
-    ///   a floating point number corresponding to the PWM period
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_period(newval:double):integer;
-
-    ////
-    /// <summary>
-    ///   Returns the PWM period in milliseconds.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   a floating point number corresponding to the PWM period in milliseconds
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PERIOD_INVALID</c>.
-    /// </para>
-    ///-
-    function get_period():double;
 
     function get_pwmTransition():string;
 
@@ -528,7 +528,6 @@ type
   end;
 
 //--- (PwmOutput functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a PWM for a given identifier.
@@ -591,6 +590,8 @@ type
 //--- (end of PwmOutput functions declaration)
 
 implementation
+//--- (YPwmOutput dlldef)
+//--- (end of YPwmOutput dlldef)
 
   constructor TYPwmOutput.Create(func:string);
     begin
@@ -598,10 +599,10 @@ implementation
       _className := 'PwmOutput';
       //--- (YPwmOutput accessors initialization)
       _enabled := Y_ENABLED_INVALID;
-      _dutyCycle := Y_DUTYCYCLE_INVALID;
-      _pulseDuration := Y_PULSEDURATION_INVALID;
       _frequency := Y_FREQUENCY_INVALID;
       _period := Y_PERIOD_INVALID;
+      _dutyCycle := Y_DUTYCYCLE_INVALID;
+      _pulseDuration := Y_PULSEDURATION_INVALID;
       _pwmTransition := Y_PWMTRANSITION_INVALID;
       _enabledAtPowerOn := Y_ENABLEDATPOWERON_INVALID;
       _dutyCycleAtPowerOn := Y_DUTYCYCLEATPOWERON_INVALID;
@@ -623,27 +624,27 @@ implementation
          result := 1;
          exit;
          end;
-      if (member^.name = 'dutyCycle') then
-        begin
-          _dutyCycle := member^.ivalue/65536.0;
-         result := 1;
-         exit;
-         end;
-      if (member^.name = 'pulseDuration') then
-        begin
-          _pulseDuration := member^.ivalue/65536.0;
-         result := 1;
-         exit;
-         end;
       if (member^.name = 'frequency') then
         begin
-          _frequency := integer(member^.ivalue);
+          _frequency := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'period') then
         begin
-          _period := member^.ivalue/65536.0;
+          _period := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'dutyCycle') then
+        begin
+          _dutyCycle := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'pulseDuration') then
+        begin
+          _pulseDuration := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
@@ -661,7 +662,7 @@ implementation
          end;
       if (member^.name = 'dutyCycleAtPowerOn') then
         begin
-          _dutyCycleAtPowerOn := member^.ivalue/65536.0;
+          _dutyCycleAtPowerOn := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
@@ -729,6 +730,124 @@ implementation
 
   ////
   /// <summary>
+  ///   Changes the PWM frequency.
+  /// <para>
+  ///   The duty cycle is kept unchanged thanks to an
+  ///   automatic pulse width change.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a floating point number corresponding to the PWM frequency
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYPwmOutput.set_frequency(newval:double):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(round(newval * 65536.0));
+      result := _setAttr('frequency',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the PWM frequency in Hz.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a floating point number corresponding to the PWM frequency in Hz
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_FREQUENCY_INVALID.
+  /// </para>
+  ///-
+  function TYPwmOutput.get_frequency():double;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_FREQUENCY_INVALID;
+              exit
+            end;
+        end;
+      result := self._frequency;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the PWM period in milliseconds.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a floating point number corresponding to the PWM period in milliseconds
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYPwmOutput.set_period(newval:double):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(round(newval * 65536.0));
+      result := _setAttr('period',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the PWM period in milliseconds.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a floating point number corresponding to the PWM period in milliseconds
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_PERIOD_INVALID.
+  /// </para>
+  ///-
+  function TYPwmOutput.get_period():double;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_PERIOD_INVALID;
+              exit
+            end;
+        end;
+      result := self._period;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
   ///   Changes the PWM duty cycle, in per cents.
   /// <para>
   /// </para>
@@ -751,7 +870,7 @@ implementation
     var
       rest_val: string;
     begin
-      rest_val := inttostr(round(newval*65536.0));
+      rest_val := inttostr(round(newval * 65536.0));
       result := _setAttr('dutyCycle',rest_val);
     end;
 
@@ -810,20 +929,20 @@ implementation
     var
       rest_val: string;
     begin
-      rest_val := inttostr(round(newval*65536.0));
+      rest_val := inttostr(round(newval * 65536.0));
       result := _setAttr('pulseDuration',rest_val);
     end;
 
   ////
   /// <summary>
-  ///   Returns the PWM pulse length in milliseconds.
+  ///   Returns the PWM pulse length in milliseconds, as a floating point number.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a floating point number corresponding to the PWM pulse length in milliseconds
+  ///   a floating point number corresponding to the PWM pulse length in milliseconds, as a floating point number
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_PULSEDURATION_INVALID.
@@ -840,124 +959,6 @@ implementation
             end;
         end;
       result := self._pulseDuration;
-      exit;
-    end;
-
-
-  ////
-  /// <summary>
-  ///   Returns the PWM frequency in Hz.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the PWM frequency in Hz
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_FREQUENCY_INVALID.
-  /// </para>
-  ///-
-  function TYPwmOutput.get_frequency():LongInt;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
-            begin
-              result := Y_FREQUENCY_INVALID;
-              exit
-            end;
-        end;
-      result := self._frequency;
-      exit;
-    end;
-
-
-  ////
-  /// <summary>
-  ///   Changes the PWM frequency.
-  /// <para>
-  ///   The duty cycle is kept unchanged thanks to an
-  ///   automatic pulse width change.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the PWM frequency
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYPwmOutput.set_frequency(newval:LongInt):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := inttostr(newval);
-      result := _setAttr('frequency',rest_val);
-    end;
-
-  ////
-  /// <summary>
-  ///   Changes the PWM period.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the PWM period
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYPwmOutput.set_period(newval:double):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := inttostr(round(newval*65536.0));
-      result := _setAttr('period',rest_val);
-    end;
-
-  ////
-  /// <summary>
-  ///   Returns the PWM period in milliseconds.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the PWM period in milliseconds
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PERIOD_INVALID.
-  /// </para>
-  ///-
-  function TYPwmOutput.get_period():double;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
-            begin
-              result := Y_PERIOD_INVALID;
-              exit
-            end;
-        end;
-      result := self._period;
       exit;
     end;
 
@@ -1071,7 +1072,7 @@ implementation
     var
       rest_val: string;
     begin
-      rest_val := inttostr(round(newval*65536.0));
+      rest_val := inttostr(round(newval * 65536.0));
       result := _setAttr('dutyCycleAtPowerOn',rest_val);
     end;
 

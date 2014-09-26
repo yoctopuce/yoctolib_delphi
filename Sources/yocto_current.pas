@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_current.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_current.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindCurrent(), the high-level API for Current functions
  *
@@ -208,7 +208,6 @@ type
   end;
 
 //--- (Current functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a current sensor for a given identifier.
@@ -271,6 +270,8 @@ type
 //--- (end of Current functions declaration)
 
 implementation
+//--- (YCurrent dlldef)
+//--- (end of YCurrent dlldef)
 
   constructor TYCurrent.Create(func:string);
     begin

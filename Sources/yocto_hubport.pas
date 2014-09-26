@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_hubport.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_hubport.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindHubPort(), the high-level API for HubPort functions
  *
@@ -272,7 +272,6 @@ type
   end;
 
 //--- (HubPort functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a Yocto-hub port for a given identifier.
@@ -335,6 +334,8 @@ type
 //--- (end of HubPort functions declaration)
 
 implementation
+//--- (YHubPort dlldef)
+//--- (end of YHubPort dlldef)
 
   constructor TYHubPort.Create(func:string);
     begin

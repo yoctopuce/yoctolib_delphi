@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 16246 2014-05-16 12:09:39Z seb $
+ * $Id: yocto_api.pas 17816 2014-09-24 14:47:30Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -10,26 +10,26 @@
  *
  *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
  *  non-exclusive license to use, modify, copy and integrate this
- *  file into your software for the sole purpose of interfacing 
- *  with Yoctopuce products. 
+ *  file into your software for the sole purpose of interfacing
+ *  with Yoctopuce products.
  *
- *  You may reproduce and distribute copies of this file in 
+ *  You may reproduce and distribute copies of this file in
  *  source or object form, as long as the sole purpose of this
- *  code is to interface with Yoctopuce products. You must retain 
+ *  code is to interface with Yoctopuce products. You must retain
  *  this notice in the distributed source file.
  *
  *  You should refer to Yoctopuce General Terms and Conditions
- *  for additional information regarding your rights and 
+ *  for additional information regarding your rights and
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
  *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
  *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -61,8 +61,8 @@ type
   u32        = longword;
   u64        = int64;
 
-  YDEV_DESCR    = s32;           // yStrRef of serial number
-  YFUN_DESCR  = s32;           // yStrRef of serial + (ystrRef of funcId << 16)
+  YDEV_DESCR = s32;           // yStrRef of serial number
+  YFUN_DESCR = s32;           // yStrRef of serial + (ystrRef of funcId << 16)
   PYDEVICE   = ^YDEV_DESCR;
   PYFUNCTION = ^YFUN_DESCR;
   yTime      = u32;           // measured in milliseconds
@@ -99,7 +99,7 @@ const
 
 
   YAPI_INVALID_STRING     = '!INVALID!';
-  YAPI_INVALID_DOUBLE     = -1.79769313486232e308;
+  YAPI_INVALID_DOUBLE     = -65536.0*65536.0*65536.0*65536.0*65536.0*65536.0;  // float-friendly constant
   YAPI_INVALID_INT        = longint($07FFFFFFF);
   YAPI_INVALID_UINT       = longint(-1);
   YAPI_INVALID_LONG       = longword($07FFFFFFFFFFFFFFF);
@@ -116,7 +116,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '16490';
+  YOCTO_API_BUILD_NO        = '17849';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -136,12 +136,14 @@ const
   YOCTO_REALM_LEN           = 20;
   YIOHDL_SIZE               = 8;
 
+  YOCTO_CALIB_TYPE_OFS      = 30;
+
   INVALID_YHANDLE   =   0;
-  
+
   //const definition for YDataStream
   Y_DATA_INVALID = YAPI_INVALID_DOUBLE;
   Y_DURATION_INVALID = -1;
-      
+
   yUnknowSize = 1024;
 
 type
@@ -195,7 +197,7 @@ type
 //--- (generated code: YFunction definitions)
 
   // Yoctopuce error codes, also used by default as function return value
-const YAPI_SUCCESS                   = 0;       // everything worked allright
+const YAPI_SUCCESS                   = 0;       // everything worked all right
 const YAPI_NOT_INITIALIZED           = -1;      // call yInitAPI() first !
 const YAPI_INVALID_ARGUMENT          = -2;      // one of the arguments passed to the function is invalid
 const YAPI_NOT_SUPPORTED             = -3;      // the operation attempted is (currently) not supported
@@ -205,10 +207,11 @@ const YAPI_DEVICE_BUSY               = -6;      // the device is busy with anoth
 const YAPI_TIMEOUT                   = -7;      // the device took too long to provide an answer
 const YAPI_IO_ERROR                  = -8;      // there was an I/O problem while talking to the device
 const YAPI_NO_MORE_DATA              = -9;      // there is no more data to read from
-const YAPI_EXHAUSTED                 = -10;     // you have run out of a limited ressource, check the documentation
-const YAPI_DOUBLE_ACCES              = -11;     // you have two process that try to acces to the same device
+const YAPI_EXHAUSTED                 = -10;     // you have run out of a limited resource, check the documentation
+const YAPI_DOUBLE_ACCES              = -11;     // you have two process that try to access to the same device
 const YAPI_UNAUTHORIZED              = -12;     // unauthorized access to password-protected device
 const YAPI_RTC_NOT_READY             = -13;     // real-time clock has not been initialized (or time was lost)
+const YAPI_FILE_NOT_FOUND            = -14;     // the file is not found
 
 const Y_LOGICALNAME_INVALID           = YAPI_INVALID_STRING;
 const Y_ADVERTISEDVALUE_INVALID       = YAPI_INVALID_STRING;
@@ -236,10 +239,7 @@ const Y_BEACON_INVALID = -1;
 const Y_UPTIME_INVALID                = YAPI_INVALID_LONG;
 const Y_USBCURRENT_INVALID            = YAPI_INVALID_UINT;
 const Y_REBOOTCOUNTDOWN_INVALID       = YAPI_INVALID_INT;
-const Y_USBBANDWIDTH_SIMPLE = 0;
-const Y_USBBANDWIDTH_DOUBLE = 1;
-const Y_USBBANDWIDTH_INVALID = -1;
-
+const Y_USERVAR_INVALID               = YAPI_INVALID_INT;
 
 
 //--- (end of generated code: YModule definitions)
@@ -258,6 +258,10 @@ const Y_RESOLUTION_INVALID            = YAPI_INVALID_DOUBLE;
 
 //--- (end of generated code: YSensor definitions)
 
+//--- (generated code: YFirmwareUpdate definitions)
+
+
+//--- (end of generated code: YFirmwareUpdate definitions)
 //--- (generated code: YDataStream definitions)
 
 
@@ -276,6 +280,7 @@ type
   TYFunction = class;
   TYModule = class;
   TYSensor = class;
+  TYFirmwareUpdate = class;
   TYDataStream = class;
   TYMeasure = class;
   TYDataSet = class;
@@ -492,7 +497,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a number corresponding to the code of the latest error that occured while
+    ///   a number corresponding to the code of the latest error that occurred while
     ///   using the function object
     /// </returns>
     ///-
@@ -544,7 +549,7 @@ type
     ///   By default, whenever accessing a device, all function attributes
     ///   are kept in cache for the standard duration (5 ms). This method can be
     ///   used to temporarily mark the cache as valid for a longer period, in order
-    ///   to reduce network trafic for instance.
+    ///   to reduce network traffic for instance.
     /// </para>
     /// <para>
     /// </para>
@@ -637,7 +642,7 @@ type
      // disable the override warning: we cannot use the override directive
      // because Tobject.ToString does not exists in all delphi versions.
      function ToString():string;
-	 
+
     //--- (generated code: YFunction accessors declaration)
     ////
     /// <summary>
@@ -808,7 +813,7 @@ type
   /// </summary>
   ///-
   TYModule=class(TYFunction)
-  //--- (end of generated code: YModule class start)  
+  //--- (end of generated code: YModule class start)
   protected
   //--- (generated code: YModule declaration)
     // Attributes (function value cache)
@@ -824,7 +829,7 @@ type
     _upTime                   : int64;
     _usbCurrent               : LongInt;
     _rebootCountdown          : LongInt;
-    _usbBandwidth             : Integer;
+    _userVar                  : LongInt;
     _valueCallbackModule      : TYModuleValueCallback;
     _logCallback              : TYModuleLogCallback;
     // Function-specific method for reading JSON output and caching result
@@ -832,8 +837,8 @@ type
 
     //--- (end of generated code: YModule declaration)
 
-     // Return the properties of the nth function of our device
-     function _getFunction(idx:integer; var serial,funcId,funcName,funcVal,errMsg:string):YRETCODE;
+    // Return the properties of the nth function of our device
+    function _getFunction(idx:integer; var serial,funcId,funcName,funcVal,errMsg:string):YRETCODE;
 
   public
 
@@ -1183,21 +1188,44 @@ type
 
     ////
     /// <summary>
-    ///   Returns the number of USB interfaces used by the module.
+    ///   Returns the value previously stored in this attribute.
     /// <para>
+    ///   On startup and after a device reboot, the value is always reset to zero.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_USBBANDWIDTH_SIMPLE</c> or <c>Y_USBBANDWIDTH_DOUBLE</c>, according to the number of USB
-    ///   interfaces used by the module
+    ///   an integer corresponding to the value previously stored in this attribute
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_USBBANDWIDTH_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>Y_USERVAR_INVALID</c>.
     /// </para>
     ///-
-    function get_usbBandwidth():Integer;
+    function get_userVar():LongInt;
+
+    ////
+    /// <summary>
+    ///   Returns the value previously stored in this attribute.
+    /// <para>
+    ///   On startup and after a device reboot, the value is always reset to zero.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_userVar(newval:LongInt):integer;
 
     ////
     /// <summary>
@@ -1336,6 +1364,107 @@ type
 
     ////
     /// <summary>
+    ///   Test if the byn file is valid for this module.
+    /// <para>
+    ///   This method is useful to test if the module need to be updated.
+    ///   It's possible to pass an directory instead of a file. In this case this method return the path of
+    ///   the most recent
+    ///   appropriate byn file. If the parameter onlynew is true the function will discard firmware that are
+    ///   older or equal to
+    ///   the installed firmware.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="path">
+    ///   the path of a byn file or a directory that contain byn files
+    /// </param>
+    /// <param name="onlynew">
+    ///   return only files that are strictly newer
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   : the path of the byn file to use or a empty string if no byn files match the requirement
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a string that start with "error:".
+    /// </para>
+    ///-
+    function checkFirmware(path: string; onlynew: boolean):string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Prepare a firmware upgrade of the module.
+    /// <para>
+    ///   This method return a object <c>YFirmwareUpdate</c> which
+    ///   will handle the firmware upgrade process.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="path">
+    ///   the path of the byn file to use.
+    /// </param>
+    /// <returns>
+    ///   : A object <c>YFirmwareUpdate</c>.
+    /// </returns>
+    ///-
+    function updateFirmware(path: string):TYFirmwareUpdate; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns all the setting of the module.
+    /// <para>
+    ///   Useful to backup all the logical name and calibrations parameters
+    ///   of a connected module.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a binary buffer with all settings.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns  <c>YAPI_INVALID_STRING</c>.
+    /// </para>
+    ///-
+    function get_allSettings():TByteArray; overload; virtual;
+
+    function _flattenJsonStruct(jsoncomplex: TByteArray):TByteArray; overload; virtual;
+
+    function calibVersion(cparams: string):LongInt; overload; virtual;
+
+    function calibScale(unit_name: string; sensorType: string):LongInt; overload; virtual;
+
+    function calibOffset(unit_name: string):LongInt; overload; virtual;
+
+    function calibConvert(param: string; calibrationParam: string; unit_name: string; sensorType: string):string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Restore all the setting of the module.
+    /// <para>
+    ///   Useful to restore all the logical name and calibrations parameters
+    ///   of a module from a backup.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="settings">
+    ///   a binary buffer with all settings.
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_allSettings(settings: TByteArray):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Downloads the specified built-in file and returns a binary buffer with its content.
     /// <para>
     /// </para>
@@ -1347,7 +1476,7 @@ type
     ///   a binary buffer with the file content
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns an empty content.
+    ///   On failure, throws an exception or returns  <c>YAPI_INVALID_STRING</c>.
     /// </para>
     ///-
     function download(pathname: string):TByteArray; overload; virtual;
@@ -1364,6 +1493,7 @@ type
     /// </summary>
     /// <returns>
     ///   a binary buffer with module icon, in png format.
+    ///   On failure, throws an exception or returns  <c>YAPI_INVALID_STRING</c>.
     /// </returns>
     ///-
     function get_icon2d():TByteArray; overload; virtual;
@@ -1380,6 +1510,7 @@ type
     /// </summary>
     /// <returns>
     ///   a string with last logs of the module.
+    ///   On failure, throws an exception or returns  <c>YAPI_INVALID_STRING</c>.
     /// </returns>
     ///-
     function get_lastLogs():string; overload; virtual;
@@ -1424,7 +1555,7 @@ end;
   /// </summary>
   ///-
   TYSensor=class(TYFunction)
-  //--- (end of generated code: YSensor class start)  
+  //--- (end of generated code: YSensor class start)
   protected
   //--- (generated code: YSensor declaration)
     // Attributes (function value cache)
@@ -1447,6 +1578,7 @@ end;
     _scale                    : double;
     _decexp                   : double;
     _isScal                   : boolean;
+    _isScal32                 : boolean;
     _caltyp                   : LongInt;
     _calpar                   : TLongIntArray;
     _calraw                   : TDoubleArray;
@@ -1457,7 +1589,7 @@ end;
 
     //--- (end of generated code: YSensor declaration)
 
-    
+
   public
 
     constructor Create(func:string); overload;
@@ -1481,14 +1613,15 @@ end;
 
     ////
     /// <summary>
-    ///   Returns the current value of the measure.
+    ///   Returns the current value of the measure, in the specified unit, as a floating point number.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a floating point number corresponding to the current value of the measure
+    ///   a floating point number corresponding to the current value of the measure, in the specified unit,
+    ///   as a floating point number
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_CURRENTVALUE_INVALID</c>.
@@ -1576,14 +1709,15 @@ end;
 
     ////
     /// <summary>
-    ///   Returns the uncalibrated, unrounded raw value returned by the sensor.
+    ///   Returns the uncalibrated, unrounded raw value returned by the sensor, in the specified unit, as a floating point number.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a floating point number corresponding to the uncalibrated, unrounded raw value returned by the sensor
+    ///   a floating point number corresponding to the uncalibrated, unrounded raw value returned by the
+    ///   sensor, in the specified unit, as a floating point number
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_CURRENTRAWVALUE_INVALID</c>.
@@ -1957,7 +2091,81 @@ end;
   end;
 
 
-  //--- (generated code: YDataStream class start)
+  //--- (generated code: YFirmwareUpdate class start)
+  ////
+  /// <summary>
+  ///   TYFirmwareUpdate Class: Control interface for the firmware update process
+  /// <para>
+  ///   The YFirmwareUpdate class let you control the firmware update of a Yoctopuce
+  ///   module. This class should not be instantiate directly, instead the method
+  ///   <c>updateFirmware</c> should be called to get an instance of YFirmwareUpdate.
+  /// </para>
+  /// </summary>
+  ///-
+  TYFirmwareUpdate=class(TObject)
+  //--- (end of generated code: YFirmwareUpdate class start)
+  protected
+  //--- (generated code: YFirmwareUpdate declaration)
+    // Attributes (function value cache)
+    _serial                   : string;
+    _settings                 : TByteArray;
+    _firmwarepath             : string;
+    _progress_msg             : string;
+    _progress                 : LongInt;
+
+    //--- (end of generated code: YFirmwareUpdate declaration)
+
+  public
+    constructor Create(serial: String; path :string; settings :TByteArray);
+
+  //--- (generated code: YFirmwareUpdate accessors declaration)
+    function _processMore(newupdate: LongInt):LongInt; overload; virtual;
+
+    function get_progress():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the last progress message of the firmware update process.
+    /// <para>
+    ///   If an error occur during the
+    ///   firmware update process the error message is returned
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an string  with the last progress message, or the error message.
+    /// </returns>
+    ///-
+    function get_progressMessage():string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Start the firmware update process.
+    /// <para>
+    ///   This method start the firmware update process in background. This method
+    ///   return immediately. The progress of the firmware update can be monitored with methods <c>get_progress()</c>
+    ///   and <c>get_progressMessage()</c>.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer in the range 0 to 100 (percentage of completion),
+    ///   or a negative error code in case of failure.
+    /// </returns>
+    /// <para>
+    ///   On failure returns a negative error code.
+    /// </para>
+    ///-
+    function startUpdate():LongInt; overload; virtual;
+
+
+  //--- (end of generated code: YFirmwareUpdate accessors declaration)
+  end;
+
+
+//--- (generated code: YDataStream class start)
   ////
   /// <summary>
   ///   TYDataStream Class: Unformatted data sequence
@@ -1976,7 +2184,7 @@ end;
   /// </summary>
   ///-
   TYDataStream=class(TObject)
-  //--- (end of generated code: YDataStream class start)    
+  //--- (end of generated code: YDataStream class start)
   protected
   //--- (generated code: YDataStream declaration)
     // Attributes (function value cache)
@@ -1991,6 +2199,7 @@ end;
     _isClosed                 : boolean;
     _isAvg                    : boolean;
     _isScal                   : boolean;
+    _isScal32                 : boolean;
     _decimals                 : LongInt;
     _offset                   : double;
     _scale                    : double;
@@ -2011,7 +2220,7 @@ end;
     constructor Create(parent:TYFunction); Overload;
     constructor Create(parent:TYFunction; dataset:TYDataSet; encoded:TLongIntArray); Overload;
 
-  
+
   //--- (generated code: YDataStream accessors declaration)
     function _initFromDataSet(dataset: TYDataSet; encoded: TLongIntArray):LongInt; overload; virtual;
 
@@ -2326,7 +2535,7 @@ end;
   /// </summary>
   ///-
   TYMeasure=class(TObject)
-  //--- (end of generated code: YMeasure class start)    
+  //--- (end of generated code: YMeasure class start)
   protected
   //--- (generated code: YMeasure declaration)
     // Attributes (function value cache)
@@ -2442,7 +2651,7 @@ end;
   ///   YDataSet objects make it possible to retrieve a set of recorded measures
   ///   for a given sensor and a specified time interval. They can be used
   ///   to load data points with a progress report. When the YDataSet object is
-  ///   instanciated by the <c>get_recordedData()</c>  function, no data is
+  ///   instantiated by the <c>get_recordedData()</c>  function, no data is
   ///   yet loaded from the module. It is only when the <c>loadMore()</c>
   ///   method is called over and over than data will be effectively loaded
   ///   from the dataLogger.
@@ -2460,7 +2669,7 @@ end;
   /// </summary>
   ///-
   TYDataSet=class(TObject)
-  //--- (end of generated code: YDataSet class start)    
+  //--- (end of generated code: YDataSet class start)
   protected
   //--- (generated code: YDataSet declaration)
     // Attributes (function value cache)
@@ -2597,7 +2806,7 @@ end;
     ///   Returns the progress of the downloads of the measures from the data logger,
     ///   on a scale from 0 to 100.
     /// <para>
-    ///   When the object is instanciated by <c>get_dataSet</c>,
+    ///   When the object is instantiated by <c>get_dataSet</c>,
     ///   the progress is zero. Each time <c>loadMore()</c> is invoked, the progress
     ///   is updated, to reach the value 100 only once all measures have been loaded.
     /// </para>
@@ -2825,7 +3034,7 @@ end;
 
 
   function  yapiLockDeviceCallBack(var errmsg:string):integer;
-  function  yapiUnlockDeviceCallBack(var errmsg:string):integer;  
+  function  yapiUnlockDeviceCallBack(var errmsg:string):integer;
 
 
 type
@@ -2930,7 +3139,7 @@ type
   ///   reach, the URL parameter should look like:
   /// </para>
   /// <para>
-  ///   <c>http://username:password@adresse:port</c>
+  ///   <c>http://username:password@address:port</c>
   /// </para>
   /// <para>
   ///   You can call <i>RegisterHub</i> several times to connect to several machines.
@@ -3152,7 +3361,6 @@ type
   function yTriggerHubDiscovery(var errmsg:string):integer;
 
   //--- (generated code: Function functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a function for a given identifier.
@@ -3209,7 +3417,6 @@ type
 //--- (end of generated code: Function functions declaration)
 
   //--- (generated code: Module functions declaration)
-
   ////
   /// <summary>
   ///   Allows you to find a module from its serial number or from its logical name.
@@ -3254,7 +3461,6 @@ type
 //--- (end of generated code: Module functions declaration)
 
 //--- (generated code: Sensor functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a sensor for a given identifier.
@@ -3315,17 +3521,13 @@ type
   function yFirstSensor():TYSensor;
 
 //--- (end of generated code: Sensor functions declaration)
+//--- (generated code: FirmwareUpdate functions declaration)
+//--- (end of generated code: FirmwareUpdate functions declaration)
 //--- (generated code: DataStream functions declaration)
-
-
 //--- (end of generated code: DataStream functions declaration)
 //--- (generated code: Measure functions declaration)
-
-
 //--- (end of generated code: Measure functions declaration)
 //--- (generated code: DataSet functions declaration)
-
-
 //--- (end of generated code: DataSet functions declaration)
 
 
@@ -3361,15 +3563,21 @@ type
   function yapiGetDevicePath(devdesc: integer; var rootdevice :string; var path : string ; var errmsg:String ) :integer;
 
   function  YISERR(retcode:YRETCODE):boolean;
+{$ifdef ENABLEPROGRAMMING}
   function  yapiFlashDevice(args:TyFlashArg; var errmsg : string):integer;
   function  yapiVerifyDevice(args:TyFlashArg;var errmsg : string):integer;
-
+{$endif}
   function _getCalibrationHandler(calType:integer):yCalibrationHandler;
   function _StrToByte(value: string): TByteArray;
   function _ByteToString(value: TByteArray): string;
   function _decimalToDouble(val:u64):double;
   function _doubleToDecimal(val:double):u64;
   function _decodeWords(sdat:string):TLongIntArray;
+  function _decodeFloats(sdat:string):TLongIntArray;
+  function _yapiBoolToStr(value:boolean):string;
+  function _yapiFloatToStr(value:double):string;
+  function _stringSplit(str :String; delimiter :Char):TStringArray;
+
 implementation
 
 var
@@ -3524,50 +3732,6 @@ const
 
   function SetupDiDestroyDeviceInfoList(DeviceInfoSet: HDEVINFO): LongBool; stdcall;  external   'setupapi.dll' name 'SetupDiDestroyDeviceInfoList';
 
-
-  {$Ifdef BUILTIN_YAPI}
-
-  function  _yapiInitAPI(mode:integer; errmsg : pansichar):integer;cdecl; external;
-  procedure _yapiFreeAPI();cdecl;  external ;
-  procedure _yapiRegisterLogFunction(fct:_yLogFunc); cdecl; external ;
-  procedure _yapiRegisterDeviceLogCallback(fct:_yapiDeviceLogCallback); cdecl; external ;
-  procedure _yapiRegisterDeviceArrivalCallback(fct:_yDeviceUpdateFunc); cdecl; external ;
-  procedure _yapiRegisterDeviceRemovalCallback(fct:_yDeviceUpdateFunc); cdecl; external;
-  procedure _yapiRegisterDeviceChangeCallback(fct:_yDeviceUpdateFunc); cdecl; external;
-  function  _yapiRegisterHub(rootUrl:pansichar; errmsg:pansichar):integer;cdecl;external;
-  function  _yapiPreregisterHub(rootUrl:pansichar; errmsg:pansichar):integer;cdecl;external;
-  procedure _yapiUnregisterHub(rootUrl:pansichar);cdecl;external;
-  function  _yapiUpdateDeviceList(force:integer; errmsg : pansichar):integer;cdecl;  external;
-  function  _yapiHandleEvents(mode:integer; errmsg : pansichar):integer;cdecl; external;
-  function  _yapiGetTickCount():u64; external;
-  function  _yapiCheckLogicalName(name:pansichar):integer;cdecl;external;
-  function  _yapiGetAPIVersion(var version:pansichar;var build_date:pansichar):u16;cdecl; external;
-  procedure _yapiSetTraceFile(tracefile:pansichar);cdecl;external;
-  function  _yapiGetDevice(device_str:pansichar;errmsg:pansichar):YDEV_DESCR; cdecl; external ;
-  function  _yapiGetAllDevices( buffer:PyHandleArray;maxsize:integer;var neededsize:integer;errmsg : pansichar):integer; cdecl; external ;
-  function  _yapiGetDeviceInfo(d:YDEV_DESCR;var infos:yDeviceSt;errmsg : pansichar):integer;  cdecl; external ;
-  function  _yapiGetFunction(class_str,function_str:pansichar;errmsg : pansichar ):YFUN_DESCR; cdecl; external ;
-  function  _yapiGetFunctionsByClass( class_str:pansichar; precFuncDesc:YFUN_DESCR; buffer:PyHandleArray;maxsize:integer;var neededsize:integer;errmsg : pansichar):integer; cdecl;  external ;
-  function  _yapiGetFunctionsByDevice( device:YDEV_DESCR; precFuncDesc:YFUN_DESCR; buffer:PyHandleArray;maxsize:integer;var neededsize:integer;errmsg : pansichar):integer; cdecl;  external;
-  function  _yapiGetFunctionInfo(fundesc:YFUN_DESCR;var devdesc:YDEV_DESCR;serial,funcId,funcName,funcVal,errmsg : pansichar):integer;  cdecl; external;
-  function  _yapiHTTPRequestSyncStart(iohdl:PYIOHDL;device:pansichar;url:pansichar; var reply:pansichar; var replysize:integer; errmsg : pansichar):integer;cdecl;external ;
-  function  _yapiHTTPRequestSyncStartEx(iohdl:PYIOHDL;device:pansichar;url:pansichar;urllen:integer; var reply:pansichar; var replysize:integer; errmsg : pansichar):integer;cdecl;external ;
-
-  function  _yapiHTTPRequestSyncDone(iohdl:PYIOHDL;errmsg : pansichar):integer;cdecl;external ;
-  function  _yapiHTTPRequestAsync(device:pansichar;url:pansichar; callback:pointer; context:pointer; errmsg : pansichar):integer;cdecl;external ;
-  function  _yapiHTTPRequest(device:pansichar;url:pansichar; buffer:pansichar;buffsize:integer;var fullsize:integer;errmsg : pansichar):integer;cdecl;external ;
-  function  _yapiGetBootloadersDevs(serials:pansichar; maxNbSerial:u32; var totalBootladers:u32; errmsg:pansichar) :integer;cdecl; external ;
-  function  _yapiFlashDevice(args:PyFlashArg;errmsg : pansichar):integer;cdecl; external ;
-  function  _yapiVerifyDevice(args:PyFlashArg;errmsg : pansichar):integer;cdecl; external ;
-  function  _yapiGetDevicePath(devdesc :integer ; rootdevice :pansichar; path:pansichar; pathsize:integer; var neededsize:integer; errmsg:pansichar);cdecl;external ;
-  function  _yapiSleep(duration_ms: integer; errmsg:pansichar):integer; cdecl; external;
-
-  function  getaddrinfo(pNodeName,pServiceName :  pansichar; pHints, ppResult :pointer):u16;cdecl; external  'ws2_32.dll' name 'getaddrinfo';
-  procedure _freeaddrinfo( ai:pointer);  cdecl; external 'ws2_32.dll' name 'freeaddrinfo';
-  function  _wsprintfA( lpOut,lpFmt:pointer):integer;  cdecl; external 'user32.dll' name 'wsprintfA';
-
-  {$else}
-
 const
   {$ifdef ENABLEPROGRAMMING}
   dllfile = 'yprogrammer.dll';
@@ -3612,15 +3776,20 @@ const
   function  _yapiHTTPRequestSyncDone(iohdl:PYIOHDL;errmsg : pansichar):integer;cdecl;external dllfile name 'yapiHTTPRequestSyncDone';
   function  _yapiHTTPRequestAsync(device:pansichar;url:pansichar; callback:pointer; context:pointer; errmsg : pansichar):integer;cdecl;external dllfile name 'yapiHTTPRequestAsync';
   function  _yapiHTTPRequest(device:pansichar;url:pansichar; buffer:pansichar;buffsize:integer;var fullsize:integer;errmsg : pansichar):integer;cdecl;external dllfile name 'yapiHTTPRequest';
-  function  _yapiGetBootloadersDevs(serials:pansichar; maxNbSerial:u32; var totalBootladers:u32; errmsg:pansichar) :integer;cdecl; external dllfile name 'yapiGetBootloadersDevs';
+  {$ifdef ENABLEPROGRAMMING}
   function  _yapiFlashDevice(args:PyFlashArg;errmsg : pansichar):integer;cdecl; external dllfile name 'yapiFlashDevice';
   function  _yapiVerifyDevice(args:PyFlashArg;errmsg : pansichar):integer;cdecl; external dllfile name 'yapiVerifyDevice';
+  {$endif}
   function  _yapiGetDevicePath(devdesc :integer ; rootdevice :pansichar; path:pansichar; pathsize:integer; var neededsize:integer; errmsg:pansichar):integer;cdecl; external dllfile name 'yapiGetDevicePath';
   function  _yapiSleep(duration_ms: integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiSleep';
   procedure _yapiRegisterHubDiscoveryCallback(fct:_yapiHubDiscoveryCallback); cdecl; external dllfile name 'yapiRegisterHubDiscoveryCallback';
   function  _yapiTriggerHubDiscovery(errmsg:pansichar):integer; cdecl; external dllfile name 'yapiTriggerHubDiscovery';
-
-  {$endif}
+  //--- (generated code: YFunction dlldef)
+  function _yapiGetAllJsonKeys(jsonbuffer:pansichar; out_buffer:pansichar; out_buffersize:integer; var fullsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetAllJsonKeys';
+  function _yapiCheckFirmware(serial:pansichar; rev:pansichar; path:pansichar; buffer:pansichar; buffersize:integer; var fullsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiCheckFirmware';
+  function _yapiGetBootloadersDevs(serials:pansichar; maxNbSerial:integer; var totalBootladers:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetBootloadersDevs';
+  function _yapiUpdateFirmware(serial:pansichar; firmwarePath:pansichar; settings:pansichar; startUpdate:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiUpdateFirmware';
+//--- (end of generated code: YFunction dlldef)
 
 
   function YISERR(retcode:YRETCODE):boolean;
@@ -3681,7 +3850,7 @@ type
     fun_descr: YFUN_DESCR;
     value    : string[YOCTO_PUBVAL_LEN];
     timestamp: double;
-    data     : array[0..15] of byte;
+    data     : array[0..18] of byte;
     data_len : integer;
     serial   : string[YOCTO_SERIAL_LEN];
     url      : string[64];
@@ -3836,7 +4005,7 @@ var
       event^.eventtype := YAPI_HUB_DISCOVERY;
       event^.serial := shortstring(serial);
       event^.url := shortstring(url);
-      _PlugEvents.add(event)      
+      _PlugEvents.add(event)
     end;
 
 
@@ -3846,7 +4015,7 @@ var
     begin
       _HubDiscoveryCallback := hubDiscoveryCallback;
       if assigned(_HubDiscoveryCallback) then
-        yTriggerHubDiscovery(error);      
+        yTriggerHubDiscovery(error);
     end;
 
 
@@ -3866,12 +4035,19 @@ var
       x2,adj2:double;
       i:integer;
     begin
-      npt:= calibType mod 10;
+      if calibType < YOCTO_CALIB_TYPE_OFS then
+        begin
+          npt:= calibType mod 10;
+          if npt>high(rawValues) then npt:=high(rawValues)+1;
+          if npt>high(refValues) then npt:=high(refValues)+1;
+        end
+      else
+        begin
+          npt:=high(refValues)+1;
+        end;
       x:= rawValues[0];
       adj := refValues[0]-x;
       i:=0;
-      if npt>high(rawValues)+1 then  npt:=high(rawValues)+1;
-      if npt>high(refValues)+1 then  npt:=high(refValues)+1;
       while (rawValue>rawValues[i]) and (i+1<npt) do
         begin
           inc(i);
@@ -3897,7 +4073,7 @@ var
       errmsg:=string(perror);
     end;
 
-  function  yapiUnlockDeviceCallBack(var errmsg:string):integer;  
+  function  yapiUnlockDeviceCallBack(var errmsg:string):integer;
     var
       buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
       perror : pansichar;
@@ -4028,7 +4204,6 @@ var
     end;
 
 
-
   function _decodeWords(sdat:string):TLongIntArray;
     var
       udat    : TLongIntArray;
@@ -4052,7 +4227,7 @@ var
               srcpos := length(udat) - 1 - (c - 97);
               if (srcpos < 0) then
                 val := 0
-              else 
+              else
                 val := udat[srcpos];
             end
           else
@@ -4076,6 +4251,144 @@ var
           udat[length(udat)-1] := val;
         end;
       _decodeWords := udat;
+    end;
+
+  function _decodeFloats(sdat:string):TLongIntArray;
+    var
+      idat    : TLongIntArray;
+      p       : integer;
+      val     : LongInt;
+      sign    : integer;
+      dec     : integer;
+      decInc  : integer;
+      c       : integer;
+    begin
+      p := 0;
+      while p < length(sdat) do
+        begin
+          val := 0;
+          sign := 1;
+          dec := 0;
+          decInc := 0;
+          c := ord(sdat[p + 1]);
+          p := p + 1;
+          while (c <> 45) and ((c < 48) or (c > 57)) do // 45='-', 48='0', 57='9'
+            begin
+              if p >= length(sdat) then
+                begin
+                  _decodeFloats := idat;
+                  exit;
+                end;
+              c := ord(sdat[p + 1]);
+              p := p + 1;
+            end;
+          if c = 45 then // 45 == '-'
+            begin
+              if p >= length(sdat) then
+                begin
+                  _decodeFloats := idat;
+                  exit;
+                end;
+              sign := -sign;
+              c := ord(sdat[p + 1]);
+              p := p + 1;
+            end;
+          while ((c >= 48) and (c <= 57)) or (c = 46) do // 48='0', 57='9', 46='.'
+            begin
+              if c = 46 then
+                begin
+                  decInc := 1;
+                end
+              else if dec < 3 then
+                begin
+                  val := val * 10 + (c - 48); // 48='0'
+                  dec := dec + decInc;
+                end;
+              if p <length(sdat) then
+                begin
+                  c := ord(sdat[p + 1]);
+                  p := p + 1;
+                end
+              else c := 0;
+            end;
+          if dec < 3 then
+            begin
+              if dec = 0 then val := val * 1000
+              else if dec = 1 then val := val * 100
+              else val := val * 10;
+            end;
+          SetLength(idat, length(idat)+1);
+          idat[length(idat)-1] := sign*val;
+        end;
+      _decodeFloats := idat;
+    end;
+
+  function _yapiBoolToStr(value:boolean):string;
+    begin
+      if (value) then _yapiBoolToStr:='1' else _yapiBoolToStr:='0';
+    end;
+
+  function _yapiFloatToStr(value:double):string;
+    var
+      res : string;
+      rounded : LongInt;
+      decim : integer;
+    begin
+      res := '';
+      rounded := round(value * 1000);
+      if(rounded < 0) then
+        begin
+          res := '-';
+          rounded := -rounded;
+        end;
+      res := res + IntToStr(rounded div 1000);
+      decim := rounded mod 1000;
+      if decim > 0 then
+        begin
+          res := res + '.';
+          if decim < 100 then res := res + '0';
+          if decim < 10 then res := res + '0';
+          if (decim mod 10) = 0 then decim := decim div 10;
+          if (decim mod 10) = 0 then decim := decim div 10;
+          res := res + IntToStr(decim);
+        end;
+      _yapiFloatToStr := res;
+    end;
+
+  function _stringSplit(str :String; delimiter :Char):TStringArray;
+    var
+      pos, lastpos ,nbchar, count : Integer;
+      part : string;
+    begin
+      SetLength(Result, 0);
+      nbchar := Length(str);
+      if nbchar = 0 then
+        Exit;
+      pos := 1;
+      count := 0;
+      while pos <= nbchar do
+        begin
+        if char(str[pos]) = delimiter then
+          begin
+             inc(count);
+          end;
+        inc(pos)
+        end;
+
+      SetLength(Result, count);
+      pos := 1;
+      lastpos:=1;
+      count :=1;
+      while pos <= nbchar do
+        begin
+        if str[pos] = delimiter then
+          begin
+            part := Copy(str,lastpos, pos-lastpos);
+            result[count] := part;
+          end;
+        inc(pos)
+        end;
+
     end;
 
 
@@ -4122,6 +4435,7 @@ var
         begin
           yRegisterCalibrationHandler(i,yLinearCalibrationHandler);
         end;
+      yRegisterCalibrationHandler(YOCTO_CALIB_TYPE_OFS,yLinearCalibrationHandler);
       YAPI_apiInitialized := true;
       yInitAPI         := res;
     end;
@@ -4260,12 +4574,15 @@ var
                   For i := 0 To _TimedReportCallbackList.Count - 1 do
                     If (TYfunction(_TimedReportCallbackList.items[i]).get_functionDescriptor() = p^.fun_descr) Then
                     begin
-                      SetLength(report, p^.data_len);
-                      for j := 0 To p^.data_len-1 do report[j] := p^.data[j];
-                      sensor := TYSensor(_TimedReportCallbackList.items[i]);
-                      measure := sensor._decodeTimedReport(p^.timestamp, report);
-                      sensor._invokeTimedReportCallback(measure);
-                      measure.free();
+                      if p^.data[0] <= 2 then
+                        begin
+                          SetLength(report, p^.data_len);
+                          for j := 0 To p^.data_len-1 do report[j] := p^.data[j];
+                          sensor := TYSensor(_TimedReportCallbackList.items[i]);
+                          measure := sensor._decodeTimedReport(p^.timestamp, report);
+                          sensor._invokeTimedReportCallback(measure);
+                          measure.free();
+                        end;
                     end;
                 end;
               freemem(p);
@@ -4324,7 +4641,7 @@ var
           exit;
         end;
       result := YAPI_SUCCESS;
-    end;      
+    end;
 
   function yGetTickCount():u64;
     begin
@@ -4334,15 +4651,15 @@ var
 
   function yCheckLogicalName(name:string):boolean;
     begin
-      if  (_yapiCheckLogicalName(pansichar(ansistring(name)))=0)  then 
+      if  (_yapiCheckLogicalName(pansichar(ansistring(name)))=0)  then
         yCheckLogicalName:=false
-      else 
+      else
         yCheckLogicalName:=true;
     end;
 
 
   (**
-   * 
+   *
    *)
 
   function yapiGetAPIVersion(var version,build_date:string):u16;
@@ -4600,7 +4917,7 @@ var
 
 
 
-  function  yapiGetBootloadersDevs(var serials:string; maxNbSerial:u32; var totalBootladers:u32; var errmsg:string) :integer;
+  function  yapiGetBootloadersDevs(var serials:string; maxNbSerial:u32; var totalBootladers:integer; var errmsg:string) :integer;
     var
       buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
       perror,p :pansichar;
@@ -4612,7 +4929,7 @@ var
       errmsg  := string(perror);
     end;
 
-
+ {$ifdef ENABLEPROGRAMMING}
   function  yapiFlashDevice(args:TyFlashArg; var errmsg : string):integer;
     var
       buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
@@ -4633,7 +4950,7 @@ var
       yapiVerifyDevice:=_yapiVerifyDevice(@args,perror);
       errmsg:=string(perror);
     end;
-
+{$endif}
 
 
  {$Ifdef BUILTIN_YAPI}
@@ -4985,8 +5302,8 @@ const
                 then
                   begin
                     uchangeval:=uchangeval+'%'+IntToHex(ord(c),2);
-                  end 
-                else  
+                  end
+                else
                   uchangeval:=uchangeval+c;
               end;
           end;
@@ -5002,10 +5319,10 @@ const
         member : PJSONRECORD;
         i      : integer;
       begin
-        if (j^.recordtype <> JSON_STRUCT) then 
-          begin 
-            _parse:= -1; 
-            exit; 
+        if (j^.recordtype <> JSON_STRUCT) then
+          begin
+            _parse:= -1;
+            exit;
           end;
         for i:=0 to j^.membercount-1 do
           begin
@@ -5023,7 +5340,7 @@ const
     var
       errmsg, request : string;
       res    : integer;
-      dev    : tydevice;    
+      dev    : tydevice;
       errBuffer       : array[0..YOCTO_ERRMSG_LEN] of ansichar;
       perror          : pansichar;
     begin
@@ -5248,7 +5565,7 @@ const
 
 
   function  TYFunction._findDataStream(dataset: TYDataSet; def :string) : TYDataStream;
-    var 
+    var
       index : integer;
       key : string;
       newDataStream : TYDataStream;
@@ -5692,7 +6009,7 @@ const
 
   function TYFunction.ToString() :string ;
   begin
-    ToString:=describe();  
+    ToString:=describe();
   end;
 
 
@@ -6278,7 +6595,7 @@ var
             for i:=0 to count-1  do _functions.add(pointer(p^[i]));
               freemem(p);
           end;
-        functions := _functions;  
+        functions := _functions;
         result    := YAPI_SUCCESS;
       end;
 
@@ -6311,7 +6628,7 @@ var
       _upTime := Y_UPTIME_INVALID;
       _usbCurrent := Y_USBCURRENT_INVALID;
       _rebootCountdown := Y_REBOOTCOUNTDOWN_INVALID;
-      _usbBandwidth := Y_USBBANDWIDTH_INVALID;
+      _userVar := Y_USERVAR_INVALID;
       _valueCallbackModule := nil;
       _logCallback := nil;
       //--- (end of generated code: YModule accessors initialization)
@@ -6392,9 +6709,9 @@ var
          result := 1;
          exit;
          end;
-      if (member^.name = 'usbBandwidth') then
+      if (member^.name = 'userVar') then
         begin
-          _usbBandwidth := integer(member^.ivalue);
+          _userVar := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -6813,34 +7130,63 @@ var
 
   ////
   /// <summary>
-  ///   Returns the number of USB interfaces used by the module.
+  ///   Returns the value previously stored in this attribute.
   /// <para>
+  ///   On startup and after a device reboot, the value is always reset to zero.
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   either Y_USBBANDWIDTH_SIMPLE or Y_USBBANDWIDTH_DOUBLE, according to the number of USB interfaces
-  ///   used by the module
+  ///   an integer corresponding to the value previously stored in this attribute
   /// </returns>
   /// <para>
-  ///   On failure, throws an exception or returns Y_USBBANDWIDTH_INVALID.
+  ///   On failure, throws an exception or returns Y_USERVAR_INVALID.
   /// </para>
   ///-
-  function TYModule.get_usbBandwidth():Integer;
+  function TYModule.get_userVar():LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
-              result := Y_USBBANDWIDTH_INVALID;
+              result := Y_USERVAR_INVALID;
               exit
             end;
         end;
-      result := self._usbBandwidth;
+      result := self._userVar;
       exit;
     end;
 
+
+  ////
+  /// <summary>
+  ///   Returns the value previously stored in this attribute.
+  /// <para>
+  ///   On startup and after a device reboot, the value is always reset to zero.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   an integer
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYModule.set_userVar(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('userVar',rest_val);
+    end;
 
   ////
   /// <summary>
@@ -7050,6 +7396,897 @@ var
 
   ////
   /// <summary>
+  ///   Test if the byn file is valid for this module.
+  /// <para>
+  ///   This method is useful to test if the module need to be updated.
+  ///   It's possible to pass an directory instead of a file. In this case this method return the path of
+  ///   the most recent
+  ///   appropriate byn file. If the parameter onlynew is true the function will discard firmware that are
+  ///   older or equal to
+  ///   the installed firmware.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="path">
+  ///   the path of a byn file or a directory that contain byn files
+  /// </param>
+  /// <param name="onlynew">
+  ///   return only files that are strictly newer
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   : the path of the byn file to use or a empty string if no byn files match the requirement
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a string that start with "error:".
+  /// </para>
+  ///-
+  function TYModule.checkFirmware(path: string; onlynew: boolean):string;
+    var
+      errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
+      errmsg : pansichar;
+      smallbuff_buffer : array[0..1024] of ansichar;
+      smallbuff : pansichar;
+      bigbuff : pansichar;
+      buffsize : LongInt;
+      fullsize : LongInt;
+      res : LongInt;
+      firmware_path : string;
+      serial : string;
+      release : string;
+    begin
+      errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
+       smallbuff_buffer[0]:=#0;smallbuff:=@smallbuff_buffer;
+      if onlynew then
+        begin
+          release := self.get_firmwareRelease
+        end
+      else
+        begin
+          release := ''
+        end;
+              //may throw an exception
+              serial := self._serial;
+              fullsize := 0;
+              res := _yapiCheckFirmware(pansichar(ansistring(serial)), pansichar(ansistring(release)), pansichar(ansistring(path)), smallbuff, 1024, fullsize, errmsg);
+      if res < 0 then
+        begin
+          firmware_path := 'error:' + string(errmsg);
+          result := 'error:' + string(errmsg);
+          exit
+        end;
+      if fullsize <= 1024 then
+        begin
+          firmware_path := string(smallbuff)
+        end
+      else
+        begin
+          buffsize := fullsize;
+          getmem(bigbuff, buffsize);
+          res := _yapiCheckFirmware(pansichar(ansistring(serial)), pansichar(ansistring(release)), pansichar(ansistring(path)), bigbuff, buffsize, fullsize, errmsg);
+          if res < 0 then
+            begin
+              self._throw(YAPI_INVALID_ARGUMENT, string(errmsg));
+              firmware_path := 'error:' + string(errmsg)
+            end
+          else
+            begin
+              firmware_path := string(bigbuff)
+            end;
+          freemem(bigbuff)
+        end;
+      result := firmware_path;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Prepare a firmware upgrade of the module.
+  /// <para>
+  ///   This method return a object <c>YFirmwareUpdate</c> which
+  ///   will handle the firmware upgrade process.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="path">
+  ///   the path of the byn file to use.
+  /// </param>
+  /// <returns>
+  ///   : A object <c>YFirmwareUpdate</c>.
+  /// </returns>
+  ///-
+  function TYModule.updateFirmware(path: string):TYFirmwareUpdate;
+    var
+      serial : string;
+      settings : TByteArray;
+    begin
+      serial := self.get_serialNumber;
+      settings := self.get_allSettings;
+      result := TYFirmwareUpdate.create(serial, path, settings);
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns all the setting of the module.
+  /// <para>
+  ///   Useful to backup all the logical name and calibrations parameters
+  ///   of a connected module.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a binary buffer with all settings.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns  <c>YAPI_INVALID_STRING</c>.
+  /// </para>
+  ///-
+  function TYModule.get_allSettings():TByteArray;
+    begin
+      result := self._download('api.json');
+      exit;
+    end;
+
+
+  function TYModule._flattenJsonStruct(jsoncomplex: TByteArray):TByteArray;
+    var
+      errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
+      errmsg : pansichar;
+      smallbuff_buffer : array[0..1024] of ansichar;
+      smallbuff : pansichar;
+      bigbuff : pansichar;
+      buffsize : LongInt;
+      fullsize : LongInt;
+      res : LongInt;
+      jsonflat : string;
+      jsoncomplexstr : string;
+    begin
+      errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
+       smallbuff_buffer[0]:=#0;smallbuff:=@smallbuff_buffer;
+              fullsize := 0;
+              jsoncomplexstr := _ByteToString(jsoncomplex);
+              res := _yapiGetAllJsonKeys(pansichar(ansistring(jsoncomplexstr)), smallbuff, 1024, fullsize, errmsg);
+      if res < 0 then
+        begin
+          self._throw(YAPI_INVALID_ARGUMENT, string(errmsg));
+          jsonflat := 'error:' + string(errmsg);
+          result := _StrToByte(jsonflat);
+          exit
+        end;
+      if fullsize <= 1024 then
+        begin
+          jsonflat := string(smallbuff)
+        end
+      else
+        begin
+          buffsize := fullsize;
+          getmem(bigbuff, buffsize);
+          res := _yapiGetAllJsonKeys(pansichar(ansistring(jsoncomplexstr)), bigbuff, buffsize, fullsize, errmsg);
+          if res < 0 then
+            begin
+              self._throw(YAPI_INVALID_ARGUMENT, string(errmsg));
+              jsonflat := 'error:' + string(errmsg)
+            end
+          else
+            begin
+              jsonflat := string(bigbuff)
+            end;
+          freemem(bigbuff)
+        end;
+      result := _StrToByte(jsonflat);
+      exit;
+    end;
+
+
+  function TYModule.calibVersion(cparams: string):LongInt;
+    begin
+      if (cparams = '0,') then
+        begin
+          result := 3;
+          exit
+        end;
+      if (pos(',', cparams) - 1) >= 0 then
+        begin
+          if (pos(' ', cparams) - 1) > 0 then
+            begin
+              result := 3;
+              exit
+            end
+          else
+            begin
+              result := 1;
+              exit
+            end;
+        end;
+      if (cparams = '') or (cparams = '0') then
+        begin
+          result := 1;
+          exit
+        end;
+      if (Length(cparams) < 2) or((pos('.', cparams) - 1) >= 0) then
+        begin
+          result := 0;
+          exit
+        end
+      else
+        begin
+          result := 2;
+          exit
+        end;
+    end;
+
+
+  function TYModule.calibScale(unit_name: string; sensorType: string):LongInt;
+    begin
+      if (unit_name = 'g') or (unit_name = 'gauss') or (unit_name = 'W') then
+        begin
+          result := 1000;
+          exit
+        end;
+      if (unit_name = 'C') then
+        begin
+          if (sensorType = '') then
+            begin
+              result := 16;
+              exit
+            end;
+          if StrToInt(sensorType) < 8 then
+            begin
+              result := 16;
+              exit
+            end
+          else
+            begin
+              result := 100;
+              exit
+            end;
+        end;
+      if (unit_name = 'm') or (unit_name = 'deg') then
+        begin
+          result := 10;
+          exit
+        end;
+      result := 1;
+      exit;
+    end;
+
+
+  function TYModule.calibOffset(unit_name: string):LongInt;
+    begin
+      if (unit_name = '% RH') or (unit_name = 'mbar') or (unit_name = 'lx') then
+        begin
+          result := 0;
+          exit
+        end;
+      result := 32767;
+      exit;
+    end;
+
+
+  function TYModule.calibConvert(param: string; calibrationParam: string; unit_name: string; sensorType: string):string;
+    var
+      paramVer : LongInt;
+      funVer : LongInt;
+      funScale : LongInt;
+      funOffset : LongInt;
+      paramScale : LongInt;
+      paramOffset : LongInt;
+      words : TLongIntArray;
+      words_str : TStringArray;
+      calibData : TDoubleArray;
+      iCalib : TLongIntArray;
+      calibType : LongInt;
+      i : LongInt;
+      maxSize : LongInt;
+      ratio : double;
+      nPoints : LongInt;
+      wordVal : double;
+      calibData_pos : LongInt;
+      words_pos : LongInt;
+      i_i : LongInt;
+    begin
+      paramVer := self.calibVersion(param);
+      funVer := self.calibVersion(calibrationParam);
+      funScale := self.calibScale(unit_name, sensorType);
+      funOffset := self.calibOffset(unit_name);
+      paramScale := funScale;
+      paramOffset := funOffset;
+      if funVer < 3 then
+        begin
+          if funVer = 2 then
+            begin
+              words := _decodeWords(calibrationParam);
+              if (words[0] = 1366) and(words[1] = 12500) then
+                begin
+                  funScale := 1;
+                  funOffset := 0
+                end
+              else
+                begin
+                  funScale := words[1];
+                  funOffset := words[0]
+                end;
+            end
+          else
+            begin
+              if funVer = 1 then
+                begin
+                  if (calibrationParam = '') or(StrToInt(calibrationParam) > 10) then
+                    begin
+                      funScale := 0
+                    end;
+                end;
+            end;
+        end;
+      SetLength(calibData, 0);
+      calibType := 0;
+      if paramVer < 3 then
+        begin
+          if paramVer = 2 then
+            begin
+              words := _decodeWords(param);
+              if (words[0] = 1366) and(words[1] = 12500) then
+                begin
+                  paramScale := 1;
+                  paramOffset := 0
+                end
+              else
+                begin
+                  paramScale := words[1];
+                  paramOffset := words[0]
+                end;
+              if (length(words) >= 3) and(words[2] > 0) then
+                begin
+                  maxSize := 3 + 2 * ((words[2]) Mod (10));
+                  if maxSize > length(words) then
+                    begin
+                      maxSize := length(words)
+                    end;
+                  calibData_pos := length(calibData);
+                  SetLength(calibData, calibData_pos+maxSize);
+                  i := 3;
+                  while i < maxSize do
+                    begin
+                      calibData[calibData_pos] := words[i];
+                      inc(calibData_pos);
+                      i := i + 1
+                    end;
+                  SetLength(calibData, calibData_pos);
+                end;
+            end
+          else
+            begin
+              if paramVer = 1 then
+                begin
+                  words_str := _stringSplit(param, ',');
+                  words_pos := length(words);
+                  SetLength(words, words_pos+length(words_str));
+                  for i_i:=0 to length(words_str)-1 do
+                    begin
+                      words[words_pos] := StrToInt(words_str[i_i]);
+                      inc(words_pos)
+                    end;
+                  SetLength(words, words_pos);
+                  if (param = '') or(words[0] > 10) then
+                    begin
+                      paramScale := 0
+                    end;
+                  if (length(words) > 0) and(words[0] > 0) then
+                    begin
+                      maxSize := 1 + 2 * ((words[0]) Mod (10));
+                      if maxSize > length(words) then
+                        begin
+                          maxSize := length(words)
+                        end;
+                      i := 1;
+                      calibData_pos := length(calibData);
+                      SetLength(calibData, calibData_pos+maxSize);
+                      while i < maxSize do
+                        begin
+                          calibData[calibData_pos] := words[i];
+                          inc(calibData_pos);
+                          i := i + 1
+                        end;
+                      SetLength(calibData, calibData_pos);
+                    end;
+                end
+              else
+                begin
+                  if paramVer = 0 then
+                    begin
+                      ratio := StrToFloat(param);
+                      calibData_pos := length(calibData);
+                      SetLength(calibData, calibData_pos+4);
+                      if ratio > 0 then
+                        begin
+                          calibData[calibData_pos] := 0.0;
+                          inc(calibData_pos);
+                          calibData[calibData_pos] := 0.0;
+                          inc(calibData_pos);
+                          calibData[calibData_pos] := round(65535 / ratio);
+                          inc(calibData_pos);
+                          calibData[calibData_pos] := 65535.0;
+                          inc(calibData_pos)
+                        end;
+                      SetLength(calibData, calibData_pos);
+                    end;
+                end;
+            end;
+          i := 0;
+          while i < length(calibData) do
+            begin
+              if paramScale > 0 then
+                begin
+                  calibData[ i] := (calibData[i] - paramOffset) / paramScale
+                end
+              else
+                begin
+                  calibData[ i] := _decimalToDouble(round(calibData[i]))
+                end;
+              i := i + 1
+            end;
+        end
+      else
+        begin
+          iCalib := _decodeFloats(param);
+          calibType := round(iCalib[0] / 1000.0);
+          if calibType >= 30 then
+            begin
+              calibType := calibType - 30
+            end;
+          i := 1;
+          calibData_pos := length(calibData);
+          SetLength(calibData, calibData_pos+length(iCalib)-1);
+          while i < length(iCalib) do
+            begin
+              calibData[calibData_pos] := iCalib[i] / 1000.0;
+              inc(calibData_pos);
+              i := i + 1
+            end;
+          SetLength(calibData, calibData_pos);
+        end;
+      if funVer >= 3 then
+        begin
+          if length(calibData) = 0 then
+            begin
+              param := '0,'
+            end
+          else
+            begin
+              param := IntToStr(30 + calibType);
+              i := 0;
+              while i < length(calibData) do
+                begin
+                  if ((i) and 1) > 0 then
+                    begin
+                      param := param + ':'
+                    end
+                  else
+                    begin
+                      param := param + ' '
+                    end;
+                  param := param + IntToStr(round(calibData[i] * 1000.0 / 1000.0));
+                  i := i + 1
+                end;
+              param := param + ','
+            end;
+        end
+      else
+        begin
+          if funVer >= 1 then
+            begin
+              nPoints := (length(calibData) div 2);
+              param := IntToStr(nPoints);
+              i := 0;
+              while i < 2 * nPoints do
+                begin
+                  if funScale = 0 then
+                    begin
+                      wordVal := _doubleToDecimal(round(calibData[i]))
+                    end
+                  else
+                    begin
+                      wordVal := calibData[i] * funScale + funOffset
+                    end;
+                  param := param + ',' + _yapiFloatToStr(round(wordVal));
+                  i := i + 1
+                end;
+            end
+          else
+            begin
+              if length(calibData) = 4 then
+                begin
+                  param := _yapiFloatToStr(round(1000 * (calibData[3] - calibData[1]) / calibData[2] - calibData[0]))
+                end;
+            end;
+        end;
+      result := param;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Restore all the setting of the module.
+  /// <para>
+  ///   Useful to restore all the logical name and calibrations parameters
+  ///   of a module from a backup.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="settings">
+  ///   a binary buffer with all settings.
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYModule.set_allSettings(settings: TByteArray):LongInt;
+    var
+      restoreLast : TStringArray;
+      old_json_flat : TByteArray;
+      old_dslist : TStringArray;
+      old_jpath : TStringArray;
+      old_jpath_len : TLongIntArray;
+      old_val : TStringArray;
+      actualSettings : TByteArray;
+      new_dslist : TStringArray;
+      new_jpath : TStringArray;
+      new_jpath_len : TLongIntArray;
+      new_val : TStringArray;
+      cpos : LongInt;
+      eqpos : LongInt;
+      leng : LongInt;
+      i : LongInt;
+      j : LongInt;
+      njpath : string;
+      jpath : string;
+      fun : string;
+      attr : string;
+      value : string;
+      url : string;
+      tmp : string;
+      new_calib : string;
+      sensorType : string;
+      unit_name : string;
+      newval : string;
+      old_calib : string;
+      do_update : boolean;
+      found : boolean;
+      jpath_pos : LongInt;
+      len_pos : LongInt;
+      val_pos : LongInt;
+      i_i : LongInt;
+      restoreLast_pos : LongInt;
+    begin
+      old_json_flat := self._flattenJsonStruct(settings);
+      old_dslist := self._json_get_array(old_json_flat);
+      jpath_pos := length(old_jpath);
+      SetLength(old_jpath, jpath_pos+length(old_dslist));;
+      len_pos := length(old_jpath_len);
+      SetLength(old_jpath_len, len_pos+length(old_dslist));;
+      val_pos := length(old_val);
+      SetLength(old_val, val_pos+length(old_dslist));;
+      for i_i:=0 to length(old_dslist)-1 do
+        begin
+          leng := Length(old_dslist[i_i]);
+          old_dslist[i_i] := Copy(old_dslist[i_i],  1 + 1, leng - 2);
+          leng := Length(old_dslist[i_i]);
+          eqpos := (pos('=', old_dslist[i_i]) - 1);
+          if (eqpos < 0) or(leng = 0) then
+            begin
+              self._throw(YAPI_INVALID_ARGUMENT, 'Invalid settings');
+              result := YAPI_INVALID_ARGUMENT;
+              exit
+            end;
+          jpath := Copy(old_dslist[i_i],  0 + 1, eqpos);
+          eqpos := eqpos + 1;
+          value := Copy(old_dslist[i_i],  eqpos + 1, leng - eqpos);
+          old_jpath[jpath_pos] := jpath;
+          inc(jpath_pos);
+          old_jpath_len[len_pos] := Length(jpath);
+          inc(len_pos);
+          old_val[val_pos] := value;
+          inc(val_pos)
+        end;
+      SetLength(old_jpath, jpath_pos);;
+      SetLength(old_jpath_len, len_pos);;
+      SetLength(old_val, val_pos);;
+      // may throw an exception
+      actualSettings := self._download('api.json');
+      actualSettings := self._flattenJsonStruct(actualSettings);
+      new_dslist := self._json_get_array(actualSettings);
+      jpath_pos := length(new_jpath);
+      SetLength(new_jpath, jpath_pos+length(new_dslist));;
+      len_pos := length(new_jpath_len);
+      SetLength(new_jpath_len, len_pos+length(new_dslist));;
+      val_pos := length(new_val);
+      SetLength(new_val, val_pos+length(new_dslist));;
+      for i_i:=0 to length(new_dslist)-1 do
+        begin
+          leng := Length(new_dslist[i_i]);
+          new_dslist[i_i] := Copy(new_dslist[i_i],  1 + 1, leng - 2);
+          leng := Length(new_dslist[i_i]);
+          eqpos := (pos('=', new_dslist[i_i]) - 1);
+          if (eqpos < 0) or(leng = 0) then
+            begin
+              self._throw(YAPI_INVALID_ARGUMENT, 'Invalid settings');
+              result := YAPI_INVALID_ARGUMENT;
+              exit
+            end;
+          jpath := Copy(new_dslist[i_i],  0 + 1, eqpos);
+          eqpos := eqpos + 1;
+          value := Copy(new_dslist[i_i],  eqpos + 1, leng - eqpos);
+          new_jpath[jpath_pos] := jpath;
+          inc(jpath_pos);
+          new_jpath_len[len_pos] := Length(jpath);
+          inc(len_pos);
+          new_val[val_pos] := value;
+          inc(val_pos)
+        end;
+      SetLength(new_jpath, jpath_pos);;
+      SetLength(new_jpath_len, len_pos);;
+      SetLength(new_val, val_pos);;
+      restoreLast_pos := length(restoreLast);
+      SetLength(restoreLast, restoreLast_pos+5);;
+      i := 0;
+      while i < length(new_jpath) do
+        begin
+          njpath := new_jpath[i];
+          leng := Length(njpath);
+          cpos := (pos('/', njpath) - 1);
+          if (cpos < 0) or(leng = 0) then
+            begin
+              continue
+            end;
+          fun := Copy(njpath,  0 + 1, cpos);
+          cpos := cpos + 1;
+          attr := Copy(njpath,  cpos + 1, leng - cpos);
+          do_update := true;
+          if (fun = 'services') then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'firmwareRelease')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'usbCurrent')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'upTime')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'persistentSettings')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'adminPassword')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'userPassword')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'rebootCountdown')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'advertisedValue')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'poeCurrent')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'readiness')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'ipAddress')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'subnetMask')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'router')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'linkQuality')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'ssid')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'channel')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'security')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'message')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'currentValue')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'currentRawValue')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'currentRunIndex')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'pulseTimer')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'lastTimePressed')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'lastTimeReleased')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'filesCount')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'freeSpace')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'timeUTC')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'rtcTime')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'unixTime')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'dateTime')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'rawValue')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'lastMsg')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'delayedPulseTimer')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'rxCount')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'txCount')) then
+            begin
+              do_update := false
+            end;
+          if (do_update) and((attr = 'msgCount')) then
+            begin
+              do_update := false
+            end;
+          if do_update then
+            begin
+              if (attr = 'calibrationParam') then
+                begin
+                  old_calib := '';
+                  unit_name := '';
+                  sensorType := '';
+                  new_calib := new_val[i];
+                  j := 0;
+                  found := false;
+                  while  (j < length(old_jpath)) and not(found) do
+                    begin
+                      if (new_jpath_len[i] = old_jpath_len[j]) and((new_jpath[i] = old_jpath[j])) then
+                        begin
+                          found := true;
+                          old_calib := old_val[j]
+                        end;
+                      j := j + 1
+                    end;
+                  tmp := fun + '/unit';
+                  j := 0;
+                  found := false;
+                  while  (j < length(new_jpath)) and not(found) do
+                    begin
+                      if (tmp = new_jpath[j]) then
+                        begin
+                          found := true;
+                          unit_name := new_jpath[j]
+                        end;
+                      j := j + 1
+                    end;
+                  tmp := fun + '/sensorType';
+                  j := 0;
+                  found := false;
+                  while  (j < length(new_jpath)) and not(found) do
+                    begin
+                      if (tmp = new_jpath[j]) then
+                        begin
+                          found := true;
+                          sensorType := new_jpath[j]
+                        end;
+                      j := j + 1
+                    end;
+                  newval := self.calibConvert(new_val[i],  old_calib,  unit_name, sensorType);
+                  url := 'api/' + fun + '.json?' + attr + '=' + newval;
+                  self._download(url)
+                end
+              else
+                begin
+                  j := 0;
+                  found := false;
+                  while  (j < length(old_jpath_len)) and not(found) do
+                    begin
+                      if (new_jpath_len[i] = old_jpath_len[j]) and((new_jpath[i] = old_jpath[j])) then
+                        begin
+                          found := true;
+                          url := 'api/' + fun + '.json?' + attr + '=' + old_val[j];
+                          if (attr = 'resolution') then
+                            begin
+                              restoreLast[restoreLast_pos] := url;
+                              inc(restoreLast_pos)
+                            end
+                          else
+                            begin
+                              self._download(url)
+                            end;
+                        end;
+                      j := j + 1
+                    end;
+                end;
+            end;
+          i := i + 1
+        end;
+      SetLength(restoreLast, restoreLast_pos);;
+      for i_i:=0 to length(restoreLast)-1 do
+        begin
+          self._download(restoreLast[i_i])
+        end;
+      result := YAPI_SUCCESS;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
   ///   Downloads the specified built-in file and returns a binary buffer with its content.
   /// <para>
   /// </para>
@@ -7061,7 +8298,7 @@ var
   ///   a binary buffer with the file content
   /// </returns>
   /// <para>
-  ///   On failure, throws an exception or returns an empty content.
+  ///   On failure, throws an exception or returns  <c>YAPI_INVALID_STRING</c>.
   /// </para>
   ///-
   function TYModule.download(pathname: string):TByteArray;
@@ -7083,6 +8320,7 @@ var
   /// </summary>
   /// <returns>
   ///   a binary buffer with module icon, in png format.
+  ///   On failure, throws an exception or returns  <c>YAPI_INVALID_STRING</c>.
   /// </returns>
   ///-
   function TYModule.get_icon2d():TByteArray;
@@ -7104,6 +8342,7 @@ var
   /// </summary>
   /// <returns>
   ///   a string with last logs of the module.
+  ///   On failure, throws an exception or returns  <c>YAPI_INVALID_STRING</c>.
   /// </returns>
   ///-
   function TYModule.get_lastLogs():string;
@@ -7232,25 +8471,25 @@ var
          end;
       if (member^.name = 'currentValue') then
         begin
-          _currentValue := member^.ivalue/65536.0;
+          _currentValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'lowestValue') then
         begin
-          _lowestValue := member^.ivalue/65536.0;
+          _lowestValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'highestValue') then
         begin
-          _highestValue := member^.ivalue/65536.0;
+          _highestValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'currentRawValue') then
         begin
-          _currentRawValue := member^.ivalue/65536.0;
+          _currentRawValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
@@ -7274,7 +8513,7 @@ var
          end;
       if (member^.name = 'resolution') then
         begin
-          if (member^.ivalue > 100) then _resolution := 1.0 / round(65536.0/member^.ivalue) else _resolution := 0.001 / round(67.0/member^.ivalue);
+          _resolution := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
@@ -7314,14 +8553,15 @@ var
 
   ////
   /// <summary>
-  ///   Returns the current value of the measure.
+  ///   Returns the current value of the measure, in the specified unit, as a floating point number.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a floating point number corresponding to the current value of the measure
+  ///   a floating point number corresponding to the current value of the measure, in the specified unit,
+  ///   as a floating point number
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_CURRENTVALUE_INVALID.
@@ -7374,7 +8614,7 @@ var
     var
       rest_val: string;
     begin
-      rest_val := inttostr(round(newval*65536.0));
+      rest_val := inttostr(round(newval * 65536.0));
       result := _setAttr('lowestValue',rest_val);
     end;
 
@@ -7435,7 +8675,7 @@ var
     var
       rest_val: string;
     begin
-      rest_val := inttostr(round(newval*65536.0));
+      rest_val := inttostr(round(newval * 65536.0));
       result := _setAttr('highestValue',rest_val);
     end;
 
@@ -7474,14 +8714,15 @@ var
 
   ////
   /// <summary>
-  ///   Returns the uncalibrated, unrounded raw value returned by the sensor.
+  ///   Returns the uncalibrated, unrounded raw value returned by the sensor, in the specified unit, as a floating point number.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a floating point number corresponding to the uncalibrated, unrounded raw value returned by the sensor
+  ///   a floating point number corresponding to the uncalibrated, unrounded raw value returned by the
+  ///   sensor, in the specified unit, as a floating point number
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_CURRENTRAWVALUE_INVALID.
@@ -7679,7 +8920,7 @@ var
     var
       rest_val: string;
     begin
-      rest_val := inttostr(round(newval*65536.0));
+      rest_val := inttostr(round(newval * 65536.0));
       result := _setAttr('resolution',rest_val);
     end;
 
@@ -7845,21 +9086,22 @@ var
       calraw_pos : LongInt;
       calref_pos : LongInt;
     begin
+      self._caltyp := -1;
+      self._scale := -1;
+      self._isScal32 := false;
+      SetLength(self._calpar, 0);
+      SetLength(self._calraw, 0);
+      SetLength(self._calref, 0);
+      // Store inverted resolution, to provide better rounding
       if self._resolution > 0 then
         begin
           self._iresol := round(1.0 / self._resolution)
         end
       else
         begin
-          result := 0;
-          exit
+          self._iresol := 10000;
+          self._resolution := 0.0001
         end;
-      
-      self._scale := -1;
-      SetLength(self._calpar, 0);
-      SetLength(self._calraw, 0);
-      SetLength(self._calref, 0);
-      
       // Old format: supported when there is no calibration
       if (self._calibrationParam = '') or (self._calibrationParam = '0') then
         begin
@@ -7867,117 +9109,160 @@ var
           result := 0;
           exit
         end;
-      // Old format: calibrated value will be provided by the device
       if (pos(',', self._calibrationParam) - 1) >= 0 then
         begin
-          self._caltyp := -1;
-          result := 0;
-          exit
-        end;
-      // New format, decode parameters
-      iCalib := _decodeWords(self._calibrationParam);
-      // In case of unknown format, calibrated value will be provided by the device
-      if length(iCalib) < 2 then
-        begin
-          self._caltyp := -1;
-          result := 0;
-          exit
-        end;
-      
-      // Save variable format (scale for scalar, or decimal exponent)          
-      self._isScal := (iCalib[1] > 0);
-      if self._isScal then
-        begin
-          self._offset := iCalib[0];
-          if self._offset > 32767 then
+          iCalib := _decodeFloats(self._calibrationParam);
+          self._caltyp := (iCalib[0] div 1000);
+          if self._caltyp > 0 then
             begin
-              self._offset := self._offset - 65536
+              if self._caltyp < YOCTO_CALIB_TYPE_OFS then
+                begin
+                  self._caltyp := -1;
+                  result := 0;
+                  exit
+                end;
+              self._calhdl := _getCalibrationHandler(self._caltyp);
+              if not((addr(self._calhdl) <> nil)) then
+                begin
+                  self._caltyp := -1;
+                  result := 0;
+                  exit
+                end;
             end;
-          self._scale := iCalib[1];
-          self._decexp := 0
-        end
-      else
-        begin
+          self._isScal := true;
+          self._isScal32 := true;
           self._offset := 0;
-          self._scale := 1;
-          self._decexp := 1.0;
-          position := iCalib[0];
-          while position > 0 do
+          self._scale := 1000;
+          maxpos := length(iCalib);
+          calpar_pos := 0;
+          SetLength(self._calpar, maxpos);
+          position := 1;
+          while position < maxpos do
             begin
-              self._decexp := self._decexp * 10;
-              position := position - 1
+              self._calpar[calpar_pos] := iCalib[position];
+              inc(calpar_pos);
+              position := position + 1
             end;
-        end;
-      
-      // Shortcut when there is no calibration parameter
-      if length(iCalib) = 2 then
-        begin
-          self._caltyp := 0;
-          result := 0;
-          exit
-        end;
-      
-      self._caltyp := iCalib[2];
-      self._calhdl := _getCalibrationHandler(self._caltyp);
-      // parse calibration points
-      position := 3;
-      if self._caltyp <= 10 then
-        begin
-          maxpos := self._caltyp
-        end
-      else
-        begin
-          if self._caltyp <= 20 then
+          SetLength(self._calpar, calpar_pos);
+          calraw_pos := 0;
+          SetLength(self._calraw, maxpos);
+          calref_pos := 0;
+          SetLength(self._calref, maxpos);
+          position := 1;
+          while position + 1 < maxpos do
             begin
-              maxpos := self._caltyp - 10
-            end
-          else
-            begin
-              maxpos := 5
-            end;
-        end;
-      maxpos := 3 + 2 * maxpos;
-      if maxpos > length(iCalib) then
-        begin
-          maxpos := length(iCalib)
-        end;
-      calpar_pos := 0;
-      SetLength(self._calpar, maxpos);;
-      calraw_pos := 0;
-      SetLength(self._calraw, maxpos);;
-      calref_pos := 0;
-      SetLength(self._calref, maxpos);;
-      while position + 1 < maxpos do
-        begin
-          iRaw := iCalib[position];
-          iRef := iCalib[position + 1];
-          self._calpar[calpar_pos] := iRaw;
-          inc(calpar_pos);
-          self._calpar[calpar_pos] := iRef;
-          inc(calpar_pos);
-          if self._isScal then
-            begin
-              fRaw := iRaw;
-              fRaw := (fRaw - self._offset) / self._scale;
-              fRef := iRef;
-              fRef := (fRef - self._offset) / self._scale;
+              fRaw := iCalib[position];
+              fRaw := fRaw / 1000.0;
+              fRef := iCalib[position + 1];
+              fRef := fRef / 1000.0;
               self._calraw[calraw_pos] := fRaw;
               inc(calraw_pos);
               self._calref[calref_pos] := fRef;
-              inc(calref_pos)
+              inc(calref_pos);
+              position := position + 2
+            end;
+          SetLength(self._calraw, calraw_pos);
+          SetLength(self._calref, calref_pos);
+        end
+      else
+        begin
+          iCalib := _decodeWords(self._calibrationParam);
+          if length(iCalib) < 2 then
+            begin
+              self._caltyp := -1;
+              result := 0;
+              exit
+            end;
+          self._isScal := (iCalib[1] > 0);
+          if self._isScal then
+            begin
+              self._offset := iCalib[0];
+              if self._offset > 32767 then
+                begin
+                  self._offset := self._offset - 65536
+                end;
+              self._scale := iCalib[1];
+              self._decexp := 0
             end
           else
             begin
-              self._calraw[calraw_pos] := _decimalToDouble(iRaw);
-              inc(calraw_pos);
-              self._calref[calref_pos] := _decimalToDouble(iRef);
-              inc(calref_pos)
+              self._offset := 0;
+              self._scale := 1;
+              self._decexp := 1.0;
+              position := iCalib[0];
+              while position > 0 do
+                begin
+                  self._decexp := self._decexp * 10;
+                  position := position - 1
+                end;
             end;
-          position := position + 2
+          if length(iCalib) = 2 then
+            begin
+              self._caltyp := 0;
+              result := 0;
+              exit
+            end;
+          self._caltyp := iCalib[2];
+          self._calhdl := _getCalibrationHandler(self._caltyp);
+          if self._caltyp <= 10 then
+            begin
+              maxpos := self._caltyp
+            end
+          else
+            begin
+              if self._caltyp <= 20 then
+                begin
+                  maxpos := self._caltyp - 10
+                end
+              else
+                begin
+                  maxpos := 5
+                end;
+            end;
+          maxpos := 3 + 2 * maxpos;
+          if maxpos > length(iCalib) then
+            begin
+              maxpos := length(iCalib)
+            end;
+          calpar_pos := 0;
+          SetLength(self._calpar, maxpos);
+          calraw_pos := 0;
+          SetLength(self._calraw, maxpos);
+          calref_pos := 0;
+          SetLength(self._calref, maxpos);
+          position := 3;
+          while position + 1 < maxpos do
+            begin
+              iRaw := iCalib[position];
+              iRef := iCalib[position + 1];
+              self._calpar[calpar_pos] := iRaw;
+              inc(calpar_pos);
+              self._calpar[calpar_pos] := iRef;
+              inc(calpar_pos);
+              if self._isScal then
+                begin
+                  fRaw := iRaw;
+                  fRaw := (fRaw - self._offset) / self._scale;
+                  fRef := iRef;
+                  fRef := (fRef - self._offset) / self._scale;
+                  self._calraw[calraw_pos] := fRaw;
+                  inc(calraw_pos);
+                  self._calref[calref_pos] := fRef;
+                  inc(calref_pos)
+                end
+              else
+                begin
+                  self._calraw[calraw_pos] := _decimalToDouble(iRaw);
+                  inc(calraw_pos);
+                  self._calref[calref_pos] := _decimalToDouble(iRef);
+                  inc(calref_pos)
+                end;
+              position := position + 2
+            end;
+          SetLength(self._calpar, calpar_pos);
+          SetLength(self._calraw, calraw_pos);
+          SetLength(self._calref, calref_pos);
         end;
-      SetLength(self._calpar, calpar_pos);
-      SetLength(self._calraw, calraw_pos);
-      SetLength(self._calref, calref_pos);
       result := 0;
       exit;
     end;
@@ -8157,7 +9442,6 @@ var
     begin
       SetLength(rawValues, 0);
       SetLength(refValues, 0);
-      
       // Load function parameters if not yet loaded
       if self._scale = 0 then
         begin
@@ -8167,10 +9451,9 @@ var
               exit
             end;
         end;
-      
       if self._caltyp < 0 then
         begin
-          self._throw(YAPI_NOT_SUPPORTED, 'Device does not support new calibration parameters. Please upgrade your firmware');
+          self._throw(YAPI_NOT_SUPPORTED, 'Calibration parameters format mismatch. Please upgrade your library or firmware.');
           result := YAPI_NOT_SUPPORTED;
           exit
         end;
@@ -8208,14 +9491,12 @@ var
           result := YAPI_INVALID_STRING;
           exit
         end;
-      
-      // Shortcut when building empty calibration parameters       
+      // Shortcut when building empty calibration parameters
       if npt = 0 then
         begin
           result := '0';
           exit
         end;
-      
       // Load function parameters if not yet loaded
       if self._scale = 0 then
         begin
@@ -8225,36 +9506,48 @@ var
               exit
             end;
         end;
-      
       // Detect old firmware
       if (self._caltyp < 0) or(self._scale < 0) then
         begin
-          self._throw(YAPI_NOT_SUPPORTED, 'Device does not support new calibration parameters. Please upgrade your firmware');
+          self._throw(YAPI_NOT_SUPPORTED, 'Calibration parameters format mismatch. Please upgrade your library or firmware.');
           result := '0';
           exit
         end;
-      if self._isScal then
+      if self._isScal32 then
         begin
-          res := ''+inttostr(npt);
+          res := ''+inttostr(YOCTO_CALIB_TYPE_OFS);
           idx := 0;
           while idx < npt do
             begin
-              iRaw := round(rawValues[idx] * self._scale + self._offset);
-              iRef := round(refValues[idx] * self._scale + self._offset);
-              res := ''+ res+','+inttostr( iRaw)+','+inttostr(iRef);
+              res := ''+ res+','+_yapiFloatToStr( rawValues[idx])+','+_yapiFloatToStr(refValues[idx]);
               idx := idx + 1
             end;
         end
       else
         begin
-          res := ''+inttostr(10 + npt);
-          idx := 0;
-          while idx < npt do
+          if self._isScal then
             begin
-              iRaw := _doubleToDecimal(rawValues[idx]);
-              iRef := _doubleToDecimal(refValues[idx]);
-              res := ''+ res+','+inttostr( iRaw)+','+inttostr(iRef);
-              idx := idx + 1
+              res := ''+inttostr(npt);
+              idx := 0;
+              while idx < npt do
+                begin
+                  iRaw := round(rawValues[idx] * self._scale + self._offset);
+                  iRef := round(refValues[idx] * self._scale + self._offset);
+                  res := ''+ res+','+inttostr( iRaw)+','+inttostr(iRef);
+                  idx := idx + 1
+                end;
+            end
+          else
+            begin
+              res := ''+inttostr(10 + npt);
+              idx := 0;
+              while idx < npt do
+                begin
+                  iRaw := _doubleToDecimal(rawValues[idx]);
+                  iRef := _doubleToDecimal(refValues[idx]);
+                  res := ''+ res+','+inttostr( iRaw)+','+inttostr(iRef);
+                  idx := idx + 1
+                end;
             end;
         end;
       result := res;
@@ -8297,6 +9590,8 @@ var
       minRaw : LongInt;
       avgRaw : LongInt;
       maxRaw : LongInt;
+      sublen : LongInt;
+      difRaw : LongInt;
       startTime : double;
       endTime : double;
       minVal : double;
@@ -8310,53 +9605,142 @@ var
         begin
           startTime := endTime
         end;
-      if report[0] > 0 then
+      if report[0] = 2 then
         begin
-          minRaw := report[1] + $0100 * report[2];
-          maxRaw := report[3] + $0100 * report[4];
-          avgRaw := report[5] + $0100 * report[6] + $010000 * report[7];
-          byteVal := report[8];
-          if ((byteVal) and ($080)) = 0 then
+          if length(report) <= 5 then
             begin
-              avgRaw := avgRaw + $01000000 * byteVal
-            end
-          else
-            begin
-              avgRaw := avgRaw - $01000000 * ($0100 - byteVal)
-            end;
-          minVal := self._decodeVal(minRaw);
-          avgVal := self._decodeAvg(avgRaw);
-          maxVal := self._decodeVal(maxRaw)
-        end
-      else
-        begin
-          poww := 1;
-          avgRaw := 0;
-          byteVal := 0;
-          i := 1;
-          while i < length(report) do
-            begin
-              byteVal := report[i];
-              avgRaw := avgRaw + poww * byteVal;
-              poww := poww * $0100;
-              i := i + 1
-            end;
-          if self._isScal then
-            begin
-              avgVal := self._decodeVal(avgRaw)
-            end
-          else
-            begin
+              poww := 1;
+              avgRaw := 0;
+              byteVal := 0;
+              i := 1;
+              while i < length(report) do
+                begin
+                  byteVal := report[i];
+                  avgRaw := avgRaw + poww * byteVal;
+                  poww := poww * $0100;
+                  i := i + 1
+                end;
               if ((byteVal) and ($080)) <> 0 then
                 begin
                   avgRaw := avgRaw - poww
                 end;
-              avgVal := self._decodeAvg(avgRaw)
+              avgVal := avgRaw / 1000.0;
+              if self._caltyp <> 0 then
+                begin
+                  if (addr(self._calhdl) <> nil) then
+                    begin
+                      avgVal := self._calhdl(avgVal, self._caltyp, self._calpar, self._calraw, self._calref)
+                    end;
+                end;
+              minVal := avgVal;
+              maxVal := avgVal
+            end
+          else
+            begin
+              sublen := 1 + ((report[1]) and 3);
+              poww := 1;
+              avgRaw := 0;
+              byteVal := 0;
+              i := 2;
+              while (sublen > 0) and(i < length(report)) do
+                begin
+                  byteVal := report[i];
+                  avgRaw := avgRaw + poww * byteVal;
+                  poww := poww * $0100;
+                  i := i + 1;
+                  sublen := sublen - 1
+                end;
+              if ((byteVal) and ($080)) <> 0 then
+                begin
+                  avgRaw := avgRaw - poww
+                end;
+              sublen := 1 + ((((report[1]) shr 2)) and 3);
+              poww := 1;
+              difRaw := 0;
+              while (sublen > 0) and(i < length(report)) do
+                begin
+                  byteVal := report[i];
+                  difRaw := avgRaw + poww * byteVal;
+                  poww := poww * $0100;
+                  i := i + 1;
+                  sublen := sublen - 1
+                end;
+              minRaw := avgRaw - difRaw;
+              sublen := 1 + ((((report[1]) shr 4)) and 3);
+              poww := 1;
+              difRaw := 0;
+              while (sublen > 0) and(i < length(report)) do
+                begin
+                  byteVal := report[i];
+                  difRaw := avgRaw + poww * byteVal;
+                  poww := poww * $0100;
+                  i := i + 1;
+                  sublen := sublen - 1
+                end;
+              maxRaw := avgRaw + difRaw;
+              avgVal := avgRaw / 1000.0;
+              minVal := minRaw / 1000.0;
+              maxVal := maxRaw / 1000.0;
+              if self._caltyp <> 0 then
+                begin
+                  if (addr(self._calhdl) <> nil) then
+                    begin
+                      avgVal := self._calhdl(avgVal, self._caltyp, self._calpar, self._calraw, self._calref);
+                      minVal := self._calhdl(minVal, self._caltyp, self._calpar, self._calraw, self._calref);
+                      maxVal := self._calhdl(maxVal, self._caltyp, self._calpar, self._calraw, self._calref)
+                    end;
+                end;
             end;
-          minVal := avgVal;
-          maxVal := avgVal
+        end
+      else
+        begin
+          if report[0] = 0 then
+            begin
+              poww := 1;
+              avgRaw := 0;
+              byteVal := 0;
+              i := 1;
+              while i < length(report) do
+                begin
+                  byteVal := report[i];
+                  avgRaw := avgRaw + poww * byteVal;
+                  poww := poww * $0100;
+                  i := i + 1
+                end;
+              if self._isScal then
+                begin
+                  avgVal := self._decodeVal(avgRaw)
+                end
+              else
+                begin
+                  if ((byteVal) and ($080)) <> 0 then
+                    begin
+                      avgRaw := avgRaw - poww
+                    end;
+                  avgVal := self._decodeAvg(avgRaw)
+                end;
+              minVal := avgVal;
+              maxVal := avgVal
+            end
+          else
+            begin
+              minRaw := report[1] + $0100 * report[2];
+              maxRaw := report[3] + $0100 * report[4];
+              avgRaw := report[5] + $0100 * report[6] + $010000 * report[7];
+              byteVal := report[8];
+              if ((byteVal) and ($080)) = 0 then
+                begin
+                  avgRaw := avgRaw + $01000000 * byteVal
+                end
+              else
+                begin
+                  avgRaw := avgRaw - $01000000 * ($0100 - byteVal)
+                end;
+              minVal := self._decodeVal(minRaw);
+              avgVal := self._decodeAvg(avgRaw);
+              maxVal := self._decodeVal(maxRaw)
+            end;
         end;
-      
       result := TYMeasure.create(startTime, endTime, minVal, avgVal, maxVal);
       exit;
     end;
@@ -8377,7 +9761,10 @@ var
         end;
       if self._caltyp <> 0 then
         begin
-          val := self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
+          if (addr(self._calhdl) <> nil) then
+            begin
+              val := self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
+            end;
         end;
       result := val;
       exit;
@@ -8399,7 +9786,10 @@ var
         end;
       if self._caltyp <> 0 then
         begin
-          val := self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
+          if (addr(self._calhdl) <> nil) then
+            begin
+              val := self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
+            end;
         end;
       result := val;
       exit;
@@ -8477,6 +9867,106 @@ var
       _initFromDataSet(dataset, encoded);
     end;
 
+  constructor TYFirmwareUpdate.Create(serial: String; path :string; settings :TByteArray);
+    begin
+      _serial := serial;
+      _firmwarepath := path;
+      _settings := settings;
+    end;
+
+
+//--- (generated code: YFirmwareUpdate implementation)
+
+  function TYFirmwareUpdate._processMore(newupdate: LongInt):LongInt;
+    var
+      errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
+      errmsg : pansichar;
+      res : LongInt;
+      serial : string;
+      firmwarepath : string;
+      settings : string;
+    begin
+      errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
+              serial := self._serial;
+              firmwarepath := self._firmwarepath;
+              settings := _ByteToString(self._settings);
+              res := _yapiUpdateFirmware(pansichar(ansistring(serial)), pansichar(ansistring(firmwarepath)), pansichar(ansistring(settings)), newupdate, errmsg);
+              self._progress := res;
+              self._progress_msg := string(errmsg);
+      result := res;
+      exit;
+    end;
+
+
+  function TYFirmwareUpdate.get_progress():LongInt;
+    var
+      m : TYModule;
+    begin
+      self._processMore(0);
+      if (self._progress = 100) and(length(self._settings) <> 0) then
+        begin
+          m := TYModule.FindModule(self._serial);
+          if m.isOnline() then
+            begin
+              m.set_allSettings(self._settings);
+              setlength(self._settings,0)
+            end;
+        end;
+      result := self._progress;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the last progress message of the firmware update process.
+  /// <para>
+  ///   If an error occur during the
+  ///   firmware update process the error message is returned
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an string  with the last progress message, or the error message.
+  /// </returns>
+  ///-
+  function TYFirmwareUpdate.get_progressMessage():string;
+    begin
+      result := self._progress_msg;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Start the firmware update process.
+  /// <para>
+  ///   This method start the firmware update process in background. This method
+  ///   return immediately. The progress of the firmware update can be monitored with methods <c>get_progress()</c>
+  ///   and <c>get_progressMessage()</c>.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer in the range 0 to 100 (percentage of completion),
+  ///   or a negative error code in case of failure.
+  /// </returns>
+  /// <para>
+  ///   On failure returns a negative error code.
+  /// </para>
+  ///-
+  function TYFirmwareUpdate.startUpdate():LongInt;
+    begin
+      self._processMore(1);
+      result := self._progress;
+      exit;
+    end;
+
+
+//--- (end of generated code: YFirmwareUpdate implementation)
+
 
 //--- (generated code: YDataStream implementation)
 
@@ -8484,6 +9974,7 @@ var
     var
       val : LongInt;
       i : LongInt;
+      maxpos : LongInt;
       iRaw : LongInt;
       iRef : LongInt;
       fRaw : double;
@@ -8511,7 +10002,6 @@ var
               self._samplesPerHour := self._samplesPerHour * 60
             end;
         end;
-      
       val := encoded[5];
       if val > 32767 then
         begin
@@ -8521,7 +10011,7 @@ var
       self._offset := val;
       self._scale := encoded[6];
       self._isScal := (self._scale <> 0);
-      
+      self._isScal32 := (length(encoded) >= 14);
       val := encoded[7];
       self._isClosed := (val <> $0ffff);
       if val = $0ffff then
@@ -8547,40 +10037,67 @@ var
       if self._caltyp <> 0 then
         begin
           self._calhdl := _getCalibrationHandler(self._caltyp);
+          maxpos := length(iCalib);
           calpar_pos := 0;
           SetLength(self._calpar, length(iCalib));
           calraw_pos := 0;
           SetLength(self._calraw, length(iCalib));
           calref_pos := 0;
           SetLength(self._calref, length(iCalib));
-          i := 1;
-          while i + 1 < length(iCalib) do
+          if self._isScal32 then
             begin
-              iRaw := iCalib[i];
-              iRef := iCalib[i + 1];
-              self._calpar[calpar_pos] := iRaw;
-              inc(calpar_pos);
-              self._calpar[calpar_pos] := iRef;
-              inc(calpar_pos);
-              if self._isScal then
+              i := 1;
+              while i < maxpos do
                 begin
-                  fRaw := iRaw;
-                  fRaw := (fRaw - self._offset) / self._scale;
-                  fRef := iRef;
-                  fRef := (fRef - self._offset) / self._scale;
+                  self._calpar[calpar_pos] := iCalib[i];
+                  inc(calpar_pos);
+                  i := i + 1
+                end;
+              i := 1;
+              while i + 1 < maxpos do
+                begin
+                  fRaw := iCalib[i];
+                  fRaw := fRaw / 1000.0;
+                  fRef := iCalib[i + 1];
+                  fRef := fRef / 1000.0;
                   self._calraw[calraw_pos] := fRaw;
                   inc(calraw_pos);
                   self._calref[calref_pos] := fRef;
-                  inc(calref_pos)
-                end
-              else
-                begin
-                  self._calraw[calraw_pos] := _decimalToDouble(iRaw);
-                  inc(calraw_pos);
-                  self._calref[calref_pos] := _decimalToDouble(iRef);
-                  inc(calref_pos)
+                  inc(calref_pos);
+                  i := i + 2
                 end;
-              i := i + 2
+            end
+          else
+            begin
+              i := 1;
+              while i + 1 < maxpos do
+                begin
+                  iRaw := iCalib[i];
+                  iRef := iCalib[i + 1];
+                  self._calpar[calpar_pos] := iRaw;
+                  inc(calpar_pos);
+                  self._calpar[calpar_pos] := iRef;
+                  inc(calpar_pos);
+                  if self._isScal then
+                    begin
+                      fRaw := iRaw;
+                      fRaw := (fRaw - self._offset) / self._scale;
+                      fRef := iRef;
+                      fRef := (fRef - self._offset) / self._scale;
+                      self._calraw[calraw_pos] := fRaw;
+                      inc(calraw_pos);
+                      self._calref[calref_pos] := fRef;
+                      inc(calref_pos)
+                    end
+                  else
+                    begin
+                      self._calraw[calraw_pos] := _decimalToDouble(iRaw);
+                      inc(calraw_pos);
+                      self._calref[calref_pos] := _decimalToDouble(iRef);
+                      inc(calref_pos)
+                    end;
+                  i := i + 2
+                end;
             end;
           SetLength(self._calpar, calpar_pos);
           SetLength(self._calraw, calraw_pos);
@@ -8613,9 +10130,18 @@ var
       // decode min/avg/max values for the sequence
       if self._nRows > 0 then
         begin
-          self._minVal := self._decodeVal(encoded[8]);
-          self._maxVal := self._decodeVal(encoded[9]);
-          self._avgVal := self._decodeAvg(encoded[10] + (((encoded[11]) shl 16)), self._nRows)
+          if self._isScal32 then
+            begin
+              self._avgVal := self._decodeAvg(encoded[8] + (((((encoded[9]) xor ($08000))) shl 16)), 1);
+              self._minVal := self._decodeVal(encoded[10] + (((encoded[11]) shl 16)));
+              self._maxVal := self._decodeVal(encoded[12] + (((encoded[13]) shl 16)))
+            end
+          else
+            begin
+              self._minVal := self._decodeVal(encoded[8]);
+              self._maxVal := self._decodeVal(encoded[9]);
+              self._avgVal := self._decodeAvg(encoded[10] + (((encoded[11]) shl 16)), self._nRows)
+            end;
         end;
       result := 0;
       exit;
@@ -8640,21 +10166,34 @@ var
             begin
               dat_pos := 0;
               SetLength(dat, 3);
-              dat[dat_pos] := self._decodeVal(udat[idx]);
-              inc(dat_pos);
-              dat[dat_pos] := self._decodeAvg(udat[idx + 2] + (((udat[idx + 3]) shl 16)), 1);
-              inc(dat_pos);
-              dat[dat_pos] := self._decodeVal(udat[idx + 1]);
-              inc(dat_pos);
+              if self._isScal32 then
+                begin
+                  dat[dat_pos] := self._decodeVal(udat[idx + 2] + (((udat[idx + 3]) shl 16)));
+                  inc(dat_pos);
+                  dat[dat_pos] := self._decodeAvg(udat[idx] + (((((udat[idx + 1]) xor ($08000))) shl 16)), 1);
+                  inc(dat_pos);
+                  dat[dat_pos] := self._decodeVal(udat[idx + 4] + (((udat[idx + 5]) shl 16)));
+                  inc(dat_pos);
+                  idx := idx + 6
+                end
+              else
+                begin
+                  dat[dat_pos] := self._decodeVal(udat[idx]);
+                  inc(dat_pos);
+                  dat[dat_pos] := self._decodeAvg(udat[idx + 2] + (((udat[idx + 3]) shl 16)), 1);
+                  inc(dat_pos);
+                  dat[dat_pos] := self._decodeVal(udat[idx + 1]);
+                  inc(dat_pos);
+                  idx := idx + 4
+                end;
               SetLength(dat, dat_pos);
               self._values[values_pos] := dat;
-              inc(values_pos);
-              idx := idx + 4
+              inc(values_pos)
             end;
         end
       else
         begin
-          if self._isScal then
+          if self._isScal and not(self._isScal32) then
             begin
               while idx < length(udat) do
                 begin
@@ -8674,7 +10213,7 @@ var
                 begin
                   dat_pos := 0;
                   SetLength(dat, 1);
-                  dat[dat_pos] := self._decodeAvg(udat[idx] + (((udat[idx + 1]) shl 16)), 1);
+                  dat[dat_pos] := self._decodeAvg(udat[idx] + (((((udat[idx + 1]) xor ($08000))) shl 16)), 1);
                   inc(dat_pos);
                   SetLength(dat, dat_pos);
                   self._values[values_pos] := dat;
@@ -8713,13 +10252,20 @@ var
       val : double;
     begin
       val := w;
-      if self._isScal then
+      if self._isScal32 then
         begin
-          val := (val - self._offset) / self._scale
+          val := val / 1000.0
         end
       else
         begin
-          val := _decimalToDouble(w)
+          if self._isScal then
+            begin
+              val := (val - self._offset) / self._scale
+            end
+          else
+            begin
+              val := _decimalToDouble(w)
+            end;
         end;
       if self._caltyp <> 0 then
         begin
@@ -8735,13 +10281,20 @@ var
       val : double;
     begin
       val := dw;
-      if self._isScal then
+      if self._isScal32 then
         begin
-          val := (val / (100 * count) - self._offset) / self._scale
+          val := val / 1000.0
         end
       else
         begin
-          val := val / (count * self._decexp)
+          if self._isScal then
+            begin
+              val := (val / (100 * count) - self._offset) / self._scale
+            end
+          else
+            begin
+              val := val / (count * self._decexp)
+            end;
         end;
       if self._caltyp <> 0 then
         begin
@@ -9336,7 +10889,7 @@ var
       stream : TYDataStream;
       summaryMinVal, summaryMaxVal, summaryTotalTime, summaryTotalAvg: double;
       i : integer;
-      endtime, startTime: LongWord;
+      endtime, startTime, interval: LongWord;
       rec :  TYMeasure;
     begin
       if not(YAPI_ExceptionsDisabled) then  p := TJsonParser.create(data, false)
@@ -9360,8 +10913,17 @@ var
       self._functionId := string(node.svalue);
       node := p.GetChildNode(nil, 'unit');
       self._unit := string(node.svalue);
-      node := p.GetChildNode(nil, 'cal');
-      self._calib := _decodeWords(string(node.svalue));
+      node := p.GetChildNode(nil, 'calib');
+      if(node <> nil) then
+        begin
+          self._calib := _decodeFloats(string(node.svalue));
+          self._calib[0] := self._calib[0] div 1000;
+        end
+      else
+        begin
+          node := p.GetChildNode(nil, 'cal');
+          self._calib := _decodeWords(string(node.svalue));
+        end;
       arr := p.GetChildNode(nil, 'streams');
       SetLength(self._streams, 0);
       SetLength(self._preview, 0);
@@ -9388,7 +10950,7 @@ var
                   if summaryMinVal > stream.get_minValue() then
                     begin
                       summaryMinVal := stream.get_minValue();
-                    end;                 
+                    end;
                   if summaryMaxVal < stream.get_maxValue() then
                     begin
                       summaryMaxVal := stream.get_maxValue();
@@ -9400,17 +10962,21 @@ var
                                           stream.get_minValue(),
                                           stream.get_averageValue(),
                                           stream.get_maxValue());
-                  SetLength(self._preview, length(self._preview) + 1); 
+                  SetLength(self._preview, length(self._preview) + 1);
                   self._preview[length(self._preview)-1] := rec;
                 end;
             end;
         end;
       if (length(self._streams)>0)  and (summaryTotalTime>0) then
-        begin      
+        begin
           // update time boundaries with actual data
           stream := self._streams[length(self._streams) - 1];
           endtime := stream.get_startTimeUTC() + LongWord(stream.get_duration());
-          startTime := self._streams[0].get_startTimeUTC() - LongWord(stream.get_dataSamplesIntervalMs() div 1000);
+          interval := LongWord(stream.get_dataSamplesIntervalMs() div 1000);
+          if self._streams[0].get_startTimeUTC() > interval then
+            startTime := self._streams[0].get_startTimeUTC() - interval
+          else
+            startTime := 0;
           if self._startTime < startTime then
             begin
               self._startTime := startTime;
@@ -9484,6 +11050,10 @@ var
         end;
       tim := stream.get_startTimeUTC();
       itv := stream.get_dataSamplesInterval();
+      if tim < itv then
+        begin
+          tim := itv
+        end;
       nCols := length(dataRows[0]);
       minCol := 0;
       if nCols > 2 then
@@ -9509,9 +11079,9 @@ var
           if (tim >= self._startTime) and((self._endTime = 0) or(tim <= self._endTime)) then
             begin
               self._measures[measures_pos] := TYMeasure.create(tim - itv, tim, dataRows[i_i][minCol], dataRows[i_i][avgCol], dataRows[i_i][maxCol]);
-              inc(measures_pos);
-              tim := tim + itv
+              inc(measures_pos)
             end;
+          tim := tim + itv
         end;
       SetLength(self._measures, measures_pos);
       result := self.get_progress;
@@ -9661,7 +11231,7 @@ var
   ///   Returns the progress of the downloads of the measures from the data logger,
   ///   on a scale from 0 to 100.
   /// <para>
-  ///   When the object is instanciated by <c>get_dataSet</c>,
+  ///   When the object is instantiated by <c>get_dataSet</c>,
   ///   the progress is zero. Each time <c>loadMore()</c> is invoked, the progress
   ///   is updated, to reach the value 100 only once all measures have been loaded.
   /// </para>
@@ -9924,6 +11494,8 @@ initialization
   YDevice_devCache        := Tlist.create();
   //--- (generated code: Module initialization)
   //--- (end of generated code: Module initialization)
+  //--- (generated code: FirmwareUpdate initialization)
+  //--- (end of generated code: FirmwareUpdate initialization)
   //--- (generated code: DataStream initialization)
   //--- (end of generated code: DataStream initialization)
   //--- (generated code: Measure initialization)
@@ -9944,6 +11516,8 @@ finalization
   //--- (generated code: Module cleanup)
   _ModuleCleanup();
   //--- (end of generated code: Module cleanup)
+  //--- (generated code: FirmwareUpdate cleanup)
+  //--- (end of generated code: FirmwareUpdate cleanup)
   //--- (generated code: DataStream cleanup)
   //--- (end of generated code: DataStream cleanup)
   //--- (generated code: Measure cleanup)

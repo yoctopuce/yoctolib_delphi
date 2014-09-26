@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_oscontrol.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_oscontrol.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindOsControl(), the high-level API for OsControl functions
  *
@@ -218,7 +218,6 @@ type
   end;
 
 //--- (OsControl functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves OS control for a given identifier.
@@ -281,6 +280,8 @@ type
 //--- (end of OsControl functions declaration)
 
 implementation
+//--- (YOsControl dlldef)
+//--- (end of YOsControl dlldef)
 
   constructor TYOsControl.Create(func:string);
     begin

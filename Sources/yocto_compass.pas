@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_compass.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_compass.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindCompass(), the high-level API for Compass functions
  *
@@ -235,7 +235,6 @@ type
   end;
 
 //--- (Compass functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a compass for a given identifier.
@@ -298,6 +297,8 @@ type
 //--- (end of Compass functions declaration)
 
 implementation
+//--- (YCompass dlldef)
+//--- (end of YCompass dlldef)
 
   constructor TYCompass.Create(func:string);
     begin
@@ -327,7 +328,7 @@ implementation
          end;
       if (member^.name = 'magneticHeading') then
         begin
-          _magneticHeading := member^.ivalue/65536.0;
+          _magneticHeading := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;

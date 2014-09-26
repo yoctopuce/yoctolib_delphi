@@ -31,9 +31,9 @@ object Form1: TForm1
     Caption = 'Function'
   end
   object ValueDisplay: TLabel
-    Left = 138
+    Left = 129
     Top = 98
-    Width = 45
+    Width = 54
     Height = 37
     Alignment = taRightJustify
     Caption = 'N/A'
@@ -47,7 +47,7 @@ object Form1: TForm1
   object ValueDisplayUnits: TLabel
     Left = 189
     Top = 98
-    Width = 9
+    Width = 11
     Height = 37
     Caption = '-'
     Font.Charset = ANSI_CHARSET

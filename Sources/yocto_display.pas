@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 16340 2014-05-30 10:41:54Z seb $
+ * $Id: yocto_display.pas 17498 2014-09-03 19:21:24Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -132,10 +132,7 @@ private
 
 public
    destructor Destroy(); override;
-   function get_displayLayer(layerId:integer):TYDisplayLayer;
    function sendCommand(cmd:string):integer;
-
- 
    function  flushLayers() :integer;
    procedure resetHiddenLayerFlags();
 
@@ -720,6 +717,28 @@ public
     ///-
     class function FirstDisplay():TYDisplay;
   //--- (end of generated code: YDisplay accessors declaration)
+
+    ////
+    /// <summary>
+    ///   Returns a YDisplayLayer object that can be used to draw on the specified
+    ///   layer.
+    /// <para>
+    ///   The content is displayed only when the layer is active on the
+    ///   screen (and not masked by other overlapping layers).
+    /// </para>
+    /// </summary>
+    /// <param name="layerId">
+    ///   the identifier of the layer (a number in range 0..layerCount-1)
+    /// </param>
+    /// <returns>
+    ///   an <c>YDisplayLayer</c> object
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>null</c>.
+    /// </para>
+    ///-
+    function get_displayLayer(layerId:integer):TYDisplayLayer;
+
 end;
 
  // from YDisplayLayer
@@ -845,11 +864,11 @@ public
     ////
     /// <summary>
     ///   Selects an eraser instead of a pen for all subsequent drawing functions,
-    ///   except for text drawing and bitmap copy functions.
+    ///   except for bitmap copy functions.
     /// <para>
-    ///   Any point drawn
-    ///   using the eraser becomes transparent (as when the layer is empty),
-    ///   showing the other layers beneath it.
+    ///   Any point drawn using the eraser
+    ///   becomes transparent (as when the layer is empty), showing the other
+    ///   layers beneath it.
     /// </para>
     /// </summary>
     /// <returns>
@@ -1426,7 +1445,6 @@ public
 end;
 
 //--- (generated code: Display functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a display for a given identifier.
@@ -2570,7 +2588,6 @@ procedure TYDisplay.resetHiddenLayerFlags();
 ///    On failure, throws an exception or returns nil.
 /// </para>
 ///-
-
 function TYDisplay.get_displayLayer(layerId:integer):TYDisplayLayer;
   var
   layercount : integer;
@@ -2642,13 +2659,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
   if not(_hidden) then res:= flush_now();
   command_flush := res;
  end;
-
-
- function yapibooltostr(value:boolean):string ;
-  begin
-    if (value) then yapibooltostr:='1' else yapibooltostr:='0';
-  end;
-
 
 
 //--- (generated code: YDisplayLayer implementation)
@@ -2759,11 +2769,11 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
   ////
   /// <summary>
   ///   Selects an eraser instead of a pen for all subsequent drawing functions,
-  ///   except for text drawing and bitmap copy functions.
+  ///   except for bitmap copy functions.
   /// <para>
-  ///   Any point drawn
-  ///   using the eraser becomes transparent (as when the layer is empty),
-  ///   showing the other layers beneath it.
+  ///   Any point drawn using the eraser
+  ///   becomes transparent (as when the layer is empty), showing the other
+  ///   layers beneath it.
   /// </para>
   /// </summary>
   /// <returns>
@@ -2805,7 +2815,7 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
   ///-
   function TYDisplayLayer.setAntialiasingMode(mode: boolean):LongInt;
     begin
-      result := self.command_push('a'+yapibooltostr(mode));
+      result := self.command_push('a'+_yapiBoolToStr(mode));
       exit;
     end;
 
@@ -3265,7 +3275,7 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
   ///-
   function TYDisplayLayer.setConsoleWordWrap(wordwrap: boolean):LongInt;
     begin
-      result := self.command_push('w'+yapibooltostr(wordwrap));
+      result := self.command_push('w'+_yapiBoolToStr(wordwrap));
       exit;
     end;
 

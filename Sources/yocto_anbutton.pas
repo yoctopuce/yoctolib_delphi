@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_anbutton.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_anbutton.pas 17673 2014-09-16 16:15:44Z seb $
  *
  * Implements yFindAnButton(), the high-level API for AnButton functions
  *
@@ -343,7 +343,7 @@ type
     ////
     /// <summary>
     ///   Returns the number of elapsed milliseconds between the module power on and the last time
-    ///   the input button was pressed (the input contact transitionned from open to closed).
+    ///   the input button was pressed (the input contact transitioned from open to closed).
     /// <para>
     /// </para>
     /// <para>
@@ -351,7 +351,7 @@ type
     /// </summary>
     /// <returns>
     ///   an integer corresponding to the number of elapsed milliseconds between the module power on and the last time
-    ///   the input button was pressed (the input contact transitionned from open to closed)
+    ///   the input button was pressed (the input contact transitioned from open to closed)
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_LASTTIMEPRESSED_INVALID</c>.
@@ -362,7 +362,7 @@ type
     ////
     /// <summary>
     ///   Returns the number of elapsed milliseconds between the module power on and the last time
-    ///   the input button was released (the input contact transitionned from closed to open).
+    ///   the input button was released (the input contact transitioned from closed to open).
     /// <para>
     /// </para>
     /// <para>
@@ -370,7 +370,7 @@ type
     /// </summary>
     /// <returns>
     ///   an integer corresponding to the number of elapsed milliseconds between the module power on and the last time
-    ///   the input button was released (the input contact transitionned from closed to open)
+    ///   the input button was released (the input contact transitioned from closed to open)
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_LASTTIMERELEASED_INVALID</c>.
@@ -516,7 +516,6 @@ type
   end;
 
 //--- (AnButton functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves an analog input for a given identifier.
@@ -579,6 +578,8 @@ type
 //--- (end of AnButton functions declaration)
 
 implementation
+//--- (YAnButton dlldef)
+//--- (end of YAnButton dlldef)
 
   constructor TYAnButton.Create(func:string);
     begin
@@ -1021,7 +1022,7 @@ implementation
   ////
   /// <summary>
   ///   Returns the number of elapsed milliseconds between the module power on and the last time
-  ///   the input button was pressed (the input contact transitionned from open to closed).
+  ///   the input button was pressed (the input contact transitioned from open to closed).
   /// <para>
   /// </para>
   /// <para>
@@ -1029,7 +1030,7 @@ implementation
   /// </summary>
   /// <returns>
   ///   an integer corresponding to the number of elapsed milliseconds between the module power on and the last time
-  ///   the input button was pressed (the input contact transitionned from open to closed)
+  ///   the input button was pressed (the input contact transitioned from open to closed)
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_LASTTIMEPRESSED_INVALID.
@@ -1053,7 +1054,7 @@ implementation
   ////
   /// <summary>
   ///   Returns the number of elapsed milliseconds between the module power on and the last time
-  ///   the input button was released (the input contact transitionned from closed to open).
+  ///   the input button was released (the input contact transitioned from closed to open).
   /// <para>
   /// </para>
   /// <para>
@@ -1061,7 +1062,7 @@ implementation
   /// </summary>
   /// <returns>
   ///   an integer corresponding to the number of elapsed milliseconds between the module power on and the last time
-  ///   the input button was released (the input contact transitionned from closed to open)
+  ///   the input button was released (the input contact transitioned from closed to open)
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_LASTTIMERELEASED_INVALID.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_servo.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_servo.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindServo(), the high-level API for Servo functions
  *
@@ -482,7 +482,6 @@ type
   end;
 
 //--- (Servo functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a servo for a given identifier.
@@ -545,6 +544,8 @@ type
 //--- (end of Servo functions declaration)
 
 implementation
+//--- (YServo dlldef)
+//--- (end of YServo dlldef)
 
     constructor TYServoMove.Create();
     begin

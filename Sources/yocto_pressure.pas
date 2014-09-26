@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pressure.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_pressure.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindPressure(), the high-level API for Pressure functions
  *
@@ -208,7 +208,6 @@ type
   end;
 
 //--- (Pressure functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a pressure sensor for a given identifier.
@@ -271,6 +270,8 @@ type
 //--- (end of Pressure functions declaration)
 
 implementation
+//--- (YPressure dlldef)
+//--- (end of YPressure dlldef)
 
   constructor TYPressure.Create(func:string);
     begin

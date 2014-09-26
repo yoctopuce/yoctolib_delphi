@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_relay.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_relay.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindRelay(), the high-level API for Relay functions
  *
@@ -515,7 +515,6 @@ type
   end;
 
 //--- (Relay functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a relay for a given identifier.
@@ -578,6 +577,8 @@ type
 //--- (end of Relay functions declaration)
 
 implementation
+//--- (YRelay dlldef)
+//--- (end of YRelay dlldef)
 
     constructor TYRelayDelayedPulse.Create();
     begin

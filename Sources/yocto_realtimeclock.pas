@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_realtimeclock.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_realtimeclock.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
@@ -305,7 +305,6 @@ type
   end;
 
 //--- (RealTimeClock functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a clock for a given identifier.
@@ -368,6 +367,8 @@ type
 //--- (end of RealTimeClock functions declaration)
 
 implementation
+//--- (YRealTimeClock dlldef)
+//--- (end of YRealTimeClock dlldef)
 
   constructor TYRealTimeClock.Create(func:string);
     begin

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_refframe.pas 15390 2014-03-11 11:11:35Z seb $
+ * $Id: yocto_refframe.pas 17481 2014-09-03 09:38:35Z mvuilleu $
  *
  * Implements yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -497,7 +497,6 @@ type
   end;
 
 //--- (RefFrame functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a reference frame for a given identifier.
@@ -560,6 +559,8 @@ type
 //--- (end of RefFrame functions declaration)
 
 implementation
+//--- (YRefFrame dlldef)
+//--- (end of YRefFrame dlldef)
 
   constructor TYRefFrame.Create(func:string);
     begin
@@ -601,7 +602,7 @@ implementation
          end;
       if (member^.name = 'bearing') then
         begin
-          _bearing := member^.ivalue/65536.0;
+          _bearing := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
@@ -679,7 +680,7 @@ implementation
     var
       rest_val: string;
     begin
-      rest_val := inttostr(round(newval*65536.0));
+      rest_val := inttostr(round(newval * 65536.0));
       result := _setAttr('bearing',rest_val);
     end;
 
@@ -879,10 +880,10 @@ implementation
   ///-
   function TYRefFrame.get_mountPosition():TYMOUNTPOSITION;
     var
-      pos : LongInt;
+      position : LongInt;
     begin
-      pos := self.get_mountPos;
-      return TYMOUNTPOSITION(((pos) shr 2));
+      position := self.get_mountPos;
+      return TYMOUNTPOSITION(((position) shr 2));
     end;
 
 
@@ -911,10 +912,10 @@ implementation
   ///-
   function TYRefFrame.get_mountOrientation():TYMOUNTORIENTATION;
     var
-      pos : LongInt;
+      position : LongInt;
     begin
-      pos := self.get_mountPos;
-      return TYMOUNTORIENTATION(((pos) and 3));
+      position := self.get_mountPos;
+      return TYMOUNTORIENTATION(((position) and 3));
     end;
 
 
@@ -957,10 +958,10 @@ implementation
   ///-
   function TYRefFrame.set_mountPosition(position: TYMOUNTPOSITION; orientation: TYMOUNTORIENTATION):LongInt;
     var
-      pos : LongInt;
+      mixedPos : LongInt;
     begin
-      pos := ((position) shl 2) + orientation;
-      return self.set_mountPos(pos);
+      mixedPos := ((position) shl 2) + orientation;
+      return self.set_mountPos(mixedPos);
     end;
 
 
@@ -1103,7 +1104,7 @@ implementation
       norm : double;
       orient : LongInt;
       idx : LongInt;
-      pos : LongInt;
+      intpos : LongInt;
       err : LongInt;
     begin
       if self._calibStage = 0 then
@@ -1174,6 +1175,7 @@ implementation
       self._calibPrevTick := currTick;
       
       // Determine the device orientation index
+      orient := 0;
       if zSq > 0.5 then
         begin
           if zVal > 0 then
@@ -1260,12 +1262,12 @@ implementation
         end;
       
       // Stage done, compute preliminary result
-      pos := (self._calibStage - 1) * self._calibCount;
-      self._calibSort(pos, pos + self._calibCount);
-      pos := pos + (self._calibCount div 2);
+      intpos := (self._calibStage - 1) * self._calibCount;
+      self._calibSort(intpos, intpos + self._calibCount);
+      intpos := intpos + (self._calibCount div 2);
       self._calibLogMsg := 'Stage '+inttostr( self._calibStage)+': median is '+inttostr(
-      round(1000*self._calibDataAccX[pos]))+','+inttostr(
-      round(1000*self._calibDataAccY[pos]))+','+inttostr(round(1000*self._calibDataAccZ[pos]));
+      round(1000*self._calibDataAccX[intpos]))+','+inttostr(
+      round(1000*self._calibDataAccY[intpos]))+','+inttostr(round(1000*self._calibDataAccZ[intpos]));
       
       // move to next stage
       self._calibStage := self._calibStage + 1;
@@ -1285,19 +1287,19 @@ implementation
       idx := 0;
       while idx < 6 do
         begin
-          pos := idx * self._calibCount + (self._calibCount div 2);
+          intpos := idx * self._calibCount + (self._calibCount div 2);
           orient := self._calibOrient[idx];
           if orient = 0 or orient = 1 then
             begin
-              zVal := zVal + self._calibDataAccZ[pos]
+              zVal := zVal + self._calibDataAccZ[intpos]
             end;
           if orient = 2 or orient = 3 then
             begin
-              xVal := xVal + self._calibDataAccX[pos]
+              xVal := xVal + self._calibDataAccX[intpos]
             end;
           if orient = 4 or orient = 5 then
             begin
-              yVal := yVal + self._calibDataAccY[pos]
+              yVal := yVal + self._calibDataAccY[intpos]
             end;
           idx := idx + 1
         end;
@@ -1306,21 +1308,21 @@ implementation
       self._calibAccZOfs := zVal / 2.0;
       
       // Recompute all norms, taking into account the computed shift, and re-sort
-      pos := 0;
-      while pos < length(self._calibDataAcc) do
+      intpos := 0;
+      while intpos < length(self._calibDataAcc) do
         begin
-          xVal := self._calibDataAccX[pos] - self._calibAccXOfs;
-          yVal := self._calibDataAccY[pos] - self._calibAccYOfs;
-          zVal := self._calibDataAccZ[pos] - self._calibAccZOfs;
+          xVal := self._calibDataAccX[intpos] - self._calibAccXOfs;
+          yVal := self._calibDataAccY[intpos] - self._calibAccYOfs;
+          zVal := self._calibDataAccZ[intpos] - self._calibAccZOfs;
           norm := Sqrt(xVal * xVal + yVal * yVal + zVal * zVal);
-          self._calibDataAcc[ pos] := norm;
-          pos := pos + 1
+          self._calibDataAcc[ intpos] := norm;
+          intpos := intpos + 1
         end;
       idx := 0;
       while idx < 6 do
         begin
-          pos := idx * self._calibCount;
-          self._calibSort(pos, pos + self._calibCount);
+          intpos := idx * self._calibCount;
+          self._calibSort(intpos, intpos + self._calibCount);
           idx := idx + 1
         end;
       
@@ -1331,19 +1333,19 @@ implementation
       idx := 0;
       while idx < 6 do
         begin
-          pos := idx * self._calibCount + (self._calibCount div 2);
+          intpos := idx * self._calibCount + (self._calibCount div 2);
           orient := self._calibOrient[idx];
           if orient = 0 or orient = 1 then
             begin
-              zVal := zVal + self._calibDataAcc[pos]
+              zVal := zVal + self._calibDataAcc[intpos]
             end;
           if orient = 2 or orient = 3 then
             begin
-              xVal := xVal + self._calibDataAcc[pos]
+              xVal := xVal + self._calibDataAcc[intpos]
             end;
           if orient = 4 or orient = 5 then
             begin
-              yVal := yVal + self._calibDataAcc[pos]
+              yVal := yVal + self._calibDataAcc[intpos]
             end;
           idx := idx + 1
         end;
@@ -1505,10 +1507,16 @@ implementation
       scaleZ := round(2048.0 / self._calibAccZScale) - 2048;
       if scaleX < -2048 or scaleX >= 2048 or scaleY < -2048 or scaleY >= 2048 or scaleZ < -2048 or scaleZ >= 2048 then
         begin
-          scaleExp := 3;
+          scaleExp := 3
+        end
+      else
+        begin
           if scaleX < -1024 or scaleX >= 1024 or scaleY < -1024 or scaleY >= 1024 or scaleZ < -1024 or scaleZ >= 1024 then
             begin
-              scaleExp := 2;
+              scaleExp := 2
+            end
+          else
+            begin
               if scaleX < -512 or scaleX >= 512 or scaleY < -512 or scaleY >= 512 or scaleZ < -512 or scaleZ >= 512 then
                 begin
                   scaleExp := 1

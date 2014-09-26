@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_led.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_led.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindLed(), the high-level API for Led functions
  *
@@ -314,7 +314,6 @@ type
   end;
 
 //--- (Led functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a led for a given identifier.
@@ -377,6 +376,8 @@ type
 //--- (end of Led functions declaration)
 
 implementation
+//--- (YLed dlldef)
+//--- (end of YLed dlldef)
 
   constructor TYLed.Create(func:string);
     begin

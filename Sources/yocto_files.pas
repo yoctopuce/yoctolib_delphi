@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 15345 2014-03-08 08:18:19Z mvuilleu $
+ * $Id: yocto_files.pas 17673 2014-09-16 16:15:44Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -235,7 +235,7 @@ public
 
     ////
     /// <summary>
-    ///   Reinitializes the filesystem to its clean, unfragmented, empty state.
+    ///   Reinitialize the filesystem to its clean, unfragmented, empty state.
     /// <para>
     ///   All files previously uploaded are permanently lost.
     /// </para>
@@ -364,7 +364,6 @@ procedure freeFileRecordArray(var list:TYFILERECORDARRAY);
 
 
 //--- (generated code: Files functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a filesystem for a given identifier.
@@ -652,7 +651,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Reinitializes the filesystem to its clean, unfragmented, empty state.
+  ///   Reinitialize the filesystem to its clean, unfragmented, empty state.
   /// <para>
   ///   All files previously uploaded are permanently lost.
   /// </para>

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_gyro.pas 15334 2014-03-07 20:33:05Z mvuilleu $
+ * $Id: yocto_gyro.pas 17226 2014-08-20 09:22:44Z seb $
  *
  * Implements yFindGyro(), the high-level API for Gyro functions
  *
@@ -217,7 +217,6 @@ type
   //--- (end of generated code: YQt accessors declaration)
   end;
   //--- (generated code: Qt functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a quaternion component for a given identifier.
@@ -706,7 +705,6 @@ type
   end;
 
 //--- (generated code: Gyro functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a gyroscope for a given identifier.
@@ -1065,19 +1063,19 @@ constructor TYQt.Create(func:string);
     begin
       if (member^.name = 'xValue') then
         begin
-          _xValue := member^.ivalue/65536.0;
+          _xValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'yValue') then
         begin
-          _yValue := member^.ivalue/65536.0;
+          _yValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'zValue') then
         begin
-          _zValue := member^.ivalue/65536.0;
+          _zValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;

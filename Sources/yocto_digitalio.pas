@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_digitalio.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_digitalio.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindDigitalIO(), the high-level API for DigitalIO functions
  *
@@ -660,7 +660,6 @@ type
   end;
 
 //--- (DigitalIO functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a digital IO port for a given identifier.
@@ -723,6 +722,8 @@ type
 //--- (end of DigitalIO functions declaration)
 
 implementation
+//--- (YDigitalIO dlldef)
+//--- (end of YDigitalIO dlldef)
 
   constructor TYDigitalIO.Create(func:string);
     begin

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_watchdog.pas 15434 2014-03-14 06:37:47Z mvuilleu $
+ * $Id: yocto_watchdog.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindWatchdog(), the high-level API for Watchdog functions
  *
@@ -710,7 +710,6 @@ type
   end;
 
 //--- (Watchdog functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves a watchdog for a given identifier.
@@ -773,6 +772,8 @@ type
 //--- (end of Watchdog functions declaration)
 
 implementation
+//--- (YWatchdog dlldef)
+//--- (end of YWatchdog dlldef)
 
     constructor TYWatchdogDelayedPulse.Create();
     begin

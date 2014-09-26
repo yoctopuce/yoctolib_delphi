@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_colorled.pas 15254 2014-03-06 10:16:24Z seb $
+ * $Id: yocto_colorled.pas 17350 2014-08-29 08:54:26Z seb $
  *
  * Implements yFindColorLed(), the high-level API for ColorLed functions
  *
@@ -377,7 +377,6 @@ type
   end;
 
 //--- (ColorLed functions declaration)
-
   ////
   /// <summary>
   ///   Retrieves an RGB led for a given identifier.
@@ -440,6 +439,8 @@ type
 //--- (end of ColorLed functions declaration)
 
 implementation
+//--- (YColorLed dlldef)
+//--- (end of YColorLed dlldef)
 
     constructor TYColorLedMove.Create();
     begin
