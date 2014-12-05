@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_digitalio.pas 17350 2014-08-29 08:54:26Z seb $
+ * $Id: yocto_digitalio.pas 18320 2014-11-10 10:47:48Z seb $
  *
  * Implements yFindDigitalIO(), the high-level API for DigitalIO functions
  *
@@ -56,7 +56,6 @@ const Y_OUTPUTVOLTAGE_USB_5V = 0;
 const Y_OUTPUTVOLTAGE_USB_3V = 1;
 const Y_OUTPUTVOLTAGE_EXT_V = 2;
 const Y_OUTPUTVOLTAGE_INVALID = -1;
-
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 

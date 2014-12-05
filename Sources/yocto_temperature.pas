@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_temperature.pas 17350 2014-08-29 08:54:26Z seb $
+ * $Id: yocto_temperature.pas 18320 2014-11-10 10:47:48Z seb $
  *
  * Implements yFindTemperature(), the high-level API for Temperature functions
  *
@@ -58,8 +58,11 @@ const Y_SENSORTYPE_TYPE_T = 7;
 const Y_SENSORTYPE_PT100_4WIRES = 8;
 const Y_SENSORTYPE_PT100_3WIRES = 9;
 const Y_SENSORTYPE_PT100_2WIRES = 10;
+const Y_SENSORTYPE_RES_OHM = 11;
+const Y_SENSORTYPE_RES_NTC = 12;
+const Y_SENSORTYPE_RES_LINEAR = 13;
 const Y_SENSORTYPE_INVALID = -1;
-
+const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 
 //--- (end of YTemperature definitions)
@@ -96,6 +99,7 @@ type
     _calibrationParam         : string;
     _resolution               : double;
     _sensorType               : Integer;
+    _command                  : string;
     _valueCallbackTemperature : TYTemperatureValueCallback;
     _timedReportCallbackTemperature : TYTemperatureTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
@@ -119,8 +123,8 @@ type
     ///   a value among <c>Y_SENSORTYPE_DIGITAL</c>, <c>Y_SENSORTYPE_TYPE_K</c>, <c>Y_SENSORTYPE_TYPE_E</c>,
     ///   <c>Y_SENSORTYPE_TYPE_J</c>, <c>Y_SENSORTYPE_TYPE_N</c>, <c>Y_SENSORTYPE_TYPE_R</c>,
     ///   <c>Y_SENSORTYPE_TYPE_S</c>, <c>Y_SENSORTYPE_TYPE_T</c>, <c>Y_SENSORTYPE_PT100_4WIRES</c>,
-    ///   <c>Y_SENSORTYPE_PT100_3WIRES</c> and <c>Y_SENSORTYPE_PT100_2WIRES</c> corresponding to the
-    ///   temperature sensor type
+    ///   <c>Y_SENSORTYPE_PT100_3WIRES</c>, <c>Y_SENSORTYPE_PT100_2WIRES</c>, <c>Y_SENSORTYPE_RES_OHM</c>,
+    ///   <c>Y_SENSORTYPE_RES_NTC</c> and <c>Y_SENSORTYPE_RES_LINEAR</c> corresponding to the temperature sensor type
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_SENSORTYPE_INVALID</c>.
@@ -145,7 +149,8 @@ type
     ///   a value among <c>Y_SENSORTYPE_DIGITAL</c>, <c>Y_SENSORTYPE_TYPE_K</c>, <c>Y_SENSORTYPE_TYPE_E</c>,
     ///   <c>Y_SENSORTYPE_TYPE_J</c>, <c>Y_SENSORTYPE_TYPE_N</c>, <c>Y_SENSORTYPE_TYPE_R</c>,
     ///   <c>Y_SENSORTYPE_TYPE_S</c>, <c>Y_SENSORTYPE_TYPE_T</c>, <c>Y_SENSORTYPE_PT100_4WIRES</c>,
-    ///   <c>Y_SENSORTYPE_PT100_3WIRES</c> and <c>Y_SENSORTYPE_PT100_2WIRES</c>
+    ///   <c>Y_SENSORTYPE_PT100_3WIRES</c>, <c>Y_SENSORTYPE_PT100_2WIRES</c>, <c>Y_SENSORTYPE_RES_OHM</c>,
+    ///   <c>Y_SENSORTYPE_RES_NTC</c> and <c>Y_SENSORTYPE_RES_LINEAR</c>
     /// </param>
     /// <para>
     /// </para>
@@ -157,6 +162,10 @@ type
     /// </para>
     ///-
     function set_sensorType(newval:Integer):integer;
+
+    function get_command():string;
+
+    function set_command(newval:string):integer;
 
     ////
     /// <summary>
@@ -245,6 +254,66 @@ type
     function registerTimedReportCallback(callback: TYTemperatureTimedReportCallback):LongInt; overload;
 
     function _invokeTimedReportCallback(value: TYMeasure):LongInt; override;
+
+    ////
+    /// <summary>
+    ///   Record a thermistor response table, for interpolating the temperature from
+    ///   the measured resistance.
+    /// <para>
+    ///   This function can only be used with temperature
+    ///   sensor based on thermistors.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="tempValues">
+    ///   array of floating point numbers, corresponding to all
+    ///   temperatures (in degrees Celcius) for which the resistance of the
+    ///   thermistor is specified.
+    /// </param>
+    /// <param name="resValues">
+    ///   array of floating point numbers, corresponding to the resistance
+    ///   values (in Ohms) for each of the temperature included in the first
+    ///   argument, index by index.
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_thermistorResponseTable(tempValues: TDoubleArray; resValues: TDoubleArray):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Retrieves the thermistor response table previously configured using function
+    ///   <c>set_thermistorResponseTable</c>.
+    /// <para>
+    ///   This function can only be used with
+    ///   temperature sensor based on thermistors.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="tempValues">
+    ///   array of floating point numbers, that will be filled by the function
+    ///   with all temperatures (in degrees Celcius) for which the resistance
+    ///   of the thermistor is specified.
+    /// </param>
+    /// <param name="resValues">
+    ///   array of floating point numbers, that will be filled by the function
+    ///   with the value (in Ohms) for each of the temperature included in the
+    ///   first argument, index by index.
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function loadThermistorResponseTable(var tempValues: TDoubleArray; var resValues: TDoubleArray):LongInt; overload; virtual;
 
 
     ////
@@ -344,6 +413,7 @@ implementation
       _className := 'Temperature';
       //--- (YTemperature accessors initialization)
       _sensorType := Y_SENSORTYPE_INVALID;
+      _command := Y_COMMAND_INVALID;
       _valueCallbackTemperature := nil;
       _timedReportCallbackTemperature := nil;
       //--- (end of YTemperature accessors initialization)
@@ -363,6 +433,12 @@ implementation
          result := 1;
          exit;
          end;
+      if (member^.name = 'command') then
+        begin
+          _command := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
@@ -378,8 +454,9 @@ implementation
   /// <returns>
   ///   a value among Y_SENSORTYPE_DIGITAL, Y_SENSORTYPE_TYPE_K, Y_SENSORTYPE_TYPE_E, Y_SENSORTYPE_TYPE_J,
   ///   Y_SENSORTYPE_TYPE_N, Y_SENSORTYPE_TYPE_R, Y_SENSORTYPE_TYPE_S, Y_SENSORTYPE_TYPE_T,
-  ///   Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES and Y_SENSORTYPE_PT100_2WIRES corresponding to
-  ///   the temperature sensor type
+  ///   Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES, Y_SENSORTYPE_PT100_2WIRES,
+  ///   Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC and Y_SENSORTYPE_RES_LINEAR corresponding to the
+  ///   temperature sensor type
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_SENSORTYPE_INVALID.
@@ -416,7 +493,8 @@ implementation
   /// <param name="newval">
   ///   a value among Y_SENSORTYPE_DIGITAL, Y_SENSORTYPE_TYPE_K, Y_SENSORTYPE_TYPE_E, Y_SENSORTYPE_TYPE_J,
   ///   Y_SENSORTYPE_TYPE_N, Y_SENSORTYPE_TYPE_R, Y_SENSORTYPE_TYPE_S, Y_SENSORTYPE_TYPE_T,
-  ///   Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES and Y_SENSORTYPE_PT100_2WIRES
+  ///   Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES, Y_SENSORTYPE_PT100_2WIRES,
+  ///   Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC and Y_SENSORTYPE_RES_LINEAR
   /// </param>
   /// <para>
   /// </para>
@@ -433,6 +511,29 @@ implementation
     begin
       rest_val := inttostr(newval);
       result := _setAttr('sensorType',rest_val);
+    end;
+
+  function TYTemperature.get_command():string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_COMMAND_INVALID;
+              exit
+            end;
+        end;
+      result := self._command;
+      exit;
+    end;
+
+
+  function TYTemperature.set_command(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('command',rest_val);
     end;
 
   ////
@@ -597,6 +698,211 @@ implementation
           inherited _invokeTimedReportCallback(value)
         end;
       result := 0;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Record a thermistor response table, for interpolating the temperature from
+  ///   the measured resistance.
+  /// <para>
+  ///   This function can only be used with temperature
+  ///   sensor based on thermistors.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="tempValues">
+  ///   array of floating point numbers, corresponding to all
+  ///   temperatures (in degrees Celcius) for which the resistance of the
+  ///   thermistor is specified.
+  /// </param>
+  /// <param name="resValues">
+  ///   array of floating point numbers, corresponding to the resistance
+  ///   values (in Ohms) for each of the temperature included in the first
+  ///   argument, index by index.
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYTemperature.set_thermistorResponseTable(tempValues: TDoubleArray; resValues: TDoubleArray):LongInt;
+    var
+      siz : LongInt;
+      res : LongInt;
+      idx : LongInt;
+      found : LongInt;
+      prev : double;
+      curr : double;
+      currTemp : double;
+      idxres : double;
+    begin
+      siz := length(tempValues);
+      if not(siz >= 2) then
+        begin
+          self._throw( YAPI_INVALID_ARGUMENT, 'thermistor response table must have at least two points');
+          result:=YAPI_INVALID_ARGUMENT;
+          exit;
+        end;
+      if not(siz = length(resValues)) then
+        begin
+          self._throw( YAPI_INVALID_ARGUMENT, 'table sizes mismatch');
+          result:=YAPI_INVALID_ARGUMENT;
+          exit;
+        end;
+      
+      // may throw an exception
+      res := self.set_command('Z');
+      if not(res=YAPI_SUCCESS) then
+        begin
+          self._throw( YAPI_IO_ERROR, 'unable to reset thermistor parameters');
+          result:=YAPI_IO_ERROR;
+          exit;
+        end;
+      
+      // add records in growing resistance value
+      found := 1;
+      prev := 0.0;
+      while found > 0 do
+        begin
+          found := 0;
+          curr := 99999999.0;
+          currTemp := -999999.0;
+          idx := 0;
+          while idx < siz do
+            begin
+              idxres := resValues[idx];
+              if (idxres > prev) and(idxres < curr) then
+                begin
+                  curr := idxres;
+                  currTemp := tempValues[idx];
+                  found := 1
+                end;
+              idx := idx + 1
+            end;
+          if found > 0 then
+            begin
+              res := self.set_command('m'+inttostr( round(1000*curr))+':'+inttostr(round(1000*currTemp)));
+              if not(res=YAPI_SUCCESS) then
+                begin
+                  self._throw( YAPI_IO_ERROR, 'unable to reset thermistor parameters');
+                  result:=YAPI_IO_ERROR;
+                  exit;
+                end;
+              prev := curr
+            end;
+        end;
+      result := YAPI_SUCCESS;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Retrieves the thermistor response table previously configured using function
+  ///   <c>set_thermistorResponseTable</c>.
+  /// <para>
+  ///   This function can only be used with
+  ///   temperature sensor based on thermistors.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="tempValues">
+  ///   array of floating point numbers, that will be filled by the function
+  ///   with all temperatures (in degrees Celcius) for which the resistance
+  ///   of the thermistor is specified.
+  /// </param>
+  /// <param name="resValues">
+  ///   array of floating point numbers, that will be filled by the function
+  ///   with the value (in Ohms) for each of the temperature included in the
+  ///   first argument, index by index.
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYTemperature.loadThermistorResponseTable(var tempValues: TDoubleArray; var resValues: TDoubleArray):LongInt;
+    var
+      id : string;
+      bin_json : TByteArray;
+      paramlist : TStringArray;
+      templist : TDoubleArray;
+      siz : LongInt;
+      idx : LongInt;
+      temp : double;
+      found : LongInt;
+      prev : double;
+      curr : double;
+      currRes : double;
+      templist_pos : LongInt;
+      tempValues_pos : LongInt;
+      resValues_pos : LongInt;
+    begin
+      SetLength(tempValues, 0);
+      SetLength(resValues, 0);
+      
+      // may throw an exception
+      id := self.get_functionId;
+      id := Copy(id,  11 + 1, Length(id)-1);
+      bin_json := self._download('extra.json?page='+id);
+      paramlist := self._json_get_array(bin_json);
+      // first convert all temperatures to float
+      siz := ((length(paramlist)) shr 1);
+      templist_pos := 0;
+      SetLength(templist, siz);;
+      idx := 0;
+      while idx < siz do
+        begin
+          temp := StrToFloat(paramlist[2*idx+1])/1000.0;
+          templist[templist_pos] := temp;
+          inc(templist_pos);
+          idx := idx + 1
+        end;
+      // then add records in growing temperature value
+      tempValues_pos := 0;
+      SetLength(tempValues, siz);;
+      resValues_pos := 0;
+      SetLength(resValues, siz);;
+      found := 1;
+      prev := -999999.0;
+      while found > 0 do
+        begin
+          found := 0;
+          curr := 999999.0;
+          currRes := -999999.0;
+          idx := 0;
+          while idx < siz do
+            begin
+              temp := templist[idx];
+              if (temp > prev) and(temp < curr) then
+                begin
+                  curr := temp;
+                  currRes := StrToFloat(paramlist[2*idx])/1000.0;
+                  found := 1
+                end;
+              idx := idx + 1
+            end;
+          if found > 0 then
+            begin
+              tempValues[tempValues_pos] := curr;
+              inc(tempValues_pos);
+              resValues[resValues_pos] := currRes;
+              inc(resValues_pos);
+              prev := curr
+            end;
+        end;
+      SetLength(tempValues, tempValues_pos);;
+      SetLength(resValues, resValues_pos);;
+      
+      result := YAPI_SUCCESS;
       exit;
     end;
 

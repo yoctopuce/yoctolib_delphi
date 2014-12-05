@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_servo.pas 17350 2014-08-29 08:54:26Z seb $
+ * $Id: yocto_servo.pas 18320 2014-11-10 10:47:48Z seb $
  *
  * Implements yFindServo(), the high-level API for Servo functions
  *
@@ -58,14 +58,12 @@ const Y_POSITION_INVALID              = YAPI_INVALID_INT;
 const Y_ENABLED_FALSE = 0;
 const Y_ENABLED_TRUE = 1;
 const Y_ENABLED_INVALID = -1;
-
 const Y_RANGE_INVALID                 = YAPI_INVALID_UINT;
 const Y_NEUTRAL_INVALID               = YAPI_INVALID_UINT;
 const Y_POSITIONATPOWERON_INVALID     = YAPI_INVALID_INT;
 const Y_ENABLEDATPOWERON_FALSE = 0;
 const Y_ENABLEDATPOWERON_TRUE = 1;
 const Y_ENABLEDATPOWERON_INVALID = -1;
-
 
 var Y_MOVE_INVALID : TYServoMove;
 

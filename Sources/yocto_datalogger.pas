@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_datalogger.pas 17673 2014-09-16 16:15:44Z seb $
+ * $Id: yocto_datalogger.pas 18320 2014-11-10 10:47:48Z seb $
  *
  * Implements yFindDataLogger(), the high-level API for DataLogger functions
  *
@@ -52,19 +52,15 @@ const Y_TIMEUTC_INVALID               = YAPI_INVALID_LONG;
 const Y_RECORDING_OFF = 0;
 const Y_RECORDING_ON = 1;
 const Y_RECORDING_INVALID = -1;
-
 const Y_AUTOSTART_OFF = 0;
 const Y_AUTOSTART_ON = 1;
 const Y_AUTOSTART_INVALID = -1;
-
 const Y_BEACONDRIVEN_OFF = 0;
 const Y_BEACONDRIVEN_ON = 1;
 const Y_BEACONDRIVEN_INVALID = -1;
-
 const Y_CLEARHISTORY_FALSE = 0;
 const Y_CLEARHISTORY_TRUE = 1;
 const Y_CLEARHISTORY_INVALID = -1;
-
 
 
 //--- (end of generated code: YDataLogger definitions)

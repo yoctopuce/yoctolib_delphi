@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_accelerometer.pas 17350 2014-08-29 08:54:26Z seb $
+ * $Id: yocto_accelerometer.pas 18320 2014-11-10 10:47:48Z seb $
  *
  * Implements yFindAccelerometer(), the high-level API for Accelerometer functions
  *
@@ -53,7 +53,6 @@ const Y_ZVALUE_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_GRAVITYCANCELLATION_OFF = 0;
 const Y_GRAVITYCANCELLATION_ON = 1;
 const Y_GRAVITYCANCELLATION_INVALID = -1;
-
 
 
 //--- (end of YAccelerometer definitions)

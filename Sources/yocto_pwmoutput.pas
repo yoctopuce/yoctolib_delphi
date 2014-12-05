@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwmoutput.pas 17481 2014-09-03 09:38:35Z mvuilleu $
+ * $Id: yocto_pwmoutput.pas 18320 2014-11-10 10:47:48Z seb $
  *
  * Implements yFindPwmOutput(), the high-level API for PwmOutput functions
  *
@@ -50,7 +50,6 @@ uses
 const Y_ENABLED_FALSE = 0;
 const Y_ENABLED_TRUE = 1;
 const Y_ENABLED_INVALID = -1;
-
 const Y_FREQUENCY_INVALID             = YAPI_INVALID_DOUBLE;
 const Y_PERIOD_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_DUTYCYCLE_INVALID             = YAPI_INVALID_DOUBLE;
@@ -59,7 +58,6 @@ const Y_PWMTRANSITION_INVALID         = YAPI_INVALID_STRING;
 const Y_ENABLEDATPOWERON_FALSE = 0;
 const Y_ENABLEDATPOWERON_TRUE = 1;
 const Y_ENABLEDATPOWERON_INVALID = -1;
-
 const Y_DUTYCYCLEATPOWERON_INVALID    = YAPI_INVALID_DOUBLE;
 
 

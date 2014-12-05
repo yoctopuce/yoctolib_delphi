@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_compass.pas 17350 2014-08-29 08:54:26Z seb $
+ * $Id: yocto_compass.pas 18320 2014-11-10 10:47:48Z seb $
  *
  * Implements yFindCompass(), the high-level API for Compass functions
  *
@@ -51,7 +51,6 @@ const Y_AXIS_X = 0;
 const Y_AXIS_Y = 1;
 const Y_AXIS_Z = 2;
 const Y_AXIS_INVALID = -1;
-
 const Y_MAGNETICHEADING_INVALID       = YAPI_INVALID_DOUBLE;
 
 

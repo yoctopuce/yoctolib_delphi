@@ -24,7 +24,7 @@ uses
         current := module.get_firmwareRelease();
 
         // check if a new firmare is available on yoctopuce.com
-        newfirm := module.checkFirmware('www.yoctopuce.com', false);
+        newfirm := module.checkFirmware('www.yoctopuce.com', true);
         if newfirm = '' then
           writeln(product + ' ' + serial + '(rev=' + current + ') is up to date')
         else
@@ -89,12 +89,13 @@ begin
     begin
       serial := module.get_serialNumber();
       product := module.get_productName();
-      if (copy(product,1,9)='YoctoHub-') then
-       begin
-          if (product = 'YoctoHub-Shield') then  shield.Add(serial)
-             else hubs.Add(serial)
-       end else devices.Add(serial);
-
+      if (product = 'YoctoHub-Shield') then
+        shield.Add(serial)
+      else
+        if (copy(product,1,9)='YoctoHub-') then
+          hubs.Add(serial)
+        else
+        devices.Add(serial);
       module := module.nextModule();
     end;
     // fist upgrades all Hubs...

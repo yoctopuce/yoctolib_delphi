@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_colorled.pas 17350 2014-08-29 08:54:26Z seb $
+ * $Id: yocto_colorled.pas 18524 2014-11-25 17:09:56Z seb $
  *
  * Implements yFindColorLed(), the high-level API for ColorLed functions
  *
@@ -57,6 +57,10 @@ type  TYColorLedMove = class(TObject)
 const Y_RGBCOLOR_INVALID              = YAPI_INVALID_UINT;
 const Y_HSLCOLOR_INVALID              = YAPI_INVALID_UINT;
 const Y_RGBCOLORATPOWERON_INVALID     = YAPI_INVALID_UINT;
+const Y_BLINKSEQSIZE_INVALID          = YAPI_INVALID_UINT;
+const Y_BLINKSEQMAXSIZE_INVALID       = YAPI_INVALID_UINT;
+const Y_BLINKSEQSIGNATURE_INVALID     = YAPI_INVALID_UINT;
+const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 var Y_RGBMOVE_INVALID : TYColorLedMove;
 var Y_HSLMOVE_INVALID : TYColorLedMove;
@@ -73,7 +77,7 @@ type
   /// <summary>
   ///   TYColorLed Class: ColorLed function interface
   /// <para>
-  ///   Yoctopuce application programming interface
+  ///   The Yoctopuce application programming interface
   ///   allows you to drive a color led using RGB coordinates as well as HSL coordinates.
   ///   The module performs all conversions form RGB to HSL automatically. It is then
   ///   self-evident to turn on a led with a given hue and to progressively vary its
@@ -94,6 +98,10 @@ type
     _rgbMove                  : TYColorLedMove;
     _hslMove                  : TYColorLedMove;
     _rgbColorAtPowerOn        : LongInt;
+    _blinkSeqSize             : LongInt;
+    _blinkSeqMaxSize          : LongInt;
+    _blinkSeqSignature        : LongInt;
+    _command                  : string;
     _valueCallbackColorLed    : TYColorLedValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
@@ -263,9 +271,6 @@ type
     /// <summary>
     ///   Changes the color that the led will display by default when the module is turned on.
     /// <para>
-    ///   This color will be displayed as soon as the module is powered on.
-    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
-    ///   change should be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -283,6 +288,61 @@ type
     /// </para>
     ///-
     function set_rgbColorAtPowerOn(newval:LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the current length of the blinking sequence
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the current length of the blinking sequence
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_BLINKSEQSIZE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_blinkSeqSize():LongInt;
+
+    ////
+    /// <summary>
+    ///   Returns the maximum length of the blinking sequence
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the maximum length of the blinking sequence
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_BLINKSEQMAXSIZE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_blinkSeqMaxSize():LongInt;
+
+    ////
+    /// <summary>
+    ///   Return the blinking sequence signature.
+    /// <para>
+    ///   Since blinking
+    ///   sequences cannot be read from the device, this can be used
+    ///   to detect if a specific blinking sequence is already
+    ///   programmed.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_BLINKSEQSIGNATURE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_blinkSeqSignature():LongInt;
+
+    function get_command():string;
+
+    function set_command(newval:string):integer;
 
     ////
     /// <summary>
@@ -349,6 +409,90 @@ type
     function registerValueCallback(callback: TYColorLedValueCallback):LongInt; overload;
 
     function _invokeValueCallback(value: string):LongInt; override;
+
+    function sendCommand(command: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Add a new transition to the blinking sequence, the move will
+    ///   be performed in the HSL space.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="HSLcolor">
+    ///   desired HSL color when the traisntion is completed
+    /// </param>
+    /// <param name="msDelay">
+    ///   duration of the color transition, in milliseconds.
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </returns>
+    ///-
+    function addHslMoveToBlinkSeq(HSLcolor: LongInt; msDelay: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Add a new transition to the blinking sequence, the move will
+    ///   be performed in the RGB space.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="RGBcolor">
+    ///   desired RGB color when the transition is completed
+    /// </param>
+    /// <param name="msDelay">
+    ///   duration of the color transition, in milliseconds.
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </returns>
+    ///-
+    function addRgbMoveToBlinkSeq(RGBcolor: LongInt; msDelay: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Starts the preprogrammed blinking sequence.
+    /// <para>
+    ///   The sequence will
+    ///   run in loop until it is stopped by stopBlinkSeq or an explicit
+    ///   change.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </returns>
+    ///-
+    function startBlinkSeq():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Stops the preprogrammed blinking sequence.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </returns>
+    ///-
+    function stopBlinkSeq():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Resets the preprogrammed blinking sequence.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </returns>
+    ///-
+    function resetBlinkSeq():LongInt; overload; virtual;
 
 
     ////
@@ -459,6 +603,10 @@ implementation
       _rgbMove := Y_RGBMOVE_INVALID;
       _hslMove := Y_HSLMOVE_INVALID;
       _rgbColorAtPowerOn := Y_RGBCOLORATPOWERON_INVALID;
+      _blinkSeqSize := Y_BLINKSEQSIZE_INVALID;
+      _blinkSeqMaxSize := Y_BLINKSEQMAXSIZE_INVALID;
+      _blinkSeqSignature := Y_BLINKSEQSIGNATURE_INVALID;
+      _command := Y_COMMAND_INVALID;
       _valueCallbackColorLed := nil;
       //--- (end of YColorLed accessors initialization)
     end;
@@ -522,6 +670,30 @@ implementation
       if (member^.name = 'rgbColorAtPowerOn') then
         begin
           _rgbColorAtPowerOn := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'blinkSeqSize') then
+        begin
+          _blinkSeqSize := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'blinkSeqMaxSize') then
+        begin
+          _blinkSeqMaxSize := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'blinkSeqSignature') then
+        begin
+          _blinkSeqSignature := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'command') then
+        begin
+          _command := string(member^.svalue);
          result := 1;
          exit;
          end;
@@ -789,9 +961,6 @@ implementation
   /// <summary>
   ///   Changes the color that the led will display by default when the module is turned on.
   /// <para>
-  ///   This color will be displayed as soon as the module is powered on.
-  ///   Remember to call the saveToFlash() method of the module if the
-  ///   change should be kept.
   /// </para>
   /// <para>
   /// </para>
@@ -814,6 +983,119 @@ implementation
     begin
       rest_val := '0x'+inttohex(newval,6);
       result := _setAttr('rgbColorAtPowerOn',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the current length of the blinking sequence
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the current length of the blinking sequence
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_BLINKSEQSIZE_INVALID.
+  /// </para>
+  ///-
+  function TYColorLed.get_blinkSeqSize():LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_BLINKSEQSIZE_INVALID;
+              exit
+            end;
+        end;
+      result := self._blinkSeqSize;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the maximum length of the blinking sequence
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the maximum length of the blinking sequence
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_BLINKSEQMAXSIZE_INVALID.
+  /// </para>
+  ///-
+  function TYColorLed.get_blinkSeqMaxSize():LongInt;
+    begin
+      if self._cacheExpiration = 0 then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_BLINKSEQMAXSIZE_INVALID;
+              exit
+            end;
+        end;
+      result := self._blinkSeqMaxSize;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Return the blinking sequence signature.
+  /// <para>
+  ///   Since blinking
+  ///   sequences cannot be read from the device, this can be used
+  ///   to detect if a specific blinking sequence is already
+  ///   programmed.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_BLINKSEQSIGNATURE_INVALID.
+  /// </para>
+  ///-
+  function TYColorLed.get_blinkSeqSignature():LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_BLINKSEQSIGNATURE_INVALID;
+              exit
+            end;
+        end;
+      result := self._blinkSeqSignature;
+      exit;
+    end;
+
+
+  function TYColorLed.get_command():string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_COMMAND_INVALID;
+              exit
+            end;
+        end;
+      result := self._command;
+      exit;
+    end;
+
+
+  function TYColorLed.set_command(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('command',rest_val);
     end;
 
   ////
@@ -929,6 +1211,120 @@ implementation
           inherited _invokeValueCallback(value)
         end;
       result := 0;
+      exit;
+    end;
+
+
+  function TYColorLed.sendCommand(command: string):LongInt;
+    begin
+      result := self.set_command(command);
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Add a new transition to the blinking sequence, the move will
+  ///   be performed in the HSL space.
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="HSLcolor">
+  ///   desired HSL color when the traisntion is completed
+  /// </param>
+  /// <param name="msDelay">
+  ///   duration of the color transition, in milliseconds.
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </returns>
+  ///-
+  function TYColorLed.addHslMoveToBlinkSeq(HSLcolor: LongInt; msDelay: LongInt):LongInt;
+    begin
+      result := self.sendCommand('H'+inttostr(HSLcolor)+','+inttostr(msDelay));
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Add a new transition to the blinking sequence, the move will
+  ///   be performed in the RGB space.
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="RGBcolor">
+  ///   desired RGB color when the transition is completed
+  /// </param>
+  /// <param name="msDelay">
+  ///   duration of the color transition, in milliseconds.
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </returns>
+  ///-
+  function TYColorLed.addRgbMoveToBlinkSeq(RGBcolor: LongInt; msDelay: LongInt):LongInt;
+    begin
+      result := self.sendCommand('R'+inttostr(RGBcolor)+','+inttostr(msDelay));
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Starts the preprogrammed blinking sequence.
+  /// <para>
+  ///   The sequence will
+  ///   run in loop until it is stopped by stopBlinkSeq or an explicit
+  ///   change.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </returns>
+  ///-
+  function TYColorLed.startBlinkSeq():LongInt;
+    begin
+      result := self.sendCommand('S');
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Stops the preprogrammed blinking sequence.
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </returns>
+  ///-
+  function TYColorLed.stopBlinkSeq():LongInt;
+    begin
+      result := self.sendCommand('X');
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Resets the preprogrammed blinking sequence.
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </returns>
+  ///-
+  function TYColorLed.resetBlinkSeq():LongInt;
+    begin
+      result := self.sendCommand('Z');
       exit;
     end;
 

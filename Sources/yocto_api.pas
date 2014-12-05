@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 17816 2014-09-24 14:47:30Z seb $
+ * $Id: yocto_api.pas 18640 2014-12-04 14:30:34Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -116,7 +116,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '17849';
+  YOCTO_API_BUILD_NO        = '18640';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -230,12 +230,10 @@ const Y_PERSISTENTSETTINGS_LOADED = 0;
 const Y_PERSISTENTSETTINGS_SAVED = 1;
 const Y_PERSISTENTSETTINGS_MODIFIED = 2;
 const Y_PERSISTENTSETTINGS_INVALID = -1;
-
 const Y_LUMINOSITY_INVALID            = YAPI_INVALID_UINT;
 const Y_BEACON_OFF = 0;
 const Y_BEACON_ON = 1;
 const Y_BEACON_INVALID = -1;
-
 const Y_UPTIME_INVALID                = YAPI_INVALID_LONG;
 const Y_USBCURRENT_INVALID            = YAPI_INVALID_UINT;
 const Y_REBOOTCOUNTDOWN_INVALID       = YAPI_INVALID_INT;
@@ -403,7 +401,8 @@ type
     function  _json_get_key(data: TByteArray; key: string):string;
     function  _json_get_string(data: TByteArray):string;
 
-    function  _buildSetRequest( changeattr : string ; changeval:string ; var request:string; var errmsg:string):YRETCODE;
+    function  _escapeAttr(changeval:string):string;
+    function  _buildSetRequest(changeattr : string ; changeval:string ; var request:string; var errmsg:string):YRETCODE;
 
   public
     class function _FindFromCache(classname: string; func: string): TYFunction;
@@ -1932,6 +1931,33 @@ end;
 
     ////
     /// <summary>
+    ///   Starts the data logger on the device.
+    /// <para>
+    ///   Note that the data logger
+    ///   will only save the measures on this sensor if the logFrequency
+    ///   is not set to "OFF".
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    ///-
+    function startDataLogger():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Stops the datalogger on the device.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    ///-
+    function stopDataLogger():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Retrieves a DataSet object holding historical data for this
     ///   sensor, for a specified time interval.
     /// <para>
@@ -2111,7 +2137,9 @@ end;
     _settings                 : TByteArray;
     _firmwarepath             : string;
     _progress_msg             : string;
+    _progress_c               : LongInt;
     _progress                 : LongInt;
+    _restore_step             : LongInt;
 
     //--- (end of generated code: YFirmwareUpdate declaration)
 
@@ -2121,6 +2149,68 @@ end;
   //--- (generated code: YFirmwareUpdate accessors declaration)
     function _processMore(newupdate: LongInt):LongInt; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Retrun a list of all modules in "update" mode.
+    /// <para>
+    ///   Only USB connected
+    ///   devices are listed. If the module is connected to a YoctoHub, you have to
+    ///   connect to the YoctoHub web interface.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an array of strings containing the serial list of module in "update" mode.
+    /// </returns>
+    ///-
+    class function GetAllBootLoaders():TStringArray;
+
+    ////
+    /// <summary>
+    ///   Test if the byn file is valid for this module.
+    /// <para>
+    ///   It's possible to pass an directory instead of a file.
+    ///   In this case this method return the path of the most recent appropriate byn file. This method will
+    ///   ignore firmware that are older than mintrelase.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="serial">
+    ///   the serial number of the module to update
+    /// </param>
+    /// <param name="path">
+    ///   the path of a byn file or a directory that contain byn files
+    /// </param>
+    /// <param name="minrelease">
+    ///   an positif integer
+    /// </param>
+    /// <returns>
+    ///   : the path of the byn file to use or a empty string if no byn files match the requirement
+    /// </returns>
+    /// <para>
+    ///   On failure, returns a string that start with "error:".
+    /// </para>
+    ///-
+    class function CheckFirmware(serial: string; path: string; minrelease: LongInt):string;
+
+    ////
+    /// <summary>
+    ///   Returns the progress of the firmware update, on a scale from 0 to 100.
+    /// <para>
+    ///   When the object is
+    ///   instantiated the progress is zero. The value is updated During the firmware update process, until
+    ///   the value of 100 is reached. The value of 100 mean that the firmware update is terminated with
+    ///   success. If an error occur during the firmware update a negative value is returned, and the
+    ///   error message can be retrieved with <c>get_progressMessage</c>.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer in the range 0 to 100 (percentage of completion) or
+    ///   or a negative error code in case of failure.
+    /// </returns>
+    ///-
     function get_progress():LongInt; overload; virtual;
 
     ////
@@ -3787,7 +3877,7 @@ const
   //--- (generated code: YFunction dlldef)
   function _yapiGetAllJsonKeys(jsonbuffer:pansichar; out_buffer:pansichar; out_buffersize:integer; var fullsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetAllJsonKeys';
   function _yapiCheckFirmware(serial:pansichar; rev:pansichar; path:pansichar; buffer:pansichar; buffersize:integer; var fullsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiCheckFirmware';
-  function _yapiGetBootloadersDevs(serials:pansichar; maxNbSerial:integer; var totalBootladers:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetBootloadersDevs';
+  function _yapiGetBootloaders(buffer:pansichar; buffersize:integer; var totalSize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetBootloaders';
   function _yapiUpdateFirmware(serial:pansichar; firmwarePath:pansichar; settings:pansichar; startUpdate:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiUpdateFirmware';
 //--- (end of generated code: YFunction dlldef)
 
@@ -4365,7 +4455,7 @@ var
       if nbchar = 0 then
         Exit;
       pos := 1;
-      count := 0;
+      count := 1;
       while pos <= nbchar do
         begin
         if char(str[pos]) = delimiter then
@@ -4378,17 +4468,20 @@ var
       SetLength(Result, count);
       pos := 1;
       lastpos:=1;
-      count :=1;
+      count :=0;
       while pos <= nbchar do
         begin
         if str[pos] = delimiter then
           begin
             part := Copy(str,lastpos, pos-lastpos);
             result[count] := part;
+            inc(count);
+            lastpos := pos + 1;
           end;
         inc(pos)
         end;
-
+      part := Copy(str,lastpos, pos-lastpos);
+      result[count] := part;
     end;
 
 
@@ -4610,7 +4703,7 @@ var
           end;
         if (yGetTickCount() < timeout) then
           begin
-            res := _yapiSleep(1,pError);
+            res := _yapiSleep(2,pError);
             if YISERR(res) then
               begin
                 ySleep :=res;
@@ -4914,20 +5007,6 @@ var
       yapiHTTPRequest := res;
     end;
 
-
-
-
-  function  yapiGetBootloadersDevs(var serials:string; maxNbSerial:u32; var totalBootladers:integer; var errmsg:string) :integer;
-    var
-      buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
-      perror,p :pansichar;
-    begin
-      buffer[0]:=#0; perror:=@buffer;
-      getmem(p, maxNbSerial * YOCTO_SERIAL_LEN);
-      yapiGetBootloadersDevs := _yapiGetBootloadersDevs(p,maxNbSerial,totalBootladers,perror);
-      serials := string(p);
-      errmsg  := string(perror);
-    end;
 
  {$ifdef ENABLEPROGRAMMING}
   function  yapiFlashDevice(args:TyFlashArg; var errmsg : string):integer;
@@ -5259,17 +5338,36 @@ const
       result := YAPI_SUCCESS;
     end;
 
+    function  TYFunction._escapeAttr(changeval:string):string;
+      var
+        i    : integer;
+        uchangeval : string;
+        c          : char;
+      begin
+        for i := 1 to length(changeval)  do
+          begin
+            c := changeval[i];
+            if (c<' ') or ((c>#122) and (c<>'~')) or (c='"') or (c='%') or (c='&') or
+            (c='+') or (c='<') or (c='=') or (c='>') or (c='\') or (c='^') or (c = '`')
+            then
+              begin
+                uchangeval := uchangeval + '%' + IntToHex(ord(c), 2);
+              end
+            else
+              uchangeval := uchangeval + c;
+          end;
+        _escapeAttr := uchangeval
+      end;
 
     function  TYFunction._buildSetRequest( changeattr : string ; changeval:string ; var request:string; var errmsg:string):YRETCODE;
       var
-        res,i    : integer;
+        res      : integer;
         fundesc  : YFUN_DESCR ;
         funcid   : array[0..YOCTO_FUNCTION_LEN] of ansichar;
         pfuncid  : pansichar;
         errbuff  : array[0..YOCTO_ERRMSG_LEN] of ansichar;
         perrbuff   : pansichar;
         uchangeval : string;
-        c          : char;
         devdesc:YDEV_DESCR;
       begin
         pfuncid  := addr(funcid[0]);
@@ -5293,19 +5391,7 @@ const
         uchangeval :='';
         if (changeattr<>'')  then
           begin
-            request    := request+changeattr+'?'+changeattr+'=';
-            for i:=1 to length(changeval)  do
-              begin
-                c:=  changeval[i];
-                if  (c<' ') or ((c>#122) and (c<>'~')) or (c='"') or (c='%') or (c='&') or
-                (c='+') or (c='<') or (c='=') or (c='>') or (c='\') or (c='^') or (c = '`')
-                then
-                  begin
-                    uchangeval:=uchangeval+'%'+IntToHex(ord(c),2);
-                  end
-                else
-                  uchangeval:=uchangeval+c;
-              end;
+            request := request+changeattr+'?'+changeattr+'='+_escapeAttr(changeval);
           end;
          request := request+ uchangeval+'&. '#13#10#13#10;     // no HTTP/1.1 to get light headers
         _buildSetRequest:= YAPI_SUCCESS;
@@ -7425,59 +7511,20 @@ var
   ///-
   function TYModule.checkFirmware(path: string; onlynew: boolean):string;
     var
-      errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
-      errmsg : pansichar;
-      smallbuff_buffer : array[0..1024] of ansichar;
-      smallbuff : pansichar;
-      bigbuff : pansichar;
-      buffsize : LongInt;
-      fullsize : LongInt;
-      res : LongInt;
-      firmware_path : string;
       serial : string;
-      release : string;
+      release : LongInt;
     begin
-      errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
-       smallbuff_buffer[0]:=#0;smallbuff:=@smallbuff_buffer;
       if onlynew then
         begin
-          release := self.get_firmwareRelease
+          release := StrToInt(self.get_firmwareRelease)
         end
       else
         begin
-          release := ''
+          release := 0
         end;
-              //may throw an exception
-              serial := self._serial;
-              fullsize := 0;
-              res := _yapiCheckFirmware(pansichar(ansistring(serial)), pansichar(ansistring(release)), pansichar(ansistring(path)), smallbuff, 1024, fullsize, errmsg);
-      if res < 0 then
-        begin
-          firmware_path := 'error:' + string(errmsg);
-          result := 'error:' + string(errmsg);
-          exit
-        end;
-      if fullsize <= 1024 then
-        begin
-          firmware_path := string(smallbuff)
-        end
-      else
-        begin
-          buffsize := fullsize;
-          getmem(bigbuff, buffsize);
-          res := _yapiCheckFirmware(pansichar(ansistring(serial)), pansichar(ansistring(release)), pansichar(ansistring(path)), bigbuff, buffsize, fullsize, errmsg);
-          if res < 0 then
-            begin
-              self._throw(YAPI_INVALID_ARGUMENT, string(errmsg));
-              firmware_path := 'error:' + string(errmsg)
-            end
-          else
-            begin
-              firmware_path := string(bigbuff)
-            end;
-          freemem(bigbuff)
-        end;
-      result := firmware_path;
+      //may throw an exception
+      serial := self.get_serialNumber;
+      result := TYFirmwareUpdate.CheckFirmware(serial, path, release);
       exit;
     end;
 
@@ -7939,12 +7986,12 @@ var
       old_dslist : TStringArray;
       old_jpath : TStringArray;
       old_jpath_len : TLongIntArray;
-      old_val : TStringArray;
+      old_val_arr : TStringArray;
       actualSettings : TByteArray;
       new_dslist : TStringArray;
       new_jpath : TStringArray;
       new_jpath_len : TLongIntArray;
-      new_val : TStringArray;
+      new_val_arr : TStringArray;
       cpos : LongInt;
       eqpos : LongInt;
       leng : LongInt;
@@ -7961,27 +8008,29 @@ var
       sensorType : string;
       unit_name : string;
       newval : string;
+      oldval : string;
       old_calib : string;
       do_update : boolean;
       found : boolean;
       jpath_pos : LongInt;
       len_pos : LongInt;
-      val_pos : LongInt;
+      arr_pos : LongInt;
       i_i : LongInt;
       restoreLast_pos : LongInt;
     begin
+      oldval := '';
+      newval := '';
       old_json_flat := self._flattenJsonStruct(settings);
       old_dslist := self._json_get_array(old_json_flat);
       jpath_pos := length(old_jpath);
       SetLength(old_jpath, jpath_pos+length(old_dslist));;
       len_pos := length(old_jpath_len);
       SetLength(old_jpath_len, len_pos+length(old_dslist));;
-      val_pos := length(old_val);
-      SetLength(old_val, val_pos+length(old_dslist));;
+      arr_pos := length(old_val_arr);
+      SetLength(old_val_arr, arr_pos+length(old_dslist));;
       for i_i:=0 to length(old_dslist)-1 do
         begin
-          leng := Length(old_dslist[i_i]);
-          old_dslist[i_i] := Copy(old_dslist[i_i],  1 + 1, leng - 2);
+          old_dslist[i_i] := self._json_get_string(_StrToByte(old_dslist[i_i]));
           leng := Length(old_dslist[i_i]);
           eqpos := (pos('=', old_dslist[i_i]) - 1);
           if (eqpos < 0) or(leng = 0) then
@@ -7997,12 +8046,12 @@ var
           inc(jpath_pos);
           old_jpath_len[len_pos] := Length(jpath);
           inc(len_pos);
-          old_val[val_pos] := value;
-          inc(val_pos)
+          old_val_arr[arr_pos] := value;
+          inc(arr_pos)
         end;
       SetLength(old_jpath, jpath_pos);;
       SetLength(old_jpath_len, len_pos);;
-      SetLength(old_val, val_pos);;
+      SetLength(old_val_arr, arr_pos);;
       // may throw an exception
       actualSettings := self._download('api.json');
       actualSettings := self._flattenJsonStruct(actualSettings);
@@ -8011,12 +8060,11 @@ var
       SetLength(new_jpath, jpath_pos+length(new_dslist));;
       len_pos := length(new_jpath_len);
       SetLength(new_jpath_len, len_pos+length(new_dslist));;
-      val_pos := length(new_val);
-      SetLength(new_val, val_pos+length(new_dslist));;
+      arr_pos := length(new_val_arr);
+      SetLength(new_val_arr, arr_pos+length(new_dslist));;
       for i_i:=0 to length(new_dslist)-1 do
         begin
-          leng := Length(new_dslist[i_i]);
-          new_dslist[i_i] := Copy(new_dslist[i_i],  1 + 1, leng - 2);
+          new_dslist[i_i] := self._json_get_string(_StrToByte(new_dslist[i_i]));
           leng := Length(new_dslist[i_i]);
           eqpos := (pos('=', new_dslist[i_i]) - 1);
           if (eqpos < 0) or(leng = 0) then
@@ -8032,12 +8080,12 @@ var
           inc(jpath_pos);
           new_jpath_len[len_pos] := Length(jpath);
           inc(len_pos);
-          new_val[val_pos] := value;
-          inc(val_pos)
+          new_val_arr[arr_pos] := value;
+          inc(arr_pos)
         end;
       SetLength(new_jpath, jpath_pos);;
       SetLength(new_jpath_len, len_pos);;
-      SetLength(new_val, val_pos);;
+      SetLength(new_val_arr, arr_pos);;
       restoreLast_pos := length(restoreLast);
       SetLength(restoreLast, restoreLast_pos+5);;
       i := 0;
@@ -8204,12 +8252,32 @@ var
             end;
           if do_update then
             begin
+              do_update := false;
+              newval := new_val_arr[i];
+              j := 0;
+              found := false;
+              while  (j < length(old_jpath)) and not(found) do
+                begin
+                  if (new_jpath_len[i] = old_jpath_len[j]) and((new_jpath[i] = old_jpath[j])) then
+                    begin
+                      found := true;
+                      oldval := old_val_arr[j];
+                      if not((newval = oldval)) then
+                        begin
+                          do_update := true
+                        end;
+                    end;
+                  j := j + 1
+                end;
+            end;
+          if do_update then
+            begin
               if (attr = 'calibrationParam') then
                 begin
                   old_calib := '';
                   unit_name := '';
                   sensorType := '';
-                  new_calib := new_val[i];
+                  new_calib := newval;
                   j := 0;
                   found := false;
                   while  (j < length(old_jpath)) and not(found) do
@@ -8217,7 +8285,7 @@ var
                       if (new_jpath_len[i] = old_jpath_len[j]) and((new_jpath[i] = old_jpath[j])) then
                         begin
                           found := true;
-                          old_calib := old_val[j]
+                          old_calib := old_val_arr[j]
                         end;
                       j := j + 1
                     end;
@@ -8245,31 +8313,21 @@ var
                         end;
                       j := j + 1
                     end;
-                  newval := self.calibConvert(new_val[i],  old_calib,  unit_name, sensorType);
-                  url := 'api/' + fun + '.json?' + attr + '=' + newval;
+                  newval := self.calibConvert(new_val_arr[i],  old_calib,  unit_name, sensorType);
+                  url := 'api/' + fun + '.json?' + attr + '=' + self._escapeAttr(newval);
                   self._download(url)
                 end
               else
                 begin
-                  j := 0;
-                  found := false;
-                  while  (j < length(old_jpath_len)) and not(found) do
+                  url := 'api/' + fun + '.json?' + attr + '=' + self._escapeAttr(oldval);
+                  if (attr = 'resolution') then
                     begin
-                      if (new_jpath_len[i] = old_jpath_len[j]) and((new_jpath[i] = old_jpath[j])) then
-                        begin
-                          found := true;
-                          url := 'api/' + fun + '.json?' + attr + '=' + old_val[j];
-                          if (attr = 'resolution') then
-                            begin
-                              restoreLast[restoreLast_pos] := url;
-                              inc(restoreLast_pos)
-                            end
-                          else
-                            begin
-                              self._download(url)
-                            end;
-                        end;
-                      j := j + 1
+                      restoreLast[restoreLast_pos] := url;
+                      inc(restoreLast_pos)
+                    end
+                  else
+                    begin
+                      self._download(url)
                     end;
                 end;
             end;
@@ -9270,6 +9328,61 @@ var
 
   ////
   /// <summary>
+  ///   Starts the data logger on the device.
+  /// <para>
+  ///   Note that the data logger
+  ///   will only save the measures on this sensor if the logFrequency
+  ///   is not set to "OFF".
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  /// </returns>
+  ///-
+  function TYSensor.startDataLogger():LongInt;
+    var
+      res : TByteArray;
+    begin
+      res := self._download('api/dataLogger/recording?recording=1');
+      if not(length(res)>0) then
+        begin
+          self._throw( YAPI_IO_ERROR, 'unable to start datalogger');
+          result:=YAPI_IO_ERROR;
+          exit;
+        end;
+      result := YAPI_SUCCESS;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Stops the datalogger on the device.
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  /// </returns>
+  ///-
+  function TYSensor.stopDataLogger():LongInt;
+    var
+      res : TByteArray;
+    begin
+      res := self._download('api/dataLogger/recording?recording=0');
+      if not(length(res)>0) then
+        begin
+          self._throw( YAPI_IO_ERROR, 'unable to stop datalogger');
+          result:=YAPI_IO_ERROR;
+          exit;
+        end;
+      result := YAPI_SUCCESS;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
   ///   Retrieves a DataSet object holding historical data for this
   ///   sensor, for a specified time interval.
   /// <para>
@@ -9660,7 +9773,7 @@ var
               while (sublen > 0) and(i < length(report)) do
                 begin
                   byteVal := report[i];
-                  difRaw := avgRaw + poww * byteVal;
+                  difRaw := difRaw + poww * byteVal;
                   poww := poww * $0100;
                   i := i + 1;
                   sublen := sublen - 1
@@ -9672,7 +9785,7 @@ var
               while (sublen > 0) and(i < length(report)) do
                 begin
                   byteVal := report[i];
-                  difRaw := avgRaw + poww * byteVal;
+                  difRaw := difRaw + poww * byteVal;
                   poww := poww * $0100;
                   i := i + 1;
                   sublen := sublen - 1
@@ -9881,37 +9994,236 @@ var
     var
       errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
       errmsg : pansichar;
+      m : TYModule;
       res : LongInt;
       serial : string;
       firmwarepath : string;
       settings : string;
+      prod_prefix : string;
+      ignoreErrMsg : string;
     begin
       errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
-              serial := self._serial;
-              firmwarepath := self._firmwarepath;
-              settings := _ByteToString(self._settings);
-              res := _yapiUpdateFirmware(pansichar(ansistring(serial)), pansichar(ansistring(firmwarepath)), pansichar(ansistring(settings)), newupdate, errmsg);
+      if self._progress_c < 100 then
+        begin
+          serial := self._serial;
+          firmwarepath := self._firmwarepath;
+          settings := _ByteToString(self._settings);
+          res := _yapiUpdateFirmware(pansichar(ansistring(serial)), pansichar(ansistring(firmwarepath)), pansichar(ansistring(settings)), newupdate, errmsg);
+          if res < 0 then
+            begin
               self._progress := res;
               self._progress_msg := string(errmsg);
-      result := res;
+              result := res;
+              exit
+            end;
+          self._progress_c := res;
+          self._progress := (self._progress_c * 9 div 10);
+          self._progress_msg := string(errmsg)
+        end
+      else
+        begin
+          if (length(self._settings) <> 0) then
+            begin
+              self._progress_msg := 'restoring settings';
+              m := TYModule.FindModule(self._serial + '.module');
+              if not(m.isOnline()) then
+                begin
+                  result := self._progress;
+                  exit
+                end;
+              if self._progress < 95 then
+                begin
+                  prod_prefix := Copy(m.get_productName(),  0 + 1, 8);
+                  if (prod_prefix = 'YoctoHub') then
+                    begin
+                      ySleep(1000, ignoreErrMsg);
+                      self._progress := self._progress + 1;
+                      result := self._progress;
+                      exit
+                    end
+                  else
+                    begin
+                      self._progress := 95
+                    end;
+                end;
+              if self._progress < 100 then
+                begin
+                  m.set_allSettings(self._settings);
+                  setlength(self._settings,0);
+                  self._progress := 100;
+                  self._progress_msg := 'success'
+                end;
+            end
+          else
+            begin
+              self._progress :=  100;
+              self._progress_msg := 'success'
+            end;
+        end;
+      result := self._progress;
       exit;
     end;
 
 
-  function TYFirmwareUpdate.get_progress():LongInt;
+  ////
+  /// <summary>
+  ///   Retrun a list of all modules in "update" mode.
+  /// <para>
+  ///   Only USB connected
+  ///   devices are listed. If the module is connected to a YoctoHub, you have to
+  ///   connect to the YoctoHub web interface.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an array of strings containing the serial list of module in "update" mode.
+  /// </returns>
+  ///-
+  class function TYFirmwareUpdate.GetAllBootLoaders():TStringArray;
     var
-      m : TYModule;
+      errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
+      errmsg : pansichar;
+      smallbuff_buffer : array[0..1024] of ansichar;
+      smallbuff : pansichar;
+      bigbuff : pansichar;
+      buffsize : LongInt;
+      fullsize : LongInt;
+      yapi_res : LongInt;
+      bootloader_list : string;
+      bootladers : TStringArray;
+    begin
+      errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
+       smallbuff_buffer[0]:=#0;smallbuff:=@smallbuff_buffer;
+              fullsize := 0;
+              yapi_res := _yapiGetBootloaders(smallbuff, 1024, fullsize, errmsg);
+      if yapi_res < 0 then
+        begin
+          bootloader_list := 'error:' + string(errmsg);
+          result := bootladers;
+          exit
+        end;
+      if fullsize <= 1024 then
+        begin
+          bootloader_list := string(smallbuff)
+        end
+      else
+        begin
+          buffsize := fullsize;
+          getmem(bigbuff, buffsize);
+          yapi_res := _yapiGetBootloaders(bigbuff, buffsize, fullsize, errmsg);
+          if yapi_res < 0 then
+            begin
+              freemem(bigbuff);
+              result := bootladers;
+              exit
+            end
+          else
+            begin
+              bootloader_list := string(bigbuff)
+            end;
+          freemem(bigbuff)
+        end;
+              bootladers := _stringSplit(bootloader_list, ',');
+      result := bootladers;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Test if the byn file is valid for this module.
+  /// <para>
+  ///   It's possible to pass an directory instead of a file.
+  ///   In this case this method return the path of the most recent appropriate byn file. This method will
+  ///   ignore firmware that are older than mintrelase.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="serial">
+  ///   the serial number of the module to update
+  /// </param>
+  /// <param name="path">
+  ///   the path of a byn file or a directory that contain byn files
+  /// </param>
+  /// <param name="minrelease">
+  ///   an positif integer
+  /// </param>
+  /// <returns>
+  ///   : the path of the byn file to use or a empty string if no byn files match the requirement
+  /// </returns>
+  /// <para>
+  ///   On failure, returns a string that start with "error:".
+  /// </para>
+  ///-
+  class function TYFirmwareUpdate.CheckFirmware(serial: string; path: string; minrelease: LongInt):string;
+    var
+      errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
+      errmsg : pansichar;
+      smallbuff_buffer : array[0..1024] of ansichar;
+      smallbuff : pansichar;
+      bigbuff : pansichar;
+      buffsize : LongInt;
+      fullsize : LongInt;
+      res : LongInt;
+      firmware_path : string;
+      release : string;
+    begin
+      errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
+       smallbuff_buffer[0]:=#0;smallbuff:=@smallbuff_buffer;
+              fullsize := 0;
+              release := IntToStr(minrelease);
+              res := _yapiCheckFirmware(pansichar(ansistring(serial)), pansichar(ansistring(release)), pansichar(ansistring(path)), smallbuff, 1024, fullsize, errmsg);
+      if res < 0 then
+        begin
+          firmware_path := 'error:' + string(errmsg);
+          result := 'error:' + string(errmsg);
+          exit
+        end;
+      if fullsize <= 1024 then
+        begin
+          firmware_path := string(smallbuff)
+        end
+      else
+        begin
+          buffsize := fullsize;
+          getmem(bigbuff, buffsize);
+          res := _yapiCheckFirmware(pansichar(ansistring(serial)), pansichar(ansistring(release)), pansichar(ansistring(path)), bigbuff, buffsize, fullsize, errmsg);
+          if res < 0 then
+            begin
+              firmware_path := 'error:' + string(errmsg)
+            end
+          else
+            begin
+              firmware_path := string(bigbuff)
+            end;
+          freemem(bigbuff)
+        end;
+      result := firmware_path;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the progress of the firmware update, on a scale from 0 to 100.
+  /// <para>
+  ///   When the object is
+  ///   instantiated the progress is zero. The value is updated During the firmware update process, until
+  ///   the value of 100 is reached. The value of 100 mean that the firmware update is terminated with
+  ///   success. If an error occur during the firmware update a negative value is returned, and the
+  ///   error message can be retrieved with <c>get_progressMessage</c>.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer in the range 0 to 100 (percentage of completion) or
+  ///   or a negative error code in case of failure.
+  /// </returns>
+  ///-
+  function TYFirmwareUpdate.get_progress():LongInt;
     begin
       self._processMore(0);
-      if (self._progress = 100) and(length(self._settings) <> 0) then
-        begin
-          m := TYModule.FindModule(self._serial);
-          if m.isOnline() then
-            begin
-              m.set_allSettings(self._settings);
-              setlength(self._settings,0)
-            end;
-        end;
       result := self._progress;
       exit;
     end;
@@ -9959,6 +10271,8 @@ var
   ///-
   function TYFirmwareUpdate.startUpdate():LongInt;
     begin
+      self._progress := 0;
+      self._progress_c := 0;
       self._processMore(1);
       result := self._progress;
       exit;

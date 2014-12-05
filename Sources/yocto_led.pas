@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_led.pas 17350 2014-08-29 08:54:26Z seb $
+ * $Id: yocto_led.pas 18320 2014-11-10 10:47:48Z seb $
  *
  * Implements yFindLed(), the high-level API for Led functions
  *
@@ -50,7 +50,6 @@ uses
 const Y_POWER_OFF = 0;
 const Y_POWER_ON = 1;
 const Y_POWER_INVALID = -1;
-
 const Y_LUMINOSITY_INVALID            = YAPI_INVALID_UINT;
 const Y_BLINKING_STILL = 0;
 const Y_BLINKING_RELAX = 1;
@@ -59,7 +58,6 @@ const Y_BLINKING_RUN = 3;
 const Y_BLINKING_CALL = 4;
 const Y_BLINKING_PANIC = 5;
 const Y_BLINKING_INVALID = -1;
-
 
 
 //--- (end of YLed definitions)

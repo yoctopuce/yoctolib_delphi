@@ -1,8 +1,8 @@
 {*********************************************************************
  *
- * $Id: yocto_dualpower.pas 18320 2014-11-10 10:47:48Z seb $
+ * $Id: pic24config.php 18250 2014-11-03 16:54:15Z mvuilleu $
  *
- * Implements yFindDualPower(), the high-level API for DualPower functions
+ * Implements yFindSegmentedDisplay(), the high-level API for SegmentedDisplay functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
@@ -38,117 +38,85 @@
  *********************************************************************}
 
 
-unit yocto_dualpower;
+unit yocto_segmenteddisplay;
 
 interface
 
 uses
   sysutils, classes, windows, yocto_api, yjson;
 
-//--- (YDualPower definitions)
+//--- (YSegmentedDisplay definitions)
 
-const Y_POWERSTATE_OFF = 0;
-const Y_POWERSTATE_FROM_USB = 1;
-const Y_POWERSTATE_FROM_EXT = 2;
-const Y_POWERSTATE_INVALID = -1;
-const Y_POWERCONTROL_AUTO = 0;
-const Y_POWERCONTROL_FROM_USB = 1;
-const Y_POWERCONTROL_FROM_EXT = 2;
-const Y_POWERCONTROL_OFF = 3;
-const Y_POWERCONTROL_INVALID = -1;
-const Y_EXTVOLTAGE_INVALID            = YAPI_INVALID_UINT;
+const Y_DISPLAYEDTEXT_INVALID         = YAPI_INVALID_STRING;
+const Y_DISPLAYMODE_DISCONNECTED = 0;
+const Y_DISPLAYMODE_MANUAL = 1;
+const Y_DISPLAYMODE_AUTO1 = 2;
+const Y_DISPLAYMODE_AUTO60 = 3;
+const Y_DISPLAYMODE_INVALID = -1;
 
 
-//--- (end of YDualPower definitions)
+//--- (end of YSegmentedDisplay definitions)
 
 type
-  TYDualPower = class;
-  //--- (YDualPower class start)
-  TYDualPowerValueCallback = procedure(func: TYDualPower; value:string);
-  TYDualPowerTimedReportCallback = procedure(func: TYDualPower; value:TYMeasure);
+  TYSegmentedDisplay = class;
+  //--- (YSegmentedDisplay class start)
+  TYSegmentedDisplayValueCallback = procedure(func: TYSegmentedDisplay; value:string);
+  TYSegmentedDisplayTimedReportCallback = procedure(func: TYSegmentedDisplay; value:TYMeasure);
 
   ////
   /// <summary>
-  ///   TYDualPower Class: External power supply control interface
+  ///   TYSegmentedDisplay Class: SegmentedDisplay function interface
   /// <para>
-  ///   Yoctopuce application programming interface allows you to control
-  ///   the power source to use for module functions that require high current.
-  ///   The module can also automatically disconnect the external power
-  ///   when a voltage drop is observed on the external power source
-  ///   (external battery running out of power).
+  ///   The SegmentedDisplay class allows you to drive segmented displays.
   /// </para>
   /// </summary>
   ///-
-  TYDualPower=class(TYFunction)
-  //--- (end of YDualPower class start)
+  TYSegmentedDisplay=class(TYFunction)
+  //--- (end of YSegmentedDisplay class start)
   protected
-  //--- (YDualPower declaration)
+  //--- (YSegmentedDisplay declaration)
     // Attributes (function value cache)
     _logicalName              : string;
     _advertisedValue          : string;
-    _powerState               : Integer;
-    _powerControl             : Integer;
-    _extVoltage               : LongInt;
-    _valueCallbackDualPower   : TYDualPowerValueCallback;
+    _displayedText            : string;
+    _displayMode              : Integer;
+    _valueCallbackSegmentedDisplay : TYSegmentedDisplayValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
 
-    //--- (end of YDualPower declaration)
+    //--- (end of YSegmentedDisplay declaration)
 
   public
-    //--- (YDualPower accessors declaration)
+    //--- (YSegmentedDisplay accessors declaration)
     constructor Create(func:string);
 
     ////
     /// <summary>
-    ///   Returns the current power source for module functions that require lots of current.
+    ///   Returns the text currently displayed on the screen.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_POWERSTATE_OFF</c>, <c>Y_POWERSTATE_FROM_USB</c> and
-    ///   <c>Y_POWERSTATE_FROM_EXT</c> corresponding to the current power source for module functions that
-    ///   require lots of current
+    ///   a string corresponding to the text currently displayed on the screen
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_POWERSTATE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>Y_DISPLAYEDTEXT_INVALID</c>.
     /// </para>
     ///-
-    function get_powerState():Integer;
+    function get_displayedText():string;
 
     ////
     /// <summary>
-    ///   Returns the selected power source for module functions that require lots of current.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   a value among <c>Y_POWERCONTROL_AUTO</c>, <c>Y_POWERCONTROL_FROM_USB</c>,
-    ///   <c>Y_POWERCONTROL_FROM_EXT</c> and <c>Y_POWERCONTROL_OFF</c> corresponding to the selected power
-    ///   source for module functions that require lots of current
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>Y_POWERCONTROL_INVALID</c>.
-    /// </para>
-    ///-
-    function get_powerControl():Integer;
-
-    ////
-    /// <summary>
-    ///   Changes the selected power source for module functions that require lots of current.
+    ///   Changes the text currently displayed on the screen.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>Y_POWERCONTROL_AUTO</c>, <c>Y_POWERCONTROL_FROM_USB</c>,
-    ///   <c>Y_POWERCONTROL_FROM_EXT</c> and <c>Y_POWERCONTROL_OFF</c> corresponding to the selected power
-    ///   source for module functions that require lots of current
+    ///   a string corresponding to the text currently displayed on the screen
     /// </param>
     /// <para>
     /// </para>
@@ -159,24 +127,11 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function set_powerControl(newval:Integer):integer;
+    function set_displayedText(newval:string):integer;
 
-    ////
-    /// <summary>
-    ///   Returns the measured voltage on the external power source, in millivolts.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   an integer corresponding to the measured voltage on the external power source, in millivolts
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>Y_EXTVOLTAGE_INVALID</c>.
-    /// </para>
-    ///-
-    function get_extVoltage():LongInt;
+    function get_displayMode():Integer;
+
+    function set_displayMode(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -206,7 +161,7 @@ type
     /// <para>
     ///   This function does not require that $THEFUNCTION$ is online at the time
     ///   it is invoked. The returned object is nevertheless valid.
-    ///   Use the method <c>YDualPower.isOnline()</c> to test if $THEFUNCTION$ is
+    ///   Use the method <c>YSegmentedDisplay.isOnline()</c> to test if $THEFUNCTION$ is
     ///   indeed online at a given time. In case of ambiguity when looking for
     ///   $AFUNCTION$ by logical name, no error is notified: the first instance
     ///   found is returned. The search is performed first by hardware name,
@@ -217,10 +172,10 @@ type
     ///   a string that uniquely characterizes $THEFUNCTION$
     /// </param>
     /// <returns>
-    ///   a <c>YDualPower</c> object allowing you to drive $THEFUNCTION$.
+    ///   a <c>YSegmentedDisplay</c> object allowing you to drive $THEFUNCTION$.
     /// </returns>
     ///-
-    class function FindDualPower(func: string):TYDualPower;
+    class function FindSegmentedDisplay(func: string):TYSegmentedDisplay;
 
     ////
     /// <summary>
@@ -240,24 +195,24 @@ type
     /// @noreturn
     /// </param>
     ///-
-    function registerValueCallback(callback: TYDualPowerValueCallback):LongInt; overload;
+    function registerValueCallback(callback: TYSegmentedDisplayValueCallback):LongInt; overload;
 
     function _invokeValueCallback(value: string):LongInt; override;
 
 
     ////
     /// <summary>
-    ///   Continues the enumeration of dual power controls started using <c>yFirstDualPower()</c>.
+    ///   Continues the enumeration of segmented displays started using <c>yFirstSegmentedDisplay()</c>.
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a pointer to a <c>YDualPower</c> object, corresponding to
-    ///   a dual power control currently online, or a <c>null</c> pointer
-    ///   if there are no more dual power controls to enumerate.
+    ///   a pointer to a <c>YSegmentedDisplay</c> object, corresponding to
+    ///   a segmented display currently online, or a <c>null</c> pointer
+    ///   if there are no more segmented displays to enumerate.
     /// </returns>
     ///-
-    function nextDualPower():TYDualPower;
+    function nextSegmentedDisplay():TYSegmentedDisplay;
     ////
     /// <summary>
     ///   c
@@ -266,14 +221,14 @@ type
     /// </para>
     /// </summary>
     ///-
-    class function FirstDualPower():TYDualPower;
-  //--- (end of YDualPower accessors declaration)
+    class function FirstSegmentedDisplay():TYSegmentedDisplay;
+  //--- (end of YSegmentedDisplay accessors declaration)
   end;
 
-//--- (DualPower functions declaration)
+//--- (SegmentedDisplay functions declaration)
   ////
   /// <summary>
-  ///   Retrieves a dual power control for a given identifier.
+  ///   Retrieves a segmented display for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
   /// </para>
@@ -297,80 +252,73 @@ type
   /// <para>
   /// </para>
   /// <para>
-  ///   This function does not require that the power control is online at the time
+  ///   This function does not require that the segmented displays is online at the time
   ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YDualPower.isOnline()</c> to test if the power control is
+  ///   Use the method <c>YSegmentedDisplay.isOnline()</c> to test if the segmented displays is
   ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   a dual power control by logical name, no error is notified: the first instance
+  ///   a segmented display by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the power control
+  ///   a string that uniquely characterizes the segmented displays
   /// </param>
   /// <returns>
-  ///   a <c>YDualPower</c> object allowing you to drive the power control.
+  ///   a <c>YSegmentedDisplay</c> object allowing you to drive the segmented displays.
   /// </returns>
   ///-
-  function yFindDualPower(func:string):TYDualPower;
+  function yFindSegmentedDisplay(func:string):TYSegmentedDisplay;
   ////
   /// <summary>
-  ///   Starts the enumeration of dual power controls currently accessible.
+  ///   Starts the enumeration of segmented displays currently accessible.
   /// <para>
-  ///   Use the method <c>YDualPower.nextDualPower()</c> to iterate on
-  ///   next dual power controls.
+  ///   Use the method <c>YSegmentedDisplay.nextSegmentedDisplay()</c> to iterate on
+  ///   next segmented displays.
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a pointer to a <c>YDualPower</c> object, corresponding to
-  ///   the first dual power control currently online, or a <c>null</c> pointer
+  ///   a pointer to a <c>YSegmentedDisplay</c> object, corresponding to
+  ///   the first segmented displays currently online, or a <c>null</c> pointer
   ///   if there are none.
   /// </returns>
   ///-
-  function yFirstDualPower():TYDualPower;
+  function yFirstSegmentedDisplay():TYSegmentedDisplay;
 
-//--- (end of DualPower functions declaration)
+//--- (end of SegmentedDisplay functions declaration)
 
 implementation
-//--- (YDualPower dlldef)
-//--- (end of YDualPower dlldef)
+//--- (YSegmentedDisplay dlldef)
+//--- (end of YSegmentedDisplay dlldef)
 
-  constructor TYDualPower.Create(func:string);
+  constructor TYSegmentedDisplay.Create(func:string);
     begin
       inherited Create(func);
-      _className := 'DualPower';
-      //--- (YDualPower accessors initialization)
-      _powerState := Y_POWERSTATE_INVALID;
-      _powerControl := Y_POWERCONTROL_INVALID;
-      _extVoltage := Y_EXTVOLTAGE_INVALID;
-      _valueCallbackDualPower := nil;
-      //--- (end of YDualPower accessors initialization)
+      _className := 'SegmentedDisplay';
+      //--- (YSegmentedDisplay accessors initialization)
+      _displayedText := Y_DISPLAYEDTEXT_INVALID;
+      _displayMode := Y_DISPLAYMODE_INVALID;
+      _valueCallbackSegmentedDisplay := nil;
+      //--- (end of YSegmentedDisplay accessors initialization)
     end;
 
 
-//--- (YDualPower implementation)
+//--- (YSegmentedDisplay implementation)
 {$HINTS OFF}
-  function TYDualPower._parseAttr(member:PJSONRECORD):integer;
+  function TYSegmentedDisplay._parseAttr(member:PJSONRECORD):integer;
     var
       sub : PJSONRECORD;
       i,l        : integer;
     begin
-      if (member^.name = 'powerState') then
+      if (member^.name = 'displayedText') then
         begin
-          _powerState := integer(member^.ivalue);
+          _displayedText := string(member^.svalue);
          result := 1;
          exit;
          end;
-      if (member^.name = 'powerControl') then
+      if (member^.name = 'displayMode') then
         begin
-          _powerControl := integer(member^.ivalue);
-         result := 1;
-         exit;
-         end;
-      if (member^.name = 'extVoltage') then
-        begin
-          _extVoltage := integer(member^.ivalue);
+          _displayMode := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -380,77 +328,44 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the current power source for module functions that require lots of current.
+  ///   Returns the text currently displayed on the screen.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a value among Y_POWERSTATE_OFF, Y_POWERSTATE_FROM_USB and Y_POWERSTATE_FROM_EXT corresponding to
-  ///   the current power source for module functions that require lots of current
+  ///   a string corresponding to the text currently displayed on the screen
   /// </returns>
   /// <para>
-  ///   On failure, throws an exception or returns Y_POWERSTATE_INVALID.
+  ///   On failure, throws an exception or returns Y_DISPLAYEDTEXT_INVALID.
   /// </para>
   ///-
-  function TYDualPower.get_powerState():Integer;
+  function TYSegmentedDisplay.get_displayedText():string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
-              result := Y_POWERSTATE_INVALID;
+              result := Y_DISPLAYEDTEXT_INVALID;
               exit
             end;
         end;
-      result := self._powerState;
+      result := self._displayedText;
       exit;
     end;
 
 
   ////
   /// <summary>
-  ///   Returns the selected power source for module functions that require lots of current.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_POWERCONTROL_AUTO, Y_POWERCONTROL_FROM_USB, Y_POWERCONTROL_FROM_EXT and
-  ///   Y_POWERCONTROL_OFF corresponding to the selected power source for module functions that require lots of current
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_POWERCONTROL_INVALID.
-  /// </para>
-  ///-
-  function TYDualPower.get_powerControl():Integer;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
-            begin
-              result := Y_POWERCONTROL_INVALID;
-              exit
-            end;
-        end;
-      result := self._powerControl;
-      exit;
-    end;
-
-
-  ////
-  /// <summary>
-  ///   Changes the selected power source for module functions that require lots of current.
+  ///   Changes the text currently displayed on the screen.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   a value among Y_POWERCONTROL_AUTO, Y_POWERCONTROL_FROM_USB, Y_POWERCONTROL_FROM_EXT and
-  ///   Y_POWERCONTROL_OFF corresponding to the selected power source for module functions that require lots of current
+  ///   a string corresponding to the text currently displayed on the screen
   /// </param>
   /// <para>
   /// </para>
@@ -461,43 +376,36 @@ implementation
   ///   On failure, throws an exception or returns a negative error code.
   /// </para>
   ///-
-  function TYDualPower.set_powerControl(newval:Integer):integer;
+  function TYSegmentedDisplay.set_displayedText(newval:string):integer;
     var
       rest_val: string;
     begin
-      rest_val := inttostr(newval);
-      result := _setAttr('powerControl',rest_val);
+      rest_val := newval;
+      result := _setAttr('displayedText',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the measured voltage on the external power source, in millivolts.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the measured voltage on the external power source, in millivolts
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_EXTVOLTAGE_INVALID.
-  /// </para>
-  ///-
-  function TYDualPower.get_extVoltage():LongInt;
+  function TYSegmentedDisplay.get_displayMode():Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
-              result := Y_EXTVOLTAGE_INVALID;
+              result := Y_DISPLAYMODE_INVALID;
               exit
             end;
         end;
-      result := self._extVoltage;
+      result := self._displayMode;
       exit;
     end;
 
+
+  function TYSegmentedDisplay.set_displayMode(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('displayMode',rest_val);
+    end;
 
   ////
   /// <summary>
@@ -527,7 +435,7 @@ implementation
   /// <para>
   ///   This function does not require that $THEFUNCTION$ is online at the time
   ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YDualPower.isOnline()</c> to test if $THEFUNCTION$ is
+  ///   Use the method <c>YSegmentedDisplay.isOnline()</c> to test if $THEFUNCTION$ is
   ///   indeed online at a given time. In case of ambiguity when looking for
   ///   $AFUNCTION$ by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
@@ -538,18 +446,18 @@ implementation
   ///   a string that uniquely characterizes $THEFUNCTION$
   /// </param>
   /// <returns>
-  ///   a <c>YDualPower</c> object allowing you to drive $THEFUNCTION$.
+  ///   a <c>YSegmentedDisplay</c> object allowing you to drive $THEFUNCTION$.
   /// </returns>
   ///-
-  class function TYDualPower.FindDualPower(func: string):TYDualPower;
+  class function TYSegmentedDisplay.FindSegmentedDisplay(func: string):TYSegmentedDisplay;
     var
-      obj : TYDualPower;
+      obj : TYSegmentedDisplay;
     begin
-      obj := TYDualPower(TYFunction._FindFromCache('DualPower', func));
+      obj := TYSegmentedDisplay(TYFunction._FindFromCache('SegmentedDisplay', func));
       if obj = nil then
         begin
-          obj :=  TYDualPower.create(func);
-          TYFunction._AddToCache('DualPower',  func, obj)
+          obj :=  TYSegmentedDisplay.create(func);
+          TYFunction._AddToCache('SegmentedDisplay',  func, obj)
         end;
       result := obj;
       exit;
@@ -574,7 +482,7 @@ implementation
   /// @noreturn
   /// </param>
   ///-
-  function TYDualPower.registerValueCallback(callback: TYDualPowerValueCallback):LongInt;
+  function TYSegmentedDisplay.registerValueCallback(callback: TYSegmentedDisplayValueCallback):LongInt;
     var
       val : string;
     begin
@@ -586,7 +494,7 @@ implementation
         begin
           TYFunction._UpdateValueCallbackList(self, false)
         end;
-      self._valueCallbackDualPower := callback;
+      self._valueCallbackSegmentedDisplay := callback;
       // Immediately invoke value callback with current value
       if (addr(callback) <> nil) and self.isOnline then
         begin
@@ -601,11 +509,11 @@ implementation
     end;
 
 
-  function TYDualPower._invokeValueCallback(value: string):LongInt;
+  function TYSegmentedDisplay._invokeValueCallback(value: string):LongInt;
     begin
-      if (addr(self._valueCallbackDualPower) <> nil) then
+      if (addr(self._valueCallbackSegmentedDisplay) <> nil) then
         begin
-          self._valueCallbackDualPower(self, value)
+          self._valueCallbackSegmentedDisplay(self, value)
         end
       else
         begin
@@ -616,31 +524,31 @@ implementation
     end;
 
 
-  function TYDualPower.nextDualPower(): TYDualPower;
+  function TYSegmentedDisplay.nextSegmentedDisplay(): TYSegmentedDisplay;
     var
       hwid: string;
     begin
       if YISERR(_nextFunction(hwid)) then
         begin
-          nextDualPower := nil;
+          nextSegmentedDisplay := nil;
           exit;
         end;
       if hwid = '' then
         begin
-          nextDualPower := nil;
+          nextSegmentedDisplay := nil;
           exit;
         end;
-      nextDualPower := TYDualPower.FindDualPower(hwid);
+      nextSegmentedDisplay := TYSegmentedDisplay.FindSegmentedDisplay(hwid);
     end;
 
-  class function TYDualPower.FirstDualPower(): TYDualPower;
+  class function TYSegmentedDisplay.FirstSegmentedDisplay(): TYSegmentedDisplay;
     var
       v_fundescr      : YFUN_DESCR;
       dev             : YDEV_DESCR;
       neededsize, err : integer;
       serial, funcId, funcName, funcVal, errmsg : string;
     begin
-      err := yapiGetFunctionsByClass('DualPower', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
+      err := yapiGetFunctionsByClass('SegmentedDisplay', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
       if (YISERR(err) or (neededsize = 0)) then
         begin
           result := nil;
@@ -651,35 +559,35 @@ implementation
           result := nil;
           exit;
         end;
-     result := TYDualPower.FindDualPower(serial+'.'+funcId);
+     result := TYSegmentedDisplay.FindSegmentedDisplay(serial+'.'+funcId);
     end;
 
-//--- (end of YDualPower implementation)
+//--- (end of YSegmentedDisplay implementation)
 
-//--- (DualPower functions)
+//--- (SegmentedDisplay functions)
 
-  function yFindDualPower(func:string): TYDualPower;
+  function yFindSegmentedDisplay(func:string): TYSegmentedDisplay;
     begin
-      result := TYDualPower.FindDualPower(func);
+      result := TYSegmentedDisplay.FindSegmentedDisplay(func);
     end;
 
-  function yFirstDualPower(): TYDualPower;
+  function yFirstSegmentedDisplay(): TYSegmentedDisplay;
     begin
-      result := TYDualPower.FirstDualPower();
+      result := TYSegmentedDisplay.FirstSegmentedDisplay();
     end;
 
-  procedure _DualPowerCleanup();
+  procedure _SegmentedDisplayCleanup();
     begin
     end;
 
-//--- (end of DualPower functions)
+//--- (end of SegmentedDisplay functions)
 
 initialization
-  //--- (DualPower initialization)
-  //--- (end of DualPower initialization)
+  //--- (SegmentedDisplay initialization)
+  //--- (end of SegmentedDisplay initialization)
 
 finalization
-  //--- (DualPower cleanup)
-  _DualPowerCleanup();
-  //--- (end of DualPower cleanup)
+  //--- (SegmentedDisplay cleanup)
+  _SegmentedDisplayCleanup();
+  //--- (end of SegmentedDisplay cleanup)
 end.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.pas 17350 2014-08-29 08:54:26Z seb $
+ * $Id: yocto_wakeupmonitor.pas 18320 2014-11-10 10:47:48Z seb $
  *
  * Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -57,11 +57,9 @@ const Y_WAKEUPREASON_EXTSIG1 = 3;
 const Y_WAKEUPREASON_SCHEDULE1 = 4;
 const Y_WAKEUPREASON_SCHEDULE2 = 5;
 const Y_WAKEUPREASON_INVALID = -1;
-
 const Y_WAKEUPSTATE_SLEEPING = 0;
 const Y_WAKEUPSTATE_AWAKE = 1;
 const Y_WAKEUPSTATE_INVALID = -1;
-
 const Y_RTCTIME_INVALID               = YAPI_INVALID_LONG;
 
 

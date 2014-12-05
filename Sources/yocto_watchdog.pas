@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_watchdog.pas 17350 2014-08-29 08:54:26Z seb $
+ * $Id: yocto_watchdog.pas 18320 2014-11-10 10:47:48Z seb $
  *
  * Implements yFindWatchdog(), the high-level API for Watchdog functions
  *
@@ -57,28 +57,23 @@ type  TYWatchdogDelayedPulse = class(TObject)
 const Y_STATE_A = 0;
 const Y_STATE_B = 1;
 const Y_STATE_INVALID = -1;
-
 const Y_STATEATPOWERON_UNCHANGED = 0;
 const Y_STATEATPOWERON_A = 1;
 const Y_STATEATPOWERON_B = 2;
 const Y_STATEATPOWERON_INVALID = -1;
-
 const Y_MAXTIMEONSTATEA_INVALID       = YAPI_INVALID_LONG;
 const Y_MAXTIMEONSTATEB_INVALID       = YAPI_INVALID_LONG;
 const Y_OUTPUT_OFF = 0;
 const Y_OUTPUT_ON = 1;
 const Y_OUTPUT_INVALID = -1;
-
 const Y_PULSETIMER_INVALID            = YAPI_INVALID_LONG;
 const Y_COUNTDOWN_INVALID             = YAPI_INVALID_LONG;
 const Y_AUTOSTART_OFF = 0;
 const Y_AUTOSTART_ON = 1;
 const Y_AUTOSTART_INVALID = -1;
-
 const Y_RUNNING_OFF = 0;
 const Y_RUNNING_ON = 1;
 const Y_RUNNING_INVALID = -1;
-
 const Y_TRIGGERDELAY_INVALID          = YAPI_INVALID_LONG;
 const Y_TRIGGERDURATION_INVALID       = YAPI_INVALID_LONG;
 

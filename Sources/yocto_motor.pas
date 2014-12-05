@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_motor.pas 17350 2014-08-29 08:54:26Z seb $
+ * $Id: yocto_motor.pas 18320 2014-11-10 10:47:48Z seb $
  *
  * Implements yFindMotor(), the high-level API for Motor functions
  *
@@ -56,7 +56,6 @@ const Y_MOTORSTATUS_HICURR = 5;
 const Y_MOTORSTATUS_HIHEAT = 6;
 const Y_MOTORSTATUS_FAILSF = 7;
 const Y_MOTORSTATUS_INVALID = -1;
-
 const Y_DRIVINGFORCE_INVALID          = YAPI_INVALID_DOUBLE;
 const Y_BRAKINGFORCE_INVALID          = YAPI_INVALID_DOUBLE;
 const Y_CUTOFFVOLTAGE_INVALID         = YAPI_INVALID_DOUBLE;

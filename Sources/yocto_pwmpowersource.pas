@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwmpowersource.pas 17350 2014-08-29 08:54:26Z seb $
+ * $Id: yocto_pwmpowersource.pas 18320 2014-11-10 10:47:48Z seb $
  *
  * Implements yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
  *
@@ -52,7 +52,6 @@ const Y_POWERMODE_USB_3V = 1;
 const Y_POWERMODE_EXT_V = 2;
 const Y_POWERMODE_OPNDRN = 3;
 const Y_POWERMODE_INVALID = -1;
-
 
 
 //--- (end of YPwmPowerSource definitions)

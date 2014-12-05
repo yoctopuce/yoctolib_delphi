@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_lightsensor.pas 17655 2014-09-16 12:24:27Z mvuilleu $
+ * $Id: yocto_lightsensor.pas 18320 2014-11-10 10:47:48Z seb $
  *
  * Implements yFindLightSensor(), the high-level API for LightSensor functions
  *
@@ -53,7 +53,6 @@ const Y_MEASURETYPE_INFRARED = 2;
 const Y_MEASURETYPE_HIGH_RATE = 3;
 const Y_MEASURETYPE_HIGH_ENERGY = 4;
 const Y_MEASURETYPE_INVALID = -1;
-
 
 
 //--- (end of YLightSensor definitions)

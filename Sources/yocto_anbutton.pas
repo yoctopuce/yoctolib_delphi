@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_anbutton.pas 17673 2014-09-16 16:15:44Z seb $
+ * $Id: yocto_anbutton.pas 18361 2014-11-13 08:06:41Z mvuilleu $
  *
  * Implements yFindAnButton(), the high-level API for AnButton functions
  *
@@ -52,14 +52,12 @@ const Y_RAWVALUE_INVALID              = YAPI_INVALID_UINT;
 const Y_ANALOGCALIBRATION_OFF = 0;
 const Y_ANALOGCALIBRATION_ON = 1;
 const Y_ANALOGCALIBRATION_INVALID = -1;
-
 const Y_CALIBRATIONMAX_INVALID        = YAPI_INVALID_UINT;
 const Y_CALIBRATIONMIN_INVALID        = YAPI_INVALID_UINT;
 const Y_SENSITIVITY_INVALID           = YAPI_INVALID_UINT;
 const Y_ISPRESSED_FALSE = 0;
 const Y_ISPRESSED_TRUE = 1;
 const Y_ISPRESSED_INVALID = -1;
-
 const Y_LASTTIMEPRESSED_INVALID       = YAPI_INVALID_LONG;
 const Y_LASTTIMERELEASED_INVALID      = YAPI_INVALID_LONG;
 const Y_PULSECOUNTER_INVALID          = YAPI_INVALID_LONG;
@@ -478,7 +476,9 @@ type
 
     ////
     /// <summary>
-    ///   Returns the pulse counter value as well as his timer
+    ///   Returns the pulse counter value as well as its timer.
+    /// <para>
+    /// </para>
     /// </summary>
     /// <returns>
     ///   <c>YAPI_SUCCESS</c> if the call succeeds.
@@ -1266,7 +1266,9 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the pulse counter value as well as his timer
+  ///   Returns the pulse counter value as well as its timer.
+  /// <para>
+  /// </para>
   /// </summary>
   /// <returns>
   ///   <c>YAPI_SUCCESS</c> if the call succeeds.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_genericsensor.pas 17350 2014-08-29 08:54:26Z seb $
+ * $Id: yocto_genericsensor.pas 18320 2014-11-10 10:47:48Z seb $
  *
  * Implements yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -52,6 +52,11 @@ const Y_SIGNALUNIT_INVALID            = YAPI_INVALID_STRING;
 const Y_SIGNALRANGE_INVALID           = YAPI_INVALID_STRING;
 const Y_VALUERANGE_INVALID            = YAPI_INVALID_STRING;
 const Y_SIGNALBIAS_INVALID            = YAPI_INVALID_DOUBLE;
+const Y_SIGNALSAMPLING_HIGH_RATE = 0;
+const Y_SIGNALSAMPLING_HIGH_RATE_FILTERED = 1;
+const Y_SIGNALSAMPLING_LOW_NOISE = 2;
+const Y_SIGNALSAMPLING_LOW_NOISE_FILTERED = 3;
+const Y_SIGNALSAMPLING_INVALID = -1;
 
 
 //--- (end of YGenericSensor definitions)
@@ -92,6 +97,7 @@ type
     _signalRange              : string;
     _valueRange               : string;
     _signalBias               : double;
+    _signalSampling           : Integer;
     _valueCallbackGenericSensor : TYGenericSensorValueCallback;
     _timedReportCallbackGenericSensor : TYGenericSensorTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
@@ -283,6 +289,59 @@ type
     /// </para>
     ///-
     function get_signalBias():double;
+
+    ////
+    /// <summary>
+    ///   Returns the electric signal sampling method to use.
+    /// <para>
+    ///   The <c>HIGH_RATE</c> method uses the highest sampling frequency, without any filtering.
+    ///   The <c>HIGH_RATE_FILTERED</c> method adds a windowed 7-sample median filter.
+    ///   The <c>LOW_NOISE</c> method uses a reduced acquisition frequency to reduce noise.
+    ///   The <c>LOW_NOISE_FILTERED</c> method combines a reduced frequency with the median filter
+    ///   to get measures as stable as possible when working on a noisy signal.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a value among <c>Y_SIGNALSAMPLING_HIGH_RATE</c>, <c>Y_SIGNALSAMPLING_HIGH_RATE_FILTERED</c>,
+    ///   <c>Y_SIGNALSAMPLING_LOW_NOISE</c> and <c>Y_SIGNALSAMPLING_LOW_NOISE_FILTERED</c> corresponding to
+    ///   the electric signal sampling method to use
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_SIGNALSAMPLING_INVALID</c>.
+    /// </para>
+    ///-
+    function get_signalSampling():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the electric signal sampling method to use.
+    /// <para>
+    ///   The <c>HIGH_RATE</c> method uses the highest sampling frequency, without any filtering.
+    ///   The <c>HIGH_RATE_FILTERED</c> method adds a windowed 7-sample median filter.
+    ///   The <c>LOW_NOISE</c> method uses a reduced acquisition frequency to reduce noise.
+    ///   The <c>LOW_NOISE_FILTERED</c> method combines a reduced frequency with the median filter
+    ///   to get measures as stable as possible when working on a noisy signal.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a value among <c>Y_SIGNALSAMPLING_HIGH_RATE</c>, <c>Y_SIGNALSAMPLING_HIGH_RATE_FILTERED</c>,
+    ///   <c>Y_SIGNALSAMPLING_LOW_NOISE</c> and <c>Y_SIGNALSAMPLING_LOW_NOISE_FILTERED</c> corresponding to
+    ///   the electric signal sampling method to use
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_signalSampling(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -492,6 +551,7 @@ implementation
       _signalRange := Y_SIGNALRANGE_INVALID;
       _valueRange := Y_VALUERANGE_INVALID;
       _signalBias := Y_SIGNALBIAS_INVALID;
+      _signalSampling := Y_SIGNALSAMPLING_INVALID;
       _valueCallbackGenericSensor := nil;
       _timedReportCallbackGenericSensor := nil;
       //--- (end of YGenericSensor accessors initialization)
@@ -532,6 +592,12 @@ implementation
       if (member^.name = 'signalBias') then
         begin
           _signalBias := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'signalSampling') then
+        begin
+          _signalSampling := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -808,6 +874,78 @@ implementation
       exit;
     end;
 
+
+  ////
+  /// <summary>
+  ///   Returns the electric signal sampling method to use.
+  /// <para>
+  ///   The HIGH_RATE method uses the highest sampling frequency, without any filtering.
+  ///   The HIGH_RATE_FILTERED method adds a windowed 7-sample median filter.
+  ///   The LOW_NOISE method uses a reduced acquisition frequency to reduce noise.
+  ///   The LOW_NOISE_FILTERED method combines a reduced frequency with the median filter
+  ///   to get measures as stable as possible when working on a noisy signal.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a value among Y_SIGNALSAMPLING_HIGH_RATE, Y_SIGNALSAMPLING_HIGH_RATE_FILTERED,
+  ///   Y_SIGNALSAMPLING_LOW_NOISE and Y_SIGNALSAMPLING_LOW_NOISE_FILTERED corresponding to the electric
+  ///   signal sampling method to use
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_SIGNALSAMPLING_INVALID.
+  /// </para>
+  ///-
+  function TYGenericSensor.get_signalSampling():Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_SIGNALSAMPLING_INVALID;
+              exit
+            end;
+        end;
+      result := self._signalSampling;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the electric signal sampling method to use.
+  /// <para>
+  ///   The HIGH_RATE method uses the highest sampling frequency, without any filtering.
+  ///   The HIGH_RATE_FILTERED method adds a windowed 7-sample median filter.
+  ///   The LOW_NOISE method uses a reduced acquisition frequency to reduce noise.
+  ///   The LOW_NOISE_FILTERED method combines a reduced frequency with the median filter
+  ///   to get measures as stable as possible when working on a noisy signal.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a value among Y_SIGNALSAMPLING_HIGH_RATE, Y_SIGNALSAMPLING_HIGH_RATE_FILTERED,
+  ///   Y_SIGNALSAMPLING_LOW_NOISE and Y_SIGNALSAMPLING_LOW_NOISE_FILTERED corresponding to the electric
+  ///   signal sampling method to use
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYGenericSensor.set_signalSampling(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('signalSampling',rest_val);
+    end;
 
   ////
   /// <summary>

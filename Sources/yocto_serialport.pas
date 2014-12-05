@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 17610 2014-09-13 11:30:24Z mvuilleu $
+ * $Id: yocto_serialport.pas 18262 2014-11-05 14:22:14Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -52,8 +52,10 @@ const Y_PROTOCOL_INVALID              = YAPI_INVALID_STRING;
 const Y_RXCOUNT_INVALID               = YAPI_INVALID_UINT;
 const Y_TXCOUNT_INVALID               = YAPI_INVALID_UINT;
 const Y_ERRCOUNT_INVALID              = YAPI_INVALID_UINT;
-const Y_MSGCOUNT_INVALID              = YAPI_INVALID_UINT;
+const Y_RXMSGCOUNT_INVALID            = YAPI_INVALID_UINT;
+const Y_TXMSGCOUNT_INVALID            = YAPI_INVALID_UINT;
 const Y_LASTMSG_INVALID               = YAPI_INVALID_STRING;
+const Y_STARTUPJOB_INVALID            = YAPI_INVALID_STRING;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 
@@ -89,8 +91,10 @@ type
     _rxCount                  : LongInt;
     _txCount                  : LongInt;
     _errCount                 : LongInt;
-    _msgCount                 : LongInt;
+    _rxMsgCount               : LongInt;
+    _txMsgCount               : LongInt;
     _lastMsg                  : string;
+    _startupJob               : string;
     _command                  : string;
     _valueCallbackSerialPort  : TYSerialPortValueCallback;
     _rxptr                    : LongInt;
@@ -270,10 +274,27 @@ type
     ///   an integer corresponding to the total number of messages received since last reset
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_MSGCOUNT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>Y_RXMSGCOUNT_INVALID</c>.
     /// </para>
     ///-
-    function get_msgCount():LongInt;
+    function get_rxMsgCount():LongInt;
+
+    ////
+    /// <summary>
+    ///   Returns the total number of messages send since last reset.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the total number of messages send since last reset
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_TXMSGCOUNT_INVALID</c>.
+    /// </para>
+    ///-
+    function get_txMsgCount():LongInt;
 
     ////
     /// <summary>
@@ -291,6 +312,47 @@ type
     /// </para>
     ///-
     function get_lastMsg():string;
+
+    ////
+    /// <summary>
+    ///   Returns the job file to use when the device is powered on.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the job file to use when the device is powered on
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_STARTUPJOB_INVALID</c>.
+    /// </para>
+    ///-
+    function get_startupJob():string;
+
+    ////
+    /// <summary>
+    ///   Changes the job to use when the device is powered on.
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a string corresponding to the job to use when the device is powered on
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_startupJob(newval:string):integer;
 
     function get_command():string;
 
@@ -576,8 +638,8 @@ type
     /// <summary>
     ///   Reads a single line (or message) from the receive buffer, starting at current stream position.
     /// <para>
-    ///   This function can only be used when the serial port is configured for a message protocol,
-    ///   such as 'Line' mode or MODBUS protocols. It does not  work in plain stream modes, eg. 'Char' or 'Byte').
+    ///   This function is intended to be used when the serial port is configured for a message protocol,
+    ///   such as 'Line' mode or MODBUS protocols.
     /// </para>
     /// <para>
     ///   If data at current stream position is not available anymore in the receive buffer,
@@ -599,9 +661,8 @@ type
     ///   Searches for incoming messages in the serial port receive buffer matching a given pattern,
     ///   starting at current position.
     /// <para>
-    ///   This function can only be used when the serial port is
-    ///   configured for a message protocol, such as 'Line' mode or MODBUS protocols.
-    ///   It does not work in plain stream modes, eg. 'Char' or 'Byte', for which there is no "start" of message.
+    ///   This function will only compare and return printable characters
+    ///   in the message strings. Binary protocols are handled as hexadecimal strings.
     /// </para>
     /// <para>
     ///   The search returns all messages matching the expression provided as argument in the buffer.
@@ -638,20 +699,32 @@ type
     ///   for the next read operations.
     /// </para>
     /// </summary>
-    /// <param name="rxCountVal">
-    ///   the absolute position index (value of rxCount) for next read operations.
+    /// <param name="absPos">
+    ///   the absolute position index for next read operations.
     /// </param>
     /// <returns>
     ///   nothing.
     /// </returns>
     ///-
-    function read_seek(rxCountVal: LongInt):LongInt; overload; virtual;
+    function read_seek(absPos: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the current absolute stream position pointer of the YSerialPort object.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the absolute position index for next read operations.
+    /// </returns>
+    ///-
+    function read_tell():LongInt; overload; virtual;
 
     ////
     /// <summary>
     ///   Sends a text line query to the serial port, and reads the reply, if any.
     /// <para>
-    ///   This function can only be used when the serial port is configured for 'Line' protocol.
+    ///   This function is intended to be used when the serial port is configured for 'Line' protocol.
     /// </para>
     /// </summary>
     /// <param name="query">
@@ -926,6 +999,51 @@ type
     ///-
     function modbusWriteAndReadRegisters(slaveNo: LongInt; pduWriteAddr: LongInt; values: TLongIntArray; pduReadAddr: LongInt; nReadWords: LongInt):TLongIntArray; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Saves the job definition string (JSON data) into a job file.
+    /// <para>
+    ///   The job file can be later enabled using <c>selectJob()</c>.
+    /// </para>
+    /// </summary>
+    /// <param name="jobfile">
+    ///   name of the job file to save on the device filesystem
+    /// </param>
+    /// <param name="jsonDef">
+    ///   a string containing a JSON definition of the job
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function uploadJob(jobfile: string; jsonDef: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Load and start processing the specified job file.
+    /// <para>
+    ///   The file must have
+    ///   been previously created using the user interface or uploaded on the
+    ///   device filesystem using the <c>uploadJob()</c> function.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="jobfile">
+    ///   name of the job file (on the device filesystem)
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function selectJob(jobfile: string):LongInt; overload; virtual;
+
 
     ////
     /// <summary>
@@ -1028,8 +1146,10 @@ implementation
       _rxCount := Y_RXCOUNT_INVALID;
       _txCount := Y_TXCOUNT_INVALID;
       _errCount := Y_ERRCOUNT_INVALID;
-      _msgCount := Y_MSGCOUNT_INVALID;
+      _rxMsgCount := Y_RXMSGCOUNT_INVALID;
+      _txMsgCount := Y_TXMSGCOUNT_INVALID;
       _lastMsg := Y_LASTMSG_INVALID;
+      _startupJob := Y_STARTUPJOB_INVALID;
       _command := Y_COMMAND_INVALID;
       _valueCallbackSerialPort := nil;
       _rxptr := 0;
@@ -1074,15 +1194,27 @@ implementation
          result := 1;
          exit;
          end;
-      if (member^.name = 'msgCount') then
+      if (member^.name = 'rxMsgCount') then
         begin
-          _msgCount := integer(member^.ivalue);
+          _rxMsgCount := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'txMsgCount') then
+        begin
+          _txMsgCount := integer(member^.ivalue);
          result := 1;
          exit;
          end;
       if (member^.name = 'lastMsg') then
         begin
           _lastMsg := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'startupJob') then
+        begin
+          _startupJob := string(member^.svalue);
          result := 1;
          exit;
          end;
@@ -1340,20 +1472,50 @@ implementation
   ///   an integer corresponding to the total number of messages received since last reset
   /// </returns>
   /// <para>
-  ///   On failure, throws an exception or returns Y_MSGCOUNT_INVALID.
+  ///   On failure, throws an exception or returns Y_RXMSGCOUNT_INVALID.
   /// </para>
   ///-
-  function TYSerialPort.get_msgCount():LongInt;
+  function TYSerialPort.get_rxMsgCount():LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
-              result := Y_MSGCOUNT_INVALID;
+              result := Y_RXMSGCOUNT_INVALID;
               exit
             end;
         end;
-      result := self._msgCount;
+      result := self._rxMsgCount;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the total number of messages send since last reset.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the total number of messages send since last reset
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_TXMSGCOUNT_INVALID.
+  /// </para>
+  ///-
+  function TYSerialPort.get_txMsgCount():LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_TXMSGCOUNT_INVALID;
+              exit
+            end;
+        end;
+      result := self._txMsgCount;
       exit;
     end;
 
@@ -1387,6 +1549,66 @@ implementation
       exit;
     end;
 
+
+  ////
+  /// <summary>
+  ///   Returns the job file to use when the device is powered on.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a string corresponding to the job file to use when the device is powered on
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_STARTUPJOB_INVALID.
+  /// </para>
+  ///-
+  function TYSerialPort.get_startupJob():string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_STARTUPJOB_INVALID;
+              exit
+            end;
+        end;
+      result := self._startupJob;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the job to use when the device is powered on.
+  /// <para>
+  ///   Remember to call the saveToFlash() method of the module if the
+  ///   modification must be kept.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a string corresponding to the job to use when the device is powered on
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYSerialPort.set_startupJob(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('startupJob',rest_val);
+    end;
 
   function TYSerialPort.get_command():string;
     begin
@@ -1922,7 +2144,7 @@ implementation
         begin
           nChars := bufflen
         end;
-      self._rxptr := self._rxptr + nChars;
+      self._rxptr := endpos - (bufflen - nChars);
       res := Copy(_ByteToString(buff),  0 + 1, nChars);
       result := res;
       exit;
@@ -1991,7 +2213,7 @@ implementation
         begin
           nBytes := bufflen
         end;
-      self._rxptr := self._rxptr + nBytes;
+      self._rxptr := endpos - (bufflen - nBytes);
       res := '';
       ofs := 0;
       while ofs+3 < nBytes do
@@ -2013,8 +2235,8 @@ implementation
   /// <summary>
   ///   Reads a single line (or message) from the receive buffer, starting at current stream position.
   /// <para>
-  ///   This function can only be used when the serial port is configured for a message protocol,
-  ///   such as 'Line' mode or MODBUS protocols. It does not  work in plain stream modes, eg. 'Char' or 'Byte').
+  ///   This function is intended to be used when the serial port is configured for a message protocol,
+  ///   such as 'Line' mode or MODBUS protocols.
   /// </para>
   /// <para>
   ///   If data at current stream position is not available anymore in the receive buffer,
@@ -2065,9 +2287,8 @@ implementation
   ///   Searches for incoming messages in the serial port receive buffer matching a given pattern,
   ///   starting at current position.
   /// <para>
-  ///   This function can only be used when the serial port is
-  ///   configured for a message protocol, such as 'Line' mode or MODBUS protocols.
-  ///   It does not work in plain stream modes, eg. 'Char' or 'Byte', for which there is no "start" of message.
+  ///   This function will only compare and return printable characters
+  ///   in the message strings. Binary protocols are handled as hexadecimal strings.
   /// </para>
   /// <para>
   ///   The search returns all messages matching the expression provided as argument in the buffer.
@@ -2139,17 +2360,34 @@ implementation
   ///   for the next read operations.
   /// </para>
   /// </summary>
-  /// <param name="rxCountVal">
-  ///   the absolute position index (value of rxCount) for next read operations.
+  /// <param name="absPos">
+  ///   the absolute position index for next read operations.
   /// </param>
   /// <returns>
   ///   nothing.
   /// </returns>
   ///-
-  function TYSerialPort.read_seek(rxCountVal: LongInt):LongInt;
+  function TYSerialPort.read_seek(absPos: LongInt):LongInt;
     begin
-      self._rxptr := rxCountVal;
+      self._rxptr := absPos;
       result := YAPI_SUCCESS;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the current absolute stream position pointer of the YSerialPort object.
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   the absolute position index for next read operations.
+  /// </returns>
+  ///-
+  function TYSerialPort.read_tell():LongInt;
+    begin
+      result := self._rxptr;
       exit;
     end;
 
@@ -2158,7 +2396,7 @@ implementation
   /// <summary>
   ///   Sends a text line query to the serial port, and reads the reply, if any.
   /// <para>
-  ///   This function can only be used when the serial port is configured for 'Line' protocol.
+  ///   This function is intended to be used when the serial port is configured for 'Line' protocol.
   /// </para>
   /// </summary>
   /// <param name="query">
@@ -3081,6 +3319,62 @@ implementation
         end;
       SetLength(res, res_pos);;
       result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Saves the job definition string (JSON data) into a job file.
+  /// <para>
+  ///   The job file can be later enabled using <c>selectJob()</c>.
+  /// </para>
+  /// </summary>
+  /// <param name="jobfile">
+  ///   name of the job file to save on the device filesystem
+  /// </param>
+  /// <param name="jsonDef">
+  ///   a string containing a JSON definition of the job
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYSerialPort.uploadJob(jobfile: string; jsonDef: string):LongInt;
+    begin
+      self._upload(jobfile, _StrToByte(jsonDef));
+      result := YAPI_SUCCESS;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Load and start processing the specified job file.
+  /// <para>
+  ///   The file must have
+  ///   been previously created using the user interface or uploaded on the
+  ///   device filesystem using the <c>uploadJob()</c> function.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="jobfile">
+  ///   name of the job file (on the device filesystem)
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYSerialPort.selectJob(jobfile: string):LongInt;
+    begin
+      result := self.sendCommand('J'+jobfile);
       exit;
     end;
 

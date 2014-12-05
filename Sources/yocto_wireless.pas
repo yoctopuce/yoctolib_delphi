@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 17594 2014-09-10 21:15:55Z mvuilleu $
+ * $Id: yocto_wireless.pas 18320 2014-11-10 10:47:48Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -56,7 +56,6 @@ const Y_SECURITY_WEP = 2;
 const Y_SECURITY_WPA = 3;
 const Y_SECURITY_WPA2 = 4;
 const Y_SECURITY_INVALID = -1;
-
 const Y_MESSAGE_INVALID               = YAPI_INVALID_STRING;
 const Y_WLANCONFIG_INVALID            = YAPI_INVALID_STRING;
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_hubport.pas 17350 2014-08-29 08:54:26Z seb $
+ * $Id: yocto_hubport.pas 18320 2014-11-10 10:47:48Z seb $
  *
  * Implements yFindHubPort(), the high-level API for HubPort functions
  *
@@ -50,14 +50,12 @@ uses
 const Y_ENABLED_FALSE = 0;
 const Y_ENABLED_TRUE = 1;
 const Y_ENABLED_INVALID = -1;
-
 const Y_PORTSTATE_OFF = 0;
 const Y_PORTSTATE_OVRLD = 1;
 const Y_PORTSTATE_ON = 2;
 const Y_PORTSTATE_RUN = 3;
 const Y_PORTSTATE_PROG = 4;
 const Y_PORTSTATE_INVALID = -1;
-
 const Y_BAUDRATE_INVALID              = YAPI_INVALID_UINT;
 
 

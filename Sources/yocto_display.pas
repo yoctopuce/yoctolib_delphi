@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 17498 2014-09-03 19:21:24Z mvuilleu $
+ * $Id: yocto_display.pas 18320 2014-11-10 10:47:48Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -50,7 +50,6 @@ uses
 const Y_ENABLED_FALSE = 0;
 const Y_ENABLED_TRUE = 1;
 const Y_ENABLED_INVALID = -1;
-
 const Y_STARTUPSEQ_INVALID            = YAPI_INVALID_STRING;
 const Y_BRIGHTNESS_INVALID            = YAPI_INVALID_UINT;
 const Y_ORIENTATION_LEFT = 0;
@@ -58,14 +57,12 @@ const Y_ORIENTATION_UP = 1;
 const Y_ORIENTATION_RIGHT = 2;
 const Y_ORIENTATION_DOWN = 3;
 const Y_ORIENTATION_INVALID = -1;
-
 const Y_DISPLAYWIDTH_INVALID          = YAPI_INVALID_UINT;
 const Y_DISPLAYHEIGHT_INVALID         = YAPI_INVALID_UINT;
 const Y_DISPLAYTYPE_MONO = 0;
 const Y_DISPLAYTYPE_GRAY = 1;
 const Y_DISPLAYTYPE_RGB = 2;
 const Y_DISPLAYTYPE_INVALID = -1;
-
 const Y_LAYERWIDTH_INVALID            = YAPI_INVALID_UINT;
 const Y_LAYERHEIGHT_INVALID           = YAPI_INVALID_UINT;
 const Y_LAYERCOUNT_INVALID            = YAPI_INVALID_UINT;
@@ -76,7 +73,6 @@ const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 //--- (generated code: YDisplayLayer definitions)
 type  TYALIGN = (Y_ALIGN_TOP_LEFT,Y_ALIGN_CENTER_LEFT,Y_ALIGN_BASELINE_LEFT,Y_ALIGN_BOTTOM_LEFT,Y_ALIGN_TOP_CENTER,Y_ALIGN_CENTER,Y_ALIGN_BASELINE_CENTER,Y_ALIGN_BOTTOM_CENTER,Y_ALIGN_TOP_DECIMAL,Y_ALIGN_CENTER_DECIMAL,Y_ALIGN_BASELINE_DECIMAL,Y_ALIGN_BOTTOM_DECIMAL,Y_ALIGN_TOP_RIGHT,Y_ALIGN_CENTER_RIGHT,Y_ALIGN_BASELINE_RIGHT,Y_ALIGN_BOTTOM_RIGHT);
-
 
 
 //--- (end of generated code: YDisplayLayer definitions)

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_realtimeclock.pas 17350 2014-08-29 08:54:26Z seb $
+ * $Id: yocto_realtimeclock.pas 18320 2014-11-10 10:47:48Z seb $
  *
  * Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
@@ -53,7 +53,6 @@ const Y_UTCOFFSET_INVALID             = YAPI_INVALID_INT;
 const Y_TIMESET_FALSE = 0;
 const Y_TIMESET_TRUE = 1;
 const Y_TIMESET_INVALID = -1;
-
 
 
 //--- (end of YRealTimeClock definitions)
