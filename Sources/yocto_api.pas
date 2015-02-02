@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 18640 2014-12-04 14:30:34Z seb $
+ * $Id: yocto_api.pas 19035 2015-01-20 08:12:25Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -116,7 +116,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '18640';
+  YOCTO_API_BUILD_NO        = '19218';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -309,6 +309,7 @@ type
   public
     constructor Create(devdesc:YDEV_DESCR);
     class function getDevice(devdescr:YDEV_DESCR ):TYDevice;
+    class procedure PlugDevice(devdescr:YDEV_DESCR );
     function  HTTPRequestPrepare(request: TByteArray; var fullrequest: TByteArray; var errmsg:string):YRETCODE;
     function  HTTPRequestAsync(request: string; var errmsg: string):YRETCODE; overload;
     function  HTTPRequestAsync(request: TByteArray; var errmsg: string):YRETCODE; overload;
@@ -1363,12 +1364,12 @@ type
 
     ////
     /// <summary>
-    ///   Test if the byn file is valid for this module.
+    ///   Tests whether the byn file is valid for this module.
     /// <para>
-    ///   This method is useful to test if the module need to be updated.
-    ///   It's possible to pass an directory instead of a file. In this case this method return the path of
-    ///   the most recent
-    ///   appropriate byn file. If the parameter onlynew is true the function will discard firmware that are
+    ///   This method is useful to test if the module needs to be updated.
+    ///   It is possible to pass a directory as argument instead of a file. In this case, this method returns
+    ///   the path of the most recent
+    ///   appropriate byn file. If the parameter onlynew is true, the function discards firmware that are
     ///   older or equal to
     ///   the installed firmware.
     /// </para>
@@ -1376,15 +1377,15 @@ type
     /// </para>
     /// </summary>
     /// <param name="path">
-    ///   the path of a byn file or a directory that contain byn files
+    ///   the path of a byn file or a directory that contains byn files
     /// </param>
     /// <param name="onlynew">
-    ///   return only files that are strictly newer
+    ///   returns only files that are strictly newer
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   : the path of the byn file to use or a empty string if no byn files match the requirement
+    ///   : the path of the byn file to use or a empty string if no byn files matches the requirement
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a string that start with "error:".
@@ -1394,10 +1395,10 @@ type
 
     ////
     /// <summary>
-    ///   Prepare a firmware upgrade of the module.
+    ///   Prepares a firmware update of the module.
     /// <para>
-    ///   This method return a object <c>YFirmwareUpdate</c> which
-    ///   will handle the firmware upgrade process.
+    ///   This method returns a <c>YFirmwareUpdate</c> object which
+    ///   handles the firmware update process.
     /// </para>
     /// <para>
     /// </para>
@@ -1406,23 +1407,23 @@ type
     ///   the path of the byn file to use.
     /// </param>
     /// <returns>
-    ///   : A object <c>YFirmwareUpdate</c>.
+    ///   : A <c>YFirmwareUpdate</c> object.
     /// </returns>
     ///-
     function updateFirmware(path: string):TYFirmwareUpdate; overload; virtual;
 
     ////
     /// <summary>
-    ///   Returns all the setting of the module.
+    ///   Returns all the settings of the module.
     /// <para>
-    ///   Useful to backup all the logical name and calibrations parameters
+    ///   Useful to backup all the logical names and calibrations parameters
     ///   of a connected module.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a binary buffer with all settings.
+    ///   a binary buffer with all the settings.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns  <c>YAPI_INVALID_STRING</c>.
@@ -1442,16 +1443,16 @@ type
 
     ////
     /// <summary>
-    ///   Restore all the setting of the module.
+    ///   Restores all the settings of the module.
     /// <para>
-    ///   Useful to restore all the logical name and calibrations parameters
+    ///   Useful to restore all the logical names and calibrations parameters
     ///   of a module from a backup.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="settings">
-    ///   a binary buffer with all settings.
+    ///   a binary buffer with all the settings.
     /// </param>
     /// <returns>
     ///   <c>YAPI_SUCCESS</c> when the call succeeds.
@@ -2151,11 +2152,11 @@ end;
 
     ////
     /// <summary>
-    ///   Retrun a list of all modules in "update" mode.
+    ///   Retruns a list of all the modules in "update" mode.
     /// <para>
     ///   Only USB connected
-    ///   devices are listed. If the module is connected to a YoctoHub, you have to
-    ///   connect to the YoctoHub web interface.
+    ///   devices are listed. For modules connected to a YoctoHub, you must
+    ///   connect yourself to the YoctoHub web interface.
     /// </para>
     /// </summary>
     /// <returns>
@@ -2198,16 +2199,16 @@ end;
     ///   Returns the progress of the firmware update, on a scale from 0 to 100.
     /// <para>
     ///   When the object is
-    ///   instantiated the progress is zero. The value is updated During the firmware update process, until
-    ///   the value of 100 is reached. The value of 100 mean that the firmware update is terminated with
-    ///   success. If an error occur during the firmware update a negative value is returned, and the
+    ///   instantiated, the progress is zero. The value is updated during the firmware update process until
+    ///   the value of 100 is reached. The 100 value means that the firmware update was completed
+    ///   successfully. If an error occurs during the firmware update, a negative value is returned, and the
     ///   error message can be retrieved with <c>get_progressMessage</c>.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer in the range 0 to 100 (percentage of completion) or
+    ///   an integer in the range 0 to 100 (percentage of completion)
     ///   or a negative error code in case of failure.
     /// </returns>
     ///-
@@ -2217,25 +2218,25 @@ end;
     /// <summary>
     ///   Returns the last progress message of the firmware update process.
     /// <para>
-    ///   If an error occur during the
-    ///   firmware update process the error message is returned
+    ///   If an error occurs during the
+    ///   firmware update process, the error message is returned
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an string  with the last progress message, or the error message.
+    ///   a string  with the latest progress message, or the error message.
     /// </returns>
     ///-
     function get_progressMessage():string; overload; virtual;
 
     ////
     /// <summary>
-    ///   Start the firmware update process.
+    ///   Starts the firmware update process.
     /// <para>
-    ///   This method start the firmware update process in background. This method
-    ///   return immediately. The progress of the firmware update can be monitored with methods <c>get_progress()</c>
-    ///   and <c>get_progressMessage()</c>.
+    ///   This method starts the firmware update process in background. This method
+    ///   returns immediately. You can monitor the progress of the firmware update with the <c>get_progress()</c>
+    ///   and <c>get_progressMessage()</c> methods.
     /// </para>
     /// <para>
     /// </para>
@@ -3954,10 +3955,11 @@ var
 
   procedure native_yDeviceArrivalCallback(d:YDEV_DESCR);cdecl;
     var
-      infos  :  yDeviceSt ;
+      infos  : yDeviceSt;
       event  : PyapiEvent;
       errmsg : string;
     begin
+      TYDevice.PlugDevice(d);
       getmem(event,sizeof(TyapiEvent));
       event^.eventtype    := YAPI_DEV_ARRIVAL;
       if(yapiGetDeviceInfo(d, infos, errmsg) <> YAPI_SUCCESS) then exit;
@@ -4235,9 +4237,11 @@ var
     var
       exp,negate:integer;
       res:double;
+      mantis:integer;
     begin
       negate:=0;
-      if (val=0) then
+      mantis:= val and 2047;
+      if (mantis=0) then
         begin
           _decimalToDouble := 0.0;
           exit;
@@ -4253,7 +4257,7 @@ var
           val := val;
         end;
       exp := val shr 11;
-      res := (val and 2047) * _decExp[exp];
+      res := (mantis) * _decExp[exp];
       if(negate<>0) then
         _decimalToDouble := -res
       else
@@ -4906,7 +4910,8 @@ var
           exit;
         end;
       setlength( reply,replysize);
-      move(preply^,reply[0],replysize);
+      if (preply <> NIL) then
+        move(preply^,reply[0],replysize);
       res := _yapiHTTPRequestSyncDone(addr(iohdl),perror);
       errmsg := string(perror);
       yapiHTTPRequestSync := res;
@@ -6488,7 +6493,6 @@ var
       inherited Destroy();
     end;
 
-
   class function TYDevice.getDevice(devdescr:YDEV_DESCR ):TYDevice;
     var
       idx : integer;
@@ -6504,6 +6508,19 @@ var
       dev := TYDevice.create(devdescr);
       YDevice_devCache.add(dev);
       result:= dev;
+    end;
+
+  class procedure TYDevice.PlugDevice(devdescr:YDEV_DESCR );
+    var
+      idx : integer;
+    begin
+      for idx:=0 to YDevice_devCache.count-1 do
+        if  TYDevice(YDevice_devCache.items[idx])._devdescr = devdescr  then
+          begin
+            TYDevice(YDevice_devCache.items[idx])._subpathinit := false;
+            TYDevice(YDevice_devCache.items[idx])._cacheStamp := 0;
+            exit;
+          end;
     end;
 
   function  TYDevice.HTTPRequestPrepare(request:TByteArray; var fullrequest:TByteArray; var errmsg:string):YRETCODE;
@@ -7482,12 +7499,12 @@ var
 
   ////
   /// <summary>
-  ///   Test if the byn file is valid for this module.
+  ///   Tests whether the byn file is valid for this module.
   /// <para>
-  ///   This method is useful to test if the module need to be updated.
-  ///   It's possible to pass an directory instead of a file. In this case this method return the path of
-  ///   the most recent
-  ///   appropriate byn file. If the parameter onlynew is true the function will discard firmware that are
+  ///   This method is useful to test if the module needs to be updated.
+  ///   It is possible to pass a directory as argument instead of a file. In this case, this method returns
+  ///   the path of the most recent
+  ///   appropriate byn file. If the parameter onlynew is true, the function discards firmware that are
   ///   older or equal to
   ///   the installed firmware.
   /// </para>
@@ -7495,15 +7512,15 @@ var
   /// </para>
   /// </summary>
   /// <param name="path">
-  ///   the path of a byn file or a directory that contain byn files
+  ///   the path of a byn file or a directory that contains byn files
   /// </param>
   /// <param name="onlynew">
-  ///   return only files that are strictly newer
+  ///   returns only files that are strictly newer
   /// </param>
   /// <para>
   /// </para>
   /// <returns>
-  ///   : the path of the byn file to use or a empty string if no byn files match the requirement
+  ///   : the path of the byn file to use or a empty string if no byn files matches the requirement
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns a string that start with "error:".
@@ -7513,6 +7530,7 @@ var
     var
       serial : string;
       release : LongInt;
+      tmp_res : string;
     begin
       if onlynew then
         begin
@@ -7524,17 +7542,22 @@ var
         end;
       //may throw an exception
       serial := self.get_serialNumber;
-      result := TYFirmwareUpdate.CheckFirmware(serial, path, release);
+      tmp_res := TYFirmwareUpdate.CheckFirmware(serial, path, release);
+      if (pos('error:', tmp_res) - 1) = 0 then
+        begin
+          self._throw(YAPI_INVALID_ARGUMENT, tmp_res)
+        end;
+      result := tmp_res;
       exit;
     end;
 
 
   ////
   /// <summary>
-  ///   Prepare a firmware upgrade of the module.
+  ///   Prepares a firmware update of the module.
   /// <para>
-  ///   This method return a object <c>YFirmwareUpdate</c> which
-  ///   will handle the firmware upgrade process.
+  ///   This method returns a <c>YFirmwareUpdate</c> object which
+  ///   handles the firmware update process.
   /// </para>
   /// <para>
   /// </para>
@@ -7543,7 +7566,7 @@ var
   ///   the path of the byn file to use.
   /// </param>
   /// <returns>
-  ///   : A object <c>YFirmwareUpdate</c>.
+  ///   : A <c>YFirmwareUpdate</c> object.
   /// </returns>
   ///-
   function TYModule.updateFirmware(path: string):TYFirmwareUpdate;
@@ -7560,16 +7583,16 @@ var
 
   ////
   /// <summary>
-  ///   Returns all the setting of the module.
+  ///   Returns all the settings of the module.
   /// <para>
-  ///   Useful to backup all the logical name and calibrations parameters
+  ///   Useful to backup all the logical names and calibrations parameters
   ///   of a connected module.
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a binary buffer with all settings.
+  ///   a binary buffer with all the settings.
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns  <c>YAPI_INVALID_STRING</c>.
@@ -7961,16 +7984,16 @@ var
 
   ////
   /// <summary>
-  ///   Restore all the setting of the module.
+  ///   Restores all the settings of the module.
   /// <para>
-  ///   Useful to restore all the logical name and calibrations parameters
+  ///   Useful to restore all the logical names and calibrations parameters
   ///   of a module from a backup.
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <param name="settings">
-  ///   a binary buffer with all settings.
+  ///   a binary buffer with all the settings.
   /// </param>
   /// <returns>
   ///   <c>YAPI_SUCCESS</c> when the call succeeds.
@@ -10067,11 +10090,11 @@ var
 
   ////
   /// <summary>
-  ///   Retrun a list of all modules in "update" mode.
+  ///   Retruns a list of all the modules in "update" mode.
   /// <para>
   ///   Only USB connected
-  ///   devices are listed. If the module is connected to a YoctoHub, you have to
-  ///   connect to the YoctoHub web interface.
+  ///   devices are listed. For modules connected to a YoctoHub, you must
+  ///   connect yourself to the YoctoHub web interface.
   /// </para>
   /// </summary>
   /// <returns>
@@ -10208,16 +10231,16 @@ var
   ///   Returns the progress of the firmware update, on a scale from 0 to 100.
   /// <para>
   ///   When the object is
-  ///   instantiated the progress is zero. The value is updated During the firmware update process, until
-  ///   the value of 100 is reached. The value of 100 mean that the firmware update is terminated with
-  ///   success. If an error occur during the firmware update a negative value is returned, and the
+  ///   instantiated, the progress is zero. The value is updated during the firmware update process until
+  ///   the value of 100 is reached. The 100 value means that the firmware update was completed
+  ///   successfully. If an error occurs during the firmware update, a negative value is returned, and the
   ///   error message can be retrieved with <c>get_progressMessage</c>.
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   an integer in the range 0 to 100 (percentage of completion) or
+  ///   an integer in the range 0 to 100 (percentage of completion)
   ///   or a negative error code in case of failure.
   /// </returns>
   ///-
@@ -10233,14 +10256,14 @@ var
   /// <summary>
   ///   Returns the last progress message of the firmware update process.
   /// <para>
-  ///   If an error occur during the
-  ///   firmware update process the error message is returned
+  ///   If an error occurs during the
+  ///   firmware update process, the error message is returned
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   an string  with the last progress message, or the error message.
+  ///   a string  with the latest progress message, or the error message.
   /// </returns>
   ///-
   function TYFirmwareUpdate.get_progressMessage():string;
@@ -10252,11 +10275,11 @@ var
 
   ////
   /// <summary>
-  ///   Start the firmware update process.
+  ///   Starts the firmware update process.
   /// <para>
-  ///   This method start the firmware update process in background. This method
-  ///   return immediately. The progress of the firmware update can be monitored with methods <c>get_progress()</c>
-  ///   and <c>get_progressMessage()</c>.
+  ///   This method starts the firmware update process in background. This method
+  ///   returns immediately. You can monitor the progress of the firmware update with the <c>get_progress()</c>
+  ///   and <c>get_progressMessage()</c> methods.
   /// </para>
   /// <para>
   /// </para>

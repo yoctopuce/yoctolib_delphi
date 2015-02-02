@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 18262 2014-11-05 14:22:14Z seb $
+ * $Id: yocto_serialport.pas 19192 2015-01-30 16:30:16Z mvuilleu $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -49,12 +49,21 @@ uses
 
 const Y_SERIALMODE_INVALID            = YAPI_INVALID_STRING;
 const Y_PROTOCOL_INVALID              = YAPI_INVALID_STRING;
+const Y_VOLTAGELEVEL_OFF = 0;
+const Y_VOLTAGELEVEL_TTL3V = 1;
+const Y_VOLTAGELEVEL_TTL3VR = 2;
+const Y_VOLTAGELEVEL_TTL5V = 3;
+const Y_VOLTAGELEVEL_TTL5VR = 4;
+const Y_VOLTAGELEVEL_RS232 = 5;
+const Y_VOLTAGELEVEL_RS485 = 6;
+const Y_VOLTAGELEVEL_INVALID = -1;
 const Y_RXCOUNT_INVALID               = YAPI_INVALID_UINT;
 const Y_TXCOUNT_INVALID               = YAPI_INVALID_UINT;
 const Y_ERRCOUNT_INVALID              = YAPI_INVALID_UINT;
 const Y_RXMSGCOUNT_INVALID            = YAPI_INVALID_UINT;
 const Y_TXMSGCOUNT_INVALID            = YAPI_INVALID_UINT;
 const Y_LASTMSG_INVALID               = YAPI_INVALID_STRING;
+const Y_CURRENTJOB_INVALID            = YAPI_INVALID_STRING;
 const Y_STARTUPJOB_INVALID            = YAPI_INVALID_STRING;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
@@ -88,12 +97,14 @@ type
     _advertisedValue          : string;
     _serialMode               : string;
     _protocol                 : string;
+    _voltageLevel             : Integer;
     _rxCount                  : LongInt;
     _txCount                  : LongInt;
     _errCount                 : LongInt;
     _rxMsgCount               : LongInt;
     _txMsgCount               : LongInt;
     _lastMsg                  : string;
+    _currentJob               : string;
     _startupJob               : string;
     _command                  : string;
     _valueCallbackSerialPort  : TYSerialPortValueCallback;
@@ -213,6 +224,54 @@ type
 
     ////
     /// <summary>
+    ///   Returns the voltage level used on the serial line.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a value among <c>Y_VOLTAGELEVEL_OFF</c>, <c>Y_VOLTAGELEVEL_TTL3V</c>, <c>Y_VOLTAGELEVEL_TTL3VR</c>,
+    ///   <c>Y_VOLTAGELEVEL_TTL5V</c>, <c>Y_VOLTAGELEVEL_TTL5VR</c>, <c>Y_VOLTAGELEVEL_RS232</c> and
+    ///   <c>Y_VOLTAGELEVEL_RS485</c> corresponding to the voltage level used on the serial line
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_VOLTAGELEVEL_INVALID</c>.
+    /// </para>
+    ///-
+    function get_voltageLevel():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the voltage type used on the serial line.
+    /// <para>
+    ///   Valid
+    ///   values  will depend on the Yoctopuce device model featuring
+    ///   the serial port feature.  Check your device documentation
+    ///   to find out which values are valid for that specific model.
+    ///   Trying to set an invalid value will have no effect.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a value among <c>Y_VOLTAGELEVEL_OFF</c>, <c>Y_VOLTAGELEVEL_TTL3V</c>, <c>Y_VOLTAGELEVEL_TTL3VR</c>,
+    ///   <c>Y_VOLTAGELEVEL_TTL5V</c>, <c>Y_VOLTAGELEVEL_TTL5VR</c>, <c>Y_VOLTAGELEVEL_RS232</c> and
+    ///   <c>Y_VOLTAGELEVEL_RS485</c> corresponding to the voltage type used on the serial line
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_voltageLevel(newval:Integer):integer;
+
+    ////
+    /// <summary>
     ///   Returns the total number of bytes received since last reset.
     /// <para>
     /// </para>
@@ -312,6 +371,47 @@ type
     /// </para>
     ///-
     function get_lastMsg():string;
+
+    ////
+    /// <summary>
+    ///   Returns the name of the job file currently in use.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the name of the job file currently in use
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_CURRENTJOB_INVALID</c>.
+    /// </para>
+    ///-
+    function get_currentJob():string;
+
+    ////
+    /// <summary>
+    ///   Changes the job to use when the device is powered on.
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a string corresponding to the job to use when the device is powered on
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_currentJob(newval:string):integer;
 
     ////
     /// <summary>
@@ -467,7 +567,7 @@ type
 
     ////
     /// <summary>
-    ///   Read the level of the CTS line.
+    ///   Reads the level of the CTS line.
     /// <para>
     ///   The CTS line is usually driven by
     ///   the RTS signal of the connected serial device.
@@ -1143,12 +1243,14 @@ implementation
       //--- (YSerialPort accessors initialization)
       _serialMode := Y_SERIALMODE_INVALID;
       _protocol := Y_PROTOCOL_INVALID;
+      _voltageLevel := Y_VOLTAGELEVEL_INVALID;
       _rxCount := Y_RXCOUNT_INVALID;
       _txCount := Y_TXCOUNT_INVALID;
       _errCount := Y_ERRCOUNT_INVALID;
       _rxMsgCount := Y_RXMSGCOUNT_INVALID;
       _txMsgCount := Y_TXMSGCOUNT_INVALID;
       _lastMsg := Y_LASTMSG_INVALID;
+      _currentJob := Y_CURRENTJOB_INVALID;
       _startupJob := Y_STARTUPJOB_INVALID;
       _command := Y_COMMAND_INVALID;
       _valueCallbackSerialPort := nil;
@@ -1173,6 +1275,12 @@ implementation
       if (member^.name = 'protocol') then
         begin
           _protocol := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'voltageLevel') then
+        begin
+          _voltageLevel := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -1209,6 +1317,12 @@ implementation
       if (member^.name = 'lastMsg') then
         begin
           _lastMsg := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'currentJob') then
+        begin
+          _currentJob := string(member^.svalue);
          result := 1;
          exit;
          end;
@@ -1368,6 +1482,73 @@ implementation
     begin
       rest_val := newval;
       result := _setAttr('protocol',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the voltage level used on the serial line.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
+  ///   Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232 and Y_VOLTAGELEVEL_RS485
+  ///   corresponding to the voltage level used on the serial line
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
+  /// </para>
+  ///-
+  function TYSerialPort.get_voltageLevel():Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_VOLTAGELEVEL_INVALID;
+              exit
+            end;
+        end;
+      result := self._voltageLevel;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the voltage type used on the serial line.
+  /// <para>
+  ///   Valid
+  ///   values  will depend on the Yoctopuce device model featuring
+  ///   the serial port feature.  Check your device documentation
+  ///   to find out which values are valid for that specific model.
+  ///   Trying to set an invalid value will have no effect.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
+  ///   Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232 and Y_VOLTAGELEVEL_RS485
+  ///   corresponding to the voltage type used on the serial line
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYSerialPort.set_voltageLevel(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('voltageLevel',rest_val);
     end;
 
   ////
@@ -1549,6 +1730,66 @@ implementation
       exit;
     end;
 
+
+  ////
+  /// <summary>
+  ///   Returns the name of the job file currently in use.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a string corresponding to the name of the job file currently in use
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_CURRENTJOB_INVALID.
+  /// </para>
+  ///-
+  function TYSerialPort.get_currentJob():string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_CURRENTJOB_INVALID;
+              exit
+            end;
+        end;
+      result := self._currentJob;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the job to use when the device is powered on.
+  /// <para>
+  ///   Remember to call the saveToFlash() method of the module if the
+  ///   modification must be kept.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a string corresponding to the job to use when the device is powered on
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYSerialPort.set_currentJob(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('currentJob',rest_val);
+    end;
 
   ////
   /// <summary>
@@ -1810,7 +2051,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Read the level of the CTS line.
+  ///   Reads the level of the CTS line.
   /// <para>
   ///   The CTS line is usually driven by
   ///   the RTS signal of the connected serial device.
@@ -3374,7 +3615,7 @@ implementation
   ///-
   function TYSerialPort.selectJob(jobfile: string):LongInt;
     begin
-      result := self.sendCommand('J'+jobfile);
+      result := self.set_currentJob(jobfile);
       exit;
     end;
 

@@ -37,13 +37,13 @@ uses
           Repeat
             newstatus := update.get_progress();
             if newstatus <> status then
-              writeln(inttostr(status) + '% ' + update.get_progressMessage());
+              writeln(inttostr(newstatus) + '% ' + update.get_progressMessage());
             ySleep(500, errmsg);
             status := newstatus;
           Until (status >= 100) or (status < 0);
           if (status < 0) then
             begin
-              writeln('    ' + inttostr(status) + ' Firmware Update failed: ' + update.get_progressMessage());
+              writeln('Firmware Update failed: ' + update.get_progressMessage());
               halt;
             end
           else
