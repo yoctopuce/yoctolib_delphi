@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_temperature.pas 19619 2015-03-05 18:11:23Z mvuilleu $
+ * $Id: yocto_temperature.pas 19900 2015-03-31 13:11:09Z seb $
  *
  * Implements yFindTemperature(), the high-level API for Temperature functions
  *
@@ -917,6 +917,8 @@ implementation
       tempValues_pos : LongInt;
       resValues_pos : LongInt;
     begin
+      SetLength(paramlist, 0);
+      
       SetLength(tempValues, 0);
       SetLength(resValues, 0);
       

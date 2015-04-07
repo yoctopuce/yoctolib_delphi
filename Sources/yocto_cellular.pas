@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 19727 2015-03-13 16:22:10Z mvuilleu $
+ * $Id: yocto_cellular.pas 19900 2015-03-31 13:11:09Z seb $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -1464,6 +1464,8 @@ implementation
       res_pos : LongInt;
       i_i : LongInt;
     begin
+      SetLength(recs, 0);
+      // may throw an exception
       moni := self._AT('+CCED=0;#MONI=7;#MONI');
       mccs := Copy(moni, 7 + 1, 3);
       if (Copy(mccs, 0 + 1, 1) = '0') then

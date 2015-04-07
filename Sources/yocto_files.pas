@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 19338 2015-02-17 17:44:58Z seb $
+ * $Id: yocto_files.pas 19900 2015-03-31 13:11:09Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -709,6 +709,7 @@ implementation
       res_pos : LongInt;
       i_i : LongInt;
     begin
+      SetLength(filelist, 0);
       json := self.sendCommand('dir&f='+pattern);
       filelist := self._json_get_array(json);
       res_pos := 0;

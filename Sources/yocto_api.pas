@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 19854 2015-03-26 10:17:46Z seb $
+ * $Id: yocto_api.pas 19900 2015-03-31 13:11:09Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -116,7 +116,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '19854';
+  YOCTO_API_BUILD_NO        = '19938';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -7637,7 +7637,7 @@ var
       jsoncomplexstr : string;
     begin
       errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
-       smallbuff_buffer[0]:=#0;smallbuff:=@smallbuff_buffer;
+      smallbuff_buffer[0]:=#0;smallbuff:=@smallbuff_buffer;
               fullsize := 0;
               jsoncomplexstr := _ByteToString(jsoncomplex);
               res := _yapiGetAllJsonKeys(pansichar(ansistring(jsoncomplexstr)), smallbuff, 1024, fullsize, errmsg);
@@ -7780,6 +7780,8 @@ var
       words_pos : LongInt;
       i_i : LongInt;
     begin
+      SetLength(words_str, 0);
+      // Initial guess for parameter encoding
       paramVer := self.calibVersion(param);
       funVer := self.calibVersion(currentFuncValue);
       funScale := self.calibScale(unit_name, sensorType);
@@ -8061,6 +8063,13 @@ var
       i_i : LongInt;
       restoreLast_pos : LongInt;
     begin
+      SetLength(restoreLast, 0);
+      SetLength(old_dslist, 0);
+      SetLength(old_jpath, 0);
+      SetLength(old_val_arr, 0);
+      SetLength(new_dslist, 0);
+      SetLength(new_jpath, 0);
+      SetLength(new_val_arr, 0);
       oldval := '';
       newval := '';
       old_json_flat := self._flattenJsonStruct(settings);
@@ -10136,12 +10145,12 @@ var
       bootladers : TStringArray;
     begin
       errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
-       smallbuff_buffer[0]:=#0;smallbuff:=@smallbuff_buffer;
-              fullsize := 0;
-              yapi_res := _yapiGetBootloaders(smallbuff, 1024, fullsize, errmsg);
+      smallbuff_buffer[0]:=#0;smallbuff:=@smallbuff_buffer;
+      SetLength(bootladers, 0);
+      fullsize := 0;
+      yapi_res := _yapiGetBootloaders(smallbuff, 1024, fullsize, errmsg);
       if yapi_res < 0 then
         begin
-          bootloader_list := 'error:' + string(errmsg);
           result := bootladers;
           exit
         end;
@@ -10216,10 +10225,10 @@ var
       release : string;
     begin
       errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
-       smallbuff_buffer[0]:=#0;smallbuff:=@smallbuff_buffer;
-              fullsize := 0;
-              release := IntToStr(minrelease);
-              res := _yapiCheckFirmware(pansichar(ansistring(serial)), pansichar(ansistring(release)), pansichar(ansistring(path)), smallbuff, 1024, fullsize, errmsg);
+      smallbuff_buffer[0]:=#0;smallbuff:=@smallbuff_buffer;
+      fullsize := 0;
+      release := IntToStr(minrelease);
+      res := _yapiCheckFirmware(pansichar(ansistring(serial)), pansichar(ansistring(release)), pansichar(ansistring(path)), smallbuff, 1024, fullsize, errmsg);
       if res < 0 then
         begin
           firmware_path := 'error:' + string(errmsg);

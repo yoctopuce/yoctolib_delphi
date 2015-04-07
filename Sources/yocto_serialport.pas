@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 19817 2015-03-23 16:49:57Z seb $
+ * $Id: yocto_serialport.pas 19900 2015-03-31 13:11:09Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -2736,6 +2736,8 @@ implementation
       msglen : LongInt;
       res : string;
     begin
+      SetLength(msgarr, 0);
+      // may throw an exception
       url := 'rxmsg.json?pos='+inttostr(self._rxptr)+'&len=1&maxw=1';
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
@@ -2801,6 +2803,9 @@ implementation
       idx : LongInt;
       res_pos : LongInt;
     begin
+      SetLength(msgarr, 0);
+      SetLength(res, 0);
+      // may throw an exception
       url := 'rxmsg.json?pos='+inttostr( self._rxptr)+'&maxw='+inttostr( maxWait)+'&pat='+pattern;
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
@@ -2927,6 +2932,8 @@ implementation
       msglen : LongInt;
       res : string;
     begin
+      SetLength(msgarr, 0);
+      // may throw an exception
       url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=!'+query;
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
@@ -2988,6 +2995,7 @@ implementation
       hexb : LongInt;
       res_pos : LongInt;
     begin
+      SetLength(reps, 0);
       funCode := pduBytes[0];
       nib := ((funCode) shr 4);
       pat := ''+inttohex( slaveNo,02)+'['+inttohex( nib,1)+''+inttohex( (nib+8),1)+']'+inttohex(((funCode) and 15),1)+'.*';
