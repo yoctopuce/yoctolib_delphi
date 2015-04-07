@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 19192 2015-01-30 16:30:16Z mvuilleu $
+ * $Id: yocto_serialport.pas 19817 2015-03-23 16:49:57Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -204,6 +204,8 @@ type
     ///   "Modbus-RTU" for MODBUS messages in RTU mode,
     ///   "Char" for a continuous ASCII stream or
     ///   "Byte" for a continuous binary stream.
+    ///   The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
+    ///   is always at lest the specified number of milliseconds between each bytes sent.
     /// </para>
     /// <para>
     /// </para>
@@ -586,6 +588,24 @@ type
 
     ////
     /// <summary>
+    ///   Sends a single byte to the serial port.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="code">
+    ///   the byte to send
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function writeByte(code: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Sends an ASCII string to the serial port, as is.
     /// <para>
     /// </para>
@@ -696,6 +716,23 @@ type
 
     ////
     /// <summary>
+    ///   Reads one byte from the receive buffer, starting at current stream position.
+    /// <para>
+    ///   If data at current stream position is not available anymore in the receive buffer,
+    ///   or if there is no data available yet, the function returns YAPI_NO_MORE_DATA.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the next byte
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function readByte():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Reads data from the receive buffer as a string, starting at current stream position.
     /// <para>
     ///   If data at current stream position is not available anymore in the receive buffer, the
@@ -713,6 +750,46 @@ type
     /// </para>
     ///-
     function readStr(nChars: LongInt):string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Reads data from the receive buffer as a binary buffer, starting at current stream position.
+    /// <para>
+    ///   If data at current stream position is not available anymore in the receive buffer, the
+    ///   function performs a short read.
+    /// </para>
+    /// </summary>
+    /// <param name="nChars">
+    ///   the maximum number of bytes to read
+    /// </param>
+    /// <returns>
+    ///   a binary object with receive buffer contents
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function readBin(nChars: LongInt):TByteArray; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Reads data from the receive buffer as a list of bytes, starting at current stream position.
+    /// <para>
+    ///   If data at current stream position is not available anymore in the receive buffer, the
+    ///   function performs a short read.
+    /// </para>
+    /// </summary>
+    /// <param name="nChars">
+    ///   the maximum number of bytes to read
+    /// </param>
+    /// <returns>
+    ///   a sequence of bytes with receive buffer contents
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function readArray(nChars: LongInt):TLongIntArray; overload; virtual;
 
     ////
     /// <summary>
@@ -819,6 +896,19 @@ type
     /// </returns>
     ///-
     function read_tell():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the number of bytes available to read in the input buffer starting from the
+    ///   current absolute stream position pointer of the YSerialPort object.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the number of bytes available to read
+    /// </returns>
+    ///-
+    function read_avail():LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -1460,6 +1550,8 @@ implementation
   ///   "Modbus-RTU" for MODBUS messages in RTU mode,
   ///   "Char" for a continuous ASCII stream or
   ///   "Byte" for a continuous binary stream.
+  ///   The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
+  ///   is always at lest the specified number of milliseconds between each bytes sent.
   /// </para>
   /// <para>
   /// </para>
@@ -2086,6 +2178,29 @@ implementation
 
   ////
   /// <summary>
+  ///   Sends a single byte to the serial port.
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="code">
+  ///   the byte to send
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYSerialPort.writeByte(code: LongInt):LongInt;
+    begin
+      result := self.sendCommand('$'+inttohex(code,02));
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
   ///   Sends an ASCII string to the serial port, as is.
   /// <para>
   /// </para>
@@ -2326,6 +2441,51 @@ implementation
 
   ////
   /// <summary>
+  ///   Reads one byte from the receive buffer, starting at current stream position.
+  /// <para>
+  ///   If data at current stream position is not available anymore in the receive buffer,
+  ///   or if there is no data available yet, the function returns YAPI_NO_MORE_DATA.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   the next byte
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYSerialPort.readByte():LongInt;
+    var
+      buff : TByteArray;
+      bufflen : LongInt;
+      mult : LongInt;
+      endpos : LongInt;
+      res : LongInt;
+    begin
+      buff := self._download('rxdata.bin?pos='+inttostr(self._rxptr)+'&len=1');
+      bufflen := length(buff) - 1;
+      endpos := 0;
+      mult := 1;
+      while (bufflen > 0) and(buff[bufflen] <> 64) do
+        begin
+          endpos := endpos + mult * (buff[bufflen] - 48);
+          mult := mult * 10;
+          bufflen := bufflen - 1
+        end;
+      self._rxptr := endpos;
+      if bufflen = 0 then
+        begin
+          result := YAPI_NO_MORE_DATA;
+          exit
+        end;
+      res := buff[0];
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
   ///   Reads data from the receive buffer as a string, starting at current stream position.
   /// <para>
   ///   If data at current stream position is not available anymore in the receive buffer, the
@@ -2348,8 +2508,6 @@ implementation
       bufflen : LongInt;
       mult : LongInt;
       endpos : LongInt;
-      startpos : LongInt;
-      missing : LongInt;
       res : string;
     begin
       if nChars > 65535 then
@@ -2367,26 +2525,124 @@ implementation
           mult := mult * 10;
           bufflen := bufflen - 1
         end;
-      startpos := ((endpos - bufflen) and ($07fffffff));
-      if startpos <> self._rxptr then
+      self._rxptr := endpos;
+      res := Copy(_ByteToString(buff),  0 + 1, bufflen);
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Reads data from the receive buffer as a binary buffer, starting at current stream position.
+  /// <para>
+  ///   If data at current stream position is not available anymore in the receive buffer, the
+  ///   function performs a short read.
+  /// </para>
+  /// </summary>
+  /// <param name="nChars">
+  ///   the maximum number of bytes to read
+  /// </param>
+  /// <returns>
+  ///   a binary object with receive buffer contents
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYSerialPort.readBin(nChars: LongInt):TByteArray;
+    var
+      buff : TByteArray;
+      bufflen : LongInt;
+      mult : LongInt;
+      endpos : LongInt;
+      idx : LongInt;
+      res : TByteArray;
+    begin
+      if nChars > 65535 then
         begin
-          missing := ((startpos - self._rxptr) and ($07fffffff));
-          if missing > nChars then
-            begin
-              nChars := 0;
-              self._rxptr := startpos
-            end
-          else
-            begin
-              nChars := nChars - missing
-            end;
+          nChars := 65535
         end;
-      if nChars > bufflen then
+      // may throw an exception
+      buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
+      bufflen := length(buff) - 1;
+      endpos := 0;
+      mult := 1;
+      while (bufflen > 0) and(buff[bufflen] <> 64) do
         begin
-          nChars := bufflen
+          endpos := endpos + mult * (buff[bufflen] - 48);
+          mult := mult * 10;
+          bufflen := bufflen - 1
         end;
-      self._rxptr := endpos - (bufflen - nChars);
-      res := Copy(_ByteToString(buff),  0 + 1, nChars);
+      self._rxptr := endpos;
+      setlength(res,bufflen);
+      idx := 0;
+      while idx < bufflen do
+        begin
+          res[idx] := buff[idx];
+          idx := idx + 1
+        end;
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Reads data from the receive buffer as a list of bytes, starting at current stream position.
+  /// <para>
+  ///   If data at current stream position is not available anymore in the receive buffer, the
+  ///   function performs a short read.
+  /// </para>
+  /// </summary>
+  /// <param name="nChars">
+  ///   the maximum number of bytes to read
+  /// </param>
+  /// <returns>
+  ///   a sequence of bytes with receive buffer contents
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYSerialPort.readArray(nChars: LongInt):TLongIntArray;
+    var
+      buff : TByteArray;
+      bufflen : LongInt;
+      mult : LongInt;
+      endpos : LongInt;
+      idx : LongInt;
+      b : LongInt;
+      res : TLongIntArray;
+      res_pos : LongInt;
+    begin
+      if nChars > 65535 then
+        begin
+          nChars := 65535
+        end;
+      // may throw an exception
+      buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
+      bufflen := length(buff) - 1;
+      endpos := 0;
+      mult := 1;
+      while (bufflen > 0) and(buff[bufflen] <> 64) do
+        begin
+          endpos := endpos + mult * (buff[bufflen] - 48);
+          mult := mult * 10;
+          bufflen := bufflen - 1
+        end;
+      self._rxptr := endpos;
+      res_pos := 0;
+      SetLength(res, bufflen);;
+      idx := 0;
+      while idx < bufflen do
+        begin
+          b := buff[idx];
+          res[res_pos] := b;
+          inc(res_pos);
+          idx := idx + 1
+        end;
+      SetLength(res, res_pos);;
       result := res;
       exit;
     end;
@@ -2416,8 +2672,6 @@ implementation
       bufflen : LongInt;
       mult : LongInt;
       endpos : LongInt;
-      startpos : LongInt;
-      missing : LongInt;
       ofs : LongInt;
       res : string;
     begin
@@ -2427,7 +2681,7 @@ implementation
         end;
       // may throw an exception
       buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nBytes));
-      bufflen := length(buff)-1;
+      bufflen := length(buff) - 1;
       endpos := 0;
       mult := 1;
       while (bufflen > 0) and(buff[bufflen] <> 64) do
@@ -2436,33 +2690,15 @@ implementation
           mult := mult * 10;
           bufflen := bufflen - 1
         end;
-      startpos := ((endpos - bufflen) and ($07fffffff));
-      if startpos <> self._rxptr then
-        begin
-          missing := ((startpos - self._rxptr) and ($07fffffff));
-          if missing > nBytes then
-            begin
-              nBytes := 0;
-              self._rxptr := startpos
-            end
-          else
-            begin
-              nBytes := nBytes - missing
-            end;
-        end;
-      if nBytes > bufflen then
-        begin
-          nBytes := bufflen
-        end;
-      self._rxptr := endpos - (bufflen - nBytes);
+      self._rxptr := endpos;
       res := '';
       ofs := 0;
-      while ofs+3 < nBytes do
+      while ofs + 3 < bufflen do
         begin
-          res := ''+ res+''+inttohex( buff[ofs],02)+''+inttohex( buff[ofs+1],02)+''+inttohex( buff[ofs+2],02)+''+inttohex(buff[ofs+3],02);
+          res := ''+ res+''+inttohex( buff[ofs],02)+''+inttohex( buff[ofs + 1],02)+''+inttohex( buff[ofs + 2],02)+''+inttohex(buff[ofs + 3],02);
           ofs := ofs + 4
         end;
-      while ofs < nBytes do
+      while ofs < bufflen do
         begin
           res := ''+ res+''+inttohex(buff[ofs],02);
           ofs := ofs + 1
@@ -2629,6 +2865,35 @@ implementation
   function TYSerialPort.read_tell():LongInt;
     begin
       result := self._rxptr;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the number of bytes available to read in the input buffer starting from the
+  ///   current absolute stream position pointer of the YSerialPort object.
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   the number of bytes available to read
+  /// </returns>
+  ///-
+  function TYSerialPort.read_avail():LongInt;
+    var
+      buff : TByteArray;
+      bufflen : LongInt;
+      res : LongInt;
+    begin
+      buff := self._download('rxcnt.bin?pos='+inttostr(self._rxptr));
+      bufflen := length(buff) - 1;
+      while (bufflen > 0) and(buff[bufflen] <> 64) do
+        begin
+          bufflen := bufflen - 1
+        end;
+      res := StrToInt(Copy(_ByteToString(buff),  0 + 1, bufflen));
+      result := res;
       exit;
     end;
 

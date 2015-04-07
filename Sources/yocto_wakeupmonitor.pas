@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.pas 18320 2014-11-10 10:47:48Z seb $
+ * $Id: yocto_wakeupmonitor.pas 19338 2015-02-17 17:44:58Z seb $
  *
  * Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *

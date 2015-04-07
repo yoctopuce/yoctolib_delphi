@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_relay.pas 18320 2014-11-10 10:47:48Z seb $
+ * $Id: yocto_relay.pas 19338 2015-02-17 17:44:58Z seb $
  *
  * Implements yFindRelay(), the high-level API for Relay functions
  *

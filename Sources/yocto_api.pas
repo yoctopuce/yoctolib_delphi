@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 19035 2015-01-20 08:12:25Z seb $
+ * $Id: yocto_api.pas 19854 2015-03-26 10:17:46Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -116,7 +116,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '19218';
+  YOCTO_API_BUILD_NO        = '19854';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -689,14 +689,14 @@ type
 
     ////
     /// <summary>
-    ///   Returns the current value of the function (no more than 6 characters).
+    ///   Returns a short string representing the current state of the function.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a string corresponding to the current value of the function (no more than 6 characters)
+    ///   a string corresponding to a short string representing the current state of the function
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_ADVERTISEDVALUE_INVALID</c>.
@@ -1439,14 +1439,15 @@ type
 
     function calibOffset(unit_name: string):LongInt; overload; virtual;
 
-    function calibConvert(param: string; calibrationParam: string; unit_name: string; sensorType: string):string; overload; virtual;
+    function calibConvert(param: string; currentFuncValue: string; unit_name: string; sensorType: string):string; overload; virtual;
 
     ////
     /// <summary>
     ///   Restores all the settings of the module.
     /// <para>
     ///   Useful to restore all the logical names and calibrations parameters
-    ///   of a module from a backup.
+    ///   of a module from a backup.Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modifications must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -1549,8 +1550,15 @@ end;
   /// <summary>
   ///   TYSensor Class: Sensor function interface
   /// <para>
-  ///   The Yoctopuce application programming interface allows you to read an instant
-  ///   measure of the sensor, as well as the minimal and maximal values observed.
+  ///   The YSensor class is the parent class for all Yoctopuce sensors. It can be
+  ///   used to read the current value and unit of any sensor, read the min/max
+  ///   value, configure autonomous recording frequency and access recorded data.
+  ///   It also provide a function to register a callback invoked each time the
+  ///   observed value changes, or at a predefined interval. Using this class rather
+  ///   than a specific subclass makes it possible to create generic applications
+  ///   that work with any Yoctopuce sensor, even those that do not yet exist.
+  ///   Note: The YAnButton class is the only analog input which does not inherit
+  ///   from YSensor.
   /// </para>
   /// </summary>
   ///-
@@ -4012,10 +4020,6 @@ var
   procedure yRegisterDeviceRemovalCallback(removalCallback: yDeviceUpdateFunc);
     begin
       yRemoval :=removalCallback;
-      if assigned(yRemoval) then
-        _yapiRegisterDeviceRemovalCallback(native_yDeviceRemovalCallback)
-      else
-        _yapiRegisterDeviceRemovalCallback(nil);
     end;
 
 
@@ -5345,21 +5349,35 @@ const
 
     function  TYFunction._escapeAttr(changeval:string):string;
       var
-        i    : integer;
+        i,c_ord,c_ord_next: integer;
         uchangeval : string;
         c          : char;
       begin
-        for i := 1 to length(changeval)  do
+        i := 1;
+        while i <= length(changeval) do
           begin
             c := changeval[i];
             if (c<' ') or ((c>#122) and (c<>'~')) or (c='"') or (c='%') or (c='&') or
             (c='+') or (c='<') or (c='=') or (c='>') or (c='\') or (c='^') or (c = '`')
             then
               begin
-                uchangeval := uchangeval + '%' + IntToHex(ord(c), 2);
+                c_ord := ord(c);
+                if (((c_ord = $c2) or (c_ord = $c3)) and (i + 1 <= length(changeval)))then
+                  begin
+                    c_ord_next := ord(changeval[i + 1]) and $c0;
+                    if (c_ord_next = $80) then
+                      begin
+                        { UTF8-encoded ISO-8859-1 character: translate to plain ISO-8859-1}
+                        c_ord := (c_ord and 1) * $40;
+                        i := i + 1;
+                        c_ord := c_ord + ord(changeval[i]);
+                      end;
+                  end;
+                uchangeval := uchangeval + '%' + IntToHex(c_ord, 2);
               end
             else
               uchangeval := uchangeval + c;
+            i := i + 1;
           end;
         _escapeAttr := uchangeval
       end;
@@ -5765,14 +5783,14 @@ const
 
   ////
   /// <summary>
-  ///   Returns the current value of the function (no more than 6 characters).
+  ///   Returns a short string representing the current state of the function.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a string corresponding to the current value of the function (no more than 6 characters)
+  ///   a string corresponding to a short string representing the current state of the function
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
@@ -7740,7 +7758,7 @@ var
     end;
 
 
-  function TYModule.calibConvert(param: string; calibrationParam: string; unit_name: string; sensorType: string):string;
+  function TYModule.calibConvert(param: string; currentFuncValue: string; unit_name: string; sensorType: string):string;
     var
       paramVer : LongInt;
       funVer : LongInt;
@@ -7763,7 +7781,7 @@ var
       i_i : LongInt;
     begin
       paramVer := self.calibVersion(param);
-      funVer := self.calibVersion(calibrationParam);
+      funVer := self.calibVersion(currentFuncValue);
       funScale := self.calibScale(unit_name, sensorType);
       funOffset := self.calibOffset(unit_name);
       paramScale := funScale;
@@ -7772,7 +7790,7 @@ var
         begin
           if funVer = 2 then
             begin
-              words := _decodeWords(calibrationParam);
+              words := _decodeWords(currentFuncValue);
               if (words[0] = 1366) and(words[1] = 12500) then
                 begin
                   funScale := 1;
@@ -7788,7 +7806,7 @@ var
             begin
               if funVer = 1 then
                 begin
-                  if (calibrationParam = '') or(StrToInt(calibrationParam) > 10) then
+                  if (currentFuncValue = '') or(StrToInt(currentFuncValue) > 10) then
                     begin
                       funScale := 0
                     end;
@@ -7987,7 +8005,8 @@ var
   ///   Restores all the settings of the module.
   /// <para>
   ///   Useful to restore all the logical names and calibrations parameters
-  ///   of a module from a backup.
+  ///   of a module from a backup.Remember to call the <c>saveToFlash()</c> method of the module if the
+  ///   modifications must be kept.
   /// </para>
   /// <para>
   /// </para>
@@ -8033,6 +8052,7 @@ var
       newval : string;
       oldval : string;
       old_calib : string;
+      each_str : string;
       do_update : boolean;
       found : boolean;
       jpath_pos : LongInt;
@@ -8053,18 +8073,18 @@ var
       SetLength(old_val_arr, arr_pos+length(old_dslist));;
       for i_i:=0 to length(old_dslist)-1 do
         begin
-          old_dslist[i_i] := self._json_get_string(_StrToByte(old_dslist[i_i]));
-          leng := Length(old_dslist[i_i]);
-          eqpos := (pos('=', old_dslist[i_i]) - 1);
+          each_str := self._json_get_string(_StrToByte(old_dslist[i_i]));
+          leng := Length(each_str);
+          eqpos := (pos('=', each_str) - 1);
           if (eqpos < 0) or(leng = 0) then
             begin
               self._throw(YAPI_INVALID_ARGUMENT, 'Invalid settings');
               result := YAPI_INVALID_ARGUMENT;
               exit
             end;
-          jpath := Copy(old_dslist[i_i],  0 + 1, eqpos);
+          jpath := Copy(each_str,  0 + 1, eqpos);
           eqpos := eqpos + 1;
-          value := Copy(old_dslist[i_i],  eqpos + 1, leng - eqpos);
+          value := Copy(each_str,  eqpos + 1, leng - eqpos);
           old_jpath[jpath_pos] := jpath;
           inc(jpath_pos);
           old_jpath_len[len_pos] := Length(jpath);
@@ -8087,18 +8107,18 @@ var
       SetLength(new_val_arr, arr_pos+length(new_dslist));;
       for i_i:=0 to length(new_dslist)-1 do
         begin
-          new_dslist[i_i] := self._json_get_string(_StrToByte(new_dslist[i_i]));
-          leng := Length(new_dslist[i_i]);
-          eqpos := (pos('=', new_dslist[i_i]) - 1);
+          each_str := self._json_get_string(_StrToByte(new_dslist[i_i]));
+          leng := Length(each_str);
+          eqpos := (pos('=', each_str) - 1);
           if (eqpos < 0) or(leng = 0) then
             begin
               self._throw(YAPI_INVALID_ARGUMENT, 'Invalid settings');
               result := YAPI_INVALID_ARGUMENT;
               exit
             end;
-          jpath := Copy(new_dslist[i_i],  0 + 1, eqpos);
+          jpath := Copy(each_str,  0 + 1, eqpos);
           eqpos := eqpos + 1;
-          value := Copy(new_dslist[i_i],  eqpos + 1, leng - eqpos);
+          value := Copy(each_str,  eqpos + 1, leng - eqpos);
           new_jpath[jpath_pos] := jpath;
           inc(jpath_pos);
           new_jpath_len[len_pos] := Length(jpath);
@@ -8320,7 +8340,7 @@ var
                       if (tmp = new_jpath[j]) then
                         begin
                           found := true;
-                          unit_name := new_jpath[j]
+                          unit_name := new_val_arr[j]
                         end;
                       j := j + 1
                     end;
@@ -8332,11 +8352,11 @@ var
                       if (tmp = new_jpath[j]) then
                         begin
                           found := true;
-                          sensorType := new_jpath[j]
+                          sensorType := new_val_arr[j]
                         end;
                       j := j + 1
                     end;
-                  newval := self.calibConvert(new_val_arr[i],  old_calib,  unit_name, sensorType);
+                  newval := self.calibConvert(old_calib,  new_val_arr[i],  unit_name, sensorType);
                   url := 'api/' + fun + '.json?' + attr + '=' + self._escapeAttr(newval);
                   self._download(url)
                 end
@@ -10072,6 +10092,7 @@ var
               if self._progress < 100 then
                 begin
                   m.set_allSettings(self._settings);
+                  m.saveToFlash();
                   setlength(self._settings,0);
                   self._progress := 100;
                   self._progress_msg := 'success'
@@ -10145,7 +10166,10 @@ var
             end;
           freemem(bigbuff)
         end;
-              bootladers := _stringSplit(bootloader_list, ',');
+      if not((bootloader_list = '')) then
+        begin
+          bootladers := _stringSplit(bootloader_list, ',')
+        end;
       result := bootladers;
       exit;
     end;

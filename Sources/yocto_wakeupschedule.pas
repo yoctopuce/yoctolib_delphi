@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wakeupschedule.pas 17350 2014-08-29 08:54:26Z seb $
+ * $Id: yocto_wakeupschedule.pas 19338 2015-02-17 17:44:58Z seb $
  *
  * Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *

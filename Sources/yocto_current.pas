@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_current.pas 17350 2014-08-29 08:54:26Z seb $
+ * $Id: yocto_current.pas 19581 2015-03-04 10:57:44Z seb $
  *
  * Implements yFindCurrent(), the high-level API for Current functions
  *
@@ -61,8 +61,9 @@ type
   /// <summary>
   ///   TYCurrent Class: Current function interface
   /// <para>
-  ///   The Yoctopuce application programming interface allows you to read an instant
-  ///   measure of the sensor, as well as the minimal and maximal values observed.
+  ///   The Yoctopuce class YCurrent allows you to read and configure Yoctopuce current
+  ///   sensors. It inherits from YSensor class the core functions to read measurements,
+  ///   register callback functions, access to the autonomous datalogger.
   /// </para>
   /// </summary>
   ///-

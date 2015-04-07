@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_gyro.pas 17226 2014-08-20 09:22:44Z seb $
+ * $Id: yocto_gyro.pas 19704 2015-03-13 06:10:37Z mvuilleu $
  *
  * Implements yFindGyro(), the high-level API for Gyro functions
  *
@@ -292,8 +292,15 @@ type
   /// <summary>
   ///   TYGyro Class: Gyroscope function interface
   /// <para>
-  ///   The Yoctopuce application programming interface allows you to read an instant
-  ///   measure of the sensor, as well as the minimal and maximal values observed.
+  ///   The YSensor class is the parent class for all Yoctopuce sensors. It can be
+  ///   used to read the current value and unit of any sensor, read the min/max
+  ///   value, configure autonomous recording frequency and access recorded data.
+  ///   It also provide a function to register a callback invoked each time the
+  ///   observed value changes, or at a predefined interval. Using this class rather
+  ///   than a specific subclass makes it possible to create generic applications
+  ///   that work with any Yoctopuce sensor, even those that do not yet exist.
+  ///   Note: The YAnButton class is the only analog input which does not inherit
+  ///   from YSensor.
   /// </para>
   /// </summary>
   ///-
@@ -1564,6 +1571,7 @@ constructor TYQt.Create(func:string);
   ///-
   function TYGyro.get_quaternionX():double;
     begin
+      self._loadQuaternion;
       result := self._x;
       exit;
     end;
@@ -1589,6 +1597,7 @@ constructor TYQt.Create(func:string);
   ///-
   function TYGyro.get_quaternionY():double;
     begin
+      self._loadQuaternion;
       result := self._y;
       exit;
     end;
@@ -1614,6 +1623,7 @@ constructor TYQt.Create(func:string);
   ///-
   function TYGyro.get_quaternionZ():double;
     begin
+      self._loadQuaternion;
       result := self._z;
       exit;
     end;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_genericsensor.pas 18320 2014-11-10 10:47:48Z seb $
+ * $Id: yocto_genericsensor.pas 19581 2015-03-04 10:57:44Z seb $
  *
  * Implements yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -71,8 +71,11 @@ type
   /// <summary>
   ///   TYGenericSensor Class: GenericSensor function interface
   /// <para>
-  ///   The Yoctopuce application programming interface allows you to read an instant
-  ///   measure of the sensor, as well as the minimal and maximal values observed.
+  ///   The YGenericSensor class allows you to read and configure Yoctopuce signal
+  ///   transducers. It inherits from YSensor class the core functions to read measurements,
+  ///   register callback functions, access to the autonomous datalogger.
+  ///   This class adds the ability to configure the automatic conversion between the
+  ///   measured signal and the corresponding engineering unit.
   /// </para>
   /// </summary>
   ///-

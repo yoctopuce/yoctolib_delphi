@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yjson.pas 14628 2014-01-19 09:54:40Z martinm $
+ * $Id: yjson.pas 19338 2015-02-17 17:44:58Z seb $
  *
  * Simple JSON parser to parse the output of Yoctopuce devices
  *
@@ -436,6 +436,12 @@ function TJsonParser.ParseEx(initialstate:Tjstate;defaultname:string; var st:str
                  end;
     JWAITFORSTRINGVALUE :
                  begin
+                  if (st[i]='\') and (i<length(st)) then
+                   begin
+                     svalue := svalue +st[i+1];
+                     inc(i);
+                   end
+                  else
                   if (st[i]='"') then
                    begin
                     state :=  JSCOMPLETED;

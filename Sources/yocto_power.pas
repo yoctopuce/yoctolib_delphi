@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_power.pas 17350 2014-08-29 08:54:26Z seb $
+ * $Id: yocto_power.pas 19581 2015-03-04 10:57:44Z seb $
  *
  * Implements yFindPower(), the high-level API for Power functions
  *
@@ -64,8 +64,10 @@ type
   /// <summary>
   ///   TYPower Class: Power function interface
   /// <para>
-  ///   The Yoctopuce application programming interface allows you to read an instant
-  ///   measure of the sensor, as well as the minimal and maximal values observed.
+  ///   The Yoctopuce class YPower allows you to read and configure Yoctopuce power
+  ///   sensors. It inherits from YSensor class the core functions to read measurements,
+  ///   register callback functions, access to the autonomous datalogger.
+  ///   This class adds the ability to access the energy counter and the power factor.
   /// </para>
   /// </summary>
   ///-

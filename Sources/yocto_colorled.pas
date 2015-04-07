@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_colorled.pas 18524 2014-11-25 17:09:56Z seb $
+ * $Id: yocto_colorled.pas 19338 2015-02-17 17:44:58Z seb $
  *
  * Implements yFindColorLed(), the high-level API for ColorLed functions
  *

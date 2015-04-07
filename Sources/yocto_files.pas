@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 17673 2014-09-16 16:15:44Z seb $
+ * $Id: yocto_files.pas 19338 2015-02-17 17:44:58Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *

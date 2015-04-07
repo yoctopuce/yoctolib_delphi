@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_temperature.pas 18320 2014-11-10 10:47:48Z seb $
+ * $Id: yocto_temperature.pas 19619 2015-03-05 18:11:23Z mvuilleu $
  *
  * Implements yFindTemperature(), the high-level API for Temperature functions
  *
@@ -77,8 +77,11 @@ type
   /// <summary>
   ///   TYTemperature Class: Temperature function interface
   /// <para>
-  ///   The Yoctopuce application programming interface allows you to read an instant
-  ///   measure of the sensor, as well as the minimal and maximal values observed.
+  ///   The Yoctopuce class YTemperature allows you to read and configure Yoctopuce temperature
+  ///   sensors. It inherits from YSensor class the core functions to read measurements,
+  ///   register callback functions, access to the autonomous datalogger.
+  ///   This class adds the ability to configure some specific parameters for some
+  ///   sensors (connection type, temperature mapping table).
   /// </para>
   /// </summary>
   ///-
@@ -113,6 +116,37 @@ type
 
     ////
     /// <summary>
+    ///   Changes the measuring unit for the measured temperature.
+    /// <para>
+    ///   That unit is a string.
+    ///   If that strings end with the letter F all temperatures values will returned in
+    ///   Fahrenheit degrees. If that String ends with the letter K all values will be
+    ///   returned in Kelvin degrees. If that String ends with the letter C all values will be
+    ///   returned in Celsius degrees.  If the string ends with any other character the
+    ///   change will be ignored. Remember to call the
+    ///   <c>saveToFlash()</c> method of the module if the modification must be kept.
+    ///   WARNING: if a specific calibration is defined for the temperature function, a
+    ///   unit system change will probably break it.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a string corresponding to the measuring unit for the measured temperature
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_unit(newval:string):integer;
+
+    ////
+    /// <summary>
     ///   Returns the temperature sensor type.
     /// <para>
     /// </para>
@@ -134,11 +168,11 @@ type
 
     ////
     /// <summary>
-    ///   Modify the temperature sensor type.
+    ///   Modifies the temperature sensor type.
     /// <para>
-    ///   This function is used to
+    ///   This function is used
     ///   to define the type of thermocouple (K,E...) used with the device.
-    ///   This will have no effect if module is using a digital sensor.
+    ///   It has no effect if module is using a digital sensor or a thermistor.
     ///   Remember to call the <c>saveToFlash()</c> method of the module if the
     ///   modification must be kept.
     /// </para>
@@ -257,10 +291,10 @@ type
 
     ////
     /// <summary>
-    ///   Record a thermistor response table, for interpolating the temperature from
+    ///   Records a thermistor response table, in order to interpolate the temperature from
     ///   the measured resistance.
     /// <para>
-    ///   This function can only be used with temperature
+    ///   This function can only be used with a temperature
     ///   sensor based on thermistors.
     /// </para>
     /// <para>
@@ -287,22 +321,22 @@ type
 
     ////
     /// <summary>
-    ///   Retrieves the thermistor response table previously configured using function
-    ///   <c>set_thermistorResponseTable</c>.
+    ///   Retrieves the thermistor response table previously configured using the
+    ///   <c>set_thermistorResponseTable</c> function.
     /// <para>
-    ///   This function can only be used with
+    ///   This function can only be used with a
     ///   temperature sensor based on thermistors.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="tempValues">
-    ///   array of floating point numbers, that will be filled by the function
+    ///   array of floating point numbers, that is filled by the function
     ///   with all temperatures (in degrees Celcius) for which the resistance
     ///   of the thermistor is specified.
     /// </param>
     /// <param name="resValues">
-    ///   array of floating point numbers, that will be filled by the function
+    ///   array of floating point numbers, that is filled by the function
     ///   with the value (in Ohms) for each of the temperature included in the
     ///   first argument, index by index.
     /// </param>
@@ -445,6 +479,43 @@ implementation
 
   ////
   /// <summary>
+  ///   Changes the measuring unit for the measured temperature.
+  /// <para>
+  ///   That unit is a string.
+  ///   If that strings end with the letter F all temperatures values will returned in
+  ///   Fahrenheit degrees. If that String ends with the letter K all values will be
+  ///   returned in Kelvin degrees. If that String ends with the letter C all values will be
+  ///   returned in Celsius degrees.  If the string ends with any other character the
+  ///   change will be ignored. Remember to call the
+  ///   saveToFlash() method of the module if the modification must be kept.
+  ///   WARNING: if a specific calibration is defined for the temperature function, a
+  ///   unit system change will probably break it.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a string corresponding to the measuring unit for the measured temperature
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYTemperature.set_unit(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('unit',rest_val);
+    end;
+
+  ////
+  /// <summary>
   ///   Returns the temperature sensor type.
   /// <para>
   /// </para>
@@ -479,11 +550,11 @@ implementation
 
   ////
   /// <summary>
-  ///   Modify the temperature sensor type.
+  ///   Modifies the temperature sensor type.
   /// <para>
-  ///   This function is used to
+  ///   This function is used
   ///   to define the type of thermocouple (K,E...) used with the device.
-  ///   This will have no effect if module is using a digital sensor.
+  ///   It has no effect if module is using a digital sensor or a thermistor.
   ///   Remember to call the saveToFlash() method of the module if the
   ///   modification must be kept.
   /// </para>
@@ -704,10 +775,10 @@ implementation
 
   ////
   /// <summary>
-  ///   Record a thermistor response table, for interpolating the temperature from
+  ///   Records a thermistor response table, in order to interpolate the temperature from
   ///   the measured resistance.
   /// <para>
-  ///   This function can only be used with temperature
+  ///   This function can only be used with a temperature
   ///   sensor based on thermistors.
   /// </para>
   /// <para>
@@ -803,22 +874,22 @@ implementation
 
   ////
   /// <summary>
-  ///   Retrieves the thermistor response table previously configured using function
-  ///   <c>set_thermistorResponseTable</c>.
+  ///   Retrieves the thermistor response table previously configured using the
+  ///   <c>set_thermistorResponseTable</c> function.
   /// <para>
-  ///   This function can only be used with
+  ///   This function can only be used with a
   ///   temperature sensor based on thermistors.
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <param name="tempValues">
-  ///   array of floating point numbers, that will be filled by the function
+  ///   array of floating point numbers, that is filled by the function
   ///   with all temperatures (in degrees Celcius) for which the resistance
   ///   of the thermistor is specified.
   /// </param>
   /// <param name="resValues">
-  ///   array of floating point numbers, that will be filled by the function
+  ///   array of floating point numbers, that is filled by the function
   ///   with the value (in Ohms) for each of the temperature included in the
   ///   first argument, index by index.
   /// </param>

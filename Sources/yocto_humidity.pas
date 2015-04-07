@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_humidity.pas 17350 2014-08-29 08:54:26Z seb $
+ * $Id: yocto_humidity.pas 19581 2015-03-04 10:57:44Z seb $
  *
  * Implements yFindHumidity(), the high-level API for Humidity functions
  *
@@ -61,8 +61,9 @@ type
   /// <summary>
   ///   TYHumidity Class: Humidity function interface
   /// <para>
-  ///   The Yoctopuce application programming interface allows you to read an instant
-  ///   measure of the sensor, as well as the minimal and maximal values observed.
+  ///   The Yoctopuce class YHumidity allows you to read and configure Yoctopuce humidity
+  ///   sensors. It inherits from YSensor class the core functions to read measurements,
+  ///   register callback functions, access to the autonomous datalogger.
   /// </para>
   /// </summary>
   ///-

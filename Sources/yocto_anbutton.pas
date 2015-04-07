@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_anbutton.pas 18361 2014-11-13 08:06:41Z mvuilleu $
+ * $Id: yocto_anbutton.pas 19338 2015-02-17 17:44:58Z seb $
  *
  * Implements yFindAnButton(), the high-level API for AnButton functions
  *

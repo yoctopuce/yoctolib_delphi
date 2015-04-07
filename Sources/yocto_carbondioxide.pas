@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_carbondioxide.pas 17350 2014-08-29 08:54:26Z seb $
+ * $Id: yocto_carbondioxide.pas 19619 2015-03-05 18:11:23Z mvuilleu $
  *
  * Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
@@ -47,6 +47,8 @@ uses
 
 //--- (YCarbonDioxide definitions)
 
+const Y_ABCPERIOD_INVALID             = YAPI_INVALID_INT;
+const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 
 //--- (end of YCarbonDioxide definitions)
@@ -61,8 +63,10 @@ type
   /// <summary>
   ///   TYCarbonDioxide Class: CarbonDioxide function interface
   /// <para>
-  ///   The Yoctopuce application programming interface allows you to read an instant
-  ///   measure of the sensor, as well as the minimal and maximal values observed.
+  ///   The Yoctopuce class YCarbonDioxide allows you to read and configure Yoctopuce CO2
+  ///   sensors. It inherits from YSensor class the core functions to read measurements,
+  ///   register callback functions, access to the autonomous datalogger.
+  ///   This class adds the ability to perform manual calibration if reuired.
   /// </para>
   /// </summary>
   ///-
@@ -82,6 +86,8 @@ type
     _reportFrequency          : string;
     _calibrationParam         : string;
     _resolution               : double;
+    _abcPeriod                : LongInt;
+    _command                  : string;
     _valueCallbackCarbonDioxide : TYCarbonDioxideValueCallback;
     _timedReportCallbackCarbonDioxide : TYCarbonDioxideTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
@@ -92,6 +98,56 @@ type
   public
     //--- (YCarbonDioxide accessors declaration)
     constructor Create(func:string);
+
+    ////
+    /// <summary>
+    ///   Returns the Automatic Baseline Calibration period, in hours.
+    /// <para>
+    ///   A negative value
+    ///   means that automatic baseline calibration is disabled.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the Automatic Baseline Calibration period, in hours
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_ABCPERIOD_INVALID</c>.
+    /// </para>
+    ///-
+    function get_abcPeriod():LongInt;
+
+    ////
+    /// <summary>
+    ///   Modifies Automatic Baseline Calibration period, in hours.
+    /// <para>
+    ///   If you need
+    ///   to disable automatic baseline calibration (for instance when using the
+    ///   sensor in an environment that is constantly above 400ppm CO2), set the
+    ///   period to -1. Remember to call the <c>saveToFlash()</c> method of the
+    ///   module if the modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_abcPeriod(newval:LongInt):integer;
+
+    function get_command():string;
+
+    function set_command(newval:string):integer;
 
     ////
     /// <summary>
@@ -180,6 +236,56 @@ type
     function registerTimedReportCallback(callback: TYCarbonDioxideTimedReportCallback):LongInt; overload;
 
     function _invokeTimedReportCallback(value: TYMeasure):LongInt; override;
+
+    ////
+    /// <summary>
+    ///   Triggers a baseline calibration at standard CO2 ambiant level (400ppm).
+    /// <para>
+    ///   It is normally not necessary to manually calibrate the sensor, because
+    ///   the built-in automatic baseline calibration procedure will automatically
+    ///   fix any long-term drift based on the lowest level of CO2 observed over the
+    ///   automatic calibration period. However, if you disable automatic baseline
+    ///   calibration, you may want to manually trigger a calibration from time to
+    ///   time. Before starting a baseline calibration, make sure to put the sensor
+    ///   in a standard environment (e.g. outside in fresh air) at around 400ppm.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function triggetBaselineCalibration():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Triggers a zero calibration of the sensor on carbon dioxide-free air.
+    /// <para>
+    ///   It is normally not necessary to manually calibrate the sensor, because
+    ///   the built-in automatic baseline calibration procedure will automatically
+    ///   fix any long-term drift based on the lowest level of CO2 observed over the
+    ///   automatic calibration period. However, if you disable automatic baseline
+    ///   calibration, you may want to manually trigger a calibration from time to
+    ///   time. Before starting a zero calibration, you should circulate carbon
+    ///   dioxide-free air within the sensor for a minute or two, using a small pipe
+    ///   connected to the sensor. Please contact support@yoctopuce.com for more details
+    ///   on the zero calibration procedure.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function triggetZeroCalibration():LongInt; overload; virtual;
 
 
     ////
@@ -278,6 +384,8 @@ implementation
       inherited Create(func);
       _className := 'CarbonDioxide';
       //--- (YCarbonDioxide accessors initialization)
+      _abcPeriod := Y_ABCPERIOD_INVALID;
+      _command := Y_COMMAND_INVALID;
       _valueCallbackCarbonDioxide := nil;
       _timedReportCallbackCarbonDioxide := nil;
       //--- (end of YCarbonDioxide accessors initialization)
@@ -291,9 +399,109 @@ implementation
       sub : PJSONRECORD;
       i,l        : integer;
     begin
+      if (member^.name = 'abcPeriod') then
+        begin
+          _abcPeriod := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'command') then
+        begin
+          _command := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
+
+  ////
+  /// <summary>
+  ///   Returns the Automatic Baseline Calibration period, in hours.
+  /// <para>
+  ///   A negative value
+  ///   means that automatic baseline calibration is disabled.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the Automatic Baseline Calibration period, in hours
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_ABCPERIOD_INVALID.
+  /// </para>
+  ///-
+  function TYCarbonDioxide.get_abcPeriod():LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_ABCPERIOD_INVALID;
+              exit
+            end;
+        end;
+      result := self._abcPeriod;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Modifies Automatic Baseline Calibration period, in hours.
+  /// <para>
+  ///   If you need
+  ///   to disable automatic baseline calibration (for instance when using the
+  ///   sensor in an environment that is constantly above 400ppm CO2), set the
+  ///   period to -1. Remember to call the saveToFlash() method of the
+  ///   module if the modification must be kept.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   an integer
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYCarbonDioxide.set_abcPeriod(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('abcPeriod',rest_val);
+    end;
+
+  function TYCarbonDioxide.get_command():string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_COMMAND_INVALID;
+              exit
+            end;
+        end;
+      result := self._command;
+      exit;
+    end;
+
+
+  function TYCarbonDioxide.set_command(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('command',rest_val);
+    end;
 
   ////
   /// <summary>
@@ -457,6 +665,66 @@ implementation
           inherited _invokeTimedReportCallback(value)
         end;
       result := 0;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Triggers a baseline calibration at standard CO2 ambiant level (400ppm).
+  /// <para>
+  ///   It is normally not necessary to manually calibrate the sensor, because
+  ///   the built-in automatic baseline calibration procedure will automatically
+  ///   fix any long-term drift based on the lowest level of CO2 observed over the
+  ///   automatic calibration period. However, if you disable automatic baseline
+  ///   calibration, you may want to manually trigger a calibration from time to
+  ///   time. Before starting a baseline calibration, make sure to put the sensor
+  ///   in a standard environment (e.g. outside in fresh air) at around 400ppm.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYCarbonDioxide.triggetBaselineCalibration():LongInt;
+    begin
+      result := self.set_command('BC');
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Triggers a zero calibration of the sensor on carbon dioxide-free air.
+  /// <para>
+  ///   It is normally not necessary to manually calibrate the sensor, because
+  ///   the built-in automatic baseline calibration procedure will automatically
+  ///   fix any long-term drift based on the lowest level of CO2 observed over the
+  ///   automatic calibration period. However, if you disable automatic baseline
+  ///   calibration, you may want to manually trigger a calibration from time to
+  ///   time. Before starting a zero calibration, you should circulate carbon
+  ///   dioxide-free air within the sensor for a minute or two, using a small pipe
+  ///   connected to the sensor. Please contact support@yoctopuce.com for more details
+  ///   on the zero calibration procedure.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYCarbonDioxide.triggetZeroCalibration():LongInt;
+    begin
+      result := self.set_command('ZC');
       exit;
     end;
 

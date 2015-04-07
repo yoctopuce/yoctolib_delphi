@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_altitude.pas 17350 2014-08-29 08:54:26Z seb $
+ * $Id: yocto_altitude.pas 19746 2015-03-17 10:34:00Z seb $
  *
  * Implements yFindAltitude(), the high-level API for Altitude functions
  *
@@ -48,6 +48,7 @@ uses
 //--- (YAltitude definitions)
 
 const Y_QNH_INVALID                   = YAPI_INVALID_DOUBLE;
+const Y_TECHNOLOGY_INVALID            = YAPI_INVALID_STRING;
 
 
 //--- (end of YAltitude definitions)
@@ -62,8 +63,11 @@ type
   /// <summary>
   ///   TYAltitude Class: Altitude function interface
   /// <para>
-  ///   The Yoctopuce application programming interface allows you to read an instant
-  ///   measure of the sensor, as well as the minimal and maximal values observed.
+  ///   The Yoctopuce class YAltitude allows you to read and configure Yoctopuce altitude
+  ///   sensors. It inherits from the YSensor class the core functions to read measurements,
+  ///   register callback functions, access to the autonomous datalogger.
+  ///   This class adds the ability to configure the barometric pressure adjusted to
+  ///   sea level (QNH) for barometric sensors.
   /// </para>
   /// </summary>
   ///-
@@ -84,6 +88,7 @@ type
     _calibrationParam         : string;
     _resolution               : double;
     _qnh                      : double;
+    _technology               : string;
     _valueCallbackAltitude    : TYAltitudeValueCallback;
     _timedReportCallbackAltitude : TYAltitudeTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
@@ -163,6 +168,26 @@ type
     /// </para>
     ///-
     function get_qnh():double;
+
+    ////
+    /// <summary>
+    ///   Returns the technology used by the sesnor to compute
+    ///   altitude.
+    /// <para>
+    ///   Possibles values are  "barometric" and "gps"
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the technology used by the sesnor to compute
+    ///   altitude
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_TECHNOLOGY_INVALID</c>.
+    /// </para>
+    ///-
+    function get_technology():string;
 
     ////
     /// <summary>
@@ -350,6 +375,7 @@ implementation
       _className := 'Altitude';
       //--- (YAltitude accessors initialization)
       _qnh := Y_QNH_INVALID;
+      _technology := Y_TECHNOLOGY_INVALID;
       _valueCallbackAltitude := nil;
       _timedReportCallbackAltitude := nil;
       //--- (end of YAltitude accessors initialization)
@@ -366,6 +392,12 @@ implementation
       if (member^.name = 'qnh') then
         begin
           _qnh := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'technology') then
+        begin
+          _technology := string(member^.svalue);
          result := 1;
          exit;
          end;
@@ -463,6 +495,39 @@ implementation
             end;
         end;
       result := self._qnh;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the technology used by the sesnor to compute
+  ///   altitude.
+  /// <para>
+  ///   Possibles values are  "barometric" and "gps"
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a string corresponding to the technology used by the sesnor to compute
+  ///   altitude
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_TECHNOLOGY_INVALID.
+  /// </para>
+  ///-
+  function TYAltitude.get_technology():string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_TECHNOLOGY_INVALID;
+              exit
+            end;
+        end;
+      result := self._technology;
       exit;
     end;
 
