@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 19900 2015-03-31 13:11:09Z seb $
+ * $Id: yocto_cellular.pas 20167 2015-04-27 14:24:03Z seb $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -49,6 +49,7 @@ uses
 
 const Y_LINKQUALITY_INVALID           = YAPI_INVALID_UINT;
 const Y_CELLOPERATOR_INVALID          = YAPI_INVALID_STRING;
+const Y_IMSI_INVALID                  = YAPI_INVALID_STRING;
 const Y_MESSAGE_INVALID               = YAPI_INVALID_STRING;
 const Y_PIN_INVALID                   = YAPI_INVALID_STRING;
 const Y_LOCKEDOPERATOR_INVALID        = YAPI_INVALID_STRING;
@@ -94,6 +95,7 @@ type
     _advertisedValue          : string;
     _linkQuality              : LongInt;
     _cellOperator             : string;
+    _imsi                     : string;
     _message                  : string;
     _pin                      : string;
     _lockedOperator           : string;
@@ -144,6 +146,27 @@ type
     /// </para>
     ///-
     function get_cellOperator():string;
+
+    ////
+    /// <summary>
+    ///   Returns an opaque string if a PIN code has been configured in the device to access
+    ///   the SIM card, or an empty string if none has been configured or if the code provided
+    ///   was rejected by the SIM card.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to an opaque string if a PIN code has been configured in the device to access
+    ///   the SIM card, or an empty string if none has been configured or if the code provided
+    ///   was rejected by the SIM card
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_IMSI_INVALID</c>.
+    /// </para>
+    ///-
+    function get_imsi():string;
 
     ////
     /// <summary>
@@ -684,6 +707,7 @@ implementation
       //--- (generated code: YCellular accessors initialization)
       _linkQuality := Y_LINKQUALITY_INVALID;
       _cellOperator := Y_CELLOPERATOR_INVALID;
+      _imsi := Y_IMSI_INVALID;
       _message := Y_MESSAGE_INVALID;
       _pin := Y_PIN_INVALID;
       _lockedOperator := Y_LOCKEDOPERATOR_INVALID;
@@ -712,6 +736,12 @@ implementation
       if (member^.name = 'cellOperator') then
         begin
           _cellOperator := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'imsi') then
+        begin
+          _imsi := string(member^.svalue);
          result := 1;
          exit;
          end;
@@ -817,6 +847,40 @@ implementation
             end;
         end;
       result := self._cellOperator;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns an opaque string if a PIN code has been configured in the device to access
+  ///   the SIM card, or an empty string if none has been configured or if the code provided
+  ///   was rejected by the SIM card.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a string corresponding to an opaque string if a PIN code has been configured in the device to access
+  ///   the SIM card, or an empty string if none has been configured or if the code provided
+  ///   was rejected by the SIM card
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_IMSI_INVALID.
+  /// </para>
+  ///-
+  function TYCellular.get_imsi():string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_IMSI_INVALID;
+              exit
+            end;
+        end;
+      result := self._imsi;
       exit;
     end;
 

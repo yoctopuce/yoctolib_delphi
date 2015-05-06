@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 19900 2015-03-31 13:11:09Z seb $
+ * $Id: yocto_api.pas 20226 2015-05-05 12:45:31Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -116,7 +116,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '19938';
+  YOCTO_API_BUILD_NO        = '20255';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -3305,6 +3305,37 @@ type
   ///-
   procedure yUnregisterHub(url:string);
 
+  ////
+  /// <summary>
+  ///   Test if the hub is reachable.
+  /// <para>
+  ///   This method do not register the hub, it only test if the
+  ///   hub is usable. The url parameter follow the same convention as the <c>RegisterHub</c>
+  ///   method. This method is useful to verify the authentication parameters for a hub. It
+  ///   is possible to force this method to return after mstimeout milliseconds.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="url">
+  ///   a string containing either <c>"usb"</c>,<c>"callback"</c> or the
+  ///   root URL of the hub to monitor
+  /// </param>
+  /// <param name="mstimeout">
+  ///   the number of millisecond available to test the connection.
+  /// </param>
+  /// <param name="errmsg">
+  ///   a string passed by reference to receive any error message.
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure returns a negative error code.
+  /// </para>
+  ///-
+  function yTestHub(url:string; mstimeout:integer; var errmsg:string):integer;
+
 
   ////
   /// <summary>
@@ -3888,6 +3919,7 @@ const
   function _yapiCheckFirmware(serial:pansichar; rev:pansichar; path:pansichar; buffer:pansichar; buffersize:integer; var fullsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiCheckFirmware';
   function _yapiGetBootloaders(buffer:pansichar; buffersize:integer; var totalSize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetBootloaders';
   function _yapiUpdateFirmware(serial:pansichar; firmwarePath:pansichar; settings:pansichar; startUpdate:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiUpdateFirmware';
+  function _yapiTestHub(url:pansichar; mstimeout:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiTestHub';
 //--- (end of generated code: YFunction dlldef)
 
 
@@ -4585,6 +4617,16 @@ var
   procedure yUnregisterHub(url:string);
     begin
       _yapiUnregisterHub(pansichar(ansistring(url)));
+    end;
+
+  function yTestHub(url:string; mstimeout:integer; var errmsg:string):integer;
+    var
+      buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
+      perror : pansichar;
+    begin
+      buffer[0]:=#0;perror:=@buffer;
+      yTestHub := _yapiTestHub(pansichar(ansistring(url)), mstimeout, perror);
+      errmsg:=string(perror);
     end;
 
 
@@ -7654,6 +7696,7 @@ var
         end
       else
         begin
+          fullsize := fullsize * 2;
           buffsize := fullsize;
           getmem(bigbuff, buffsize);
           res := _yapiGetAllJsonKeys(pansichar(ansistring(jsoncomplexstr)), bigbuff, buffsize, fullsize, errmsg);
