@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 20226 2015-05-05 12:45:31Z seb $
+ * $Id: yocto_api.pas 20380 2015-05-19 16:28:16Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -109,14 +109,15 @@ const
   Y_FRIENDLYNAME_INVALID =  YAPI_INVALID_STRING;
 
   // fyInitAPI argument
-  Y_DETECT_NONE   = 0;
-  Y_DETECT_USB    = 1;
-  Y_DETECT_NET    = 2;
+  Y_DETECT_NONE        = 0;
+  Y_DETECT_USB         = 1;
+  Y_DETECT_NET         = 2;
+  Y_RESEND_MISSING_PKT = 4;
   Y_DETECT_ALL : integer = (Y_DETECT_USB or Y_DETECT_NET);
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '20255';
+  YOCTO_API_BUILD_NO        = '20384';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -3914,6 +3915,9 @@ const
   function  _yapiSleep(duration_ms: integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiSleep';
   procedure _yapiRegisterHubDiscoveryCallback(fct:_yapiHubDiscoveryCallback); cdecl; external dllfile name 'yapiRegisterHubDiscoveryCallback';
   function  _yapiTriggerHubDiscovery(errmsg:pansichar):integer; cdecl; external dllfile name 'yapiTriggerHubDiscovery';
+  function  _yapiGetMem(size:integer):pointer; cdecl; external dllfile name 'yapiGetMem';
+  procedure _yapiFreeMem(ptr:pointer); cdecl; external dllfile name 'yapiFreeMem';
+
   //--- (generated code: YFunction dlldef)
   function _yapiGetAllJsonKeys(jsonbuffer:pansichar; out_buffer:pansichar; out_buffersize:integer; var fullsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetAllJsonKeys';
   function _yapiCheckFirmware(serial:pansichar; rev:pansichar; path:pansichar; buffer:pansichar; buffersize:integer; var fullsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiCheckFirmware';
@@ -4000,13 +4004,13 @@ var
       errmsg : string;
     begin
       TYDevice.PlugDevice(d);
-      getmem(event,sizeof(TyapiEvent));
+      event := _yapiGetMem(sizeof(TyapiEvent));
       event^.eventtype    := YAPI_DEV_ARRIVAL;
       if(yapiGetDeviceInfo(d, infos, errmsg) <> YAPI_SUCCESS) then exit;
       event^.module := yFindModule(string(infos.serial)+'.module');
       event^.module.setImmutableAttributes(infos);
       if(assigned(yArrival)) then _PlugEvents.add(event)
-      else freemem(event);
+      else _yapiFreeMem(event);
     end;
 
 
@@ -4040,12 +4044,12 @@ var
       errmsg : string;
     begin
       if(not assigned(yRemoval)) then exit;
-      getmem(event,sizeof(TyapiEvent));
+      event := _yapiGetMem(sizeof(TyapiEvent));
       event^.eventtype    := YAPI_DEV_REMOVAL;
       if(yapiGetDeviceInfo(d, infos, errmsg) <> YAPI_SUCCESS) then exit;
       event^.module := yFindModule(string(infos.serial)+'.module');
       if(assigned(yRemoval)) then _PlugEvents.add(event)
-      else freemem(event);
+      else _yapiFreeMem(event);
     end;
 
 
@@ -4062,12 +4066,12 @@ var
       event  : PyapiEvent;
     begin
       if(not assigned(yChange)) then exit;
-      getmem(event,sizeof(TyapiEvent));
+      event := _yapiGetMem(sizeof(TyapiEvent));
       event^.eventtype    := YAPI_DEV_CHANGE;
       if(yapiGetDeviceInfo(d, infos, errmsg) <> YAPI_SUCCESS) then exit;
       event^.module := yFindModule(string(infos.serial)+'.module');
       if(assigned(yChange)) then   _PlugEvents.add(event)
-      else freemem(event);
+      else _yapiFreeMem(event);
     end;
 
 
@@ -4084,10 +4088,10 @@ var
   Procedure queuesCleanUp();
     var i:integer;
     begin
-      for i:=0 to _PlugEvents.count-1 do freemem(_PlugEvents[i]);
+      for i:=0 to _PlugEvents.count-1 do _yapiFreeMem(_PlugEvents[i]);
       _PlugEvents.free();
       _PlugEvents:=nil;
-      for i:=0 to _DataEvents.count-1 do freemem(_DataEvents[i]);
+      for i:=0 to _DataEvents.count-1 do _yapiFreeMem(_DataEvents[i]);
       _DataEvents.free();
       _DataEvents:=nil;
     end;
@@ -4098,7 +4102,7 @@ var
     var
       event  : PyapiEvent;
     begin
-      getmem(event,sizeof(TyapiEvent));
+      event := _yapiGetMem(sizeof(TyapiEvent));
       event^.fun_descr:=f;
       if (data=nil) then
         event^.eventtype :=  YAPI_FUN_UPDATE
@@ -4115,7 +4119,7 @@ var
     var
       event  : PyapiEvent;
     begin
-      getmem(event,sizeof(TyapiEvent));
+      event := _yapiGetMem(sizeof(TyapiEvent));
       event^.fun_descr:=f;
       event^.eventtype := YAPI_FUN_TIMEDREPORT;
       event^.timestamp := timestamp;
@@ -4129,7 +4133,7 @@ var
     var
       event : PyapiEvent;
     begin
-      getmem(event,sizeof(TyapiEvent));
+      event := _yapiGetMem(sizeof(TyapiEvent));
       event^.eventtype := YAPI_HUB_DISCOVERY;
       event^.serial := shortstring(serial);
       event^.url := shortstring(url);
@@ -4671,7 +4675,7 @@ var
                   _HubDiscoveryCallback(string(p^.serial), string(p^.url));
                 end;
           end;
-          freemem(p);
+          _yapiFreeMem(p);
         end;
       yUpdateDeviceList:=YAPI_SUCCESS;
     end;
@@ -4728,7 +4732,7 @@ var
                         end;
                     end;
                 end;
-              freemem(p);
+              _yapiFreeMem(p);
             end;
         end;
       yHandleEvents:=YAPI_SUCCESS;

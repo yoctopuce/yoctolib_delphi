@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwmoutput.pas 19338 2015-02-17 17:44:58Z seb $
+ * $Id: yocto_pwmoutput.pas 20287 2015-05-08 13:40:21Z seb $
  *
  * Implements yFindPwmOutput(), the high-level API for PwmOutput functions
  *
@@ -71,7 +71,7 @@ type
 
   ////
   /// <summary>
-  ///   TYPwmOutput Class: Pwm function interface
+  ///   TYPwmOutput Class: PwmOutput function interface
   /// <para>
   ///   The Yoctopuce application programming interface allows you to configure, start, and stop the PWM.
   /// </para>

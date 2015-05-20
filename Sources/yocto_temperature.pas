@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_temperature.pas 19900 2015-03-31 13:11:09Z seb $
+ * $Id: yocto_temperature.pas 20383 2015-05-19 23:44:31Z mvuilleu $
  *
  * Implements yFindTemperature(), the high-level API for Temperature functions
  *
@@ -288,6 +288,33 @@ type
     function registerTimedReportCallback(callback: TYTemperatureTimedReportCallback):LongInt; overload;
 
     function _invokeTimedReportCallback(value: TYMeasure):LongInt; override;
+
+    ////
+    /// <summary>
+    ///   Configure NTC thermistor parameters in order to properly compute the temperature from
+    ///   the measured resistance.
+    /// <para>
+    ///   For increased precision, you can enter a complete mapping
+    ///   table using set_thermistorResponseTable. This function can only be used with a
+    ///   temperature sensor based on thermistors.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="res25">
+    ///   thermistor resistance at 25 degrees Celsius
+    /// </param>
+    /// <param name="beta">
+    ///   Beta value
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_ntcParameters(res25: double; beta: double):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -769,6 +796,65 @@ implementation
           inherited _invokeTimedReportCallback(value)
         end;
       result := 0;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Configure NTC thermistor parameters in order to properly compute the temperature from
+  ///   the measured resistance.
+  /// <para>
+  ///   For increased precision, you can enter a complete mapping
+  ///   table using set_thermistorResponseTable. This function can only be used with a
+  ///   temperature sensor based on thermistors.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="res25">
+  ///   thermistor resistance at 25 degrees Celsius
+  /// </param>
+  /// <param name="beta">
+  ///   Beta value
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYTemperature.set_ntcParameters(res25: double; beta: double):LongInt;
+    var
+      t0 : double;
+      t1 : double;
+      res100 : double;
+      tempValues : TDoubleArray;
+      resValues : TDoubleArray;
+      tempValues_pos : LongInt;
+      resValues_pos : LongInt;
+    begin
+      t0 := 25.0+275.15;
+      t1 := 100.0+275.15;
+      res100 := res25 * Exp(beta*(1.0/t1 - 1.0/t0));
+      tempValues_pos := 0;
+      SetLength(tempValues, 2);;
+      resValues_pos := 0;
+      SetLength(resValues, 2);;
+      tempValues[tempValues_pos] := 25.0;
+      inc(tempValues_pos);
+      resValues[resValues_pos] := res25;
+      inc(resValues_pos);
+      tempValues[tempValues_pos] := 100.0;
+      inc(tempValues_pos);
+      resValues[resValues_pos] := res100;
+      inc(resValues_pos);
+      
+      SetLength(tempValues, tempValues_pos);;
+      SetLength(resValues, resValues_pos);;
+      
+      result := self.set_thermistorResponseTable(tempValues, resValues);
       exit;
     end;
 
