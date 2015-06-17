@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_gyro.pas 19704 2015-03-13 06:10:37Z mvuilleu $
+ * $Id: yocto_gyro.pas 20400 2015-05-21 14:58:16Z mvuilleu $
  *
  * Implements yFindGyro(), the high-level API for Gyro functions
  *
@@ -92,6 +92,7 @@ type
     _reportFrequency          : string;
     _calibrationParam         : string;
     _resolution               : double;
+    _sensorState              : LongInt;
     _valueCallbackQt          : TYQtValueCallback;
     _timedReportCallbackQt    : TYQtTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
@@ -320,6 +321,7 @@ type
     _reportFrequency          : string;
     _calibrationParam         : string;
     _resolution               : double;
+    _sensorState              : LongInt;
     _xValue                   : double;
     _yValue                   : double;
     _zValue                   : double;

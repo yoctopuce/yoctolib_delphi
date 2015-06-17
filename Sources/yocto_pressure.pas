@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pressure.pas 19581 2015-03-04 10:57:44Z seb $
+ * $Id: yocto_pressure.pas 20400 2015-05-21 14:58:16Z mvuilleu $
  *
  * Implements yFindPressure(), the high-level API for Pressure functions
  *
@@ -83,6 +83,7 @@ type
     _reportFrequency          : string;
     _calibrationParam         : string;
     _resolution               : double;
+    _sensorState              : LongInt;
     _valueCallbackPressure    : TYPressureValueCallback;
     _timedReportCallbackPressure : TYPressureTimedReportCallback;
     // Function-specific method for reading JSON output and caching result

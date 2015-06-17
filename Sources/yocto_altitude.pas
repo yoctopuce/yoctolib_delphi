@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_altitude.pas 19746 2015-03-17 10:34:00Z seb $
+ * $Id: yocto_altitude.pas 20400 2015-05-21 14:58:16Z mvuilleu $
  *
  * Implements yFindAltitude(), the high-level API for Altitude functions
  *
@@ -87,6 +87,7 @@ type
     _reportFrequency          : string;
     _calibrationParam         : string;
     _resolution               : double;
+    _sensorState              : LongInt;
     _qnh                      : double;
     _technology               : string;
     _valueCallbackAltitude    : TYAltitudeValueCallback;

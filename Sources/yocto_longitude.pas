@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_longitude.pas 19746 2015-03-17 10:34:00Z seb $
+ * $Id: yocto_longitude.pas 20400 2015-05-21 14:58:16Z mvuilleu $
  *
  * Implements yFindLongitude(), the high-level API for Longitude functions
  *
@@ -84,6 +84,7 @@ type
     _reportFrequency          : string;
     _calibrationParam         : string;
     _resolution               : double;
+    _sensorState              : LongInt;
     _valueCallbackLongitude   : TYLongitudeValueCallback;
     _timedReportCallbackLongitude : TYLongitudeTimedReportCallback;
     // Function-specific method for reading JSON output and caching result

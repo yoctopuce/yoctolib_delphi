@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_tilt.pas 19581 2015-03-04 10:57:44Z seb $
+ * $Id: yocto_tilt.pas 20400 2015-05-21 14:58:16Z mvuilleu $
  *
  * Implements yFindTilt(), the high-level API for Tilt functions
  *
@@ -93,6 +93,7 @@ type
     _reportFrequency          : string;
     _calibrationParam         : string;
     _resolution               : double;
+    _sensorState              : LongInt;
     _axis                     : Integer;
     _valueCallbackTilt        : TYTiltValueCallback;
     _timedReportCallbackTilt  : TYTiltTimedReportCallback;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_carbondioxide.pas 19619 2015-03-05 18:11:23Z mvuilleu $
+ * $Id: yocto_carbondioxide.pas 20400 2015-05-21 14:58:16Z mvuilleu $
  *
  * Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
@@ -86,6 +86,7 @@ type
     _reportFrequency          : string;
     _calibrationParam         : string;
     _resolution               : double;
+    _sensorState              : LongInt;
     _abcPeriod                : LongInt;
     _command                  : string;
     _valueCallbackCarbonDioxide : TYCarbonDioxideValueCallback;

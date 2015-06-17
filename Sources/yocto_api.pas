@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 20380 2015-05-19 16:28:16Z seb $
+ * $Id: yocto_api.pas 20488 2015-06-01 09:20:42Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -117,7 +117,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '20384';
+  YOCTO_API_BUILD_NO        = '20652';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -253,6 +253,7 @@ const Y_LOGFREQUENCY_INVALID          = YAPI_INVALID_STRING;
 const Y_REPORTFREQUENCY_INVALID       = YAPI_INVALID_STRING;
 const Y_CALIBRATIONPARAM_INVALID      = YAPI_INVALID_STRING;
 const Y_RESOLUTION_INVALID            = YAPI_INVALID_DOUBLE;
+const Y_SENSORSTATE_INVALID           = YAPI_INVALID_INT;
 
 
 //--- (end of generated code: YSensor definitions)
@@ -1579,6 +1580,7 @@ end;
     _reportFrequency          : string;
     _calibrationParam         : string;
     _resolution               : double;
+    _sensorState              : LongInt;
     _valueCallbackSensor      : TYSensorValueCallback;
     _timedReportCallbackSensor : TYSensorTimedReportCallback;
     _prevTimedReport          : double;
@@ -1873,6 +1875,25 @@ end;
 
     ////
     /// <summary>
+    ///   Returns the sensor health state code, which is zero when there is an up-to-date measure
+    ///   available or a positive code if the sensor is not able to provide a measure right now.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the sensor health state code, which is zero when there is an up-to-date measure
+    ///   available or a positive code if the sensor is not able to provide a measure right now
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_SENSORSTATE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_sensorState():LongInt;
+
+    ////
+    /// <summary>
     ///   Retrieves $AFUNCTION$ for a given identifier.
     /// <para>
     ///   The identifier can be specified using several formats:
@@ -1938,6 +1959,23 @@ end;
     function _invokeValueCallback(value: string):LongInt; override;
 
     function _parserHelper():LongInt; override;
+
+    ////
+    /// <summary>
+    ///   Checks if the sensor is currently able to provide an up-to-date measure.
+    /// <para>
+    ///   Returns false if the device is unreachable, or if the sensor does not have
+    ///   a current measure to transmit. No exception is raised if there is an error
+    ///   while trying to contact the device hosting $THEFUNCTION$.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>true</c> if the sensor can provide an up-to-date measure, and <c>false</c> otherwise
+    /// </returns>
+    ///-
+    function isSensorReady():boolean; overload; virtual;
 
     ////
     /// <summary>
@@ -3708,6 +3746,7 @@ type
   function _yapiBoolToStr(value:boolean):string;
   function _yapiFloatToStr(value:double):string;
   function _stringSplit(str :String; delimiter :Char):TStringArray;
+  function _atoi(val:string):integer;
 
 implementation
 
@@ -4455,6 +4494,36 @@ var
           idat[length(idat)-1] := sign*val;
         end;
       _decodeFloats := idat;
+    end;
+
+    function _atoi(val:string):integer;
+    var
+      p       : integer;
+      start   : integer;
+    begin
+      p := 0;
+      while ((p < length(val)) and (val[p + 1] =' ')) do
+        begin
+          p := p + 1;
+        end;
+      start := p;
+      if ((p < length(val)) and ((val[p + 1] = '-') or (val[p + 1] = '+'))) then
+        begin
+          p := p + 1;
+        end;
+      while ((p < length(val)) and (val[p + 1] >= '0') and (val[p + 1] <= '9')) do
+        begin
+          p := p + 1;
+        end;
+      if (start < p) then
+        begin
+          val := copy(val, start + 1, p-start);
+          _atoi := StrtoInt(val);
+        end
+      else
+        begin
+          _atoi := 0;
+        end;
     end;
 
   function _yapiBoolToStr(value:boolean):string;
@@ -7598,7 +7667,7 @@ var
     begin
       if onlynew then
         begin
-          release := StrToInt(self.get_firmwareRelease)
+          release := _atoi(self.get_firmwareRelease)
         end
       else
         begin
@@ -7772,7 +7841,7 @@ var
               result := 16;
               exit
             end;
-          if StrToInt(sensorType) < 8 then
+          if _atoi(sensorType) < 8 then
             begin
               result := 16;
               exit
@@ -7855,7 +7924,7 @@ var
             begin
               if funVer = 1 then
                 begin
-                  if (currentFuncValue = '') or(StrToInt(currentFuncValue) > 10) then
+                  if (currentFuncValue = '') or(_atoi(currentFuncValue) > 10) then
                     begin
                       funScale := 0
                     end;
@@ -7907,7 +7976,7 @@ var
                   SetLength(words, words_pos+length(words_str));
                   for i_i:=0 to length(words_str)-1 do
                     begin
-                      words[words_pos] := StrToInt(words_str[i_i]);
+                      words[words_pos] := _atoi(words_str[i_i]);
                       inc(words_pos)
                     end;
                   SetLength(words, words_pos);
@@ -8601,6 +8670,7 @@ var
       _reportFrequency := Y_REPORTFREQUENCY_INVALID;
       _calibrationParam := Y_CALIBRATIONPARAM_INVALID;
       _resolution := Y_RESOLUTION_INVALID;
+      _sensorState := Y_SENSORSTATE_INVALID;
       _valueCallbackSensor := nil;
       _timedReportCallbackSensor := nil;
       _prevTimedReport := 0;
@@ -8671,6 +8741,12 @@ var
       if (member^.name = 'resolution') then
         begin
           _resolution := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'sensorState') then
+        begin
+          _sensorState := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -9115,6 +9191,38 @@ var
 
   ////
   /// <summary>
+  ///   Returns the sensor health state code, which is zero when there is an up-to-date measure
+  ///   available or a positive code if the sensor is not able to provide a measure right now.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the sensor health state code, which is zero when there is an up-to-date measure
+  ///   available or a positive code if the sensor is not able to provide a measure right now
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_SENSORSTATE_INVALID.
+  /// </para>
+  ///-
+  function TYSensor.get_sensorState():LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_SENSORSTATE_INVALID;
+              exit
+            end;
+        end;
+      result := self._sensorState;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
   ///   Retrieves $AFUNCTION$ for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
@@ -9421,6 +9529,38 @@ var
           SetLength(self._calref, calref_pos);
         end;
       result := 0;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Checks if the sensor is currently able to provide an up-to-date measure.
+  /// <para>
+  ///   Returns false if the device is unreachable, or if the sensor does not have
+  ///   a current measure to transmit. No exception is raised if there is an error
+  ///   while trying to contact the device hosting $THEFUNCTION$.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   <c>true</c> if the sensor can provide an up-to-date measure, and <c>false</c> otherwise
+  /// </returns>
+  ///-
+  function TYSensor.isSensorReady():boolean;
+    begin
+      if not(self.isOnline) then
+        begin
+          result := false;
+          exit
+        end;
+      if not(self._sensorState = 0) then
+        begin
+          result := false;
+          exit
+        end;
+      result := true;
       exit;
     end;
 

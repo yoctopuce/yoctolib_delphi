@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 20167 2015-04-27 14:24:03Z seb $
+ * $Id: yocto_cellular.pas 20508 2015-06-01 16:32:48Z seb $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -1486,7 +1486,6 @@ implementation
           cmdLen := cmdLen + 2;
           chrPos := (pos('=', cmd) - 1)
         end;
-      
       // may throw an exception
       content := self._download('at.txt?cmd='+cmd);
       result := _ByteToString(content);
@@ -1540,7 +1539,7 @@ implementation
         begin
           mccs := Copy(mccs, 1 + 1, 1)
         end;
-      mcc := StrToInt(mccs);
+      mcc := _atoi(mccs);
       mncs := Copy(moni, 11 + 1, 3);
       if (Copy(mncs, 2 + 1, 1) = ',') then
         begin
@@ -1550,7 +1549,7 @@ implementation
         begin
           mncs := Copy(mncs, 1 + 1, Length(mncs)-1)
         end;
-      mnc := StrToInt(mncs);
+      mnc := _atoi(mncs);
       recs := _stringSplit(moni, '#');
       // process each line in turn
       res_pos := 0;
@@ -1569,7 +1568,7 @@ implementation
                     begin
                       dbms := Copy(dbms, 1 + 1, 3)
                     end;
-                  dbm := StrToInt(dbms);
+                  dbm := _atoi(dbms);
                   if llen > 66 then
                     begin
                       tads := Copy(recs[i_i], 54 + 1, 2);
@@ -1577,7 +1576,7 @@ implementation
                         begin
                           tads := Copy(tads, 1 + 1, 3)
                         end;
-                      tad := StrToInt(tads);
+                      tad := _atoi(tads);
                       oper := Copy(recs[i_i], 66 + 1, llen-66)
                     end
                   else

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_bluetoothlink.pas 20326 2015-05-12 15:35:18Z seb $
+ * $Id: yocto_bluetoothlink.pas 20644 2015-06-12 16:04:33Z seb $
  *
  * Implements yFindBluetoothLink(), the high-level API for BluetoothLink functions
  *
@@ -50,7 +50,20 @@ uses
 const Y_OWNADDRESS_INVALID            = YAPI_INVALID_STRING;
 const Y_PAIRINGPIN_INVALID            = YAPI_INVALID_STRING;
 const Y_REMOTEADDRESS_INVALID         = YAPI_INVALID_STRING;
-const Y_MESSAGE_INVALID               = YAPI_INVALID_STRING;
+const Y_REMOTENAME_INVALID            = YAPI_INVALID_STRING;
+const Y_MUTE_FALSE = 0;
+const Y_MUTE_TRUE = 1;
+const Y_MUTE_INVALID = -1;
+const Y_PREAMPLIFIER_INVALID          = YAPI_INVALID_UINT;
+const Y_VOLUME_INVALID                = YAPI_INVALID_UINT;
+const Y_LINKSTATE_DOWN = 0;
+const Y_LINKSTATE_FREE = 1;
+const Y_LINKSTATE_SEARCH = 2;
+const Y_LINKSTATE_EXISTS = 3;
+const Y_LINKSTATE_LINKED = 4;
+const Y_LINKSTATE_PLAY = 5;
+const Y_LINKSTATE_INVALID = -1;
+const Y_LINKQUALITY_INVALID           = YAPI_INVALID_UINT;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 
@@ -81,7 +94,12 @@ type
     _ownAddress               : string;
     _pairingPin               : string;
     _remoteAddress            : string;
-    _message                  : string;
+    _remoteName               : string;
+    _mute                     : Integer;
+    _preAmplifier             : LongInt;
+    _volume                   : LongInt;
+    _linkState                : Integer;
+    _linkQuality              : LongInt;
     _command                  : string;
     _valueCallbackBluetoothLink : TYBluetoothLinkValueCallback;
     // Function-specific method for reading JSON output and caching result
@@ -197,20 +215,176 @@ type
 
     ////
     /// <summary>
-    ///   Returns the latest status message from the bluetooth interface.
+    ///   Returns the bluetooth name the remote device, if found on the bluetooth network.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a string corresponding to the latest status message from the bluetooth interface
+    ///   a string corresponding to the bluetooth name the remote device, if found on the bluetooth network
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_MESSAGE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>Y_REMOTENAME_INVALID</c>.
     /// </para>
     ///-
-    function get_message():string;
+    function get_remoteName():string;
+
+    ////
+    /// <summary>
+    ///   Returns the state of the mute function.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   either <c>Y_MUTE_FALSE</c> or <c>Y_MUTE_TRUE</c>, according to the state of the mute function
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_MUTE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_mute():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the state of the mute function.
+    /// <para>
+    ///   Remember to call the matching module
+    ///   <c>saveToFlash()</c> method to save the setting permanently.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   either <c>Y_MUTE_FALSE</c> or <c>Y_MUTE_TRUE</c>, according to the state of the mute function
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_mute(newval:Integer):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the audio pre-amplifier volume, in per cents.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the audio pre-amplifier volume, in per cents
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_PREAMPLIFIER_INVALID</c>.
+    /// </para>
+    ///-
+    function get_preAmplifier():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the audio pre-amplifier volume, in per cents.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the audio pre-amplifier volume, in per cents
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_preAmplifier(newval:LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the connected headset volume, in per cents.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the connected headset volume, in per cents
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_VOLUME_INVALID</c>.
+    /// </para>
+    ///-
+    function get_volume():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the connected headset volume, in per cents.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the connected headset volume, in per cents
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_volume(newval:LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the bluetooth link state.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a value among <c>Y_LINKSTATE_DOWN</c>, <c>Y_LINKSTATE_FREE</c>, <c>Y_LINKSTATE_SEARCH</c>,
+    ///   <c>Y_LINKSTATE_EXISTS</c>, <c>Y_LINKSTATE_LINKED</c> and <c>Y_LINKSTATE_PLAY</c> corresponding to
+    ///   the bluetooth link state
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_LINKSTATE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_linkState():Integer;
+
+    ////
+    /// <summary>
+    ///   Returns the bluetooth receiver signal strength, in pourcents, or 0 if no connection is established.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the bluetooth receiver signal strength, in pourcents, or 0 if no
+    ///   connection is established
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_LINKQUALITY_INVALID</c>.
+    /// </para>
+    ///-
+    function get_linkQuality():LongInt;
 
     function get_command():string;
 
@@ -416,7 +590,12 @@ implementation
       _ownAddress := Y_OWNADDRESS_INVALID;
       _pairingPin := Y_PAIRINGPIN_INVALID;
       _remoteAddress := Y_REMOTEADDRESS_INVALID;
-      _message := Y_MESSAGE_INVALID;
+      _remoteName := Y_REMOTENAME_INVALID;
+      _mute := Y_MUTE_INVALID;
+      _preAmplifier := Y_PREAMPLIFIER_INVALID;
+      _volume := Y_VOLUME_INVALID;
+      _linkState := Y_LINKSTATE_INVALID;
+      _linkQuality := Y_LINKQUALITY_INVALID;
       _command := Y_COMMAND_INVALID;
       _valueCallbackBluetoothLink := nil;
       //--- (end of YBluetoothLink accessors initialization)
@@ -448,9 +627,39 @@ implementation
          result := 1;
          exit;
          end;
-      if (member^.name = 'message') then
+      if (member^.name = 'remoteName') then
         begin
-          _message := string(member^.svalue);
+          _remoteName := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'mute') then
+        begin
+          _mute := member^.ivalue;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'preAmplifier') then
+        begin
+          _preAmplifier := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'volume') then
+        begin
+          _volume := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'linkState') then
+        begin
+          _linkState := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'linkQuality') then
+        begin
+          _linkQuality := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -619,30 +828,268 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the latest status message from the bluetooth interface.
+  ///   Returns the bluetooth name the remote device, if found on the bluetooth network.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a string corresponding to the latest status message from the bluetooth interface
+  ///   a string corresponding to the bluetooth name the remote device, if found on the bluetooth network
   /// </returns>
   /// <para>
-  ///   On failure, throws an exception or returns Y_MESSAGE_INVALID.
+  ///   On failure, throws an exception or returns Y_REMOTENAME_INVALID.
   /// </para>
   ///-
-  function TYBluetoothLink.get_message():string;
+  function TYBluetoothLink.get_remoteName():string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
-              result := Y_MESSAGE_INVALID;
+              result := Y_REMOTENAME_INVALID;
               exit
             end;
         end;
-      result := self._message;
+      result := self._remoteName;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the state of the mute function.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   either Y_MUTE_FALSE or Y_MUTE_TRUE, according to the state of the mute function
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_MUTE_INVALID.
+  /// </para>
+  ///-
+  function TYBluetoothLink.get_mute():Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_MUTE_INVALID;
+              exit
+            end;
+        end;
+      result := self._mute;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the state of the mute function.
+  /// <para>
+  ///   Remember to call the matching module
+  ///   saveToFlash() method to save the setting permanently.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   either Y_MUTE_FALSE or Y_MUTE_TRUE, according to the state of the mute function
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYBluetoothLink.set_mute(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      if(newval>0) then rest_val := '1' else rest_val := '0';
+      result := _setAttr('mute',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the audio pre-amplifier volume, in per cents.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the audio pre-amplifier volume, in per cents
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_PREAMPLIFIER_INVALID.
+  /// </para>
+  ///-
+  function TYBluetoothLink.get_preAmplifier():LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_PREAMPLIFIER_INVALID;
+              exit
+            end;
+        end;
+      result := self._preAmplifier;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the audio pre-amplifier volume, in per cents.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   an integer corresponding to the audio pre-amplifier volume, in per cents
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYBluetoothLink.set_preAmplifier(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('preAmplifier',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the connected headset volume, in per cents.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the connected headset volume, in per cents
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_VOLUME_INVALID.
+  /// </para>
+  ///-
+  function TYBluetoothLink.get_volume():LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_VOLUME_INVALID;
+              exit
+            end;
+        end;
+      result := self._volume;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the connected headset volume, in per cents.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   an integer corresponding to the connected headset volume, in per cents
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYBluetoothLink.set_volume(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('volume',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the bluetooth link state.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a value among Y_LINKSTATE_DOWN, Y_LINKSTATE_FREE, Y_LINKSTATE_SEARCH, Y_LINKSTATE_EXISTS,
+  ///   Y_LINKSTATE_LINKED and Y_LINKSTATE_PLAY corresponding to the bluetooth link state
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_LINKSTATE_INVALID.
+  /// </para>
+  ///-
+  function TYBluetoothLink.get_linkState():Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_LINKSTATE_INVALID;
+              exit
+            end;
+        end;
+      result := self._linkState;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the bluetooth receiver signal strength, in pourcents, or 0 if no connection is established.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the bluetooth receiver signal strength, in pourcents, or 0 if no
+  ///   connection is established
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_LINKQUALITY_INVALID.
+  /// </para>
+  ///-
+  function TYBluetoothLink.get_linkQuality():LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_LINKQUALITY_INVALID;
+              exit
+            end;
+        end;
+      result := self._linkQuality;
       exit;
     end;
 

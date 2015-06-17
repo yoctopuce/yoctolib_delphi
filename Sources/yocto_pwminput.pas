@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwminput.pas 19581 2015-03-04 10:57:44Z seb $
+ * $Id: yocto_pwminput.pas 20400 2015-05-21 14:58:16Z mvuilleu $
  *
  * Implements yFindPwmInput(), the high-level API for PwmInput functions
  *
@@ -96,6 +96,7 @@ type
     _reportFrequency          : string;
     _calibrationParam         : string;
     _resolution               : double;
+    _sensorState              : LongInt;
     _dutyCycle                : double;
     _pulseDuration            : double;
     _frequency                : double;

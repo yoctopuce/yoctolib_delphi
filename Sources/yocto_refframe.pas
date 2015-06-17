@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_refframe.pas 19338 2015-02-17 17:44:58Z seb $
+ * $Id: yocto_refframe.pas 20508 2015-06-01 16:32:48Z seb $
  *
  * Implements yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -1128,9 +1128,9 @@ implementation
       self._calibStageHint := 'Set down the device on a steady horizontal surface';
       self._calibPrevTick := ((currTick + 500) and ($07FFFFFFF));
       jsonData := self._download('api/accelerometer.json');
-      xVal := StrToInt(self._json_get_key(jsonData, 'xValue')) / 65536.0;
-      yVal := StrToInt(self._json_get_key(jsonData, 'yValue')) / 65536.0;
-      zVal := StrToInt(self._json_get_key(jsonData, 'zValue')) / 65536.0;
+      xVal := _atoi(self._json_get_key(jsonData, 'xValue')) / 65536.0;
+      yVal := _atoi(self._json_get_key(jsonData, 'yValue')) / 65536.0;
+      zVal := _atoi(self._json_get_key(jsonData, 'zValue')) / 65536.0;
       xSq := xVal * xVal;
       if xSq >= 0.04 and xSq < 0.64 then
         begin

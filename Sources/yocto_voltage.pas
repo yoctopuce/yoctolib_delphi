@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_voltage.pas 19581 2015-03-04 10:57:44Z seb $
+ * $Id: yocto_voltage.pas 20400 2015-05-21 14:58:16Z mvuilleu $
  *
  * Implements yFindVoltage(), the high-level API for Voltage functions
  *
@@ -83,6 +83,7 @@ type
     _reportFrequency          : string;
     _calibrationParam         : string;
     _resolution               : double;
+    _sensorState              : LongInt;
     _valueCallbackVoltage     : TYVoltageValueCallback;
     _timedReportCallbackVoltage : TYVoltageTimedReportCallback;
     // Function-specific method for reading JSON output and caching result

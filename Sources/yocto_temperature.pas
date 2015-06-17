@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_temperature.pas 20383 2015-05-19 23:44:31Z mvuilleu $
+ * $Id: yocto_temperature.pas 20410 2015-05-22 08:30:27Z seb $
  *
  * Implements yFindTemperature(), the high-level API for Temperature functions
  *
@@ -101,6 +101,7 @@ type
     _reportFrequency          : string;
     _calibrationParam         : string;
     _resolution               : double;
+    _sensorState              : LongInt;
     _sensorType               : Integer;
     _command                  : string;
     _valueCallbackTemperature : TYTemperatureValueCallback;
@@ -850,10 +851,8 @@ implementation
       inc(tempValues_pos);
       resValues[resValues_pos] := res100;
       inc(resValues_pos);
-      
       SetLength(tempValues, tempValues_pos);;
       SetLength(resValues, resValues_pos);;
-      
       result := self.set_thermistorResponseTable(tempValues, resValues);
       exit;
     end;
@@ -911,7 +910,6 @@ implementation
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
-      
       // may throw an exception
       res := self.set_command('Z');
       if not(res=YAPI_SUCCESS) then
@@ -920,7 +918,6 @@ implementation
           result:=YAPI_IO_ERROR;
           exit;
         end;
-      
       // add records in growing resistance value
       found := 1;
       prev := 0.0;
@@ -1004,10 +1001,8 @@ implementation
       resValues_pos : LongInt;
     begin
       SetLength(paramlist, 0);
-      
       SetLength(tempValues, 0);
       SetLength(resValues, 0);
-      
       // may throw an exception
       id := self.get_functionId;
       id := Copy(id,  11 + 1, Length(id)-1);
@@ -1060,7 +1055,6 @@ implementation
         end;
       SetLength(tempValues, tempValues_pos);;
       SetLength(resValues, resValues_pos);;
-      
       result := YAPI_SUCCESS;
       exit;
     end;

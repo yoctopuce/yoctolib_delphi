@@ -1,8 +1,8 @@
 {*********************************************************************
  *
- * $Id: yocto_audioout.pas 20565 2015-06-04 09:59:10Z seb $
+ * $Id: pic24config.php 20612 2015-06-09 01:27:02Z mvuilleu $
  *
- * Implements yFindAudioOut(), the high-level API for AudioOut functions
+ * Implements yFindAudioIn(), the high-level API for AudioIn functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
@@ -38,14 +38,14 @@
  *********************************************************************}
 
 
-unit yocto_audioout;
+unit yocto_audioin;
 
 interface
 
 uses
   sysutils, classes, windows, yocto_api, yjson;
 
-//--- (YAudioOut definitions)
+//--- (YAudioIn definitions)
 
 const Y_VOLUME_INVALID                = YAPI_INVALID_UINT;
 const Y_MUTE_FALSE = 0;
@@ -55,26 +55,26 @@ const Y_SIGNAL_INVALID                = YAPI_INVALID_INT;
 const Y_NOSIGNALFOR_INVALID           = YAPI_INVALID_INT;
 
 
-//--- (end of YAudioOut definitions)
+//--- (end of YAudioIn definitions)
 
 type
-  TYAudioOut = class;
-  //--- (YAudioOut class start)
-  TYAudioOutValueCallback = procedure(func: TYAudioOut; value:string);
-  TYAudioOutTimedReportCallback = procedure(func: TYAudioOut; value:TYMeasure);
+  TYAudioIn = class;
+  //--- (YAudioIn class start)
+  TYAudioInValueCallback = procedure(func: TYAudioIn; value:string);
+  TYAudioInTimedReportCallback = procedure(func: TYAudioIn; value:TYMeasure);
 
   ////
   /// <summary>
-  ///   TYAudioOut Class: AudioOut function interface
+  ///   TYAudioIn Class: AudioIn function interface
   /// <para>
-  ///   The Yoctopuce application programming interface allows you to configure the volume of the outout.
+  ///   The Yoctopuce application programming interface allows you to configure the volume of the input channel.
   /// </para>
   /// </summary>
   ///-
-  TYAudioOut=class(TYFunction)
-  //--- (end of YAudioOut class start)
+  TYAudioIn=class(TYFunction)
+  //--- (end of YAudioIn class start)
   protected
-  //--- (YAudioOut declaration)
+  //--- (YAudioIn declaration)
     // Attributes (function value cache)
     _logicalName              : string;
     _advertisedValue          : string;
@@ -82,26 +82,26 @@ type
     _mute                     : Integer;
     _signal                   : LongInt;
     _noSignalFor              : LongInt;
-    _valueCallbackAudioOut    : TYAudioOutValueCallback;
+    _valueCallbackAudioIn     : TYAudioInValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
 
-    //--- (end of YAudioOut declaration)
+    //--- (end of YAudioIn declaration)
 
   public
-    //--- (YAudioOut accessors declaration)
+    //--- (YAudioIn accessors declaration)
     constructor Create(func:string);
 
     ////
     /// <summary>
-    ///   Returns audio output volume, in per cents.
+    ///   Returns audio input gain, in per cents.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to audio output volume, in per cents
+    ///   an integer corresponding to audio input gain, in per cents
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_VOLUME_INVALID</c>.
@@ -111,14 +111,14 @@ type
 
     ////
     /// <summary>
-    ///   Changes audio output volume, in per cents.
+    ///   Changes audio input gain, in per cents.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer corresponding to audio output volume, in per cents
+    ///   an integer corresponding to audio input gain, in per cents
     /// </param>
     /// <para>
     /// </para>
@@ -174,14 +174,14 @@ type
 
     ////
     /// <summary>
-    ///   Returns the detected output current level.
+    ///   Returns the detected input signal level.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the detected output current level
+    ///   an integer corresponding to the detected input signal level
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_SIGNAL_INVALID</c>.
@@ -232,7 +232,7 @@ type
     /// <para>
     ///   This function does not require that $THEFUNCTION$ is online at the time
     ///   it is invoked. The returned object is nevertheless valid.
-    ///   Use the method <c>YAudioOut.isOnline()</c> to test if $THEFUNCTION$ is
+    ///   Use the method <c>YAudioIn.isOnline()</c> to test if $THEFUNCTION$ is
     ///   indeed online at a given time. In case of ambiguity when looking for
     ///   $AFUNCTION$ by logical name, no error is notified: the first instance
     ///   found is returned. The search is performed first by hardware name,
@@ -243,10 +243,10 @@ type
     ///   a string that uniquely characterizes $THEFUNCTION$
     /// </param>
     /// <returns>
-    ///   a <c>YAudioOut</c> object allowing you to drive $THEFUNCTION$.
+    ///   a <c>YAudioIn</c> object allowing you to drive $THEFUNCTION$.
     /// </returns>
     ///-
-    class function FindAudioOut(func: string):TYAudioOut;
+    class function FindAudioIn(func: string):TYAudioIn;
 
     ////
     /// <summary>
@@ -266,24 +266,24 @@ type
     /// @noreturn
     /// </param>
     ///-
-    function registerValueCallback(callback: TYAudioOutValueCallback):LongInt; overload;
+    function registerValueCallback(callback: TYAudioInValueCallback):LongInt; overload;
 
     function _invokeValueCallback(value: string):LongInt; override;
 
 
     ////
     /// <summary>
-    ///   Continues the enumeration of audio outputs started using <c>yFirstAudioOut()</c>.
+    ///   Continues the enumeration of audio inputs started using <c>yFirstAudioIn()</c>.
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a pointer to a <c>YAudioOut</c> object, corresponding to
-    ///   an audio output currently online, or a <c>null</c> pointer
-    ///   if there are no more audio outputs to enumerate.
+    ///   a pointer to a <c>YAudioIn</c> object, corresponding to
+    ///   an audio input currently online, or a <c>null</c> pointer
+    ///   if there are no more audio inputs to enumerate.
     /// </returns>
     ///-
-    function nextAudioOut():TYAudioOut;
+    function nextAudioIn():TYAudioIn;
     ////
     /// <summary>
     ///   c
@@ -292,14 +292,14 @@ type
     /// </para>
     /// </summary>
     ///-
-    class function FirstAudioOut():TYAudioOut;
-  //--- (end of YAudioOut accessors declaration)
+    class function FirstAudioIn():TYAudioIn;
+  //--- (end of YAudioIn accessors declaration)
   end;
 
-//--- (AudioOut functions declaration)
+//--- (AudioIn functions declaration)
   ////
   /// <summary>
-  ///   Retrieves an audio output for a given identifier.
+  ///   Retrieves an audio input for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
   /// </para>
@@ -323,62 +323,62 @@ type
   /// <para>
   /// </para>
   /// <para>
-  ///   This function does not require that the audio output is online at the time
+  ///   This function does not require that the audio input is online at the time
   ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YAudioOut.isOnline()</c> to test if the audio output is
+  ///   Use the method <c>YAudioIn.isOnline()</c> to test if the audio input is
   ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   an audio output by logical name, no error is notified: the first instance
+  ///   an audio input by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the audio output
+  ///   a string that uniquely characterizes the audio input
   /// </param>
   /// <returns>
-  ///   a <c>YAudioOut</c> object allowing you to drive the audio output.
+  ///   a <c>YAudioIn</c> object allowing you to drive the audio input.
   /// </returns>
   ///-
-  function yFindAudioOut(func:string):TYAudioOut;
+  function yFindAudioIn(func:string):TYAudioIn;
   ////
   /// <summary>
-  ///   Starts the enumeration of audio outputs currently accessible.
+  ///   Starts the enumeration of audio inputs currently accessible.
   /// <para>
-  ///   Use the method <c>YAudioOut.nextAudioOut()</c> to iterate on
-  ///   next audio outputs.
+  ///   Use the method <c>YAudioIn.nextAudioIn()</c> to iterate on
+  ///   next audio inputs.
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a pointer to a <c>YAudioOut</c> object, corresponding to
-  ///   the first audio output currently online, or a <c>null</c> pointer
+  ///   a pointer to a <c>YAudioIn</c> object, corresponding to
+  ///   the first audio input currently online, or a <c>null</c> pointer
   ///   if there are none.
   /// </returns>
   ///-
-  function yFirstAudioOut():TYAudioOut;
+  function yFirstAudioIn():TYAudioIn;
 
-//--- (end of AudioOut functions declaration)
+//--- (end of AudioIn functions declaration)
 
 implementation
-//--- (YAudioOut dlldef)
-//--- (end of YAudioOut dlldef)
+//--- (YAudioIn dlldef)
+//--- (end of YAudioIn dlldef)
 
-  constructor TYAudioOut.Create(func:string);
+  constructor TYAudioIn.Create(func:string);
     begin
       inherited Create(func);
-      _className := 'AudioOut';
-      //--- (YAudioOut accessors initialization)
+      _className := 'AudioIn';
+      //--- (YAudioIn accessors initialization)
       _volume := Y_VOLUME_INVALID;
       _mute := Y_MUTE_INVALID;
       _signal := Y_SIGNAL_INVALID;
       _noSignalFor := Y_NOSIGNALFOR_INVALID;
-      _valueCallbackAudioOut := nil;
-      //--- (end of YAudioOut accessors initialization)
+      _valueCallbackAudioIn := nil;
+      //--- (end of YAudioIn accessors initialization)
     end;
 
 
-//--- (YAudioOut implementation)
+//--- (YAudioIn implementation)
 {$HINTS OFF}
-  function TYAudioOut._parseAttr(member:PJSONRECORD):integer;
+  function TYAudioIn._parseAttr(member:PJSONRECORD):integer;
     var
       sub : PJSONRECORD;
       i,l        : integer;
@@ -413,20 +413,20 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns audio output volume, in per cents.
+  ///   Returns audio input gain, in per cents.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   an integer corresponding to audio output volume, in per cents
+  ///   an integer corresponding to audio input gain, in per cents
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_VOLUME_INVALID.
   /// </para>
   ///-
-  function TYAudioOut.get_volume():LongInt;
+  function TYAudioIn.get_volume():LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -443,14 +443,14 @@ implementation
 
   ////
   /// <summary>
-  ///   Changes audio output volume, in per cents.
+  ///   Changes audio input gain, in per cents.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   an integer corresponding to audio output volume, in per cents
+  ///   an integer corresponding to audio input gain, in per cents
   /// </param>
   /// <para>
   /// </para>
@@ -461,7 +461,7 @@ implementation
   ///   On failure, throws an exception or returns a negative error code.
   /// </para>
   ///-
-  function TYAudioOut.set_volume(newval:LongInt):integer;
+  function TYAudioIn.set_volume(newval:LongInt):integer;
     var
       rest_val: string;
     begin
@@ -484,7 +484,7 @@ implementation
   ///   On failure, throws an exception or returns Y_MUTE_INVALID.
   /// </para>
   ///-
-  function TYAudioOut.get_mute():Integer;
+  function TYAudioIn.get_mute():Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -521,7 +521,7 @@ implementation
   ///   On failure, throws an exception or returns a negative error code.
   /// </para>
   ///-
-  function TYAudioOut.set_mute(newval:Integer):integer;
+  function TYAudioIn.set_mute(newval:Integer):integer;
     var
       rest_val: string;
     begin
@@ -531,20 +531,20 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the detected output current level.
+  ///   Returns the detected input signal level.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   an integer corresponding to the detected output current level
+  ///   an integer corresponding to the detected input signal level
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_SIGNAL_INVALID.
   /// </para>
   ///-
-  function TYAudioOut.get_signal():LongInt;
+  function TYAudioIn.get_signal():LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -572,7 +572,7 @@ implementation
   ///   On failure, throws an exception or returns Y_NOSIGNALFOR_INVALID.
   /// </para>
   ///-
-  function TYAudioOut.get_noSignalFor():LongInt;
+  function TYAudioIn.get_noSignalFor():LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -615,7 +615,7 @@ implementation
   /// <para>
   ///   This function does not require that $THEFUNCTION$ is online at the time
   ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YAudioOut.isOnline()</c> to test if $THEFUNCTION$ is
+  ///   Use the method <c>YAudioIn.isOnline()</c> to test if $THEFUNCTION$ is
   ///   indeed online at a given time. In case of ambiguity when looking for
   ///   $AFUNCTION$ by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
@@ -626,18 +626,18 @@ implementation
   ///   a string that uniquely characterizes $THEFUNCTION$
   /// </param>
   /// <returns>
-  ///   a <c>YAudioOut</c> object allowing you to drive $THEFUNCTION$.
+  ///   a <c>YAudioIn</c> object allowing you to drive $THEFUNCTION$.
   /// </returns>
   ///-
-  class function TYAudioOut.FindAudioOut(func: string):TYAudioOut;
+  class function TYAudioIn.FindAudioIn(func: string):TYAudioIn;
     var
-      obj : TYAudioOut;
+      obj : TYAudioIn;
     begin
-      obj := TYAudioOut(TYFunction._FindFromCache('AudioOut', func));
+      obj := TYAudioIn(TYFunction._FindFromCache('AudioIn', func));
       if obj = nil then
         begin
-          obj :=  TYAudioOut.create(func);
-          TYFunction._AddToCache('AudioOut',  func, obj)
+          obj :=  TYAudioIn.create(func);
+          TYFunction._AddToCache('AudioIn',  func, obj)
         end;
       result := obj;
       exit;
@@ -662,7 +662,7 @@ implementation
   /// @noreturn
   /// </param>
   ///-
-  function TYAudioOut.registerValueCallback(callback: TYAudioOutValueCallback):LongInt;
+  function TYAudioIn.registerValueCallback(callback: TYAudioInValueCallback):LongInt;
     var
       val : string;
     begin
@@ -674,7 +674,7 @@ implementation
         begin
           TYFunction._UpdateValueCallbackList(self, false)
         end;
-      self._valueCallbackAudioOut := callback;
+      self._valueCallbackAudioIn := callback;
       // Immediately invoke value callback with current value
       if (addr(callback) <> nil) and self.isOnline then
         begin
@@ -689,11 +689,11 @@ implementation
     end;
 
 
-  function TYAudioOut._invokeValueCallback(value: string):LongInt;
+  function TYAudioIn._invokeValueCallback(value: string):LongInt;
     begin
-      if (addr(self._valueCallbackAudioOut) <> nil) then
+      if (addr(self._valueCallbackAudioIn) <> nil) then
         begin
-          self._valueCallbackAudioOut(self, value)
+          self._valueCallbackAudioIn(self, value)
         end
       else
         begin
@@ -704,31 +704,31 @@ implementation
     end;
 
 
-  function TYAudioOut.nextAudioOut(): TYAudioOut;
+  function TYAudioIn.nextAudioIn(): TYAudioIn;
     var
       hwid: string;
     begin
       if YISERR(_nextFunction(hwid)) then
         begin
-          nextAudioOut := nil;
+          nextAudioIn := nil;
           exit;
         end;
       if hwid = '' then
         begin
-          nextAudioOut := nil;
+          nextAudioIn := nil;
           exit;
         end;
-      nextAudioOut := TYAudioOut.FindAudioOut(hwid);
+      nextAudioIn := TYAudioIn.FindAudioIn(hwid);
     end;
 
-  class function TYAudioOut.FirstAudioOut(): TYAudioOut;
+  class function TYAudioIn.FirstAudioIn(): TYAudioIn;
     var
       v_fundescr      : YFUN_DESCR;
       dev             : YDEV_DESCR;
       neededsize, err : integer;
       serial, funcId, funcName, funcVal, errmsg : string;
     begin
-      err := yapiGetFunctionsByClass('AudioOut', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
+      err := yapiGetFunctionsByClass('AudioIn', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
       if (YISERR(err) or (neededsize = 0)) then
         begin
           result := nil;
@@ -739,35 +739,35 @@ implementation
           result := nil;
           exit;
         end;
-     result := TYAudioOut.FindAudioOut(serial+'.'+funcId);
+     result := TYAudioIn.FindAudioIn(serial+'.'+funcId);
     end;
 
-//--- (end of YAudioOut implementation)
+//--- (end of YAudioIn implementation)
 
-//--- (AudioOut functions)
+//--- (AudioIn functions)
 
-  function yFindAudioOut(func:string): TYAudioOut;
+  function yFindAudioIn(func:string): TYAudioIn;
     begin
-      result := TYAudioOut.FindAudioOut(func);
+      result := TYAudioIn.FindAudioIn(func);
     end;
 
-  function yFirstAudioOut(): TYAudioOut;
+  function yFirstAudioIn(): TYAudioIn;
     begin
-      result := TYAudioOut.FirstAudioOut();
+      result := TYAudioIn.FirstAudioIn();
     end;
 
-  procedure _AudioOutCleanup();
+  procedure _AudioInCleanup();
     begin
     end;
 
-//--- (end of AudioOut functions)
+//--- (end of AudioIn functions)
 
 initialization
-  //--- (AudioOut initialization)
-  //--- (end of AudioOut initialization)
+  //--- (AudioIn initialization)
+  //--- (end of AudioIn initialization)
 
 finalization
-  //--- (AudioOut cleanup)
-  _AudioOutCleanup();
-  //--- (end of AudioOut cleanup)
+  //--- (AudioIn cleanup)
+  _AudioInCleanup();
+  //--- (end of AudioIn cleanup)
 end.

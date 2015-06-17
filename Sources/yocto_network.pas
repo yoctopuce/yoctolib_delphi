@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_network.pas 19338 2015-02-17 17:44:58Z seb $
+ * $Id: yocto_network.pas 20599 2015-06-08 12:16:39Z seb $
  *
  * Implements yFindNetwork(), the high-level API for Network functions
  *
@@ -60,8 +60,11 @@ const Y_ROUTER_INVALID                = YAPI_INVALID_STRING;
 const Y_IPCONFIG_INVALID              = YAPI_INVALID_STRING;
 const Y_PRIMARYDNS_INVALID            = YAPI_INVALID_STRING;
 const Y_SECONDARYDNS_INVALID          = YAPI_INVALID_STRING;
+const Y_NTPSERVER_INVALID             = YAPI_INVALID_STRING;
 const Y_USERPASSWORD_INVALID          = YAPI_INVALID_STRING;
 const Y_ADMINPASSWORD_INVALID         = YAPI_INVALID_STRING;
+const Y_HTTPPORT_INVALID              = YAPI_INVALID_UINT;
+const Y_DEFAULTPAGE_INVALID           = YAPI_INVALID_STRING;
 const Y_DISCOVERABLE_FALSE = 0;
 const Y_DISCOVERABLE_TRUE = 1;
 const Y_DISCOVERABLE_INVALID = -1;
@@ -76,6 +79,8 @@ const Y_CALLBACKENCODING_JSON = 1;
 const Y_CALLBACKENCODING_JSON_ARRAY = 2;
 const Y_CALLBACKENCODING_CSV = 3;
 const Y_CALLBACKENCODING_YOCTO_API = 4;
+const Y_CALLBACKENCODING_JSON_NUM = 5;
+const Y_CALLBACKENCODING_EMONCMS = 6;
 const Y_CALLBACKENCODING_INVALID = -1;
 const Y_CALLBACKCREDENTIALS_INVALID   = YAPI_INVALID_STRING;
 const Y_CALLBACKMINDELAY_INVALID      = YAPI_INVALID_UINT;
@@ -115,8 +120,11 @@ type
     _ipConfig                 : string;
     _primaryDNS               : string;
     _secondaryDNS             : string;
+    _ntpServer                : string;
     _userPassword             : string;
     _adminPassword            : string;
+    _httpPort                 : LongInt;
+    _defaultPage              : string;
     _discoverable             : Integer;
     _wwwWatchdogDelay         : LongInt;
     _callbackUrl              : string;
@@ -328,6 +336,46 @@ type
 
     ////
     /// <summary>
+    ///   Returns the IP address of the NTP server to be used by the device.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the IP address of the NTP server to be used by the device
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_NTPSERVER_INVALID</c>.
+    /// </para>
+    ///-
+    function get_ntpServer():string;
+
+    ////
+    /// <summary>
+    ///   Changes the IP address of the NTP server to be used by the module.
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a string corresponding to the IP address of the NTP server to be used by the module
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_ntpServer(newval:string):integer;
+
+    ////
+    /// <summary>
     ///   Returns a hash string if a password has been set for "user" user,
     ///   or an empty string otherwise.
     /// <para>
@@ -417,6 +465,90 @@ type
     /// </para>
     ///-
     function set_adminPassword(newval:string):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the HTML page to serve for the URL "/"" of the hub.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the HTML page to serve for the URL "/"" of the hub
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_HTTPPORT_INVALID</c>.
+    /// </para>
+    ///-
+    function get_httpPort():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the default HTML page returned by the hub.
+    /// <para>
+    ///   If not value are set the hub return
+    ///   "index.html" which is the web interface of the hub. It is possible de change this page
+    ///   for file that has been uploaded on the hub.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the default HTML page returned by the hub
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_httpPort(newval:LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the HTML page to serve for the URL "/"" of the hub.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the HTML page to serve for the URL "/"" of the hub
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_DEFAULTPAGE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_defaultPage():string;
+
+    ////
+    /// <summary>
+    ///   Changes the default HTML page returned by the hub.
+    /// <para>
+    ///   If not value are set the hub return
+    ///   "index.html" which is the web interface of the hub. It is possible de change this page
+    ///   for file that has been uploaded on the hub.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a string corresponding to the default HTML page returned by the hub
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_defaultPage(newval:string):integer;
 
     ////
     /// <summary>
@@ -605,8 +737,9 @@ type
     /// </summary>
     /// <returns>
     ///   a value among <c>Y_CALLBACKENCODING_FORM</c>, <c>Y_CALLBACKENCODING_JSON</c>,
-    ///   <c>Y_CALLBACKENCODING_JSON_ARRAY</c>, <c>Y_CALLBACKENCODING_CSV</c> and
-    ///   <c>Y_CALLBACKENCODING_YOCTO_API</c> corresponding to the encoding standard to use for representing
+    ///   <c>Y_CALLBACKENCODING_JSON_ARRAY</c>, <c>Y_CALLBACKENCODING_CSV</c>,
+    ///   <c>Y_CALLBACKENCODING_YOCTO_API</c>, <c>Y_CALLBACKENCODING_JSON_NUM</c> and
+    ///   <c>Y_CALLBACKENCODING_EMONCMS</c> corresponding to the encoding standard to use for representing
     ///   notification values
     /// </returns>
     /// <para>
@@ -625,8 +758,9 @@ type
     /// </summary>
     /// <param name="newval">
     ///   a value among <c>Y_CALLBACKENCODING_FORM</c>, <c>Y_CALLBACKENCODING_JSON</c>,
-    ///   <c>Y_CALLBACKENCODING_JSON_ARRAY</c>, <c>Y_CALLBACKENCODING_CSV</c> and
-    ///   <c>Y_CALLBACKENCODING_YOCTO_API</c> corresponding to the encoding standard to use for representing
+    ///   <c>Y_CALLBACKENCODING_JSON_ARRAY</c>, <c>Y_CALLBACKENCODING_CSV</c>,
+    ///   <c>Y_CALLBACKENCODING_YOCTO_API</c>, <c>Y_CALLBACKENCODING_JSON_NUM</c> and
+    ///   <c>Y_CALLBACKENCODING_EMONCMS</c> corresponding to the encoding standard to use for representing
     ///   notification values
     /// </param>
     /// <para>
@@ -1061,8 +1195,11 @@ implementation
       _ipConfig := Y_IPCONFIG_INVALID;
       _primaryDNS := Y_PRIMARYDNS_INVALID;
       _secondaryDNS := Y_SECONDARYDNS_INVALID;
+      _ntpServer := Y_NTPSERVER_INVALID;
       _userPassword := Y_USERPASSWORD_INVALID;
       _adminPassword := Y_ADMINPASSWORD_INVALID;
+      _httpPort := Y_HTTPPORT_INVALID;
+      _defaultPage := Y_DEFAULTPAGE_INVALID;
       _discoverable := Y_DISCOVERABLE_INVALID;
       _wwwWatchdogDelay := Y_WWWWATCHDOGDELAY_INVALID;
       _callbackUrl := Y_CALLBACKURL_INVALID;
@@ -1132,6 +1269,12 @@ implementation
          result := 1;
          exit;
          end;
+      if (member^.name = 'ntpServer') then
+        begin
+          _ntpServer := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
       if (member^.name = 'userPassword') then
         begin
           _userPassword := string(member^.svalue);
@@ -1141,6 +1284,18 @@ implementation
       if (member^.name = 'adminPassword') then
         begin
           _adminPassword := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'httpPort') then
+        begin
+          _httpPort := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'defaultPage') then
+        begin
+          _defaultPage := string(member^.svalue);
          result := 1;
          exit;
          end;
@@ -1515,6 +1670,65 @@ implementation
 
   ////
   /// <summary>
+  ///   Returns the IP address of the NTP server to be used by the device.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a string corresponding to the IP address of the NTP server to be used by the device
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_NTPSERVER_INVALID.
+  /// </para>
+  ///-
+  function TYNetwork.get_ntpServer():string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_NTPSERVER_INVALID;
+              exit
+            end;
+        end;
+      result := self._ntpServer;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the IP address of the NTP server to be used by the module.
+  /// <para>
+  ///   Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a string corresponding to the IP address of the NTP server to be used by the module
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYNetwork.set_ntpServer(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('ntpServer',rest_val);
+    end;
+
+  ////
+  /// <summary>
   ///   Returns a hash string if a password has been set for "user" user,
   ///   or an empty string otherwise.
   /// <para>
@@ -1641,6 +1855,128 @@ implementation
     begin
       rest_val := newval;
       result := _setAttr('adminPassword',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the HTML page to serve for the URL "/"" of the hub.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the HTML page to serve for the URL "/"" of the hub
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_HTTPPORT_INVALID.
+  /// </para>
+  ///-
+  function TYNetwork.get_httpPort():LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_HTTPPORT_INVALID;
+              exit
+            end;
+        end;
+      result := self._httpPort;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the default HTML page returned by the hub.
+  /// <para>
+  ///   If not value are set the hub return
+  ///   "index.html" which is the web interface of the hub. It is possible de change this page
+  ///   for file that has been uploaded on the hub.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   an integer corresponding to the default HTML page returned by the hub
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYNetwork.set_httpPort(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('httpPort',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the HTML page to serve for the URL "/"" of the hub.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a string corresponding to the HTML page to serve for the URL "/"" of the hub
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_DEFAULTPAGE_INVALID.
+  /// </para>
+  ///-
+  function TYNetwork.get_defaultPage():string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_DEFAULTPAGE_INVALID;
+              exit
+            end;
+        end;
+      result := self._defaultPage;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the default HTML page returned by the hub.
+  /// <para>
+  ///   If not value are set the hub return
+  ///   "index.html" which is the web interface of the hub. It is possible de change this page
+  ///   for file that has been uploaded on the hub.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a string corresponding to the default HTML page returned by the hub
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYNetwork.set_defaultPage(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('defaultPage',rest_val);
     end;
 
   ////
@@ -1904,8 +2240,8 @@ implementation
   /// </summary>
   /// <returns>
   ///   a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON, Y_CALLBACKENCODING_JSON_ARRAY,
-  ///   Y_CALLBACKENCODING_CSV and Y_CALLBACKENCODING_YOCTO_API corresponding to the encoding standard to
-  ///   use for representing notification values
+  ///   Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API, Y_CALLBACKENCODING_JSON_NUM and
+  ///   Y_CALLBACKENCODING_EMONCMS corresponding to the encoding standard to use for representing notification values
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_CALLBACKENCODING_INVALID.
@@ -1936,8 +2272,8 @@ implementation
   /// </summary>
   /// <param name="newval">
   ///   a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON, Y_CALLBACKENCODING_JSON_ARRAY,
-  ///   Y_CALLBACKENCODING_CSV and Y_CALLBACKENCODING_YOCTO_API corresponding to the encoding standard to
-  ///   use for representing notification values
+  ///   Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API, Y_CALLBACKENCODING_JSON_NUM and
+  ///   Y_CALLBACKENCODING_EMONCMS corresponding to the encoding standard to use for representing notification values
   /// </param>
   /// <para>
   /// </para>

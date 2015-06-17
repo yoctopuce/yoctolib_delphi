@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 19900 2015-03-31 13:11:09Z seb $
+ * $Id: yocto_serialport.pas 20508 2015-06-01 16:32:48Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -2749,7 +2749,7 @@ implementation
         end;
       // last element of array is the new position
       msglen := msglen - 1;
-      self._rxptr := StrToInt(msgarr[msglen]);
+      self._rxptr := _atoi(msgarr[msglen]);
       if msglen = 0 then
         begin
           result := '';
@@ -2817,7 +2817,7 @@ implementation
         end;
       // last element of array is the new position
       msglen := msglen - 1;
-      self._rxptr := StrToInt(msgarr[msglen]);
+      self._rxptr := _atoi(msgarr[msglen]);
       idx := 0;
       res_pos := length(res);
       SetLength(res, res_pos+msglen);;
@@ -2897,7 +2897,7 @@ implementation
         begin
           bufflen := bufflen - 1
         end;
-      res := StrToInt(Copy(_ByteToString(buff),  0 + 1, bufflen));
+      res := _atoi(Copy(_ByteToString(buff),  0 + 1, bufflen));
       result := res;
       exit;
     end;
@@ -2945,7 +2945,7 @@ implementation
         end;
       // last element of array is the new position
       msglen := msglen - 1;
-      self._rxptr := StrToInt(msgarr[msglen]);
+      self._rxptr := _atoi(msgarr[msglen]);
       if msglen = 0 then
         begin
           result := '';
