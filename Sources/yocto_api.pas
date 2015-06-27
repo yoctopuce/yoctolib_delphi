@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 20488 2015-06-01 09:20:42Z seb $
+ * $Id: yocto_api.pas 20715 2015-06-22 17:14:03Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -117,7 +117,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '20652';
+  YOCTO_API_BUILD_NO        = '20773';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -11446,7 +11446,7 @@ var
       stream : TYDataStream;
       summaryMinVal, summaryMaxVal, summaryTotalTime, summaryTotalAvg: double;
       i : integer;
-      endtime, startTime, interval: LongWord;
+      endTime, startTime, streamEndTime, streamStartTime, interval: LongWord;
       rec :  TYMeasure;
     begin
       if not(YAPI_ExceptionsDisabled) then  p := TJsonParser.create(data, false)
@@ -11461,7 +11461,8 @@ var
           end;
       end;
 
-
+      startTime := $7fffffff;
+      endTime := 0;
       summaryMinVal := +InfinityAndBeyond;
       summaryMaxVal := -InfinityAndBeyond;
       summaryTotalTime := 0;
@@ -11488,7 +11489,13 @@ var
       for i := 0 to arr.itemcount-1 do
         begin
           stream := _parent._findDataStream(self, string(arr.items[i].svalue));
-          if (self._startTime > 0) and (stream.get_startTimeUTC() + LongWord(stream.get_duration()) <= LongWord(self._startTime)) then
+          streamEndTime := stream.get_startTimeUTC() + LongWord(stream.get_duration());
+          interval := LongWord(stream.get_dataSamplesIntervalMs() div 1000);
+          if stream.get_startTimeUTC() > interval then
+            streamStartTime := stream.get_startTimeUTC() - interval
+          else
+            streamStartTime := 0;
+          if (self._startTime > 0) and (streamEndTime <= LongWord(self._startTime)) then
             begin
               // self stream is too early, drop it
             end
@@ -11501,8 +11508,16 @@ var
             begin
               SetLength(self._streams, length(self._streams) + 1);
               self._streams[length(self._streams)-1] := stream;
+              if startTime > streamStartTime then
+                begin
+                  startTime := streamStartTime;
+                end;
+              if endTime < streamEndTime then
+                begin
+                  endTime := streamEndTime;
+                end;
               if stream.isClosed() and (stream.get_startTimeUTC() >= self._startTime) and
-                 ( (self._endTime = 0) or (stream.get_startTimeUTC() + LongWord(stream.get_duration()) <= LongWord(self._endTime))) then
+                 ( (self._endTime = 0) or (streamEndTime <= LongWord(self._endTime))) then
                 begin
                   if summaryMinVal > stream.get_minValue() then
                     begin
@@ -11515,7 +11530,7 @@ var
                   summaryTotalAvg := summaryTotalAvg + (stream.get_averageValue() * stream.get_duration());
                   summaryTotalTime := summaryTotalTime + stream.get_duration();
                   rec := TYMeasure.create(stream.get_startTimeUTC(),
-                                          stream.get_startTimeUTC() + LongWord(stream.get_duration()),
+                                          streamEndTime,
                                           stream.get_minValue(),
                                           stream.get_averageValue(),
                                           stream.get_maxValue());
@@ -11527,20 +11542,13 @@ var
       if (length(self._streams)>0)  and (summaryTotalTime>0) then
         begin
           // update time boundaries with actual data
-          stream := self._streams[length(self._streams) - 1];
-          endtime := stream.get_startTimeUTC() + LongWord(stream.get_duration());
-          interval := LongWord(stream.get_dataSamplesIntervalMs() div 1000);
-          if self._streams[0].get_startTimeUTC() > interval then
-            startTime := self._streams[0].get_startTimeUTC() - interval
-          else
-            startTime := 0;
           if self._startTime < startTime then
             begin
               self._startTime := startTime;
             end;
-          if (self._endTime = 0) or (self._endTime > endtime) then
+          if (self._endTime = 0) or (self._endTime > endTime) then
             begin
-              self._endTime := endtime;
+              self._endTime := endTime;
             end;
           self._summary.free();
           self._summary := TYMeasure.create(_startTime,

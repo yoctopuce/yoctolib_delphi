@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_datalogger.pas 19900 2015-03-31 13:11:09Z seb $
+ * $Id: yocto_datalogger.pas 20704 2015-06-20 19:43:34Z mvuilleu $
  *
  * Implements yFindDataLogger(), the high-level API for DataLogger functions
  *
@@ -51,6 +51,7 @@ const Y_CURRENTRUNINDEX_INVALID       = YAPI_INVALID_UINT;
 const Y_TIMEUTC_INVALID               = YAPI_INVALID_LONG;
 const Y_RECORDING_OFF = 0;
 const Y_RECORDING_ON = 1;
+const Y_RECORDING_PENDING = 2;
 const Y_RECORDING_INVALID = -1;
 const Y_AUTOSTART_OFF = 0;
 const Y_AUTOSTART_ON = 1;
@@ -270,8 +271,8 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_RECORDING_OFF</c> or <c>Y_RECORDING_ON</c>, according to the current activation state
-    ///   of the data logger
+    ///   a value among <c>Y_RECORDING_OFF</c>, <c>Y_RECORDING_ON</c> and <c>Y_RECORDING_PENDING</c>
+    ///   corresponding to the current activation state of the data logger
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_RECORDING_INVALID</c>.
@@ -288,8 +289,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_RECORDING_OFF</c> or <c>Y_RECORDING_ON</c>, according to the activation state of the
-    ///   data logger to start/stop recording data
+    ///   a value among <c>Y_RECORDING_OFF</c>, <c>Y_RECORDING_ON</c> and <c>Y_RECORDING_PENDING</c>
+    ///   corresponding to the activation state of the data logger to start/stop recording data
     /// </param>
     /// <para>
     /// </para>
@@ -742,7 +743,7 @@ const
          end;
       if (member^.name = 'recording') then
         begin
-          _recording := member^.ivalue;
+          _recording := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -867,7 +868,8 @@ const
   /// </para>
   /// </summary>
   /// <returns>
-  ///   either Y_RECORDING_OFF or Y_RECORDING_ON, according to the current activation state of the data logger
+  ///   a value among Y_RECORDING_OFF, Y_RECORDING_ON and Y_RECORDING_PENDING corresponding to the current
+  ///   activation state of the data logger
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_RECORDING_INVALID.
@@ -897,8 +899,8 @@ const
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   either Y_RECORDING_OFF or Y_RECORDING_ON, according to the activation state of the data logger to
-  ///   start/stop recording data
+  ///   a value among Y_RECORDING_OFF, Y_RECORDING_ON and Y_RECORDING_PENDING corresponding to the
+  ///   activation state of the data logger to start/stop recording data
   /// </param>
   /// <para>
   /// </para>
@@ -913,7 +915,7 @@ const
     var
       rest_val: string;
     begin
-      if(newval>0) then rest_val := '1' else rest_val := '0';
+      rest_val := inttostr(newval);
       result := _setAttr('recording',rest_val);
     end;
 
