@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 20715 2015-06-22 17:14:03Z mvuilleu $
+ * $Id: yocto_api.pas 20916 2015-07-23 08:54:20Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -117,7 +117,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '20773';
+  YOCTO_API_BUILD_NO        = '20975';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -882,6 +882,24 @@ type
 
     ////
     /// <summary>
+    ///   Retrieves the type of the <i>n</i>th function on the module.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="functionIndex">
+    ///   the index of the function for which the information is desired, starting at 0 for the first function.
+    /// </param>
+    /// <returns>
+    ///   a the type of the function
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty string.
+    /// </para>
+    ///-
+    function functionType(functionIndex:integer):string;
+
+    ////
+    /// <summary>
     ///   Retrieves the logical name of the <i>n</i>th function on the module.
     /// <para>
     /// </para>
@@ -1432,6 +1450,10 @@ type
     /// </para>
     ///-
     function get_allSettings():TByteArray; overload; virtual;
+
+    function hasFunction(funcId: string):boolean; overload; virtual;
+
+    function get_functionIds(funType: string):TStringArray; overload; virtual;
 
     function _flattenJsonStruct(jsoncomplex: TByteArray):TByteArray; overload; virtual;
 
@@ -3033,6 +3055,30 @@ end;
 
     ////
     /// <summary>
+    ///   Returns the detailed set of measures for the time interval corresponding
+    ///   to a given condensed measures previously returned by <c>get_preview()</c>.
+    /// <para>
+    ///   The result is provided as a list of YMeasure objects.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="measure">
+    ///   condensed measure from the list previously returned by
+    ///   <c>get_preview()</c>.
+    /// </param>
+    /// <returns>
+    ///   a table of records, where each record depicts the
+    ///   measured values during a time interval
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty array.
+    /// </para>
+    ///-
+    function get_measuresAt(measure: TYMeasure):TYMeasureArray; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Returns all measured values currently available for this DataSet,
     ///   as a list of YMeasure objects.
     /// <para>
@@ -3747,6 +3793,9 @@ type
   function _yapiFloatToStr(value:double):string;
   function _stringSplit(str :String; delimiter :Char):TStringArray;
   function _atoi(val:string):integer;
+  function _bytesToHexStr(bytes: TByteArray; ofs:integer; len:integer):string;
+  function _hexStrToBin(hex_str:string):TByteArray;
+  function _bytesMerge(array_a:TByteArray; array_b:TByteArray):TByteArray;
 
 implementation
 
@@ -4524,6 +4573,72 @@ var
         begin
           _atoi := 0;
         end;
+    end;
+
+
+  function _bytesToHexStr(bytes: TByteArray; ofs:integer; len:integer):string;
+    const
+      hexArray : string = '0123456789ABCDEF';
+    var
+      hexChars : array of char;
+      j : integer;
+      v : integer;
+    begin
+      SetLength(hexChars, len * 2);
+      j := 0;
+      while (j < len) do
+        begin
+          v := bytes[j + ofs] And $0FF;
+          hexChars[j * 2] := hexArray[v shr 4 + 1];
+          hexChars[j * 2 + 1] := hexArray[v and $0F + 1];
+          inc(j);
+        end;
+      if Length(hexChars)>0 then
+        SetString(Result, PChar(@hexChars[0]), Length(hexChars))
+      else
+        Result := '';
+    end;
+
+  function _hexStrToBin(hex_str:string):TByteArray;
+    var
+      len : integer;
+      res :TByteArray;
+      i : integer;
+      val, n, c : integer;
+    begin
+      len := Length(hex_str) div 2;
+      SetLength(res, len);
+      i := 0;
+      while (i < len) do
+        begin
+          val := 0;
+          for n := 0 to  1 do
+            begin
+              c := ord(hex_str[i * 2 + n + 1]);
+              val := val shl 4;
+              //57='9', 70='F', 102='f'
+              if (c <= 57) Then
+                val := val + c - 48
+              else if (c <= 70) then
+                val := val + c - 65 + 10
+              else
+                val := val + c - 97 + 10;
+            end;
+          res[i] := val And $FF;
+          inc(i);
+        end;
+      _hexStrToBin := res;
+    end;
+
+
+  function _bytesMerge(array_a:TByteArray; array_b:TByteArray):TByteArray;
+    var
+      res : TByteArray;
+    begin
+      SetLength(res, length(array_a) + length(array_b));
+      move(array_a[0], res[0],  length(array_a));
+      move(array_b[0], res[length(array_a)], length(array_b));
+      _bytesMerge := res;
     end;
 
   function _yapiBoolToStr(value:boolean):string;
@@ -6572,6 +6687,22 @@ const
       result:= funcId;
     end;
 
+  // Retrieve the type of the nth function (beside "module") in the device
+  function TYModule.functionType(functionIndex:integer):string;
+    var
+      serial, funcId, funcName, funcVal, errmsg:string;
+      res:integer;
+    begin
+      res := _getFunction(functionIndex, serial, funcId, funcName, funcVal, errmsg);
+      if(YISERR(res)) then
+        begin
+          _throw(res, errmsg);
+          result:=YAPI_INVALID_STRING;
+          exit;
+        end;
+      result:= funcId;
+    end;
+
   // Retrieve the logical name of the nth function (beside "module") in the device
   function TYModule.functionName(functionIndex:integer):string;
     var
@@ -7734,6 +7865,59 @@ var
   function TYModule.get_allSettings():TByteArray;
     begin
       result := self._download('api.json');
+      exit;
+    end;
+
+
+  function TYModule.hasFunction(funcId: string):boolean;
+    var
+      count : LongInt;
+      i : LongInt;
+      fid : string;
+    begin
+      count  := self.functionCount;
+      i := 0;
+      while i < count do
+        begin
+          fid  := self.functionId(i);
+          if (fid = funcId) then
+            begin
+              result := true;
+              exit
+            end;
+          i := i + 1
+        end;
+      result := false;
+      exit;
+    end;
+
+
+  function TYModule.get_functionIds(funType: string):TStringArray;
+    var
+      count : LongInt;
+      i : LongInt;
+      ftype : string;
+      res : TStringArray;
+      res_pos : LongInt;
+    begin
+      SetLength(res, 0);
+      // may throw an exception
+      count := self.functionCount;
+      i := 0;
+      res_pos := length(res);
+      SetLength(res, res_pos+count);;
+      while i < count do
+        begin
+          ftype  := self.functionType(i);
+          if (ftype = funType) then
+            begin
+              res[res_pos] := self.functionId(i);
+              inc(res_pos)
+            end;
+          i := i + 1
+        end;
+      SetLength(res, res_pos);;
+      result := res;
       exit;
     end;
 
@@ -10713,6 +10897,13 @@ var
       values_pos : LongInt;
       dat_pos : LongInt;
     begin
+      if length(sdata) = 0 then
+        begin
+          self._nRows := 0;
+          result := YAPI_SUCCESS;
+          exit
+        end;
+      // may throw an exception
       udat := _decodeWords(self._parent._json_get_string(sdata));
       values_pos := 0;
       SetLength(self._values, length(udat));;
@@ -11930,6 +12121,104 @@ var
   function TYDataSet.get_preview():TYMeasureArray;
     begin
       result := self._preview;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the detailed set of measures for the time interval corresponding
+  ///   to a given condensed measures previously returned by <c>get_preview()</c>.
+  /// <para>
+  ///   The result is provided as a list of YMeasure objects.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="measure">
+  ///   condensed measure from the list previously returned by
+  ///   <c>get_preview()</c>.
+  /// </param>
+  /// <returns>
+  ///   a table of records, where each record depicts the
+  ///   measured values during a time interval
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns an empty array.
+  /// </para>
+  ///-
+  function TYDataSet.get_measuresAt(measure: TYMeasure):TYMeasureArray;
+    var
+      startUtc : int64;
+      stream : TYDataStream;
+      dataRows : TDoubleArrayArray;
+      measures : TYMeasureArray;
+      tim : double;
+      itv : double;
+      nCols : LongInt;
+      minCol : LongInt;
+      avgCol : LongInt;
+      maxCol : LongInt;
+      i_i : LongInt;
+      measures_pos : LongInt;
+    begin
+      startUtc := round(measure.get_startTimeUTC);
+      stream := nil;
+      for i_i:=0 to length(self._streams)-1 do
+        begin
+          if self._streams[i_i].get_startTimeUTC() = startUtc then
+            begin
+              stream := self._streams[i_i]
+            end;
+        end;
+      if stream = nil then
+        begin
+          result := measures;
+          exit
+        end;
+      dataRows := stream.get_dataRows();
+      if length(dataRows) = 0 then
+        begin
+          result := measures;
+          exit
+        end;
+      tim := stream.get_startTimeUTC();
+      itv := stream.get_dataSamplesInterval();
+      if tim < itv then
+        begin
+          tim := itv
+        end;
+      nCols := length(dataRows[0]);
+      minCol := 0;
+      if nCols > 2 then
+        begin
+          avgCol := 1
+        end
+      else
+        begin
+          avgCol := 0
+        end;
+      if nCols > 2 then
+        begin
+          maxCol := 2
+        end
+      else
+        begin
+          maxCol := 0
+        end;
+      measures_pos := length(measures);
+      SetLength(measures, measures_pos+length(dataRows));
+      for i_i:=0 to length(dataRows)-1 do
+        begin
+          if (tim >= self._startTime) and((self._endTime = 0) or(tim <= self._endTime)) then
+            begin
+              measures[measures_pos] := TYMeasure.create(tim - itv, tim, dataRows[i_i][minCol], dataRows[i_i][avgCol], dataRows[i_i][maxCol]);
+              inc(measures_pos)
+            end;
+          tim := tim + itv
+        end;
+      SetLength(measures, measures_pos);;
+      result := measures;
       exit;
     end;
 

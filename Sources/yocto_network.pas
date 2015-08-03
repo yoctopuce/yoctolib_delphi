@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_network.pas 20599 2015-06-08 12:16:39Z seb $
+ * $Id: yocto_network.pas 20815 2015-07-09 17:23:30Z mvuilleu $
  *
  * Implements yFindNetwork(), the high-level API for Network functions
  *
@@ -81,6 +81,7 @@ const Y_CALLBACKENCODING_CSV = 3;
 const Y_CALLBACKENCODING_YOCTO_API = 4;
 const Y_CALLBACKENCODING_JSON_NUM = 5;
 const Y_CALLBACKENCODING_EMONCMS = 6;
+const Y_CALLBACKENCODING_AZURE = 7;
 const Y_CALLBACKENCODING_INVALID = -1;
 const Y_CALLBACKCREDENTIALS_INVALID   = YAPI_INVALID_STRING;
 const Y_CALLBACKMINDELAY_INVALID      = YAPI_INVALID_UINT;
@@ -738,9 +739,9 @@ type
     /// <returns>
     ///   a value among <c>Y_CALLBACKENCODING_FORM</c>, <c>Y_CALLBACKENCODING_JSON</c>,
     ///   <c>Y_CALLBACKENCODING_JSON_ARRAY</c>, <c>Y_CALLBACKENCODING_CSV</c>,
-    ///   <c>Y_CALLBACKENCODING_YOCTO_API</c>, <c>Y_CALLBACKENCODING_JSON_NUM</c> and
-    ///   <c>Y_CALLBACKENCODING_EMONCMS</c> corresponding to the encoding standard to use for representing
-    ///   notification values
+    ///   <c>Y_CALLBACKENCODING_YOCTO_API</c>, <c>Y_CALLBACKENCODING_JSON_NUM</c>,
+    ///   <c>Y_CALLBACKENCODING_EMONCMS</c> and <c>Y_CALLBACKENCODING_AZURE</c> corresponding to the encoding
+    ///   standard to use for representing notification values
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_CALLBACKENCODING_INVALID</c>.
@@ -759,9 +760,9 @@ type
     /// <param name="newval">
     ///   a value among <c>Y_CALLBACKENCODING_FORM</c>, <c>Y_CALLBACKENCODING_JSON</c>,
     ///   <c>Y_CALLBACKENCODING_JSON_ARRAY</c>, <c>Y_CALLBACKENCODING_CSV</c>,
-    ///   <c>Y_CALLBACKENCODING_YOCTO_API</c>, <c>Y_CALLBACKENCODING_JSON_NUM</c> and
-    ///   <c>Y_CALLBACKENCODING_EMONCMS</c> corresponding to the encoding standard to use for representing
-    ///   notification values
+    ///   <c>Y_CALLBACKENCODING_YOCTO_API</c>, <c>Y_CALLBACKENCODING_JSON_NUM</c>,
+    ///   <c>Y_CALLBACKENCODING_EMONCMS</c> and <c>Y_CALLBACKENCODING_AZURE</c> corresponding to the encoding
+    ///   standard to use for representing notification values
     /// </param>
     /// <para>
     /// </para>
@@ -2240,8 +2241,9 @@ implementation
   /// </summary>
   /// <returns>
   ///   a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON, Y_CALLBACKENCODING_JSON_ARRAY,
-  ///   Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API, Y_CALLBACKENCODING_JSON_NUM and
-  ///   Y_CALLBACKENCODING_EMONCMS corresponding to the encoding standard to use for representing notification values
+  ///   Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API, Y_CALLBACKENCODING_JSON_NUM,
+  ///   Y_CALLBACKENCODING_EMONCMS and Y_CALLBACKENCODING_AZURE corresponding to the encoding standard to
+  ///   use for representing notification values
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_CALLBACKENCODING_INVALID.
@@ -2272,8 +2274,9 @@ implementation
   /// </summary>
   /// <param name="newval">
   ///   a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON, Y_CALLBACKENCODING_JSON_ARRAY,
-  ///   Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API, Y_CALLBACKENCODING_JSON_NUM and
-  ///   Y_CALLBACKENCODING_EMONCMS corresponding to the encoding standard to use for representing notification values
+  ///   Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API, Y_CALLBACKENCODING_JSON_NUM,
+  ///   Y_CALLBACKENCODING_EMONCMS and Y_CALLBACKENCODING_AZURE corresponding to the encoding standard to
+  ///   use for representing notification values
   /// </param>
   /// <para>
   /// </para>

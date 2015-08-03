@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_audioout.pas 20565 2015-06-04 09:59:10Z seb $
+ * $Id: yocto_audioout.pas 20797 2015-07-06 16:49:40Z mvuilleu $
  *
  * Implements yFindAudioOut(), the high-level API for AudioOut functions
  *
@@ -51,6 +51,7 @@ const Y_VOLUME_INVALID                = YAPI_INVALID_UINT;
 const Y_MUTE_FALSE = 0;
 const Y_MUTE_TRUE = 1;
 const Y_MUTE_INVALID = -1;
+const Y_VOLUMERANGE_INVALID           = YAPI_INVALID_STRING;
 const Y_SIGNAL_INVALID                = YAPI_INVALID_INT;
 const Y_NOSIGNALFOR_INVALID           = YAPI_INVALID_INT;
 
@@ -80,6 +81,7 @@ type
     _advertisedValue          : string;
     _volume                   : LongInt;
     _mute                     : Integer;
+    _volumeRange              : string;
     _signal                   : LongInt;
     _noSignalFor              : LongInt;
     _valueCallbackAudioOut    : TYAudioOutValueCallback;
@@ -171,6 +173,27 @@ type
     /// </para>
     ///-
     function set_mute(newval:Integer):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the supported volume range.
+    /// <para>
+    ///   The low value of the
+    ///   range corresponds to the minimal audible value. To
+    ///   completely mute the sound, use <c>set_mute()</c>
+    ///   instead of the <c>set_volume()</c>.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the supported volume range
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_VOLUMERANGE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_volumeRange():string;
 
     ////
     /// <summary>
@@ -369,6 +392,7 @@ implementation
       //--- (YAudioOut accessors initialization)
       _volume := Y_VOLUME_INVALID;
       _mute := Y_MUTE_INVALID;
+      _volumeRange := Y_VOLUMERANGE_INVALID;
       _signal := Y_SIGNAL_INVALID;
       _noSignalFor := Y_NOSIGNALFOR_INVALID;
       _valueCallbackAudioOut := nil;
@@ -392,6 +416,12 @@ implementation
       if (member^.name = 'mute') then
         begin
           _mute := member^.ivalue;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'volumeRange') then
+        begin
+          _volumeRange := string(member^.svalue);
          result := 1;
          exit;
          end;
@@ -528,6 +558,40 @@ implementation
       if(newval>0) then rest_val := '1' else rest_val := '0';
       result := _setAttr('mute',rest_val);
     end;
+
+  ////
+  /// <summary>
+  ///   Returns the supported volume range.
+  /// <para>
+  ///   The low value of the
+  ///   range corresponds to the minimal audible value. To
+  ///   completely mute the sound, use set_mute()
+  ///   instead of the set_volume().
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a string corresponding to the supported volume range
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_VOLUMERANGE_INVALID.
+  /// </para>
+  ///-
+  function TYAudioOut.get_volumeRange():string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_VOLUMERANGE_INVALID;
+              exit
+            end;
+        end;
+      result := self._volumeRange;
+      exit;
+    end;
+
 
   ////
   /// <summary>
