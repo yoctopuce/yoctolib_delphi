@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_humidity.pas 20400 2015-05-21 14:58:16Z mvuilleu $
+ * $Id: yocto_humidity.pas 21211 2015-08-19 16:03:29Z seb $
  *
  * Implements yFindHumidity(), the high-level API for Humidity functions
  *
@@ -47,6 +47,8 @@ uses
 
 //--- (YHumidity definitions)
 
+const Y_RELHUM_INVALID                = YAPI_INVALID_DOUBLE;
+const Y_ABSHUM_INVALID                = YAPI_INVALID_DOUBLE;
 
 
 //--- (end of YHumidity definitions)
@@ -84,6 +86,8 @@ type
     _calibrationParam         : string;
     _resolution               : double;
     _sensorState              : LongInt;
+    _relHum                   : double;
+    _absHum                   : double;
     _valueCallbackHumidity    : TYHumidityValueCallback;
     _timedReportCallbackHumidity : TYHumidityTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
@@ -94,6 +98,70 @@ type
   public
     //--- (YHumidity accessors declaration)
     constructor Create(func:string);
+
+    ////
+    /// <summary>
+    ///   Changes the primary unit for measuring humidity.
+    /// <para>
+    ///   That unit is a string.
+    ///   If that strings starts with the letter 'g', the primary measured value is the absolute
+    ///   humidity, in g/m3. Otherwise, the primary measured value will be the relative humidity
+    ///   (RH), in per cents.
+    /// </para>
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification
+    ///   must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a string corresponding to the primary unit for measuring humidity
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_unit(newval:string):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the current relative humidity, in per cents.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a floating point number corresponding to the current relative humidity, in per cents
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_RELHUM_INVALID</c>.
+    /// </para>
+    ///-
+    function get_relHum():double;
+
+    ////
+    /// <summary>
+    ///   Returns the current absolute humidity, in grams per cubic meter of air.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a floating point number corresponding to the current absolute humidity, in grams per cubic meter of air
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_ABSHUM_INVALID</c>.
+    /// </para>
+    ///-
+    function get_absHum():double;
 
     ////
     /// <summary>
@@ -280,6 +348,8 @@ implementation
       inherited Create(func);
       _className := 'Humidity';
       //--- (YHumidity accessors initialization)
+      _relHum := Y_RELHUM_INVALID;
+      _absHum := Y_ABSHUM_INVALID;
       _valueCallbackHumidity := nil;
       _timedReportCallbackHumidity := nil;
       //--- (end of YHumidity accessors initialization)
@@ -293,9 +363,117 @@ implementation
       sub : PJSONRECORD;
       i,l        : integer;
     begin
+      if (member^.name = 'relHum') then
+        begin
+          _relHum := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'absHum') then
+        begin
+          _absHum := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+         result := 1;
+         exit;
+         end;
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
+
+  ////
+  /// <summary>
+  ///   Changes the primary unit for measuring humidity.
+  /// <para>
+  ///   That unit is a string.
+  ///   If that strings starts with the letter 'g', the primary measured value is the absolute
+  ///   humidity, in g/m3. Otherwise, the primary measured value will be the relative humidity
+  ///   (RH), in per cents.
+  /// </para>
+  /// <para>
+  ///   Remember to call the saveToFlash() method of the module if the modification
+  ///   must be kept.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a string corresponding to the primary unit for measuring humidity
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYHumidity.set_unit(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('unit',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the current relative humidity, in per cents.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a floating point number corresponding to the current relative humidity, in per cents
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_RELHUM_INVALID.
+  /// </para>
+  ///-
+  function TYHumidity.get_relHum():double;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_RELHUM_INVALID;
+              exit
+            end;
+        end;
+      result := self._relHum;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the current absolute humidity, in grams per cubic meter of air.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a floating point number corresponding to the current absolute humidity, in grams per cubic meter of air
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_ABSHUM_INVALID.
+  /// </para>
+  ///-
+  function TYHumidity.get_absHum():double;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_ABSHUM_INVALID;
+              exit
+            end;
+        end;
+      result := self._absHum;
+      exit;
+    end;
+
 
   ////
   /// <summary>

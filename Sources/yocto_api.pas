@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 20916 2015-07-23 08:54:20Z seb $
+ * $Id: yocto_api.pas 21200 2015-08-19 13:09:00Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -86,14 +86,12 @@ var
   // with languages without exception support like C
   YAPI_ExceptionsDisabled : Boolean ;
   YAPI_apiInitialized  : Boolean;
+  YAPI_DefaultCacheValidity : Integer;
   _decExp: array[0..15] of Double =
     (1.0e-6, 1.0e-5, 1.0e-4, 1.0e-3, 1.0e-2, 1.0e-1, 1.0,
       1.0e1, 1.0e2, 1.0e3, 1.0e4, 1.0e5, 1.0e6, 1.0e7, 1.0e8, 1.0e9 );
 
 const
-  // Default cache validity (in [ms]) before reloading data from device. This saves a lots of trafic.
-  // Note that a value undger 2 ms makes little sense since a USB bus itself has a 2ms roundtrip period
-  YAPI_DefaultCacheValidity = 5;
 
   Y_FUNCTIONDESCRIPTOR_INVALID = -1;
 
@@ -117,7 +115,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '20983';
+  YOCTO_API_BUILD_NO        = '21242';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -401,6 +399,8 @@ type
     function  _request(request: string) :TByteArray; overload;
     function  _request(request: TByteArray) :TByteArray; overload;
     function  _json_get_array(data: TByteArray) :TStringArray;
+    function  _get_json_path(json, path: string):string;
+    function  _decode_json_string(json: string):string;
     function  _json_get_key(data: TByteArray; key: string):string;
     function  _json_get_string(data: TByteArray):string;
 
@@ -417,6 +417,7 @@ type
     Destructor Destroy(); override;
 
     function  _findDataStream(dataset: TYDataSet; def :string) : TYDataStream;
+    procedure  _clearDataStreamCache();
 
     ////
     /// <summary>
@@ -1451,8 +1452,69 @@ type
     ///-
     function get_allSettings():TByteArray; overload; virtual;
 
+    function get_allSettings_dev():TByteArray; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Restores all the settings of the module.
+    /// <para>
+    ///   Useful to restore all the logical names and calibrations parameters
+    ///   of a module from a backup.Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modifications must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="settings">
+    ///   a binary buffer with all the settings.
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_allSettings_dev(settings: TByteArray):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Test if the device has a specific function.
+    /// <para>
+    ///   This method took an function identifier
+    ///   and return a boolean.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="funcId">
+    ///   the requested function identifier
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   : true if the device has the function identifier
+    /// </returns>
+    ///-
     function hasFunction(funcId: string):boolean; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Retrieve all hardware identifier that match the type passed in argument.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="funType">
+    ///   The type of function (Relay, LightSensor, Voltage,...)
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   : A array of string.
+    /// </returns>
+    ///-
     function get_functionIds(funType: string):TStringArray; overload; virtual;
 
     function _flattenJsonStruct(jsoncomplex: TByteArray):TByteArray; overload; virtual;
@@ -3808,6 +3870,7 @@ var
   constructor  YAPI_Exception.Create(errType:YRETCODE;  errMsg:string );
     begin
       inherited create(errMsg);
+      errorType := errType;
     end;
 
 type
@@ -4012,6 +4075,8 @@ const
   function _yapiGetBootloaders(buffer:pansichar; buffersize:integer; var totalSize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetBootloaders';
   function _yapiUpdateFirmware(serial:pansichar; firmwarePath:pansichar; settings:pansichar; startUpdate:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiUpdateFirmware';
   function _yapiTestHub(url:pansichar; mstimeout:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiTestHub';
+  function _yapiJsonGetPath(path:pansichar; json_data:pansichar; json_len:integer; var result:pansichar; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiJsonGetPath';
+  function _yapiJsonDecodeString(json_data:pansichar; output:pansichar):integer; cdecl; external dllfile name 'yapiJsonDecodeString';
 //--- (end of generated code: YFunction dlldef)
 
 
@@ -5920,6 +5985,12 @@ const
       result :=newDataStream;
   end;
 
+  procedure  TYFunction._clearDataStreamCache();
+    begin
+      _dataStreams.Free;
+    end;
+
+
 //--- (generated code: YFunction implementation)
 {$HINTS OFF}
   function TYFunction._parseAttr(member:PJSONRECORD):integer;
@@ -6463,6 +6534,46 @@ const
       res:=TStringArray(p.GetAllChilds(nil));
       p.free();
       _json_get_array := res;
+    end;
+
+  function  TYFunction._get_json_path(json, path: string):string;
+    var
+      buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
+      perror, p: pansichar;
+      dllres    : YRETCODE;
+      res : string;
+    begin
+      buffer[0]:=#0;
+      perror:=@buffer;
+      dllres := _yapiJsonGetPath( pansichar(ansistring(path)),
+                                          pansichar(ansistring(json)),
+                                          length(json),
+                                          p, perror);
+      if(dllres<=0) then
+        begin
+          _get_json_path := '';
+          exit;
+        end;
+      res := string(p);
+      SetLength(res, dllres);
+      _get_json_path := res;
+    end;
+
+
+  function  TYFunction._decode_json_string(json: string):string;
+    var
+      bigbuff : pansichar;
+      size : LongInt;
+      res : LongInt;
+    begin
+      size := length(json);
+      getmem(bigbuff, size);
+      res := _yapiJsonDecodeString(pansichar(ansistring(json)), bigbuff);
+      if (res>0) then
+        _decode_json_string := string(bigbuff)
+      else
+        _decode_json_string := '';
+      freemem(bigbuff);
     end;
 
   function   TYFunction._json_get_string(data: TByteArray):string;
@@ -7869,6 +7980,128 @@ var
     end;
 
 
+  function TYModule.get_allSettings_dev():TByteArray;
+    var
+      settings : TByteArray;
+      json : TByteArray;
+      res : TByteArray;
+      sep : string;
+      name : string;
+      file_data : string;
+      file_data_bin : TByteArray;
+      all_file_data : string;
+      filelist : TStringArray;
+      i_i : LongInt;
+    begin
+      SetLength(filelist, 0);
+      // may throw an exception
+      settings := self._download('api.json');
+      all_file_data := ', "files":[';
+      if self.hasFunction('files') then
+        begin
+          json := self._download('files.json?a=dir&f=');
+          filelist := self._json_get_array(json);
+          sep := '';
+          for i_i:=0 to length( filelist)-1 do
+            begin
+              name := self._json_get_key(_StrToByte( filelist[i_i]), 'name');
+              file_data_bin := self._download(self._escapeAttr(name));
+              file_data := _bytesToHexStr(file_data_bin, 0, length(file_data_bin));
+              file_data := ''+ sep+'{"name":"'+ name+'", "data":"'+file_data+'"}\n';
+              sep := ',';
+              all_file_data := all_file_data + file_data
+            end;
+        end;
+      all_file_data := all_file_data + ']}';
+      res := _bytesMerge(_StrToByte('{ "api":'), _bytesMerge(settings, _StrToByte(all_file_data)));
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Restores all the settings of the module.
+  /// <para>
+  ///   Useful to restore all the logical names and calibrations parameters
+  ///   of a module from a backup.Remember to call the <c>saveToFlash()</c> method of the module if the
+  ///   modifications must be kept.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="settings">
+  ///   a binary buffer with all the settings.
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYModule.set_allSettings_dev(settings: TByteArray):LongInt;
+    var
+      down : TByteArray;
+      json : string;
+      json_api : string;
+      json_files : string;
+        files : TStringArray;
+        res : string;
+        name : string;
+        data : string;
+      i_i : LongInt;
+    begin
+      SetLength(files, 0);
+      json := _ByteToString(settings);
+      json_api := self._get_json_path(json, 'api');
+      self.set_allSettings(_StrToByte(json_api));
+      if self.hasFunction('files') then
+        begin
+          down := self._download('files.json?a=format');
+          res := self._get_json_path(_ByteToString(down), 'res');
+          res := self._decode_json_string(res);
+          if not((res = 'ok')) then
+            begin
+              self._throw( YAPI_IO_ERROR, 'format failed');
+              result:=YAPI_IO_ERROR;
+              exit;
+            end;
+          json_files := self._get_json_path(json, 'files');
+          files := self._json_get_array(_StrToByte(json_files));
+          for i_i:=0 to length( files)-1 do
+            begin
+              name := self._get_json_path( files[i_i], 'name');
+              name := self._decode_json_string(name);
+              data := self._get_json_path( files[i_i], 'data');
+              data := self._decode_json_string(data);
+              self._upload(name, _hexStrToBin(data))
+            end;
+        end;
+      result := YAPI_SUCCESS;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Test if the device has a specific function.
+  /// <para>
+  ///   This method took an function identifier
+  ///   and return a boolean.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="funcId">
+  ///   the requested function identifier
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   : true if the device has the function identifier
+  /// </returns>
+  ///-
   function TYModule.hasFunction(funcId: string):boolean;
     var
       count : LongInt;
@@ -7892,6 +8125,23 @@ var
     end;
 
 
+  ////
+  /// <summary>
+  ///   Retrieve all hardware identifier that match the type passed in argument.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="funType">
+  ///   The type of function (Relay, LightSensor, Voltage,...)
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   : A array of string.
+  /// </returns>
+  ///-
   function TYModule.get_functionIds(funType: string):TStringArray;
     var
       count : LongInt;
@@ -9989,7 +10239,8 @@ var
         end;
       if self._caltyp < 0 then
         begin
-          self._throw(YAPI_NOT_SUPPORTED, 'Calibration parameters format mismatch. Please upgrade your library or firmware.');
+          self._throw(YAPI_NOT_SUPPORTED, 'Calibration parameters format mismatch. Please upgrade your lib'
+          + 'rary or firmware.');
           result := YAPI_NOT_SUPPORTED;
           exit
         end;
@@ -10045,7 +10296,8 @@ var
       // Detect old firmware
       if (self._caltyp < 0) or(self._scale < 0) then
         begin
-          self._throw(YAPI_NOT_SUPPORTED, 'Calibration parameters format mismatch. Please upgrade your library or firmware.');
+          self._throw(YAPI_NOT_SUPPORTED, 'Calibration parameters format mismatch. Please upgrade your lib'
+          + 'rary or firmware.');
           result := '0';
           exit
         end;
@@ -12345,6 +12597,11 @@ initialization
   randomize;
   YAPI_apiInitialized     := false;
   YAPI_ExceptionsDisabled := false;
+  // Default cache validity (in [ms]) before reloading data from device. This saves a lots of trafic.
+  // Note that a value undger 2 ms makes little sense since a USB bus itself has a 2ms roundtrip period
+  YAPI_DefaultCacheValidity := 5;
+
+
   YDevice_devCache        := Tlist.create();
   //--- (generated code: Module initialization)
   //--- (end of generated code: Module initialization)
