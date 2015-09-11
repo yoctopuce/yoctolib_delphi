@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 20508 2015-06-01 16:32:48Z seb $
+ * $Id: yocto_cellular.pas 21485 2015-09-11 14:10:22Z seb $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -49,6 +49,7 @@ uses
 
 const Y_LINKQUALITY_INVALID           = YAPI_INVALID_UINT;
 const Y_CELLOPERATOR_INVALID          = YAPI_INVALID_STRING;
+const Y_CELLIDENTIFIER_INVALID        = YAPI_INVALID_STRING;
 const Y_IMSI_INVALID                  = YAPI_INVALID_STRING;
 const Y_MESSAGE_INVALID               = YAPI_INVALID_STRING;
 const Y_PIN_INVALID                   = YAPI_INVALID_STRING;
@@ -95,6 +96,7 @@ type
     _advertisedValue          : string;
     _linkQuality              : LongInt;
     _cellOperator             : string;
+    _cellIdentifier           : string;
     _imsi                     : string;
     _message                  : string;
     _pin                      : string;
@@ -146,6 +148,23 @@ type
     /// </para>
     ///-
     function get_cellOperator():string;
+
+    ////
+    /// <summary>
+    ///   Returns the unique identifier of the cellular antenna in use: MCC, MNC, LAC and Cell ID.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the unique identifier of the cellular antenna in use: MCC, MNC, LAC and Cell ID
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_CELLIDENTIFIER_INVALID</c>.
+    /// </para>
+    ///-
+    function get_cellIdentifier():string;
 
     ////
     /// <summary>
@@ -707,6 +726,7 @@ implementation
       //--- (generated code: YCellular accessors initialization)
       _linkQuality := Y_LINKQUALITY_INVALID;
       _cellOperator := Y_CELLOPERATOR_INVALID;
+      _cellIdentifier := Y_CELLIDENTIFIER_INVALID;
       _imsi := Y_IMSI_INVALID;
       _message := Y_MESSAGE_INVALID;
       _pin := Y_PIN_INVALID;
@@ -736,6 +756,12 @@ implementation
       if (member^.name = 'cellOperator') then
         begin
           _cellOperator := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'cellIdentifier') then
+        begin
+          _cellIdentifier := string(member^.svalue);
          result := 1;
          exit;
          end;
@@ -847,6 +873,36 @@ implementation
             end;
         end;
       result := self._cellOperator;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the unique identifier of the cellular antenna in use: MCC, MNC, LAC and Cell ID.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a string corresponding to the unique identifier of the cellular antenna in use: MCC, MNC, LAC and Cell ID
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_CELLIDENTIFIER_INVALID.
+  /// </para>
+  ///-
+  function TYCellular.get_cellIdentifier():string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_CELLIDENTIFIER_INVALID;
+              exit
+            end;
+        end;
+      result := self._cellIdentifier;
       exit;
     end;
 

@@ -1,4 +1,6 @@
+- Add new methods set_allSettingsAndFiles() that restore settings and files
 - Add compiler sanity check on library initialization
 - Fix YWireless.joinNetwork(), YWireless.adhocNetwork() and YWireless.softAPNetwork() methods
 - Fix YAPI_Exception with invalid errorType
+- Fix occasional Exception during isOnline()
 - Fix potential crash if YAPI.RegisterHUB("usb") is called after YAPI.UnregisterHub("usb")

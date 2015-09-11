@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 21200 2015-08-19 13:09:00Z seb $
+ * $Id: yocto_api.pas 21405 2015-09-03 13:29:00Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -115,7 +115,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '21312';
+  YOCTO_API_BUILD_NO        = '21486';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -1435,10 +1435,10 @@ type
 
     ////
     /// <summary>
-    ///   Returns all the settings of the module.
+    ///   Returns all the settings and uploaded files of the module.
     /// <para>
-    ///   Useful to backup all the logical names and calibrations parameters
-    ///   of a connected module.
+    ///   Useful to backup all the logical names, calibrations parameters,
+    ///   and uploaded files of a connected module.
     /// </para>
     /// <para>
     /// </para>
@@ -1452,14 +1452,12 @@ type
     ///-
     function get_allSettings():TByteArray; overload; virtual;
 
-    function get_allSettings_dev():TByteArray; overload; virtual;
-
     ////
     /// <summary>
-    ///   Restores all the settings of the module.
+    ///   Restores all the settings and uploaded files of the module.
     /// <para>
-    ///   Useful to restore all the logical names and calibrations parameters
-    ///   of a module from a backup.Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   Useful to restore all the logical names and calibrations parameters, uploaded
+    ///   files etc.. of a module from a backup.Remember to call the <c>saveToFlash()</c> method of the module if the
     ///   modifications must be kept.
     /// </para>
     /// <para>
@@ -1475,7 +1473,7 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function set_allSettings_dev(settings: TByteArray):LongInt; overload; virtual;
+    function set_allSettingsAndFiles(settings: TByteArray):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -6501,8 +6499,8 @@ const
       end;
 
       node := p.GetChildNode(nil,key);
-      p.free();
       _json_get_key := string(node^.svalue);
+      p.free();
     end;
 
   function  TYFunction._json_get_array(data: TByteArray):TStringArray;
@@ -6802,7 +6800,8 @@ const
   function TYModule.functionType(functionIndex:integer):string;
     var
       serial, funcId, funcName, funcVal, errmsg:string;
-      res:integer;
+      res, i: integer;
+      first, c : char;
     begin
       res := _getFunction(functionIndex, serial, funcId, funcName, funcVal, errmsg);
       if(YISERR(res)) then
@@ -6811,7 +6810,14 @@ const
           result:=YAPI_INVALID_STRING;
           exit;
         end;
-      result:= funcId;
+      first := funcId[1];
+      for i := 2 to Length(funcId) do
+        begin
+          c := funcId[i];
+          if (c >= '0') and (c <= '9') Then
+            break;
+        end;
+      result := UpCase(first) + Copy(funcId, 2, i - 2);
     end;
 
   // Retrieve the logical name of the nth function (beside "module") in the device
@@ -7049,6 +7055,13 @@ var
             exit;
           end;
       end;
+      if j.httpcode <> 200 then
+        begin
+          errmsg := 'Unexpected HTTP return code:' + IntToStr(j.httpcode);
+          result:=YAPI_IO_ERROR;
+          exit;
+        end;
+
       // store result in cache
       if assigned(_cacheJson) then _cacheJson.free();
       _cacheJson:= j;
@@ -7958,10 +7971,10 @@ var
 
   ////
   /// <summary>
-  ///   Returns all the settings of the module.
+  ///   Returns all the settings and uploaded files of the module.
   /// <para>
-  ///   Useful to backup all the logical names and calibrations parameters
-  ///   of a connected module.
+  ///   Useful to backup all the logical names, calibrations parameters,
+  ///   and uploaded files of a connected module.
   /// </para>
   /// <para>
   /// </para>
@@ -7974,13 +7987,6 @@ var
   /// </para>
   ///-
   function TYModule.get_allSettings():TByteArray;
-    begin
-      result := self._download('api.json');
-      exit;
-    end;
-
-
-  function TYModule.get_allSettings_dev():TByteArray;
     var
       settings : TByteArray;
       json : TByteArray;
@@ -8007,7 +8013,7 @@ var
               name := self._json_get_key(_StrToByte( filelist[i_i]), 'name');
               file_data_bin := self._download(self._escapeAttr(name));
               file_data := _bytesToHexStr(file_data_bin, 0, length(file_data_bin));
-              file_data := ''+ sep+'{"name":"'+ name+'", "data":"'+file_data+'"}\n';
+              file_data := ''+ sep+'{"name":"'+ name+'", "data":"'+file_data+'"}'#10'';
               sep := ',';
               all_file_data := all_file_data + file_data
             end;
@@ -8021,10 +8027,10 @@ var
 
   ////
   /// <summary>
-  ///   Restores all the settings of the module.
+  ///   Restores all the settings and uploaded files of the module.
   /// <para>
-  ///   Useful to restore all the logical names and calibrations parameters
-  ///   of a module from a backup.Remember to call the <c>saveToFlash()</c> method of the module if the
+  ///   Useful to restore all the logical names and calibrations parameters, uploaded
+  ///   files etc.. of a module from a backup.Remember to call the <c>saveToFlash()</c> method of the module if the
   ///   modifications must be kept.
   /// </para>
   /// <para>
@@ -8040,7 +8046,7 @@ var
   ///   On failure, throws an exception or returns a negative error code.
   /// </para>
   ///-
-  function TYModule.set_allSettings_dev(settings: TByteArray):LongInt;
+  function TYModule.set_allSettingsAndFiles(settings: TByteArray):LongInt;
     var
       down : TByteArray;
       json : string;
@@ -8055,6 +8061,11 @@ var
       SetLength(files, 0);
       json := _ByteToString(settings);
       json_api := self._get_json_path(json, 'api');
+      if (json_api = '') then
+        begin
+          result := self.set_allSettings(settings);
+          exit
+        end;
       self.set_allSettings(_StrToByte(json_api));
       if self.hasFunction('files') then
         begin
@@ -8620,6 +8631,12 @@ var
       SetLength(new_dslist, 0);
       SetLength(new_jpath, 0);
       SetLength(new_val_arr, 0);
+      tmp := _ByteToString(settings);
+      tmp := self._get_json_path(tmp, 'api');
+      if not((tmp = '')) then
+        begin
+          settings := _StrToByte(tmp)
+        end;
       oldval := '';
       newval := '';
       old_json_flat := self._flattenJsonStruct(settings);
@@ -10723,7 +10740,7 @@ var
                 end;
               if self._progress < 100 then
                 begin
-                  m.set_allSettings(self._settings);
+                  m.set_allSettingsAndFiles(self._settings);
                   m.saveToFlash();
                   setlength(self._settings,0);
                   self._progress := 100;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 20508 2015-06-01 16:32:48Z seb $
+ * $Id: yocto_serialport.pas 21397 2015-09-03 06:26:28Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -2384,7 +2384,7 @@ implementation
       idx : LongInt;
       ch : LongInt;
     begin
-      buff := _StrToByte(''+text+'\r\n');
+      buff := _StrToByte(''+text+''#13''#10'');
       bufflen := length(buff)-2;
       if bufflen < 100 then
         begin
