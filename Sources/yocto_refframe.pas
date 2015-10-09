@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_refframe.pas 20508 2015-06-01 16:32:48Z seb $
+ * $Id: yocto_refframe.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -621,7 +621,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_MOUNTPOS_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._mountPos;
@@ -707,7 +707,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_BEARING_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._bearing;
@@ -722,7 +722,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_CALIBRATIONPARAM_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._calibrationParam;
@@ -788,7 +788,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYRefFrame.create(func);
-          TYFunction._AddToCache('RefFrame',  func, obj)
+          TYFunction._AddToCache('RefFrame',  func, obj);
         end;
       result := obj;
       exit;
@@ -819,11 +819,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackRefFrame := callback;
       // Immediately invoke value callback with current value
@@ -832,7 +832,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -844,11 +844,11 @@ implementation
     begin
       if (addr(self._valueCallbackRefFrame) <> nil) then
         begin
-          self._valueCallbackRefFrame(self, value)
+          self._valueCallbackRefFrame(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;
@@ -997,13 +997,13 @@ implementation
                   xb := self._calibDataAccZ[idx];
                   self._calibDataAccZ[ idx-1] := xb;
                   self._calibDataAccZ[ idx] := xa;
-                  changed := changed + 1
+                  changed := changed + 1;
                 end
               else
                 begin
-                  a := b
+                  a := b;
                 end;
-              idx := idx + 1
+              idx := idx + 1;
             end;
         end;
       result := 0;
@@ -1044,11 +1044,11 @@ implementation
       if not(self.isOnline) then
         begin
           result := YAPI_DEVICE_NOT_FOUND;
-          exit
+          exit;
         end;
       if self._calibStage <> 0 then
         begin
-          self.cancel3DCalibration
+          self.cancel3DCalibration;
         end;
       self._calibSavedParams := self.get_calibrationParam;
       self.set_calibrationParam('0');
@@ -1108,12 +1108,12 @@ implementation
       if self._calibStage = 0 then
         begin
           result := YAPI_INVALID_ARGUMENT;
-          exit
+          exit;
         end;
       if self._calibProgress = 100 then
         begin
           result := YAPI_SUCCESS;
-          exit
+          exit;
         end;
       
       // make sure we leave at least 160ms between samples
@@ -1121,7 +1121,7 @@ implementation
       if ((currTick - self._calibPrevTick) and ($07FFFFFFF)) < 160 then
         begin
           result := YAPI_SUCCESS;
-          exit
+          exit;
         end;
       // load current accelerometer values, make sure we are on a straight angle
       // (default timeout to 0,5 sec without reading measure when out of range)
@@ -1135,40 +1135,40 @@ implementation
       if xSq >= 0.04 and xSq < 0.64 then
         begin
           result := YAPI_SUCCESS;
-          exit
+          exit;
         end;
       if xSq >= 1.44 then
         begin
           result := YAPI_SUCCESS;
-          exit
+          exit;
         end;
       ySq := yVal * yVal;
       if ySq >= 0.04 and ySq < 0.64 then
         begin
           result := YAPI_SUCCESS;
-          exit
+          exit;
         end;
       if ySq >= 1.44 then
         begin
           result := YAPI_SUCCESS;
-          exit
+          exit;
         end;
       zSq := zVal * zVal;
       if zSq >= 0.04 and zSq < 0.64 then
         begin
           result := YAPI_SUCCESS;
-          exit
+          exit;
         end;
       if zSq >= 1.44 then
         begin
           result := YAPI_SUCCESS;
-          exit
+          exit;
         end;
       norm := Sqrt(xSq + ySq + zSq);
       if norm < 0.8 or norm > 1.2 then
         begin
           result := YAPI_SUCCESS;
-          exit
+          exit;
         end;
       self._calibPrevTick := currTick;
       
@@ -1178,33 +1178,33 @@ implementation
         begin
           if zVal > 0 then
             begin
-              orient := 0
+              orient := 0;
             end
           else
             begin
-              orient := 1
+              orient := 1;
             end;
         end;
       if xSq > 0.5 then
         begin
           if xVal > 0 then
             begin
-              orient := 2
+              orient := 2;
             end
           else
             begin
-              orient := 3
+              orient := 3;
             end;
         end;
       if ySq > 0.5 then
         begin
           if yVal > 0 then
             begin
-              orient := 4
+              orient := 4;
             end
           else
             begin
-              orient := 5
+              orient := 5;
             end;
         end;
       
@@ -1217,18 +1217,18 @@ implementation
             begin
               if self._calibOrient[idx] = orient then
                 begin
-                  err := 1
+                  err := 1;
                 end;
-              idx := idx + 1
+              idx := idx + 1;
             end;
           if err <> 0 then
             begin
               self._calibStageHint := 'Turn the device on another face';
               result := YAPI_SUCCESS;
-              exit
+              exit;
             end;
           self._calibOrient[calibOrient_pos] := orient;
-          inc(calibOrient_pos)
+          inc(calibOrient_pos);
         end
       else
         begin
@@ -1236,7 +1236,7 @@ implementation
             begin
               self._calibStageHint := 'Not yet done, please move back to the previous face';
               result := YAPI_SUCCESS;
-              exit
+              exit;
             end;
         end;
       
@@ -1256,7 +1256,7 @@ implementation
         begin
           self._calibStageProgress := 1 + (99 * self._calibInternalPos div self._calibCount);
           result := YAPI_SUCCESS;
-          exit
+          exit;
         end;
       
       // Stage done, compute preliminary result
@@ -1276,7 +1276,7 @@ implementation
           self._calibStageProgress := 0;
           self._calibInternalPos := 0;
           result := YAPI_SUCCESS;
-          exit
+          exit;
         end;
       // Data collection completed, compute accelerometer shift
       xVal := 0;
@@ -1289,17 +1289,17 @@ implementation
           orient := self._calibOrient[idx];
           if orient = 0 or orient = 1 then
             begin
-              zVal := zVal + self._calibDataAccZ[intpos]
+              zVal := zVal + self._calibDataAccZ[intpos];
             end;
           if orient = 2 or orient = 3 then
             begin
-              xVal := xVal + self._calibDataAccX[intpos]
+              xVal := xVal + self._calibDataAccX[intpos];
             end;
           if orient = 4 or orient = 5 then
             begin
-              yVal := yVal + self._calibDataAccY[intpos]
+              yVal := yVal + self._calibDataAccY[intpos];
             end;
-          idx := idx + 1
+          idx := idx + 1;
         end;
       self._calibAccXOfs := xVal / 2.0;
       self._calibAccYOfs := yVal / 2.0;
@@ -1314,14 +1314,14 @@ implementation
           zVal := self._calibDataAccZ[intpos] - self._calibAccZOfs;
           norm := Sqrt(xVal * xVal + yVal * yVal + zVal * zVal);
           self._calibDataAcc[ intpos] := norm;
-          intpos := intpos + 1
+          intpos := intpos + 1;
         end;
       idx := 0;
       while idx < 6 do
         begin
           intpos := idx * self._calibCount;
           self._calibSort(intpos, intpos + self._calibCount);
-          idx := idx + 1
+          idx := idx + 1;
         end;
       
       // Compute the scaling factor for each axis
@@ -1335,17 +1335,17 @@ implementation
           orient := self._calibOrient[idx];
           if orient = 0 or orient = 1 then
             begin
-              zVal := zVal + self._calibDataAcc[intpos]
+              zVal := zVal + self._calibDataAcc[intpos];
             end;
           if orient = 2 or orient = 3 then
             begin
-              xVal := xVal + self._calibDataAcc[intpos]
+              xVal := xVal + self._calibDataAcc[intpos];
             end;
           if orient = 4 or orient = 5 then
             begin
-              yVal := yVal + self._calibDataAcc[intpos]
+              yVal := yVal + self._calibDataAcc[intpos];
             end;
-          idx := idx + 1
+          idx := idx + 1;
         end;
       self._calibAccXScale := xVal / 2.0;
       self._calibAccYScale := yVal / 2.0;
@@ -1481,47 +1481,47 @@ implementation
       if self._calibProgress <> 100 then
         begin
           result := YAPI_INVALID_ARGUMENT;
-          exit
+          exit;
         end;
       
       // Compute integer values (correction unit is 732ug/count)
       shiftX := -round(self._calibAccXOfs / 0.000732);
       if shiftX < 0 then
         begin
-          shiftX := shiftX + 65536
+          shiftX := shiftX + 65536;
         end;
       shiftY := -round(self._calibAccYOfs / 0.000732);
       if shiftY < 0 then
         begin
-          shiftY := shiftY + 65536
+          shiftY := shiftY + 65536;
         end;
       shiftZ := -round(self._calibAccZOfs / 0.000732);
       if shiftZ < 0 then
         begin
-          shiftZ := shiftZ + 65536
+          shiftZ := shiftZ + 65536;
         end;
       scaleX := round(2048.0 / self._calibAccXScale) - 2048;
       scaleY := round(2048.0 / self._calibAccYScale) - 2048;
       scaleZ := round(2048.0 / self._calibAccZScale) - 2048;
       if scaleX < -2048 or scaleX >= 2048 or scaleY < -2048 or scaleY >= 2048 or scaleZ < -2048 or scaleZ >= 2048 then
         begin
-          scaleExp := 3
+          scaleExp := 3;
         end
       else
         begin
           if scaleX < -1024 or scaleX >= 1024 or scaleY < -1024 or scaleY >= 1024 or scaleZ < -1024 or scaleZ >= 1024 then
             begin
-              scaleExp := 2
+              scaleExp := 2;
             end
           else
             begin
               if scaleX < -512 or scaleX >= 512 or scaleY < -512 or scaleY >= 512 or scaleZ < -512 or scaleZ >= 512 then
                 begin
-                  scaleExp := 1
+                  scaleExp := 1;
                 end
               else
                 begin
-                  scaleExp := 0
+                  scaleExp := 0;
                 end;
             end;
         end;
@@ -1529,19 +1529,19 @@ implementation
         begin
           scaleX := ((scaleX) shr (scaleExp));
           scaleY := ((scaleY) shr (scaleExp));
-          scaleZ := ((scaleZ) shr (scaleExp))
+          scaleZ := ((scaleZ) shr (scaleExp));
         end;
       if scaleX < 0 then
         begin
-          scaleX := scaleX + 1024
+          scaleX := scaleX + 1024;
         end;
       if scaleY < 0 then
         begin
-          scaleY := scaleY + 1024
+          scaleY := scaleY + 1024;
         end;
       if scaleZ < 0 then
         begin
-          scaleZ := scaleZ + 1024
+          scaleZ := scaleZ + 1024;
         end;
       scaleLo := ((((scaleY) and 15)) shl 12) + ((scaleX) shl 2) + scaleExp;
       scaleHi := ((scaleZ) shl 6) + ((scaleY) shr 4);
@@ -1569,7 +1569,7 @@ implementation
       if self._calibStage = 0 then
         begin
           result := YAPI_SUCCESS;
-          exit
+          exit;
         end;
       // may throw an exception        
       self._calibStage := 0;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.pas 19338 2015-02-17 17:44:58Z seb $
+ * $Id: yocto_wakeupmonitor.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -591,7 +591,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_POWERDURATION_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._powerDuration;
@@ -649,7 +649,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_SLEEPCOUNTDOWN_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._sleepCountdown;
@@ -705,7 +705,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_NEXTWAKEUP_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._nextWakeUp;
@@ -765,7 +765,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_WAKEUPREASON_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._wakeUpReason;
@@ -793,7 +793,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_WAKEUPSTATE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._wakeUpState;
@@ -816,7 +816,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_RTCTIME_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._rtcTime;
@@ -874,7 +874,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYWakeUpMonitor.create(func);
-          TYFunction._AddToCache('WakeUpMonitor',  func, obj)
+          TYFunction._AddToCache('WakeUpMonitor',  func, obj);
         end;
       result := obj;
       exit;
@@ -905,11 +905,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackWakeUpMonitor := callback;
       // Immediately invoke value callback with current value
@@ -918,7 +918,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -930,11 +930,11 @@ implementation
     begin
       if (addr(self._valueCallbackWakeUpMonitor) <> nil) then
         begin
-          self._valueCallbackWakeUpMonitor(self, value)
+          self._valueCallbackWakeUpMonitor(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;

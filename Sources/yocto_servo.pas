@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_servo.pas 20287 2015-05-08 13:40:21Z seb $
+ * $Id: yocto_servo.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindServo(), the high-level API for Servo functions
  *
@@ -658,7 +658,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_POSITION_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._position;
@@ -716,7 +716,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_ENABLED_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._enabled;
@@ -774,7 +774,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_RANGE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._range;
@@ -838,7 +838,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_NEUTRAL_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._neutral;
@@ -886,7 +886,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_MOVE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._move;
@@ -955,7 +955,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_POSITIONATPOWERON_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._positionAtPowerOn;
@@ -1016,7 +1016,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_ENABLEDATPOWERON_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._enabledAtPowerOn;
@@ -1104,7 +1104,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYServo.create(func);
-          TYFunction._AddToCache('Servo',  func, obj)
+          TYFunction._AddToCache('Servo',  func, obj);
         end;
       result := obj;
       exit;
@@ -1135,11 +1135,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackServo := callback;
       // Immediately invoke value callback with current value
@@ -1148,7 +1148,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -1160,11 +1160,11 @@ implementation
     begin
       if (addr(self._valueCallbackServo) <> nil) then
         begin
-          self._valueCallbackServo(self, value)
+          self._valueCallbackServo(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;

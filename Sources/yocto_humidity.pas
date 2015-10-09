@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_humidity.pas 21211 2015-08-19 16:03:29Z seb $
+ * $Id: yocto_humidity.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindHumidity(), the high-level API for Humidity functions
  *
@@ -437,7 +437,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_RELHUM_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._relHum;
@@ -467,7 +467,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_ABSHUM_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._absHum;
@@ -525,7 +525,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYHumidity.create(func);
-          TYFunction._AddToCache('Humidity',  func, obj)
+          TYFunction._AddToCache('Humidity',  func, obj);
         end;
       result := obj;
       exit;
@@ -556,11 +556,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackHumidity := callback;
       // Immediately invoke value callback with current value
@@ -569,7 +569,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -581,11 +581,11 @@ implementation
     begin
       if (addr(self._valueCallbackHumidity) <> nil) then
         begin
-          self._valueCallbackHumidity(self, value)
+          self._valueCallbackHumidity(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;
@@ -614,11 +614,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, true)
+          TYFunction._UpdateTimedReportCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, false)
+          TYFunction._UpdateTimedReportCallbackList(self, false);
         end;
       self._timedReportCallbackHumidity := callback;
       result := 0;
@@ -630,11 +630,11 @@ implementation
     begin
       if (addr(self._timedReportCallbackHumidity) <> nil) then
         begin
-          self._timedReportCallbackHumidity(self, value)
+          self._timedReportCallbackHumidity(self, value);
         end
       else
         begin
-          inherited _invokeTimedReportCallback(value)
+          inherited _invokeTimedReportCallback(value);
         end;
       result := 0;
       exit;

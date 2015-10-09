@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 21405 2015-09-03 13:29:00Z seb $
+ * $Id: yocto_api.pas 21680 2015-10-02 13:42:44Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -115,7 +115,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '21486';
+  YOCTO_API_BUILD_NO        = '21701';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -317,6 +317,7 @@ type
     function  HTTPRequest(request :string ; var buffer : TByteArray; var   errmsg:string) : YRETCODE; overload;
     function  HTTPRequest(request :TByteArray ; var buffer : TByteArray; var   errmsg:string) : YRETCODE; overload;
     function  requestAPI(var apires:TJsonParser;var errmsg:string):YRETCODE;
+    procedure clearCache();
     function  getFunctions(var functions:tlist; var errmsg:string):YRETCODE;
     destructor Destroy();override;
   end;
@@ -569,6 +570,21 @@ type
     /// </para>
     ///-
     function load(msValidity:integer):YRETCODE;
+
+    ////
+    /// <summary>
+    ///   Invalidate the cache.
+    /// <para>
+    ///   Invalidate the cache of the function attributes. Force the
+    ///   next call to get_xxx() or loadxxx() to use value that come from the device..
+    /// </para>
+    /// <para>
+    /// @noreturn
+    /// </para>
+    /// </summary>
+    ///-
+    procedure clearCache();
+
 
     ////
     /// <summary>
@@ -1428,7 +1444,7 @@ type
     ///   the path of the byn file to use.
     /// </param>
     /// <returns>
-    ///   : A <c>YFirmwareUpdate</c> object.
+    ///   : A <c>YFirmwareUpdate</c> object or NULL on error.
     /// </returns>
     ///-
     function updateFirmware(path: string):TYFirmwareUpdate; overload; virtual;
@@ -1447,10 +1463,14 @@ type
     ///   a binary buffer with all the settings.
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns  <c>YAPI_INVALID_STRING</c>.
+    ///   On failure, throws an exception or returns an binary object of size 0.
     /// </para>
     ///-
     function get_allSettings():TByteArray; overload; virtual;
+
+    function loadThermistorExtra(funcId: string; jsonExtra: string):LongInt; overload; virtual;
+
+    function set_extraSettings(jsonExtra: string):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -6034,7 +6054,7 @@ const
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_LOGICALNAME_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._logicalName;
@@ -6102,7 +6122,7 @@ const
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_ADVERTISEDVALUE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._advertisedValue;
@@ -6160,7 +6180,7 @@ const
       if obj = nil then
         begin
           obj :=  TYFunction.create(func);
-          TYFunction._AddToCache('Function',  func, obj)
+          TYFunction._AddToCache('Function',  func, obj);
         end;
       result := obj;
       exit;
@@ -6191,11 +6211,11 @@ const
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackFunction := callback;
       // Immediately invoke value callback with current value
@@ -6204,7 +6224,7 @@ const
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -6216,7 +6236,7 @@ const
     begin
       if (addr(self._valueCallbackFunction) <> nil) then
         begin
-          self._valueCallbackFunction(self, value)
+          self._valueCallbackFunction(self, value);
         end
       else
         begin
@@ -6628,6 +6648,21 @@ const
         end;
       _parse(node);
       result := YAPI_SUCCESS;
+    end;
+
+  procedure TYFunction.clearCache();
+    var
+      dev            : TYDevice;
+      errmsg         : string;
+      res            : integer;
+    begin
+      // Resolve our reference to our device, load REST API
+      res := _getDevice(dev, errmsg);
+      if(YISERR(res))  then
+        exit;
+      dev.clearCache();
+      if (_cacheExpiration <> 0) then
+        _cacheExpiration := yGetTickCount();
     end;
 
   // Return the YModule object for the device on which the function is located
@@ -7070,6 +7105,13 @@ var
       result:= YAPI_SUCCESS;
     end;
 
+    procedure TYDevice.clearCache();
+      begin
+        if assigned(_cacheJson) then _cacheJson.free();
+        _cacheJson := nil;
+        _cacheStamp := 0;
+      end;
+
     function TYDevice.getFunctions(var  functions:tlist; var errmsg:string):YRETCODE;
       var
         res,neededsize,i,count:integer;
@@ -7232,7 +7274,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PRODUCTNAME_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._productName;
@@ -7262,7 +7304,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_SERIALNUMBER_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._serialNumber;
@@ -7292,7 +7334,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PRODUCTID_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._productId;
@@ -7322,7 +7364,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PRODUCTRELEASE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._productRelease;
@@ -7352,7 +7394,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_FIRMWARERELEASE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._firmwareRelease;
@@ -7383,7 +7425,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PERSISTENTSETTINGS_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._persistentSettings;
@@ -7421,7 +7463,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_LUMINOSITY_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._luminosity;
@@ -7483,7 +7525,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_BEACON_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._beacon;
@@ -7541,7 +7583,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_UPTIME_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._upTime;
@@ -7571,7 +7613,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_USBCURRENT_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._usbCurrent;
@@ -7603,7 +7645,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_REBOOTCOUNTDOWN_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._rebootCountdown;
@@ -7642,7 +7684,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_USERVAR_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._userVar;
@@ -7729,7 +7771,7 @@ var
       if obj = nil then
         begin
           obj :=  TYModule.create(func);
-          TYFunction._AddToCache('Module',  func, obj)
+          TYFunction._AddToCache('Module',  func, obj);
         end;
       result := obj;
       exit;
@@ -7760,11 +7802,11 @@ var
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackModule := callback;
       // Immediately invoke value callback with current value
@@ -7773,7 +7815,7 @@ var
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -7785,11 +7827,11 @@ var
     begin
       if (addr(self._valueCallbackModule) <> nil) then
         begin
-          self._valueCallbackModule(self, value)
+          self._valueCallbackModule(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;
@@ -7922,18 +7964,18 @@ var
     begin
       if onlynew then
         begin
-          release := _atoi(self.get_firmwareRelease)
+          release := _atoi(self.get_firmwareRelease);
         end
       else
         begin
-          release := 0
+          release := 0;
         end;
       //may throw an exception
       serial := self.get_serialNumber;
       tmp_res := TYFirmwareUpdate.CheckFirmware(serial, path, release);
       if (pos('error:', tmp_res) - 1) = 0 then
         begin
-          self._throw(YAPI_INVALID_ARGUMENT, tmp_res)
+          self._throw(YAPI_INVALID_ARGUMENT, tmp_res);
         end;
       result := tmp_res;
       exit;
@@ -7954,7 +7996,7 @@ var
   ///   the path of the byn file to use.
   /// </param>
   /// <returns>
-  ///   : A <c>YFirmwareUpdate</c> object.
+  ///   : A <c>YFirmwareUpdate</c> object or NULL on error.
   /// </returns>
   ///-
   function TYModule.updateFirmware(path: string):TYFirmwareUpdate;
@@ -7964,6 +8006,11 @@ var
     begin
       serial := self.get_serialNumber;
       settings := self.get_allSettings;
+      if length(settings) = 0 then
+        begin
+          self._throw(YAPI_IO_ERROR, 'Unable to get device settings');
+          settings := _StrToByte('error:Unable to get device settings');
+        end;
       result := TYFirmwareUpdate.create(serial, path, settings);
       exit;
     end;
@@ -7983,7 +8030,7 @@ var
   ///   a binary buffer with all the settings.
   /// </returns>
   /// <para>
-  ///   On failure, throws an exception or returns  <c>YAPI_INVALID_STRING</c>.
+  ///   On failure, throws an exception or returns an binary object of size 0.
   /// </para>
   ///-
   function TYModule.get_allSettings():TByteArray;
@@ -7993,34 +8040,134 @@ var
       res : TByteArray;
       sep : string;
       name : string;
+      item : string;
+      t_type : string;
+      id : string;
+      url : string;
       file_data : string;
       file_data_bin : TByteArray;
-      all_file_data : string;
+      temp_data_bin : TByteArray;
+      ext_settings : string;
       filelist : TStringArray;
+      templist : TStringArray;
       i_i : LongInt;
     begin
       SetLength(filelist, 0);
+      SetLength(templist, 0);
       // may throw an exception
       settings := self._download('api.json');
-      all_file_data := ', "files":[';
+      if length(settings) = 0 then
+        begin
+          result := settings;
+          exit;
+        end;
+      ext_settings := ', "extras":[';
+      templist := self.get_functionIds('Temperature');
+      sep := '';
+      for i_i:=0 to length( templist)-1 do
+        begin
+          if _atoi(self.get_firmwareRelease) > 9000 then
+            begin
+              url := 'api/'+ templist[i_i]+'/sensorType';
+              t_type := _ByteToString(self._download(url));
+              if (t_type = 'RES_NTC') then
+                begin
+                  id := Copy( templist[i_i],  11 + 1, Length( templist[i_i]) - 11);
+                  temp_data_bin := self._download('extra.json?page='+id);
+                  if length(temp_data_bin) = 0 then
+                    begin
+                      result := temp_data_bin;
+                      exit;
+                    end;
+                  item := ''+ sep+'{"fid":"'+  templist[i_i]+'", "json":'+_ByteToString(temp_data_bin)+'}'#10'';
+                  ext_settings := ext_settings + item;
+                  sep := ',';
+                end;
+            end;
+        end;
+      ext_settings :=  ext_settings + '],'#10'"files":[';
       if self.hasFunction('files') then
         begin
           json := self._download('files.json?a=dir&f=');
+          if length(json) = 0 then
+            begin
+              result := json;
+              exit;
+            end;
           filelist := self._json_get_array(json);
           sep := '';
           for i_i:=0 to length( filelist)-1 do
             begin
               name := self._json_get_key(_StrToByte( filelist[i_i]), 'name');
+              if Length(name) = 0 then
+                begin
+                  result := _StrToByte(name);
+                  exit;
+                end;
               file_data_bin := self._download(self._escapeAttr(name));
               file_data := _bytesToHexStr(file_data_bin, 0, length(file_data_bin));
-              file_data := ''+ sep+'{"name":"'+ name+'", "data":"'+file_data+'"}'#10'';
+              item := ''+ sep+'{"name":"'+ name+'", "data":"'+file_data+'"}'#10'';
+              ext_settings := ext_settings + item;
               sep := ',';
-              all_file_data := all_file_data + file_data
             end;
         end;
-      all_file_data := all_file_data + ']}';
-      res := _bytesMerge(_StrToByte('{ "api":'), _bytesMerge(settings, _StrToByte(all_file_data)));
+      ext_settings := ext_settings + ']}';
+      res := _bytesMerge(_StrToByte('{ "api":'), _bytesMerge(settings, _StrToByte(ext_settings)));
       result := res;
+      exit;
+    end;
+
+
+  function TYModule.loadThermistorExtra(funcId: string; jsonExtra: string):LongInt;
+    var
+      values : TStringArray;
+      url : string;
+      curr : string;
+      currTemp : string;
+      ofs : LongInt;
+      size : LongInt;
+    begin
+      SetLength(values, 0);
+      url := 'api/' + funcId + '.json?command=Z';
+      // may throw an exception
+      self._download(url);
+      // add records in growing resistance value
+      values := self._json_get_array(_StrToByte(jsonExtra));
+      ofs := 0;
+      size := length(values);
+      while ofs + 1 < size do
+        begin
+          curr := values[ofs];
+          currTemp := values[ofs + 1];
+          url := 'api/'+  funcId+'/.json?command=m'+ curr+':'+currTemp;
+          self._download(url);
+          ofs := ofs + 2;
+        end;
+      result := YAPI_SUCCESS;
+      exit;
+    end;
+
+
+  function TYModule.set_extraSettings(jsonExtra: string):LongInt;
+    var
+      extras : TStringArray;
+      functionId : string;
+      data : string;
+      i_i : LongInt;
+    begin
+      SetLength(extras, 0);
+      extras := self._json_get_array(_StrToByte(jsonExtra));
+      for i_i:=0 to length( extras)-1 do
+        begin
+          functionId := self._get_json_path( extras[i_i], 'fid');
+          functionId := self._decode_json_string(functionId);
+          data := self._get_json_path( extras[i_i], 'json');
+          if self.hasFunction(functionId) then
+            begin
+              self.loadThermistorExtra(functionId, data);
+            end;
+        end;
+      result := YAPI_SUCCESS;
       exit;
     end;
 
@@ -8052,6 +8199,7 @@ var
       json : string;
       json_api : string;
       json_files : string;
+      json_extra : string;
         files : TStringArray;
         res : string;
         name : string;
@@ -8064,7 +8212,12 @@ var
       if (json_api = '') then
         begin
           result := self.set_allSettings(settings);
-          exit
+          exit;
+        end;
+      json_extra := self._get_json_path(json, 'extras');
+      if not((json_extra = '')) then
+        begin
+          self.set_extraSettings(json_extra);
         end;
       self.set_allSettings(_StrToByte(json_api));
       if self.hasFunction('files') then
@@ -8086,7 +8239,7 @@ var
               name := self._decode_json_string(name);
               data := self._get_json_path( files[i_i], 'data');
               data := self._decode_json_string(data);
-              self._upload(name, _hexStrToBin(data))
+              self._upload(name, _hexStrToBin(data));
             end;
         end;
       result := YAPI_SUCCESS;
@@ -8127,9 +8280,9 @@ var
           if (fid = funcId) then
             begin
               result := true;
-              exit
+              exit;
             end;
-          i := i + 1
+          i := i + 1;
         end;
       result := false;
       exit;
@@ -8173,9 +8326,9 @@ var
           if (ftype = funType) then
             begin
               res[res_pos] := self.functionId(i);
-              inc(res_pos)
+              inc(res_pos);
             end;
-          i := i + 1
+          i := i + 1;
         end;
       SetLength(res, res_pos);;
       result := res;
@@ -8206,11 +8359,11 @@ var
           self._throw(YAPI_INVALID_ARGUMENT, string(errmsg));
           jsonflat := 'error:' + string(errmsg);
           result := _StrToByte(jsonflat);
-          exit
+          exit;
         end;
       if fullsize <= 1024 then
         begin
-          jsonflat := string(smallbuff)
+          jsonflat := string(smallbuff);
         end
       else
         begin
@@ -8221,13 +8374,13 @@ var
           if res < 0 then
             begin
               self._throw(YAPI_INVALID_ARGUMENT, string(errmsg));
-              jsonflat := 'error:' + string(errmsg)
+              jsonflat := 'error:' + string(errmsg);
             end
           else
             begin
-              jsonflat := string(bigbuff)
+              jsonflat := string(bigbuff);
             end;
-          freemem(bigbuff)
+          freemem(bigbuff);
         end;
       result := _StrToByte(jsonflat);
       exit;
@@ -8239,35 +8392,35 @@ var
       if (cparams = '0,') then
         begin
           result := 3;
-          exit
+          exit;
         end;
       if (pos(',', cparams) - 1) >= 0 then
         begin
           if (pos(' ', cparams) - 1) > 0 then
             begin
               result := 3;
-              exit
+              exit;
             end
           else
             begin
               result := 1;
-              exit
+              exit;
             end;
         end;
       if (cparams = '') or (cparams = '0') then
         begin
           result := 1;
-          exit
+          exit;
         end;
       if (Length(cparams) < 2) or((pos('.', cparams) - 1) >= 0) then
         begin
           result := 0;
-          exit
+          exit;
         end
       else
         begin
           result := 2;
-          exit
+          exit;
         end;
     end;
 
@@ -8277,30 +8430,30 @@ var
       if (unit_name = 'g') or (unit_name = 'gauss') or (unit_name = 'W') then
         begin
           result := 1000;
-          exit
+          exit;
         end;
       if (unit_name = 'C') then
         begin
           if (sensorType = '') then
             begin
               result := 16;
-              exit
+              exit;
             end;
           if _atoi(sensorType) < 8 then
             begin
               result := 16;
-              exit
+              exit;
             end
           else
             begin
               result := 100;
-              exit
+              exit;
             end;
         end;
       if (unit_name = 'm') or (unit_name = 'deg') then
         begin
           result := 10;
-          exit
+          exit;
         end;
       result := 1;
       exit;
@@ -8312,7 +8465,7 @@ var
       if (unit_name = '% RH') or (unit_name = 'mbar') or (unit_name = 'lx') then
         begin
           result := 0;
-          exit
+          exit;
         end;
       result := 32767;
       exit;
@@ -8357,12 +8510,12 @@ var
               if (words[0] = 1366) and(words[1] = 12500) then
                 begin
                   funScale := 1;
-                  funOffset := 0
+                  funOffset := 0;
                 end
               else
                 begin
                   funScale := words[1];
-                  funOffset := words[0]
+                  funOffset := words[0];
                 end;
             end
           else
@@ -8371,7 +8524,7 @@ var
                 begin
                   if (currentFuncValue = '') or(_atoi(currentFuncValue) > 10) then
                     begin
-                      funScale := 0
+                      funScale := 0;
                     end;
                 end;
             end;
@@ -8386,19 +8539,19 @@ var
               if (words[0] = 1366) and(words[1] = 12500) then
                 begin
                   paramScale := 1;
-                  paramOffset := 0
+                  paramOffset := 0;
                 end
               else
                 begin
                   paramScale := words[1];
-                  paramOffset := words[0]
+                  paramOffset := words[0];
                 end;
               if (length(words) >= 3) and(words[2] > 0) then
                 begin
                   maxSize := 3 + 2 * ((words[2]) Mod (10));
                   if maxSize > length(words) then
                     begin
-                      maxSize := length(words)
+                      maxSize := length(words);
                     end;
                   calibData_pos := length(calibData);
                   SetLength(calibData, calibData_pos+maxSize);
@@ -8407,7 +8560,7 @@ var
                     begin
                       calibData[calibData_pos] := words[i];
                       inc(calibData_pos);
-                      i := i + 1
+                      i := i + 1;
                     end;
                   SetLength(calibData, calibData_pos);
                 end;
@@ -8422,19 +8575,19 @@ var
                   for i_i:=0 to length(words_str)-1 do
                     begin
                       words[words_pos] := _atoi(words_str[i_i]);
-                      inc(words_pos)
+                      inc(words_pos);
                     end;
                   SetLength(words, words_pos);
                   if (param = '') or(words[0] > 10) then
                     begin
-                      paramScale := 0
+                      paramScale := 0;
                     end;
                   if (length(words) > 0) and(words[0] > 0) then
                     begin
                       maxSize := 1 + 2 * ((words[0]) Mod (10));
                       if maxSize > length(words) then
                         begin
-                          maxSize := length(words)
+                          maxSize := length(words);
                         end;
                       i := 1;
                       calibData_pos := length(calibData);
@@ -8443,7 +8596,7 @@ var
                         begin
                           calibData[calibData_pos] := words[i];
                           inc(calibData_pos);
-                          i := i + 1
+                          i := i + 1;
                         end;
                       SetLength(calibData, calibData_pos);
                     end;
@@ -8464,7 +8617,7 @@ var
                           calibData[calibData_pos] := round(65535 / ratio);
                           inc(calibData_pos);
                           calibData[calibData_pos] := 65535.0;
-                          inc(calibData_pos)
+                          inc(calibData_pos);
                         end;
                       SetLength(calibData, calibData_pos);
                     end;
@@ -8475,13 +8628,13 @@ var
             begin
               if paramScale > 0 then
                 begin
-                  calibData[ i] := (calibData[i] - paramOffset) / paramScale
+                  calibData[ i] := (calibData[i] - paramOffset) / paramScale;
                 end
               else
                 begin
-                  calibData[ i] := _decimalToDouble(round(calibData[i]))
+                  calibData[ i] := _decimalToDouble(round(calibData[i]));
                 end;
-              i := i + 1
+              i := i + 1;
             end;
         end
       else
@@ -8490,7 +8643,7 @@ var
           calibType := round(iCalib[0] / 1000.0);
           if calibType >= 30 then
             begin
-              calibType := calibType - 30
+              calibType := calibType - 30;
             end;
           i := 1;
           calibData_pos := length(calibData);
@@ -8499,7 +8652,7 @@ var
             begin
               calibData[calibData_pos] := iCalib[i] / 1000.0;
               inc(calibData_pos);
-              i := i + 1
+              i := i + 1;
             end;
           SetLength(calibData, calibData_pos);
         end;
@@ -8507,7 +8660,7 @@ var
         begin
           if length(calibData) = 0 then
             begin
-              param := '0,'
+              param := '0,';
             end
           else
             begin
@@ -8517,16 +8670,16 @@ var
                 begin
                   if ((i) and 1) > 0 then
                     begin
-                      param := param + ':'
+                      param := param + ':';
                     end
                   else
                     begin
-                      param := param + ' '
+                      param := param + ' ';
                     end;
                   param := param + IntToStr(round(calibData[i] * 1000.0 / 1000.0));
-                  i := i + 1
+                  i := i + 1;
                 end;
-              param := param + ','
+              param := param + ',';
             end;
         end
       else
@@ -8540,21 +8693,21 @@ var
                 begin
                   if funScale = 0 then
                     begin
-                      wordVal := _doubleToDecimal(round(calibData[i]))
+                      wordVal := _doubleToDecimal(round(calibData[i]));
                     end
                   else
                     begin
-                      wordVal := calibData[i] * funScale + funOffset
+                      wordVal := calibData[i] * funScale + funOffset;
                     end;
                   param := param + ',' + _yapiFloatToStr(round(wordVal));
-                  i := i + 1
+                  i := i + 1;
                 end;
             end
           else
             begin
               if length(calibData) = 4 then
                 begin
-                  param := _yapiFloatToStr(round(1000 * (calibData[3] - calibData[1]) / calibData[2] - calibData[0]))
+                  param := _yapiFloatToStr(round(1000 * (calibData[3] - calibData[1]) / calibData[2] - calibData[0]));
                 end;
             end;
         end;
@@ -8635,7 +8788,7 @@ var
       tmp := self._get_json_path(tmp, 'api');
       if not((tmp = '')) then
         begin
-          settings := _StrToByte(tmp)
+          settings := _StrToByte(tmp);
         end;
       oldval := '';
       newval := '';
@@ -8656,7 +8809,7 @@ var
             begin
               self._throw(YAPI_INVALID_ARGUMENT, 'Invalid settings');
               result := YAPI_INVALID_ARGUMENT;
-              exit
+              exit;
             end;
           jpath := Copy(each_str,  0 + 1, eqpos);
           eqpos := eqpos + 1;
@@ -8666,7 +8819,7 @@ var
           old_jpath_len[len_pos] := Length(jpath);
           inc(len_pos);
           old_val_arr[arr_pos] := value;
-          inc(arr_pos)
+          inc(arr_pos);
         end;
       SetLength(old_jpath, jpath_pos);;
       SetLength(old_jpath_len, len_pos);;
@@ -8690,7 +8843,7 @@ var
             begin
               self._throw(YAPI_INVALID_ARGUMENT, 'Invalid settings');
               result := YAPI_INVALID_ARGUMENT;
-              exit
+              exit;
             end;
           jpath := Copy(each_str,  0 + 1, eqpos);
           eqpos := eqpos + 1;
@@ -8700,7 +8853,7 @@ var
           new_jpath_len[len_pos] := Length(jpath);
           inc(len_pos);
           new_val_arr[arr_pos] := value;
-          inc(arr_pos)
+          inc(arr_pos);
         end;
       SetLength(new_jpath, jpath_pos);;
       SetLength(new_jpath_len, len_pos);;
@@ -8715,7 +8868,7 @@ var
           cpos := (pos('/', njpath) - 1);
           if (cpos < 0) or(leng = 0) then
             begin
-              continue
+              continue;
             end;
           fun := Copy(njpath,  0 + 1, cpos);
           cpos := cpos + 1;
@@ -8723,151 +8876,151 @@ var
           do_update := true;
           if (fun = 'services') then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'firmwareRelease')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'usbCurrent')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'upTime')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'persistentSettings')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'adminPassword')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'userPassword')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'rebootCountdown')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'advertisedValue')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'poeCurrent')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'readiness')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'ipAddress')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'subnetMask')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'router')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'linkQuality')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'ssid')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'channel')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'security')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'message')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'currentValue')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'currentRawValue')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'currentRunIndex')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'pulseTimer')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'lastTimePressed')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'lastTimeReleased')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'filesCount')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'freeSpace')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'timeUTC')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'rtcTime')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'unixTime')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'dateTime')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'rawValue')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'lastMsg')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'delayedPulseTimer')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'rxCount')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'txCount')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if (do_update) and((attr = 'msgCount')) then
             begin
-              do_update := false
+              do_update := false;
             end;
           if do_update then
             begin
@@ -8883,10 +9036,10 @@ var
                       oldval := old_val_arr[j];
                       if not((newval = oldval)) then
                         begin
-                          do_update := true
+                          do_update := true;
                         end;
                     end;
-                  j := j + 1
+                  j := j + 1;
                 end;
             end;
           if do_update then
@@ -8904,9 +9057,9 @@ var
                       if (new_jpath_len[i] = old_jpath_len[j]) and((new_jpath[i] = old_jpath[j])) then
                         begin
                           found := true;
-                          old_calib := old_val_arr[j]
+                          old_calib := old_val_arr[j];
                         end;
-                      j := j + 1
+                      j := j + 1;
                     end;
                   tmp := fun + '/unit';
                   j := 0;
@@ -8916,9 +9069,9 @@ var
                       if (tmp = new_jpath[j]) then
                         begin
                           found := true;
-                          unit_name := new_val_arr[j]
+                          unit_name := new_val_arr[j];
                         end;
-                      j := j + 1
+                      j := j + 1;
                     end;
                   tmp := fun + '/sensorType';
                   j := 0;
@@ -8928,13 +9081,13 @@ var
                       if (tmp = new_jpath[j]) then
                         begin
                           found := true;
-                          sensorType := new_val_arr[j]
+                          sensorType := new_val_arr[j];
                         end;
-                      j := j + 1
+                      j := j + 1;
                     end;
                   newval := self.calibConvert(old_calib,  new_val_arr[i],  unit_name, sensorType);
                   url := 'api/' + fun + '.json?' + attr + '=' + self._escapeAttr(newval);
-                  self._download(url)
+                  self._download(url);
                 end
               else
                 begin
@@ -8942,20 +9095,20 @@ var
                   if (attr = 'resolution') then
                     begin
                       restoreLast[restoreLast_pos] := url;
-                      inc(restoreLast_pos)
+                      inc(restoreLast_pos);
                     end
                   else
                     begin
-                      self._download(url)
+                      self._download(url);
                     end;
                 end;
             end;
-          i := i + 1
+          i := i + 1;
         end;
       SetLength(restoreLast, restoreLast_pos);;
       for i_i:=0 to length(restoreLast)-1 do
         begin
-          self._download(restoreLast[i_i])
+          self._download(restoreLast[i_i]);
         end;
       result := YAPI_SUCCESS;
       exit;
@@ -9227,7 +9380,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_UNIT_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._unit;
@@ -9260,13 +9413,13 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_CURRENTVALUE_INVALID;
-              exit
+              exit;
             end;
         end;
       res := self._applyCalibration(self._currentRawValue);
       if res = Y_CURRENTVALUE_INVALID then
         begin
-          res := self._currentValue
+          res := self._currentValue;
         end;
       res := res * self._iresol;
       result := round(res) / self._iresol;
@@ -9326,7 +9479,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_LOWESTVALUE_INVALID;
-              exit
+              exit;
             end;
         end;
       res := self._lowestValue * self._iresol;
@@ -9387,7 +9540,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_HIGHESTVALUE_INVALID;
-              exit
+              exit;
             end;
         end;
       res := self._highestValue * self._iresol;
@@ -9419,7 +9572,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_CURRENTRAWVALUE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._currentRawValue;
@@ -9451,7 +9604,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_LOGFREQUENCY_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._logFrequency;
@@ -9515,7 +9668,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_REPORTFREQUENCY_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._reportFrequency;
@@ -9562,7 +9715,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_CALIBRATIONPARAM_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._calibrationParam;
@@ -9632,7 +9785,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_RESOLUTION_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._resolution;
@@ -9664,7 +9817,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_SENSORSTATE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._sensorState;
@@ -9722,7 +9875,7 @@ var
       if obj = nil then
         begin
           obj :=  TYSensor.create(func);
-          TYFunction._AddToCache('Sensor',  func, obj)
+          TYFunction._AddToCache('Sensor',  func, obj);
         end;
       result := obj;
       exit;
@@ -9753,11 +9906,11 @@ var
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackSensor := callback;
       // Immediately invoke value callback with current value
@@ -9766,7 +9919,7 @@ var
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -9778,11 +9931,11 @@ var
     begin
       if (addr(self._valueCallbackSensor) <> nil) then
         begin
-          self._valueCallbackSensor(self, value)
+          self._valueCallbackSensor(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;
@@ -9811,19 +9964,19 @@ var
       // Store inverted resolution, to provide better rounding
       if self._resolution > 0 then
         begin
-          self._iresol := round(1.0 / self._resolution)
+          self._iresol := round(1.0 / self._resolution);
         end
       else
         begin
           self._iresol := 10000;
-          self._resolution := 0.0001
+          self._resolution := 0.0001;
         end;
       // Old format: supported when there is no calibration
       if (self._calibrationParam = '') or (self._calibrationParam = '0') then
         begin
           self._caltyp := 0;
           result := 0;
-          exit
+          exit;
         end;
       if (pos(',', self._calibrationParam) - 1) >= 0 then
         begin
@@ -9835,14 +9988,14 @@ var
                 begin
                   self._caltyp := -1;
                   result := 0;
-                  exit
+                  exit;
                 end;
               self._calhdl := _getCalibrationHandler(self._caltyp);
               if not((addr(self._calhdl) <> nil)) then
                 begin
                   self._caltyp := -1;
                   result := 0;
-                  exit
+                  exit;
                 end;
             end;
           self._isScal := true;
@@ -9857,7 +10010,7 @@ var
             begin
               self._calpar[calpar_pos] := iCalib[position];
               inc(calpar_pos);
-              position := position + 1
+              position := position + 1;
             end;
           SetLength(self._calpar, calpar_pos);
           calraw_pos := 0;
@@ -9875,7 +10028,7 @@ var
               inc(calraw_pos);
               self._calref[calref_pos] := fRef;
               inc(calref_pos);
-              position := position + 2
+              position := position + 2;
             end;
           SetLength(self._calraw, calraw_pos);
           SetLength(self._calref, calref_pos);
@@ -9887,7 +10040,7 @@ var
             begin
               self._caltyp := -1;
               result := 0;
-              exit
+              exit;
             end;
           self._isScal := (iCalib[1] > 0);
           if self._isScal then
@@ -9895,10 +10048,10 @@ var
               self._offset := iCalib[0];
               if self._offset > 32767 then
                 begin
-                  self._offset := self._offset - 65536
+                  self._offset := self._offset - 65536;
                 end;
               self._scale := iCalib[1];
-              self._decexp := 0
+              self._decexp := 0;
             end
           else
             begin
@@ -9909,36 +10062,36 @@ var
               while position > 0 do
                 begin
                   self._decexp := self._decexp * 10;
-                  position := position - 1
+                  position := position - 1;
                 end;
             end;
           if length(iCalib) = 2 then
             begin
               self._caltyp := 0;
               result := 0;
-              exit
+              exit;
             end;
           self._caltyp := iCalib[2];
           self._calhdl := _getCalibrationHandler(self._caltyp);
           if self._caltyp <= 10 then
             begin
-              maxpos := self._caltyp
+              maxpos := self._caltyp;
             end
           else
             begin
               if self._caltyp <= 20 then
                 begin
-                  maxpos := self._caltyp - 10
+                  maxpos := self._caltyp - 10;
                 end
               else
                 begin
-                  maxpos := 5
+                  maxpos := 5;
                 end;
             end;
           maxpos := 3 + 2 * maxpos;
           if maxpos > length(iCalib) then
             begin
-              maxpos := length(iCalib)
+              maxpos := length(iCalib);
             end;
           calpar_pos := 0;
           SetLength(self._calpar, maxpos);
@@ -9964,16 +10117,16 @@ var
                   self._calraw[calraw_pos] := fRaw;
                   inc(calraw_pos);
                   self._calref[calref_pos] := fRef;
-                  inc(calref_pos)
+                  inc(calref_pos);
                 end
               else
                 begin
                   self._calraw[calraw_pos] := _decimalToDouble(iRaw);
                   inc(calraw_pos);
                   self._calref[calref_pos] := _decimalToDouble(iRef);
-                  inc(calref_pos)
+                  inc(calref_pos);
                 end;
-              position := position + 2
+              position := position + 2;
             end;
           SetLength(self._calpar, calpar_pos);
           SetLength(self._calraw, calraw_pos);
@@ -10004,12 +10157,12 @@ var
       if not(self.isOnline) then
         begin
           result := false;
-          exit
+          exit;
         end;
       if not(self._sensorState = 0) then
         begin
           result := false;
-          exit
+          exit;
         end;
       result := true;
       exit;
@@ -10143,11 +10296,11 @@ var
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, true)
+          TYFunction._UpdateTimedReportCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, false)
+          TYFunction._UpdateTimedReportCallbackList(self, false);
         end;
       self._timedReportCallbackSensor := callback;
       result := 0;
@@ -10159,7 +10312,7 @@ var
     begin
       if (addr(self._timedReportCallbackSensor) <> nil) then
         begin
-          self._timedReportCallbackSensor(self, value)
+          self._timedReportCallbackSensor(self, value);
         end
       else
         begin
@@ -10251,7 +10404,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := YAPI_DEVICE_NOT_FOUND;
-              exit
+              exit;
             end;
         end;
       if self._caltyp < 0 then
@@ -10259,7 +10412,7 @@ var
           self._throw(YAPI_NOT_SUPPORTED, 'Calibration parameters format mismatch. Please upgrade your lib'
           + 'rary or firmware.');
           result := YAPI_NOT_SUPPORTED;
-          exit
+          exit;
         end;
       rawValues_pos := 0;
       SetLength(rawValues, length(self._calraw));;
@@ -10268,12 +10421,12 @@ var
       for i_i:=0 to length(self._calraw)-1 do
         begin
           rawValues[rawValues_pos] := self._calraw[i_i];
-          inc(rawValues_pos)
+          inc(rawValues_pos);
         end;
       for i_i:=0 to length(self._calref)-1 do
         begin
           refValues[refValues_pos] := self._calref[i_i];
-          inc(refValues_pos)
+          inc(refValues_pos);
         end;
       result := YAPI_SUCCESS;
       exit;
@@ -10293,13 +10446,13 @@ var
         begin
           self._throw(YAPI_INVALID_ARGUMENT, 'Invalid calibration parameters (size mismatch)');
           result := YAPI_INVALID_STRING;
-          exit
+          exit;
         end;
       // Shortcut when building empty calibration parameters
       if npt = 0 then
         begin
           result := '0';
-          exit
+          exit;
         end;
       // Load function parameters if not yet loaded
       if self._scale = 0 then
@@ -10307,7 +10460,7 @@ var
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := YAPI_INVALID_STRING;
-              exit
+              exit;
             end;
         end;
       // Detect old firmware
@@ -10316,7 +10469,7 @@ var
           self._throw(YAPI_NOT_SUPPORTED, 'Calibration parameters format mismatch. Please upgrade your lib'
           + 'rary or firmware.');
           result := '0';
-          exit
+          exit;
         end;
       if self._isScal32 then
         begin
@@ -10325,7 +10478,7 @@ var
           while idx < npt do
             begin
               res := ''+ res+','+_yapiFloatToStr( rawValues[idx])+','+_yapiFloatToStr(refValues[idx]);
-              idx := idx + 1
+              idx := idx + 1;
             end;
         end
       else
@@ -10339,7 +10492,7 @@ var
                   iRaw := round(rawValues[idx] * self._scale + self._offset);
                   iRef := round(refValues[idx] * self._scale + self._offset);
                   res := ''+ res+','+inttostr( iRaw)+','+inttostr(iRef);
-                  idx := idx + 1
+                  idx := idx + 1;
                 end;
             end
           else
@@ -10351,7 +10504,7 @@ var
                   iRaw := _doubleToDecimal(rawValues[idx]);
                   iRef := _doubleToDecimal(refValues[idx]);
                   res := ''+ res+','+inttostr( iRaw)+','+inttostr(iRef);
-                  idx := idx + 1
+                  idx := idx + 1;
                 end;
             end;
         end;
@@ -10365,22 +10518,22 @@ var
       if rawValue = Y_CURRENTVALUE_INVALID then
         begin
           result := Y_CURRENTVALUE_INVALID;
-          exit
+          exit;
         end;
       if self._caltyp = 0 then
         begin
           result := rawValue;
-          exit
+          exit;
         end;
       if self._caltyp < 0 then
         begin
           result := Y_CURRENTVALUE_INVALID;
-          exit
+          exit;
         end;
       if not((addr(self._calhdl) <> nil)) then
         begin
           result := Y_CURRENTVALUE_INVALID;
-          exit
+          exit;
         end;
       result := self._calhdl(rawValue, self._caltyp, self._calpar, self._calraw, self._calref);
       exit;
@@ -10408,7 +10561,7 @@ var
       self._prevTimedReport := endTime;
       if startTime = 0 then
         begin
-          startTime := endTime
+          startTime := endTime;
         end;
       if report[0] = 2 then
         begin
@@ -10423,22 +10576,22 @@ var
                   byteVal := report[i];
                   avgRaw := avgRaw + poww * byteVal;
                   poww := poww * $0100;
-                  i := i + 1
+                  i := i + 1;
                 end;
               if ((byteVal) and ($080)) <> 0 then
                 begin
-                  avgRaw := avgRaw - poww
+                  avgRaw := avgRaw - poww;
                 end;
               avgVal := avgRaw / 1000.0;
               if self._caltyp <> 0 then
                 begin
                   if (addr(self._calhdl) <> nil) then
                     begin
-                      avgVal := self._calhdl(avgVal, self._caltyp, self._calpar, self._calraw, self._calref)
+                      avgVal := self._calhdl(avgVal, self._caltyp, self._calpar, self._calraw, self._calref);
                     end;
                 end;
               minVal := avgVal;
-              maxVal := avgVal
+              maxVal := avgVal;
             end
           else
             begin
@@ -10453,11 +10606,11 @@ var
                   avgRaw := avgRaw + poww * byteVal;
                   poww := poww * $0100;
                   i := i + 1;
-                  sublen := sublen - 1
+                  sublen := sublen - 1;
                 end;
               if ((byteVal) and ($080)) <> 0 then
                 begin
-                  avgRaw := avgRaw - poww
+                  avgRaw := avgRaw - poww;
                 end;
               sublen := 1 + ((((report[1]) shr 2)) and 3);
               poww := 1;
@@ -10468,7 +10621,7 @@ var
                   difRaw := difRaw + poww * byteVal;
                   poww := poww * $0100;
                   i := i + 1;
-                  sublen := sublen - 1
+                  sublen := sublen - 1;
                 end;
               minRaw := avgRaw - difRaw;
               sublen := 1 + ((((report[1]) shr 4)) and 3);
@@ -10480,7 +10633,7 @@ var
                   difRaw := difRaw + poww * byteVal;
                   poww := poww * $0100;
                   i := i + 1;
-                  sublen := sublen - 1
+                  sublen := sublen - 1;
                 end;
               maxRaw := avgRaw + difRaw;
               avgVal := avgRaw / 1000.0;
@@ -10492,7 +10645,7 @@ var
                     begin
                       avgVal := self._calhdl(avgVal, self._caltyp, self._calpar, self._calraw, self._calref);
                       minVal := self._calhdl(minVal, self._caltyp, self._calpar, self._calraw, self._calref);
-                      maxVal := self._calhdl(maxVal, self._caltyp, self._calpar, self._calraw, self._calref)
+                      maxVal := self._calhdl(maxVal, self._caltyp, self._calpar, self._calraw, self._calref);
                     end;
                 end;
             end;
@@ -10510,22 +10663,22 @@ var
                   byteVal := report[i];
                   avgRaw := avgRaw + poww * byteVal;
                   poww := poww * $0100;
-                  i := i + 1
+                  i := i + 1;
                 end;
               if self._isScal then
                 begin
-                  avgVal := self._decodeVal(avgRaw)
+                  avgVal := self._decodeVal(avgRaw);
                 end
               else
                 begin
                   if ((byteVal) and ($080)) <> 0 then
                     begin
-                      avgRaw := avgRaw - poww
+                      avgRaw := avgRaw - poww;
                     end;
-                  avgVal := self._decodeAvg(avgRaw)
+                  avgVal := self._decodeAvg(avgRaw);
                 end;
               minVal := avgVal;
-              maxVal := avgVal
+              maxVal := avgVal;
             end
           else
             begin
@@ -10535,15 +10688,15 @@ var
               byteVal := report[8];
               if ((byteVal) and ($080)) = 0 then
                 begin
-                  avgRaw := avgRaw + $01000000 * byteVal
+                  avgRaw := avgRaw + $01000000 * byteVal;
                 end
               else
                 begin
-                  avgRaw := avgRaw - $01000000 * ($0100 - byteVal)
+                  avgRaw := avgRaw - $01000000 * ($0100 - byteVal);
                 end;
               minVal := self._decodeVal(minRaw);
               avgVal := self._decodeAvg(avgRaw);
-              maxVal := self._decodeVal(maxRaw)
+              maxVal := self._decodeVal(maxRaw);
             end;
         end;
       result := TYMeasure.create(startTime, endTime, minVal, avgVal, maxVal);
@@ -10558,17 +10711,17 @@ var
       val := w;
       if self._isScal then
         begin
-          val := (val - self._offset) / self._scale
+          val := (val - self._offset) / self._scale;
         end
       else
         begin
-          val := _decimalToDouble(w)
+          val := _decimalToDouble(w);
         end;
       if self._caltyp <> 0 then
         begin
           if (addr(self._calhdl) <> nil) then
             begin
-              val := self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
+              val := self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref);
             end;
         end;
       result := val;
@@ -10583,17 +10736,17 @@ var
       val := dw;
       if self._isScal then
         begin
-          val := (val / 100 - self._offset) / self._scale
+          val := (val / 100 - self._offset) / self._scale;
         end
       else
         begin
-          val := val / self._decexp
+          val := val / self._decexp;
         end;
       if self._caltyp <> 0 then
         begin
           if (addr(self._calhdl) <> nil) then
             begin
-              val := self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
+              val := self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref);
             end;
         end;
       result := val;
@@ -10706,11 +10859,11 @@ var
               self._progress := res;
               self._progress_msg := string(errmsg);
               result := res;
-              exit
+              exit;
             end;
           self._progress_c := res;
           self._progress := (self._progress_c * 9 div 10);
-          self._progress_msg := string(errmsg)
+          self._progress_msg := string(errmsg);
         end
       else
         begin
@@ -10721,7 +10874,7 @@ var
               if not(m.isOnline()) then
                 begin
                   result := self._progress;
-                  exit
+                  exit;
                 end;
               if self._progress < 95 then
                 begin
@@ -10731,11 +10884,11 @@ var
                       ySleep(1000, ignoreErrMsg);
                       self._progress := self._progress + 1;
                       result := self._progress;
-                      exit
+                      exit;
                     end
                   else
                     begin
-                      self._progress := 95
+                      self._progress := 95;
                     end;
                 end;
               if self._progress < 100 then
@@ -10744,13 +10897,13 @@ var
                   m.saveToFlash();
                   setlength(self._settings,0);
                   self._progress := 100;
-                  self._progress_msg := 'success'
+                  self._progress_msg := 'success';
                 end;
             end
           else
             begin
               self._progress :=  100;
-              self._progress_msg := 'success'
+              self._progress_msg := 'success';
             end;
         end;
       result := self._progress;
@@ -10792,11 +10945,11 @@ var
       if yapi_res < 0 then
         begin
           result := bootladers;
-          exit
+          exit;
         end;
       if fullsize <= 1024 then
         begin
-          bootloader_list := string(smallbuff)
+          bootloader_list := string(smallbuff);
         end
       else
         begin
@@ -10807,17 +10960,17 @@ var
             begin
               freemem(bigbuff);
               result := bootladers;
-              exit
+              exit;
             end
           else
             begin
-              bootloader_list := string(bigbuff)
+              bootloader_list := string(bigbuff);
             end;
-          freemem(bigbuff)
+          freemem(bigbuff);
         end;
       if not((bootloader_list = '')) then
         begin
-          bootladers := _stringSplit(bootloader_list, ',')
+          bootladers := _stringSplit(bootloader_list, ',');
         end;
       result := bootladers;
       exit;
@@ -10873,11 +11026,11 @@ var
         begin
           firmware_path := 'error:' + string(errmsg);
           result := 'error:' + string(errmsg);
-          exit
+          exit;
         end;
       if fullsize <= 1024 then
         begin
-          firmware_path := string(smallbuff)
+          firmware_path := string(smallbuff);
         end
       else
         begin
@@ -10886,13 +11039,13 @@ var
           res := _yapiCheckFirmware(pansichar(ansistring(serial)), pansichar(ansistring(release)), pansichar(ansistring(path)), bigbuff, buffsize, fullsize, errmsg);
           if res < 0 then
             begin
-              firmware_path := 'error:' + string(errmsg)
+              firmware_path := 'error:' + string(errmsg);
             end
           else
             begin
-              firmware_path := string(bigbuff)
+              firmware_path := string(bigbuff);
             end;
-          freemem(bigbuff)
+          freemem(bigbuff);
         end;
       result := firmware_path;
       exit;
@@ -10919,7 +11072,10 @@ var
   ///-
   function TYFirmwareUpdate.get_progress():LongInt;
     begin
-      self._processMore(0);
+      if self._progress >= 0 then
+        begin
+          self._processMore(0);
+        end;
       result := self._progress;
       exit;
     end;
@@ -10966,10 +11122,23 @@ var
   /// </para>
   ///-
   function TYFirmwareUpdate.startUpdate():LongInt;
+    var
+      err : string;
+      leng : LongInt;
     begin
-      self._progress := 0;
-      self._progress_c := 0;
-      self._processMore(1);
+      err := _ByteToString(self._settings);
+      leng := Length(err);
+      if  ( leng >= 6) and(('error:' = Copy(err, 0 + 1, 6))) then
+        begin
+          self._progress := -1;
+          self._progress_msg := Copy(err,  6 + 1, leng - 6);
+        end
+      else
+        begin
+          self._progress := 0;
+          self._progress_c := 0;
+          self._processMore(1);
+        end;
       result := self._progress;
       exit;
     end;
@@ -11003,19 +11172,19 @@ var
       self._samplesPerHour := ((val) and ($0ff));
       if ((val) and ($0100)) <> 0 then
         begin
-          self._samplesPerHour := self._samplesPerHour * 3600
+          self._samplesPerHour := self._samplesPerHour * 3600;
         end
       else
         begin
           if ((val) and ($0200)) <> 0 then
             begin
-              self._samplesPerHour := self._samplesPerHour * 60
+              self._samplesPerHour := self._samplesPerHour * 60;
             end;
         end;
       val := encoded[5];
       if val > 32767 then
         begin
-          val := val - 65536
+          val := val - 65536;
         end;
       self._decimals := val;
       self._offset := val;
@@ -11026,7 +11195,7 @@ var
       self._isClosed := (val <> $0ffff);
       if val = $0ffff then
         begin
-          val := 0
+          val := 0;
         end;
       self._nRows := val;
       duration_float := self._nRows * 3600 / self._samplesPerHour;
@@ -11039,7 +11208,7 @@ var
           while i < self._decimals do
             begin
               self._decexp := self._decexp * 10.0;
-              i := i + 1
+              i := i + 1;
             end;
         end;
       iCalib := dataset.get_calibration();
@@ -11061,7 +11230,7 @@ var
                 begin
                   self._calpar[calpar_pos] := iCalib[i];
                   inc(calpar_pos);
-                  i := i + 1
+                  i := i + 1;
                 end;
               i := 1;
               while i + 1 < maxpos do
@@ -11074,7 +11243,7 @@ var
                   inc(calraw_pos);
                   self._calref[calref_pos] := fRef;
                   inc(calref_pos);
-                  i := i + 2
+                  i := i + 2;
                 end;
             end
           else
@@ -11097,21 +11266,21 @@ var
                       self._calraw[calraw_pos] := fRaw;
                       inc(calraw_pos);
                       self._calref[calref_pos] := fRef;
-                      inc(calref_pos)
+                      inc(calref_pos);
                     end
                   else
                     begin
                       self._calraw[calraw_pos] := _decimalToDouble(iRaw);
                       inc(calraw_pos);
                       self._calref[calref_pos] := _decimalToDouble(iRef);
-                      inc(calref_pos)
+                      inc(calref_pos);
                     end;
-                  i := i + 2
+                  i := i + 2;
                 end;
             end;
           SetLength(self._calpar, calpar_pos);
           SetLength(self._calraw, calraw_pos);
-          SetLength(self._calref, calref_pos)
+          SetLength(self._calref, calref_pos);
         end;
       // preload column names for backward-compatibility
       self._functionId := dataset.get_functionId();
@@ -11126,7 +11295,7 @@ var
           self._columnNames[columnNames_pos] := ''+self._functionId+'_max';
           inc(columnNames_pos);
           SetLength(self._columnNames, columnNames_pos);
-          self._nCols := 3
+          self._nCols := 3;
         end
       else
         begin
@@ -11135,7 +11304,7 @@ var
           self._columnNames[columnNames_pos] := self._functionId;
           inc(columnNames_pos);
           SetLength(self._columnNames, columnNames_pos);
-          self._nCols := 1
+          self._nCols := 1;
         end;
       // decode min/avg/max values for the sequence
       if self._nRows > 0 then
@@ -11144,13 +11313,13 @@ var
             begin
               self._avgVal := self._decodeAvg(encoded[8] + (((((encoded[9]) xor ($08000))) shl 16)), 1);
               self._minVal := self._decodeVal(encoded[10] + (((encoded[11]) shl 16)));
-              self._maxVal := self._decodeVal(encoded[12] + (((encoded[13]) shl 16)))
+              self._maxVal := self._decodeVal(encoded[12] + (((encoded[13]) shl 16)));
             end
           else
             begin
               self._minVal := self._decodeVal(encoded[8]);
               self._maxVal := self._decodeVal(encoded[9]);
-              self._avgVal := self._decodeAvg(encoded[10] + (((encoded[11]) shl 16)), self._nRows)
+              self._avgVal := self._decodeAvg(encoded[10] + (((encoded[11]) shl 16)), self._nRows);
             end;
         end;
       result := 0;
@@ -11170,7 +11339,7 @@ var
         begin
           self._nRows := 0;
           result := YAPI_SUCCESS;
-          exit
+          exit;
         end;
       // may throw an exception
       udat := _decodeWords(self._parent._json_get_string(sdata));
@@ -11191,7 +11360,7 @@ var
                   inc(dat_pos);
                   dat[dat_pos] := self._decodeVal(udat[idx + 4] + (((udat[idx + 5]) shl 16)));
                   inc(dat_pos);
-                  idx := idx + 6
+                  idx := idx + 6;
                 end
               else
                 begin
@@ -11201,11 +11370,11 @@ var
                   inc(dat_pos);
                   dat[dat_pos] := self._decodeVal(udat[idx + 1]);
                   inc(dat_pos);
-                  idx := idx + 4
+                  idx := idx + 4;
                 end;
               SetLength(dat, dat_pos);
               self._values[values_pos] := dat;
-              inc(values_pos)
+              inc(values_pos);
             end;
         end
       else
@@ -11221,7 +11390,7 @@ var
                   SetLength(dat, dat_pos);
                   self._values[values_pos] := dat;
                   inc(values_pos);
-                  idx := idx + 1
+                  idx := idx + 1;
                 end;
             end
           else
@@ -11235,7 +11404,7 @@ var
                   SetLength(dat, dat_pos);
                   self._values[values_pos] := dat;
                   inc(values_pos);
-                  idx := idx + 2
+                  idx := idx + 2;
                 end;
             end;
         end;
@@ -11271,22 +11440,22 @@ var
       val := w;
       if self._isScal32 then
         begin
-          val := val / 1000.0
+          val := val / 1000.0;
         end
       else
         begin
           if self._isScal then
             begin
-              val := (val - self._offset) / self._scale
+              val := (val - self._offset) / self._scale;
             end
           else
             begin
-              val := _decimalToDouble(w)
+              val := _decimalToDouble(w);
             end;
         end;
       if self._caltyp <> 0 then
         begin
-          val := self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
+          val := self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref);
         end;
       result := val;
       exit;
@@ -11300,22 +11469,22 @@ var
       val := dw;
       if self._isScal32 then
         begin
-          val := val / 1000.0
+          val := val / 1000.0;
         end
       else
         begin
           if self._isScal then
             begin
-              val := (val / (100 * count) - self._offset) / self._scale
+              val := (val / (100 * count) - self._offset) / self._scale;
             end
           else
             begin
-              val := val / (count * self._decexp)
+              val := val / (count * self._decexp);
             end;
         end;
       if self._caltyp <> 0 then
         begin
-          val := self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref)
+          val := self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref);
         end;
       result := val;
       exit;
@@ -11455,7 +11624,7 @@ var
       if (self._nRows <> 0) and self._isClosed then
         begin
           result := self._nRows;
-          exit
+          exit;
         end;
       self.loadStream;
       result := self._nRows;
@@ -11490,7 +11659,7 @@ var
       if self._nCols <> 0 then
         begin
           result := self._nCols;
-          exit
+          exit;
         end;
       self.loadStream;
       result := self._nCols;
@@ -11529,7 +11698,7 @@ var
       if length(self._columnNames) <> 0 then
         begin
           result := self._columnNames;
-          exit
+          exit;
         end;
       self.loadStream;
       result := self._columnNames;
@@ -11632,7 +11801,7 @@ var
       if self._isClosed then
         begin
           result := self._duration;
-          exit
+          exit;
         end;
       result := integer(Round((Now()-25569)*86400) - self._utcStamp);
       exit;
@@ -11667,7 +11836,7 @@ var
     begin
       if (length(self._values) = 0) or not(self._isClosed) then
         begin
-          self.loadStream
+          self.loadStream;
         end;
       result := self._values;
       exit;
@@ -11706,17 +11875,17 @@ var
     begin
       if (length(self._values) = 0) or not(self._isClosed) then
         begin
-          self.loadStream
+          self.loadStream;
         end;
       if row >= length(self._values) then
         begin
           result := Y_DATA_INVALID;
-          exit
+          exit;
         end;
       if col >= length(self._values[row]) then
         begin
           result := Y_DATA_INVALID;
-          exit
+          exit;
         end;
       result := self._values[row][col];
       exit;
@@ -12050,7 +12219,7 @@ var
       if progress <> self._progress then
         begin
           result := self._progress;
-          exit
+          exit;
         end;
       if self._progress < 0 then
         begin
@@ -12059,10 +12228,10 @@ var
             begin
               self._parent._throw(YAPI_VERSION_MISMATCH, 'device firmware is too old');
               result := YAPI_VERSION_MISMATCH;
-              exit
+              exit;
             end;
           result := self._parse(strdata);
-          exit
+          exit;
         end;
       stream := self._streams[self._progress];
       stream.parse(data);
@@ -12071,31 +12240,31 @@ var
       if length(dataRows) = 0 then
         begin
           result := self.get_progress;
-          exit
+          exit;
         end;
       tim := stream.get_startTimeUTC();
       itv := stream.get_dataSamplesInterval();
       if tim < itv then
         begin
-          tim := itv
+          tim := itv;
         end;
       nCols := length(dataRows[0]);
       minCol := 0;
       if nCols > 2 then
         begin
-          avgCol := 1
+          avgCol := 1;
         end
       else
         begin
-          avgCol := 0
+          avgCol := 0;
         end;
       if nCols > 2 then
         begin
-          maxCol := 2
+          maxCol := 2;
         end
       else
         begin
-          maxCol := 0
+          maxCol := 0;
         end;
       measures_pos := length(self._measures);
       SetLength(self._measures, measures_pos+length(dataRows));
@@ -12104,9 +12273,9 @@ var
           if (tim >= self._startTime) and((self._endTime = 0) or(tim <= self._endTime)) then
             begin
               self._measures[measures_pos] := TYMeasure.create(tim - itv, tim, dataRows[i_i][minCol], dataRows[i_i][avgCol], dataRows[i_i][maxCol]);
-              inc(measures_pos)
+              inc(measures_pos);
             end;
-          tim := tim + itv
+          tim := tim + itv;
         end;
       SetLength(self._measures, measures_pos);
       result := self.get_progress;
@@ -12147,7 +12316,7 @@ var
       if not((self._hardwareId = '')) then
         begin
           result := self._hardwareId;
-          exit
+          exit;
         end;
       mo := self._parent.get_module();
       self._hardwareId := ''+ mo.get_serialNumber()+'.'+self.get_functionId;
@@ -12272,13 +12441,13 @@ var
       if self._progress < 0 then
         begin
           result := 0;
-          exit
+          exit;
         end;
       // index not yet loaded
       if self._progress >= length(self._streams) then
         begin
           result := 100;
-          exit
+          exit;
         end;
       result := (1 + (1 + self._progress) * 98  div (1 + length(self._streams)));
       exit;
@@ -12309,19 +12478,19 @@ var
     begin
       if self._progress < 0 then
         begin
-          url := 'logger.json?id='+self._functionId
+          url := 'logger.json?id='+self._functionId;
         end
       else
         begin
           if self._progress >= length(self._streams) then
             begin
               result := 100;
-              exit
+              exit;
             end
           else
             begin
               stream := self._streams[self._progress];
-              url := stream.get_url()
+              url := stream.get_url();
             end;
         end;
       result := self.processMore(self._progress, self._parent._download(url));
@@ -12437,43 +12606,43 @@ var
         begin
           if self._streams[i_i].get_startTimeUTC() = startUtc then
             begin
-              stream := self._streams[i_i]
+              stream := self._streams[i_i];
             end;
         end;
       if stream = nil then
         begin
           result := measures;
-          exit
+          exit;
         end;
       dataRows := stream.get_dataRows();
       if length(dataRows) = 0 then
         begin
           result := measures;
-          exit
+          exit;
         end;
       tim := stream.get_startTimeUTC();
       itv := stream.get_dataSamplesInterval();
       if tim < itv then
         begin
-          tim := itv
+          tim := itv;
         end;
       nCols := length(dataRows[0]);
       minCol := 0;
       if nCols > 2 then
         begin
-          avgCol := 1
+          avgCol := 1;
         end
       else
         begin
-          avgCol := 0
+          avgCol := 0;
         end;
       if nCols > 2 then
         begin
-          maxCol := 2
+          maxCol := 2;
         end
       else
         begin
-          maxCol := 0
+          maxCol := 0;
         end;
       measures_pos := length(measures);
       SetLength(measures, measures_pos+length(dataRows));
@@ -12482,9 +12651,9 @@ var
           if (tim >= self._startTime) and((self._endTime = 0) or(tim <= self._endTime)) then
             begin
               measures[measures_pos] := TYMeasure.create(tim - itv, tim, dataRows[i_i][minCol], dataRows[i_i][avgCol], dataRows[i_i][maxCol]);
-              inc(measures_pos)
+              inc(measures_pos);
             end;
-          tim := tim + itv
+          tim := tim + itv;
         end;
       SetLength(measures, measures_pos);;
       result := measures;

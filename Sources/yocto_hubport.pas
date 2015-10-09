@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_hubport.pas 19338 2015-02-17 17:44:58Z seb $
+ * $Id: yocto_hubport.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindHubPort(), the high-level API for HubPort functions
  *
@@ -399,7 +399,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_ENABLED_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._enabled;
@@ -460,7 +460,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PORTSTATE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._portState;
@@ -492,7 +492,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_BAUDRATE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._baudRate;
@@ -550,7 +550,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYHubPort.create(func);
-          TYFunction._AddToCache('HubPort',  func, obj)
+          TYFunction._AddToCache('HubPort',  func, obj);
         end;
       result := obj;
       exit;
@@ -581,11 +581,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackHubPort := callback;
       // Immediately invoke value callback with current value
@@ -594,7 +594,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -606,11 +606,11 @@ implementation
     begin
       if (addr(self._valueCallbackHubPort) <> nil) then
         begin
-          self._valueCallbackHubPort(self, value)
+          self._valueCallbackHubPort(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;

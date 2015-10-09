@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_groundspeed.pas 20400 2015-05-21 14:58:16Z mvuilleu $
+ * $Id: yocto_groundspeed.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindGroundSpeed(), the high-level API for GroundSpeed functions
  *
@@ -348,7 +348,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYGroundSpeed.create(func);
-          TYFunction._AddToCache('GroundSpeed',  func, obj)
+          TYFunction._AddToCache('GroundSpeed',  func, obj);
         end;
       result := obj;
       exit;
@@ -379,11 +379,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackGroundSpeed := callback;
       // Immediately invoke value callback with current value
@@ -392,7 +392,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -404,11 +404,11 @@ implementation
     begin
       if (addr(self._valueCallbackGroundSpeed) <> nil) then
         begin
-          self._valueCallbackGroundSpeed(self, value)
+          self._valueCallbackGroundSpeed(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;
@@ -437,11 +437,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, true)
+          TYFunction._UpdateTimedReportCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, false)
+          TYFunction._UpdateTimedReportCallbackList(self, false);
         end;
       self._timedReportCallbackGroundSpeed := callback;
       result := 0;
@@ -453,11 +453,11 @@ implementation
     begin
       if (addr(self._timedReportCallbackGroundSpeed) <> nil) then
         begin
-          self._timedReportCallbackGroundSpeed(self, value)
+          self._timedReportCallbackGroundSpeed(self, value);
         end
       else
         begin
-          inherited _invokeTimedReportCallback(value)
+          inherited _invokeTimedReportCallback(value);
         end;
       result := 0;
       exit;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_current.pas 20400 2015-05-21 14:58:16Z mvuilleu $
+ * $Id: yocto_current.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindCurrent(), the high-level API for Current functions
  *
@@ -347,7 +347,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYCurrent.create(func);
-          TYFunction._AddToCache('Current',  func, obj)
+          TYFunction._AddToCache('Current',  func, obj);
         end;
       result := obj;
       exit;
@@ -378,11 +378,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackCurrent := callback;
       // Immediately invoke value callback with current value
@@ -391,7 +391,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -403,11 +403,11 @@ implementation
     begin
       if (addr(self._valueCallbackCurrent) <> nil) then
         begin
-          self._valueCallbackCurrent(self, value)
+          self._valueCallbackCurrent(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;
@@ -436,11 +436,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, true)
+          TYFunction._UpdateTimedReportCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, false)
+          TYFunction._UpdateTimedReportCallbackList(self, false);
         end;
       self._timedReportCallbackCurrent := callback;
       result := 0;
@@ -452,11 +452,11 @@ implementation
     begin
       if (addr(self._timedReportCallbackCurrent) <> nil) then
         begin
-          self._timedReportCallbackCurrent(self, value)
+          self._timedReportCallbackCurrent(self, value);
         end
       else
         begin
-          inherited _invokeTimedReportCallback(value)
+          inherited _invokeTimedReportCallback(value);
         end;
       result := 0;
       exit;

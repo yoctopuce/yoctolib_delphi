@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_anbutton.pas 19338 2015-02-17 17:44:58Z seb $
+ * $Id: yocto_anbutton.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindAnButton(), the high-level API for AnButton functions
  *
@@ -701,7 +701,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_CALIBRATEDVALUE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._calibratedValue;
@@ -731,7 +731,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_RAWVALUE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._rawValue;
@@ -761,7 +761,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_ANALOGCALIBRATION_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._analogCalibration;
@@ -821,7 +821,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_CALIBRATIONMAX_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._calibrationMax;
@@ -884,7 +884,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_CALIBRATIONMIN_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._calibrationMin;
@@ -947,7 +947,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_SENSITIVITY_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._sensitivity;
@@ -1011,7 +1011,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_ISPRESSED_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._isPressed;
@@ -1043,7 +1043,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_LASTTIMEPRESSED_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._lastTimePressed;
@@ -1075,7 +1075,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_LASTTIMERELEASED_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._lastTimeReleased;
@@ -1103,7 +1103,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PULSECOUNTER_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._pulseCounter;
@@ -1139,7 +1139,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PULSETIMER_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._pulseTimer;
@@ -1197,7 +1197,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYAnButton.create(func);
-          TYFunction._AddToCache('AnButton',  func, obj)
+          TYFunction._AddToCache('AnButton',  func, obj);
         end;
       result := obj;
       exit;
@@ -1228,11 +1228,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackAnButton := callback;
       // Immediately invoke value callback with current value
@@ -1241,7 +1241,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -1253,11 +1253,11 @@ implementation
     begin
       if (addr(self._valueCallbackAnButton) <> nil) then
         begin
-          self._valueCallbackAnButton(self, value)
+          self._valueCallbackAnButton(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;

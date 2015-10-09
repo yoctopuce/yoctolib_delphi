@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_audioin.pas 20797 2015-07-06 16:49:40Z mvuilleu $
+ * $Id: yocto_audioin.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindAudioIn(), the high-level API for AudioIn functions
  *
@@ -463,7 +463,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_VOLUME_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._volume;
@@ -521,7 +521,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_MUTE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._mute;
@@ -585,7 +585,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_VOLUMERANGE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._volumeRange;
@@ -615,7 +615,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_SIGNAL_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._signal;
@@ -643,7 +643,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_NOSIGNALFOR_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._noSignalFor;
@@ -701,7 +701,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYAudioIn.create(func);
-          TYFunction._AddToCache('AudioIn',  func, obj)
+          TYFunction._AddToCache('AudioIn',  func, obj);
         end;
       result := obj;
       exit;
@@ -732,11 +732,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackAudioIn := callback;
       // Immediately invoke value callback with current value
@@ -745,7 +745,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -757,11 +757,11 @@ implementation
     begin
       if (addr(self._valueCallbackAudioIn) <> nil) then
         begin
-          self._valueCallbackAudioIn(self, value)
+          self._valueCallbackAudioIn(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;

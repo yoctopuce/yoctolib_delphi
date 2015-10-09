@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_datalogger.pas 20704 2015-06-20 19:43:34Z mvuilleu $
+ * $Id: yocto_datalogger.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindDataLogger(), the high-level API for DataLogger functions
  *
@@ -793,7 +793,7 @@ const
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_CURRENTRUNINDEX_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._currentRunIndex;
@@ -823,7 +823,7 @@ const
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_TIMEUTC_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._timeUTC;
@@ -882,7 +882,7 @@ const
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_RECORDING_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._recording;
@@ -942,7 +942,7 @@ const
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_AUTOSTART_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._autoStart;
@@ -1003,7 +1003,7 @@ const
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_BEACONDRIVEN_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._beaconDriven;
@@ -1048,7 +1048,7 @@ const
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_CLEARHISTORY_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._clearHistory;
@@ -1114,7 +1114,7 @@ const
       if obj = nil then
         begin
           obj :=  TYDataLogger.create(func);
-          TYFunction._AddToCache('DataLogger',  func, obj)
+          TYFunction._AddToCache('DataLogger',  func, obj);
         end;
       result := obj;
       exit;
@@ -1145,11 +1145,11 @@ const
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackDataLogger := callback;
       // Immediately invoke value callback with current value
@@ -1158,7 +1158,7 @@ const
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -1170,11 +1170,11 @@ const
     begin
       if (addr(self._valueCallbackDataLogger) <> nil) then
         begin
-          self._valueCallbackDataLogger(self, value)
+          self._valueCallbackDataLogger(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;
@@ -1245,7 +1245,7 @@ const
       for i_i:=0 to length(dslist)-1 do
         begin
           res[res_pos] := TYDataSet.create(self, dslist[i_i]);
-          inc(res_pos)
+          inc(res_pos);
         end;
       result := res;
       exit;

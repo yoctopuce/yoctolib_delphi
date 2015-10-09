@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_network.pas 20815 2015-07-09 17:23:30Z mvuilleu $
+ * $Id: yocto_network.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindNetwork(), the high-level API for Network functions
  *
@@ -1394,7 +1394,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_READINESS_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._readiness;
@@ -1426,7 +1426,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_MACADDRESS_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._macAddress;
@@ -1458,7 +1458,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_IPADDRESS_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._ipAddress;
@@ -1488,7 +1488,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_SUBNETMASK_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._subnetMask;
@@ -1518,7 +1518,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_ROUTER_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._router;
@@ -1533,7 +1533,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_IPCONFIG_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._ipConfig;
@@ -1571,7 +1571,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PRIMARYDNS_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._primaryDNS;
@@ -1631,7 +1631,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_SECONDARYDNS_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._secondaryDNS;
@@ -1691,7 +1691,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_NTPSERVER_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._ntpServer;
@@ -1752,7 +1752,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_USERPASSWORD_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._userPassword;
@@ -1817,7 +1817,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_ADMINPASSWORD_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._adminPassword;
@@ -1880,7 +1880,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_HTTPPORT_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._httpPort;
@@ -1941,7 +1941,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_DEFAULTPAGE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._defaultPage;
@@ -2005,7 +2005,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_DISCOVERABLE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._discoverable;
@@ -2070,7 +2070,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_WWWWATCHDOGDELAY_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._wwwWatchdogDelay;
@@ -2133,7 +2133,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_CALLBACKURL_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._callbackUrl;
@@ -2194,7 +2194,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_CALLBACKMETHOD_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._callbackMethod;
@@ -2256,7 +2256,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_CALLBACKENCODING_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._callbackEncoding;
@@ -2319,7 +2319,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_CALLBACKCREDENTIALS_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._callbackCredentials;
@@ -2421,7 +2421,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_CALLBACKMINDELAY_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._callbackMinDelay;
@@ -2479,7 +2479,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_CALLBACKMAXDELAY_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._callbackMaxDelay;
@@ -2539,7 +2539,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_POECURRENT_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._poeCurrent;
@@ -2597,7 +2597,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYNetwork.create(func);
-          TYFunction._AddToCache('Network',  func, obj)
+          TYFunction._AddToCache('Network',  func, obj);
         end;
       result := obj;
       exit;
@@ -2628,11 +2628,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackNetwork := callback;
       // Immediately invoke value callback with current value
@@ -2641,7 +2641,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -2653,11 +2653,11 @@ implementation
     begin
       if (addr(self._valueCallbackNetwork) <> nil) then
         begin
-          self._valueCallbackNetwork(self, value)
+          self._valueCallbackNetwork(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;

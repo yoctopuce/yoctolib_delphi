@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_longitude.pas 20400 2015-05-21 14:58:16Z mvuilleu $
+ * $Id: yocto_longitude.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindLongitude(), the high-level API for Longitude functions
  *
@@ -348,7 +348,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYLongitude.create(func);
-          TYFunction._AddToCache('Longitude',  func, obj)
+          TYFunction._AddToCache('Longitude',  func, obj);
         end;
       result := obj;
       exit;
@@ -379,11 +379,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackLongitude := callback;
       // Immediately invoke value callback with current value
@@ -392,7 +392,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -404,11 +404,11 @@ implementation
     begin
       if (addr(self._valueCallbackLongitude) <> nil) then
         begin
-          self._valueCallbackLongitude(self, value)
+          self._valueCallbackLongitude(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;
@@ -437,11 +437,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, true)
+          TYFunction._UpdateTimedReportCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, false)
+          TYFunction._UpdateTimedReportCallbackList(self, false);
         end;
       self._timedReportCallbackLongitude := callback;
       result := 0;
@@ -453,11 +453,11 @@ implementation
     begin
       if (addr(self._timedReportCallbackLongitude) <> nil) then
         begin
-          self._timedReportCallbackLongitude(self, value)
+          self._timedReportCallbackLongitude(self, value);
         end
       else
         begin
-          inherited _invokeTimedReportCallback(value)
+          inherited _invokeTimedReportCallback(value);
         end;
       result := 0;
       exit;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 19900 2015-03-31 13:11:09Z seb $
+ * $Id: yocto_files.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -483,7 +483,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_FILESCOUNT_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._filesCount;
@@ -513,7 +513,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_FREESPACE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._freeSpace;
@@ -571,7 +571,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYFiles.create(func);
-          TYFunction._AddToCache('Files',  func, obj)
+          TYFunction._AddToCache('Files',  func, obj);
         end;
       result := obj;
       exit;
@@ -602,11 +602,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackFiles := callback;
       // Immediately invoke value callback with current value
@@ -615,7 +615,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -627,11 +627,11 @@ implementation
     begin
       if (addr(self._valueCallbackFiles) <> nil) then
         begin
-          self._valueCallbackFiles(self, value)
+          self._valueCallbackFiles(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;
@@ -717,7 +717,7 @@ implementation
       for i_i:=0 to length(filelist)-1 do
         begin
           res[res_pos] := TYFileRecord.create(filelist[i_i]);
-          inc(res_pos)
+          inc(res_pos);
         end;
       result := res;
       exit;

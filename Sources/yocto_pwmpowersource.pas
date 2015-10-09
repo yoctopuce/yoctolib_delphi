@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwmpowersource.pas 19338 2015-02-17 17:44:58Z seb $
+ * $Id: yocto_pwmpowersource.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
  *
@@ -342,7 +342,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_POWERMODE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._powerMode;
@@ -436,7 +436,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYPwmPowerSource.create(func);
-          TYFunction._AddToCache('PwmPowerSource',  func, obj)
+          TYFunction._AddToCache('PwmPowerSource',  func, obj);
         end;
       result := obj;
       exit;
@@ -467,11 +467,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackPwmPowerSource := callback;
       // Immediately invoke value callback with current value
@@ -480,7 +480,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -492,11 +492,11 @@ implementation
     begin
       if (addr(self._valueCallbackPwmPowerSource) <> nil) then
         begin
-          self._valueCallbackPwmPowerSource(self, value)
+          self._valueCallbackPwmPowerSource(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;

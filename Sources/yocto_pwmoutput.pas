@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwmoutput.pas 20287 2015-05-08 13:40:21Z seb $
+ * $Id: yocto_pwmoutput.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindPwmOutput(), the high-level API for PwmOutput functions
  *
@@ -690,7 +690,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_ENABLED_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._enabled;
@@ -778,7 +778,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_FREQUENCY_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._frequency;
@@ -836,7 +836,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PERIOD_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._period;
@@ -894,7 +894,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_DUTYCYCLE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._dutyCycle;
@@ -953,7 +953,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PULSEDURATION_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._pulseDuration;
@@ -968,7 +968,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PWMTRANSITION_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._pwmTransition;
@@ -1006,7 +1006,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_ENABLEDATPOWERON_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._enabledAtPowerOn;
@@ -1095,7 +1095,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_DUTYCYCLEATPOWERON_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._dutyCycleAtPowerOn;
@@ -1153,7 +1153,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYPwmOutput.create(func);
-          TYFunction._AddToCache('PwmOutput',  func, obj)
+          TYFunction._AddToCache('PwmOutput',  func, obj);
         end;
       result := obj;
       exit;
@@ -1184,11 +1184,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackPwmOutput := callback;
       // Immediately invoke value callback with current value
@@ -1197,7 +1197,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -1209,11 +1209,11 @@ implementation
     begin
       if (addr(self._valueCallbackPwmOutput) <> nil) then
         begin
-          self._valueCallbackPwmOutput(self, value)
+          self._valueCallbackPwmOutput(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;
@@ -1248,7 +1248,7 @@ implementation
     begin
       if ms_target < 0.0 then
         begin
-          ms_target := 0.0
+          ms_target := 0.0;
         end;
       newval := ''+inttostr( round(ms_target*65536))+'ms:'+inttostr(ms_duration);
       result := self.set_pwmTransition(newval);
@@ -1282,11 +1282,11 @@ implementation
     begin
       if target < 0.0 then
         begin
-          target := 0.0
+          target := 0.0;
         end;
       if target > 100.0 then
         begin
-          target := 100.0
+          target := 100.0;
         end;
       newval := ''+inttostr( round(target*65536))+':'+inttostr(ms_duration);
       result := self.set_pwmTransition(newval);

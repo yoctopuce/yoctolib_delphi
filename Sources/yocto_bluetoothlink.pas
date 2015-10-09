@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_bluetoothlink.pas 20644 2015-06-12 16:04:33Z seb $
+ * $Id: yocto_bluetoothlink.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindBluetoothLink(), the high-level API for BluetoothLink functions
  *
@@ -696,7 +696,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_OWNADDRESS_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._ownAddress;
@@ -730,7 +730,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PAIRINGPIN_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._pairingPin;
@@ -790,7 +790,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_REMOTEADDRESS_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._remoteAddress;
@@ -848,7 +848,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_REMOTENAME_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._remoteName;
@@ -878,7 +878,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_MUTE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._mute;
@@ -938,7 +938,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PREAMPLIFIER_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._preAmplifier;
@@ -996,7 +996,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_VOLUME_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._volume;
@@ -1055,7 +1055,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_LINKSTATE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._linkState;
@@ -1086,7 +1086,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_LINKQUALITY_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._linkQuality;
@@ -1101,7 +1101,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_COMMAND_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._command;
@@ -1167,7 +1167,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYBluetoothLink.create(func);
-          TYFunction._AddToCache('BluetoothLink',  func, obj)
+          TYFunction._AddToCache('BluetoothLink',  func, obj);
         end;
       result := obj;
       exit;
@@ -1198,11 +1198,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackBluetoothLink := callback;
       // Immediately invoke value callback with current value
@@ -1211,7 +1211,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -1223,11 +1223,11 @@ implementation
     begin
       if (addr(self._valueCallbackBluetoothLink) <> nil) then
         begin
-          self._valueCallbackBluetoothLink(self, value)
+          self._valueCallbackBluetoothLink(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 21119 2015-08-17 12:39:43Z seb $
+ * $Id: yocto_wireless.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -586,7 +586,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_LINKQUALITY_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._linkQuality;
@@ -616,7 +616,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_SSID_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._ssid;
@@ -646,7 +646,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_CHANNEL_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._channel;
@@ -677,7 +677,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_SECURITY_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._security;
@@ -707,7 +707,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_MESSAGE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._message;
@@ -722,7 +722,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_WLANCONFIG_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._wlanConfig;
@@ -788,7 +788,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYWireless.create(func);
-          TYFunction._AddToCache('Wireless',  func, obj)
+          TYFunction._AddToCache('Wireless',  func, obj);
         end;
       result := obj;
       exit;
@@ -819,11 +819,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackWireless := callback;
       // Immediately invoke value callback with current value
@@ -832,7 +832,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -844,11 +844,11 @@ implementation
     begin
       if (addr(self._valueCallbackWireless) <> nil) then
         begin
-          self._valueCallbackWireless(self, value)
+          self._valueCallbackWireless(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;
@@ -993,7 +993,7 @@ implementation
       for i_i:=0 to length(wlanlist)-1 do
         begin
           res[res_pos] := TYWlanRecord.create(wlanlist[i_i]);
-          inc(res_pos)
+          inc(res_pos);
         end;
       result := res;
       exit;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_accelerometer.pas 20400 2015-05-21 14:58:16Z mvuilleu $
+ * $Id: yocto_accelerometer.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindAccelerometer(), the high-level API for Accelerometer functions
  *
@@ -418,7 +418,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_XVALUE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._xValue;
@@ -448,7 +448,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_YVALUE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._yValue;
@@ -478,7 +478,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_ZVALUE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._zValue;
@@ -493,7 +493,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_GRAVITYCANCELLATION_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._gravityCancellation;
@@ -559,7 +559,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYAccelerometer.create(func);
-          TYFunction._AddToCache('Accelerometer',  func, obj)
+          TYFunction._AddToCache('Accelerometer',  func, obj);
         end;
       result := obj;
       exit;
@@ -590,11 +590,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackAccelerometer := callback;
       // Immediately invoke value callback with current value
@@ -603,7 +603,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -615,11 +615,11 @@ implementation
     begin
       if (addr(self._valueCallbackAccelerometer) <> nil) then
         begin
-          self._valueCallbackAccelerometer(self, value)
+          self._valueCallbackAccelerometer(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;
@@ -648,11 +648,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, true)
+          TYFunction._UpdateTimedReportCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, false)
+          TYFunction._UpdateTimedReportCallbackList(self, false);
         end;
       self._timedReportCallbackAccelerometer := callback;
       result := 0;
@@ -664,11 +664,11 @@ implementation
     begin
       if (addr(self._timedReportCallbackAccelerometer) <> nil) then
         begin
-          self._timedReportCallbackAccelerometer(self, value)
+          self._timedReportCallbackAccelerometer(self, value);
         end
       else
         begin
-          inherited _invokeTimedReportCallback(value)
+          inherited _invokeTimedReportCallback(value);
         end;
       result := 0;
       exit;

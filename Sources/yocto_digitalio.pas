@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_digitalio.pas 19338 2015-02-17 17:44:58Z seb $
+ * $Id: yocto_digitalio.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindDigitalIO(), the high-level API for DigitalIO functions
  *
@@ -816,7 +816,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PORTSTATE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._portState;
@@ -877,7 +877,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PORTDIRECTION_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._portDirection;
@@ -939,7 +939,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PORTOPENDRAIN_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._portOpenDrain;
@@ -1002,7 +1002,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PORTPOLARITY_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._portPolarity;
@@ -1062,7 +1062,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PORTSIZE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._portSize;
@@ -1093,7 +1093,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_OUTPUTVOLTAGE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._outputVoltage;
@@ -1138,7 +1138,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_COMMAND_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._command;
@@ -1204,7 +1204,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYDigitalIO.create(func);
-          TYFunction._AddToCache('DigitalIO',  func, obj)
+          TYFunction._AddToCache('DigitalIO',  func, obj);
         end;
       result := obj;
       exit;
@@ -1235,11 +1235,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackDigitalIO := callback;
       // Immediately invoke value callback with current value
@@ -1248,7 +1248,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -1260,11 +1260,11 @@ implementation
     begin
       if (addr(self._valueCallbackDigitalIO) <> nil) then
         begin
-          self._valueCallbackDigitalIO(self, value)
+          self._valueCallbackDigitalIO(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;

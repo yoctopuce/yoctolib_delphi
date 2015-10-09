@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_gyro.pas 20400 2015-05-21 14:58:16Z mvuilleu $
+ * $Id: yocto_gyro.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindGyro(), the high-level API for Gyro functions
  *
@@ -850,7 +850,7 @@ constructor TYQt.Create(func:string);
       if obj = nil then
         begin
           obj :=  TYQt.create(func);
-          TYFunction._AddToCache('Qt',  func, obj)
+          TYFunction._AddToCache('Qt',  func, obj);
         end;
       result := obj;
       exit;
@@ -881,11 +881,11 @@ constructor TYQt.Create(func:string);
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackQt := callback;
       // Immediately invoke value callback with current value
@@ -894,7 +894,7 @@ constructor TYQt.Create(func:string);
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -906,11 +906,11 @@ constructor TYQt.Create(func:string);
     begin
       if (addr(self._valueCallbackQt) <> nil) then
         begin
-          self._valueCallbackQt(self, value)
+          self._valueCallbackQt(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;
@@ -939,11 +939,11 @@ constructor TYQt.Create(func:string);
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, true)
+          TYFunction._UpdateTimedReportCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, false)
+          TYFunction._UpdateTimedReportCallbackList(self, false);
         end;
       self._timedReportCallbackQt := callback;
       result := 0;
@@ -955,11 +955,11 @@ constructor TYQt.Create(func:string);
     begin
       if (addr(self._timedReportCallbackQt) <> nil) then
         begin
-          self._timedReportCallbackQt(self, value)
+          self._timedReportCallbackQt(self, value);
         end
       else
         begin
-          inherited _invokeTimedReportCallback(value)
+          inherited _invokeTimedReportCallback(value);
         end;
       result := 0;
       exit;
@@ -1115,7 +1115,7 @@ constructor TYQt.Create(func:string);
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_XVALUE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._xValue;
@@ -1146,7 +1146,7 @@ constructor TYQt.Create(func:string);
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_YVALUE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._yValue;
@@ -1177,7 +1177,7 @@ constructor TYQt.Create(func:string);
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_ZVALUE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._zValue;
@@ -1235,7 +1235,7 @@ constructor TYQt.Create(func:string);
       if obj = nil then
         begin
           obj :=  TYGyro.create(func);
-          TYFunction._AddToCache('Gyro',  func, obj)
+          TYFunction._AddToCache('Gyro',  func, obj);
         end;
       result := obj;
       exit;
@@ -1266,11 +1266,11 @@ constructor TYQt.Create(func:string);
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackGyro := callback;
       // Immediately invoke value callback with current value
@@ -1279,7 +1279,7 @@ constructor TYQt.Create(func:string);
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -1291,11 +1291,11 @@ constructor TYQt.Create(func:string);
     begin
       if (addr(self._valueCallbackGyro) <> nil) then
         begin
-          self._valueCallbackGyro(self, value)
+          self._valueCallbackGyro(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;
@@ -1324,11 +1324,11 @@ constructor TYQt.Create(func:string);
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, true)
+          TYFunction._UpdateTimedReportCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, false)
+          TYFunction._UpdateTimedReportCallbackList(self, false);
         end;
       self._timedReportCallbackGyro := callback;
       result := 0;
@@ -1340,11 +1340,11 @@ constructor TYQt.Create(func:string);
     begin
       if (addr(self._timedReportCallbackGyro) <> nil) then
         begin
-          self._timedReportCallbackGyro(self, value)
+          self._timedReportCallbackGyro(self, value);
         end
       else
         begin
-          inherited _invokeTimedReportCallback(value)
+          inherited _invokeTimedReportCallback(value);
         end;
       result := 0;
       exit;
@@ -1363,40 +1363,40 @@ constructor TYQt.Create(func:string);
           if self.load(10) <> YAPI_SUCCESS then
             begin
               result := YAPI_DEVICE_NOT_FOUND;
-              exit
+              exit;
             end;
           if self._qt_stamp = 0 then
             begin
               self._qt_w := TYQt.FindQt(''+self._serial+'.qt1');
               self._qt_x := TYQt.FindQt(''+self._serial+'.qt2');
               self._qt_y := TYQt.FindQt(''+self._serial+'.qt3');
-              self._qt_z := TYQt.FindQt(''+self._serial+'.qt4')
+              self._qt_z := TYQt.FindQt(''+self._serial+'.qt4');
             end;
           if self._qt_w.load(9) <> YAPI_SUCCESS then
             begin
               result := YAPI_DEVICE_NOT_FOUND;
-              exit
+              exit;
             end;
           if self._qt_x.load(9) <> YAPI_SUCCESS then
             begin
               result := YAPI_DEVICE_NOT_FOUND;
-              exit
+              exit;
             end;
           if self._qt_y.load(9) <> YAPI_SUCCESS then
             begin
               result := YAPI_DEVICE_NOT_FOUND;
-              exit
+              exit;
             end;
           if self._qt_z.load(9) <> YAPI_SUCCESS then
             begin
               result := YAPI_DEVICE_NOT_FOUND;
-              exit
+              exit;
             end;
           self._w := self._qt_w.get_currentValue();
           self._x := self._qt_x.get_currentValue();
           self._y := self._qt_y.get_currentValue();
           self._z := self._qt_z.get_currentValue();
-          self._qt_stamp := now_stamp
+          self._qt_stamp := now_stamp;
         end;
       result := YAPI_SUCCESS;
       exit;
@@ -1415,7 +1415,7 @@ constructor TYQt.Create(func:string);
       if self._loadQuaternion <> YAPI_SUCCESS then
         begin
           result := YAPI_DEVICE_NOT_FOUND;
-          exit
+          exit;
         end;
       if self._angles_stamp <> self._qt_stamp then
         begin
@@ -1428,23 +1428,23 @@ constructor TYQt.Create(func:string);
           if delta > 0.499 * norm then
             begin
               self._pitch := 90.0;
-              self._head  := round(2.0 * 1800.0/PI * ArcTan2(self._x,self._w)) / 10.0
+              self._head  := round(2.0 * 1800.0/PI * ArcTan2(self._x,self._w)) / 10.0;
             end
           else
             begin
               if delta < -0.499 * norm then
                 begin
                   self._pitch := -90.0;
-                  self._head  := round(-2.0 * 1800.0/PI * ArcTan2(self._x,self._w)) / 10.0
+                  self._head  := round(-2.0 * 1800.0/PI * ArcTan2(self._x,self._w)) / 10.0;
                 end
               else
                 begin
                   self._roll  := round(1800.0/PI * ArcTan2(2.0 * (self._w * self._x + self._y * self._z),sqw - sqx - sqy + sqz)) / 10.0;
                   self._pitch := round(1800.0/PI * ArcSin(2.0 * delta / norm)) / 10.0;
-                  self._head  := round(1800.0/PI * ArcTan2(2.0 * (self._x * self._y + self._z * self._w),sqw + sqx - sqy - sqz)) / 10.0
+                  self._head  := round(1800.0/PI * ArcTan2(2.0 * (self._x * self._y + self._z * self._w),sqw + sqx - sqy - sqz)) / 10.0;
                 end;
             end;
-          self._angles_stamp := self._qt_stamp
+          self._angles_stamp := self._qt_stamp;
         end;
       result := YAPI_SUCCESS;
       exit;
@@ -1662,7 +1662,7 @@ constructor TYQt.Create(func:string);
           if self._loadQuaternion <> YAPI_SUCCESS then
             begin
               result := YAPI_DEVICE_NOT_FOUND;
-              exit
+              exit;
             end;
           self._qt_w.set_userData(self);
           self._qt_x.set_userData(self);
@@ -1671,7 +1671,7 @@ constructor TYQt.Create(func:string);
           self._qt_w.registerValueCallback(yInternalGyroCallback);
           self._qt_x.registerValueCallback(yInternalGyroCallback);
           self._qt_y.registerValueCallback(yInternalGyroCallback);
-          self._qt_z.registerValueCallback(yInternalGyroCallback)
+          self._qt_z.registerValueCallback(yInternalGyroCallback);
         end
       else
         begin
@@ -1680,7 +1680,7 @@ constructor TYQt.Create(func:string);
               self._qt_w.registerValueCallback(TYQtValueCallback(nil));
               self._qt_x.registerValueCallback(TYQtValueCallback(nil));
               self._qt_y.registerValueCallback(TYQtValueCallback(nil));
-              self._qt_z.registerValueCallback(TYQtValueCallback(nil))
+              self._qt_z.registerValueCallback(TYQtValueCallback(nil));
             end;
         end;
       result := 0;
@@ -1719,7 +1719,7 @@ constructor TYQt.Create(func:string);
           if self._loadQuaternion <> YAPI_SUCCESS then
             begin
               result := YAPI_DEVICE_NOT_FOUND;
-              exit
+              exit;
             end;
           self._qt_w.set_userData(self);
           self._qt_x.set_userData(self);
@@ -1728,7 +1728,7 @@ constructor TYQt.Create(func:string);
           self._qt_w.registerValueCallback(yInternalGyroCallback);
           self._qt_x.registerValueCallback(yInternalGyroCallback);
           self._qt_y.registerValueCallback(yInternalGyroCallback);
-          self._qt_z.registerValueCallback(yInternalGyroCallback)
+          self._qt_z.registerValueCallback(yInternalGyroCallback);
         end
       else
         begin
@@ -1737,7 +1737,7 @@ constructor TYQt.Create(func:string);
               self._qt_w.registerValueCallback(TYQtValueCallback(nil));
               self._qt_x.registerValueCallback(TYQtValueCallback(nil));
               self._qt_y.registerValueCallback(TYQtValueCallback(nil));
-              self._qt_z.registerValueCallback(TYQtValueCallback(nil))
+              self._qt_z.registerValueCallback(TYQtValueCallback(nil));
             end;
         end;
       result := 0;
@@ -1750,35 +1750,35 @@ constructor TYQt.Create(func:string);
       case qtIndex - 1 of
         0 :
           begin
-            self._w := qtValue
+            self._w := qtValue;
           end;
         1 :
           begin
-            self._x := qtValue
+            self._x := qtValue;
           end;
         2 :
           begin
-            self._y := qtValue
+            self._y := qtValue;
           end;
         3 :
           begin
-            self._z := qtValue
+            self._z := qtValue;
           end;
       end;;
       if qtIndex < 4 then
         begin
           result := 0;
-          exit
+          exit;
         end;
       self._qt_stamp := ((yGetTickCount) and ($07FFFFFFF));
       if (addr(self._quatCallback) <> nil) then
         begin
-          self._quatCallback(self, self._w, self._x, self._y, self._z)
+          self._quatCallback(self, self._w, self._x, self._y, self._z);
         end;
       if (addr(self._anglesCallback) <> nil) then
         begin
           self._loadAngles;
-          self._anglesCallback(self, self._roll, self._pitch, self._head)
+          self._anglesCallback(self, self._roll, self._pitch, self._head);
         end;
       result := 0;
       exit;

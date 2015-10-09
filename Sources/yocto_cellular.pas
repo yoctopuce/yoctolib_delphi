@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 21485 2015-09-11 14:10:22Z seb $
+ * $Id: yocto_cellular.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -561,6 +561,22 @@ type
 
     ////
     /// <summary>
+    ///   Returns the list detected cell operators in the neighborhood.
+    /// <para>
+    ///   This function will typically take between 30 seconds to 1 minute to
+    ///   return. Note that any SIM card can usually only connect to specific
+    ///   operators. All networks returned by this function might therefore
+    ///   not be available for connection.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a list of string (cell operator names).
+    /// </returns>
+    ///-
+    function get_availableOperators():TStringArray; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Returns a list of nearby cellular antennas, as required for quick
     ///   geolocation of the device.
     /// <para>
@@ -839,7 +855,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_LINKQUALITY_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._linkQuality;
@@ -869,7 +885,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_CELLOPERATOR_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._cellOperator;
@@ -899,7 +915,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_CELLIDENTIFIER_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._cellIdentifier;
@@ -933,7 +949,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_IMSI_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._imsi;
@@ -963,7 +979,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_MESSAGE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._message;
@@ -997,7 +1013,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PIN_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._pin;
@@ -1070,7 +1086,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_LOCKEDOPERATOR_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._lockedOperator;
@@ -1133,7 +1149,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_ENABLEDATA_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._enableData;
@@ -1199,7 +1215,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_APN_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._apn;
@@ -1261,7 +1277,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_APNSECRET_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._apnSecret;
@@ -1284,7 +1300,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_COMMAND_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._command;
@@ -1350,7 +1366,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYCellular.create(func);
-          TYFunction._AddToCache('Cellular',  func, obj)
+          TYFunction._AddToCache('Cellular',  func, obj);
         end;
       result := obj;
       exit;
@@ -1381,11 +1397,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackCellular := callback;
       // Immediately invoke value callback with current value
@@ -1394,7 +1410,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -1406,11 +1422,11 @@ implementation
     begin
       if (addr(self._valueCallbackCellular) <> nil) then
         begin
-          self._valueCallbackCellular(self, value)
+          self._valueCallbackCellular(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;
@@ -1458,7 +1474,7 @@ implementation
         begin
           result := self.set_command('AT+CPIN='+puk+',0000;
           +CLCK=SC,0,0000');
-          exit
+          exit;
         end;
       result := self.set_command('AT+CPIN='+puk+','+newPin);
       exit;
@@ -1518,7 +1534,14 @@ implementation
     var
       chrPos : LongInt;
       cmdLen : LongInt;
-      content : TByteArray;
+      waitMore : LongInt;
+      res : string;
+      buff : TByteArray;
+      bufflen : LongInt;
+      buffstr : string;
+      buffstrlen : LongInt;
+      idx : LongInt;
+      suffixlen : LongInt;
     begin
       cmdLen := Length(cmd);
       chrPos := (pos('#', cmd) - 1);
@@ -1526,25 +1549,104 @@ implementation
         begin
           cmd := ''+ Copy(cmd,  0 + 1, chrPos)+''+chr( 37)+'23'+Copy(cmd,  chrPos+1 + 1, cmdLen-chrPos-1);
           cmdLen := cmdLen + 2;
-          chrPos := (pos('#', cmd) - 1)
+          chrPos := (pos('#', cmd) - 1);
         end;
       chrPos := (pos('+', cmd) - 1);
       while chrPos >= 0 do
         begin
           cmd := ''+ Copy(cmd,  0 + 1, chrPos)+''+chr( 37)+'2B'+Copy(cmd,  chrPos+1 + 1, cmdLen-chrPos-1);
           cmdLen := cmdLen + 2;
-          chrPos := (pos('+', cmd) - 1)
+          chrPos := (pos('+', cmd) - 1);
         end;
       chrPos := (pos('=', cmd) - 1);
       while chrPos >= 0 do
         begin
           cmd := ''+ Copy(cmd,  0 + 1, chrPos)+''+chr( 37)+'3D'+Copy(cmd,  chrPos+1 + 1, cmdLen-chrPos-1);
           cmdLen := cmdLen + 2;
-          chrPos := (pos('=', cmd) - 1)
+          chrPos := (pos('=', cmd) - 1);
         end;
+      cmd := 'at.txt?cmd='+cmd;
+      res := '';
+      // max 2 minutes (each iteration may take up to 5 seconds if waiting)
+      waitMore := 24;
+      while waitMore > 0 do
+        begin
+          buff := self._download(cmd);
+          bufflen := length(buff);
+          buffstr := _ByteToString(buff);
+          buffstrlen := Length(buffstr);
+          idx := bufflen - 1;
+          while (idx > 0) and(buff[idx] <> 64) and(buff[idx] <> 10) and(buff[idx] <> 13) do
+            begin
+              idx := idx - 1;
+            end;
+          if buff[idx] = 64 then
+            begin
+              suffixlen := bufflen - idx;
+              cmd := 'at.txt?cmd='+Copy(buffstr,  buffstrlen - suffixlen + 1, suffixlen);
+              buffstr := Copy(buffstr,  0 + 1, buffstrlen - suffixlen);
+              waitMore := waitMore - 1;
+            end
+          else
+            begin
+              waitMore := 0;
+            end;
+          res := ''+ res+''+buffstr;
+        end;
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the list detected cell operators in the neighborhood.
+  /// <para>
+  ///   This function will typically take between 30 seconds to 1 minute to
+  ///   return. Note that any SIM card can usually only connect to specific
+  ///   operators. All networks returned by this function might therefore
+  ///   not be available for connection.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a list of string (cell operator names).
+  /// </returns>
+  ///-
+  function TYCellular.get_availableOperators():TStringArray;
+    var
+      cops : string;
+      idx : LongInt;
+      slen : LongInt;
+      res : TStringArray;
+      res_pos : LongInt;
+    begin
+      SetLength(res, 0);
       // may throw an exception
-      content := self._download('at.txt?cmd='+cmd);
-      result := _ByteToString(content);
+      cops := self._AT('+COPS=?');
+      slen := Length(cops);
+      res_pos := 0;
+      SetLength(res, 10);;
+      idx := (pos('(', cops) - 1);
+      while idx >= 0 do
+        begin
+          slen := slen - (idx+1);
+          cops := Copy(cops,  idx+1 + 1, slen);
+          idx := (pos('"', cops) - 1);
+          if idx > 0 then
+            begin
+              slen := slen - (idx+1);
+              cops := Copy(cops,  idx+1 + 1, slen);
+              idx := (pos('"', cops) - 1);
+              if idx > 0 then
+                begin
+                  res[res_pos] := Copy(cops,  0 + 1, idx);
+                  inc(res_pos);
+                end;
+            end;
+          idx := (pos('(', cops) - 1);
+        end;
+      SetLength(res, res_pos);;
+      result := res;
       exit;
     end;
 
@@ -1589,21 +1691,21 @@ implementation
       mccs := Copy(moni, 7 + 1, 3);
       if (Copy(mccs, 0 + 1, 1) = '0') then
         begin
-          mccs := Copy(mccs, 1 + 1, 2)
+          mccs := Copy(mccs, 1 + 1, 2);
         end;
       if (Copy(mccs, 0 + 1, 1) = '0') then
         begin
-          mccs := Copy(mccs, 1 + 1, 1)
+          mccs := Copy(mccs, 1 + 1, 1);
         end;
       mcc := _atoi(mccs);
       mncs := Copy(moni, 11 + 1, 3);
       if (Copy(mncs, 2 + 1, 1) = ',') then
         begin
-          mncs := Copy(mncs, 0 + 1, 2)
+          mncs := Copy(mncs, 0 + 1, 2);
         end;
       if (Copy(mncs, 0 + 1, 1) = '0') then
         begin
-          mncs := Copy(mncs, 1 + 1, Length(mncs)-1)
+          mncs := Copy(mncs, 1 + 1, Length(mncs)-1);
         end;
       mnc := _atoi(mncs);
       recs := _stringSplit(moni, '#');
@@ -1622,7 +1724,7 @@ implementation
                   dbms := Copy(recs[i_i], 37 + 1, 4);
                   if (Copy(dbms, 0 + 1, 1) = ' ') then
                     begin
-                      dbms := Copy(dbms, 1 + 1, 3)
+                      dbms := Copy(dbms, 1 + 1, 3);
                     end;
                   dbm := _atoi(dbms);
                   if llen > 66 then
@@ -1630,20 +1732,20 @@ implementation
                       tads := Copy(recs[i_i], 54 + 1, 2);
                       if (Copy(tads, 0 + 1, 1) = ' ') then
                         begin
-                          tads := Copy(tads, 1 + 1, 3)
+                          tads := Copy(tads, 1 + 1, 3);
                         end;
                       tad := _atoi(tads);
-                      oper := Copy(recs[i_i], 66 + 1, llen-66)
+                      oper := Copy(recs[i_i], 66 + 1, llen-66);
                     end
                   else
                     begin
                       tad := -1;
-                      oper := ''
+                      oper := '';
                     end;
                   if lac < 65535 then
                     begin
                       res[res_pos] := TYCellRecord.create(mcc, mnc, lac, cellId, dbm, tad, oper);
-                      inc(res_pos)
+                      inc(res_pos);
                     end;
                 end;
             end;

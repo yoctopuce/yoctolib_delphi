@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 21397 2015-09-03 06:26:28Z seb $
+ * $Id: yocto_serialport.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -1461,7 +1461,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_SERIALMODE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._serialMode;
@@ -1532,7 +1532,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PROTOCOL_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._protocol;
@@ -1600,7 +1600,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_VOLTAGELEVEL_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._voltageLevel;
@@ -1665,7 +1665,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_RXCOUNT_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._rxCount;
@@ -1695,7 +1695,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_TXCOUNT_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._txCount;
@@ -1725,7 +1725,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_ERRCOUNT_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._errCount;
@@ -1755,7 +1755,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_RXMSGCOUNT_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._rxMsgCount;
@@ -1785,7 +1785,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_TXMSGCOUNT_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._txMsgCount;
@@ -1815,7 +1815,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_LASTMSG_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._lastMsg;
@@ -1845,7 +1845,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_CURRENTJOB_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._currentJob;
@@ -1905,7 +1905,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_STARTUPJOB_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._startupJob;
@@ -1950,7 +1950,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_COMMAND_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._command;
@@ -2016,7 +2016,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYSerialPort.create(func);
-          TYFunction._AddToCache('SerialPort',  func, obj)
+          TYFunction._AddToCache('SerialPort',  func, obj);
         end;
       result := obj;
       exit;
@@ -2047,11 +2047,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackSerialPort := callback;
       // Immediately invoke value callback with current value
@@ -2060,7 +2060,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -2072,11 +2072,11 @@ implementation
     begin
       if (addr(self._valueCallbackSerialPort) <> nil) then
         begin
-          self._valueCallbackSerialPort(self, value)
+          self._valueCallbackSerialPort(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;
@@ -2233,17 +2233,17 @@ implementation
               ch := buff[idx];
               if (ch >= $020) and(ch < $07f) then
                 begin
-                  idx := idx + 1
+                  idx := idx + 1;
                 end
               else
                 begin
-                  ch := 0
+                  ch := 0;
                 end;
             end;
           if idx >= bufflen then
             begin
               result := self.sendCommand('+'+text);
-              exit
+              exit;
             end;
         end;
       // send string using file upload
@@ -2306,7 +2306,7 @@ implementation
         begin
           hexb := byteList[idx];
           buff[idx] := hexb;
-          idx := idx + 1
+          idx := idx + 1;
         end;
       // may throw an exception
       res := self._upload('txdata', buff);
@@ -2343,7 +2343,7 @@ implementation
       if bufflen < 100 then
         begin
           result := self.sendCommand('$'+hexString);
-          exit
+          exit;
         end;
       bufflen := ((bufflen) shr 1);
       setlength(buff,bufflen);
@@ -2352,7 +2352,7 @@ implementation
         begin
           hexb := StrToInt('$0' + Copy(hexString,  2 * idx + 1, 2));
           buff[idx] := hexb;
-          idx := idx + 1
+          idx := idx + 1;
         end;
       // may throw an exception
       res := self._upload('txdata', buff);
@@ -2395,17 +2395,17 @@ implementation
               ch := buff[idx];
               if (ch >= $020) and(ch < $07f) then
                 begin
-                  idx := idx + 1
+                  idx := idx + 1;
                 end
               else
                 begin
-                  ch := 0
+                  ch := 0;
                 end;
             end;
           if idx >= bufflen then
             begin
               result := self.sendCommand('!'+text);
-              exit
+              exit;
             end;
         end;
       // send string using file upload
@@ -2470,13 +2470,13 @@ implementation
         begin
           endpos := endpos + mult * (buff[bufflen] - 48);
           mult := mult * 10;
-          bufflen := bufflen - 1
+          bufflen := bufflen - 1;
         end;
       self._rxptr := endpos;
       if bufflen = 0 then
         begin
           result := YAPI_NO_MORE_DATA;
-          exit
+          exit;
         end;
       res := buff[0];
       result := res;
@@ -2512,7 +2512,7 @@ implementation
     begin
       if nChars > 65535 then
         begin
-          nChars := 65535
+          nChars := 65535;
         end;
       // may throw an exception
       buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
@@ -2523,7 +2523,7 @@ implementation
         begin
           endpos := endpos + mult * (buff[bufflen] - 48);
           mult := mult * 10;
-          bufflen := bufflen - 1
+          bufflen := bufflen - 1;
         end;
       self._rxptr := endpos;
       res := Copy(_ByteToString(buff),  0 + 1, bufflen);
@@ -2561,7 +2561,7 @@ implementation
     begin
       if nChars > 65535 then
         begin
-          nChars := 65535
+          nChars := 65535;
         end;
       // may throw an exception
       buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
@@ -2572,7 +2572,7 @@ implementation
         begin
           endpos := endpos + mult * (buff[bufflen] - 48);
           mult := mult * 10;
-          bufflen := bufflen - 1
+          bufflen := bufflen - 1;
         end;
       self._rxptr := endpos;
       setlength(res,bufflen);
@@ -2580,7 +2580,7 @@ implementation
       while idx < bufflen do
         begin
           res[idx] := buff[idx];
-          idx := idx + 1
+          idx := idx + 1;
         end;
       result := res;
       exit;
@@ -2618,7 +2618,7 @@ implementation
     begin
       if nChars > 65535 then
         begin
-          nChars := 65535
+          nChars := 65535;
         end;
       // may throw an exception
       buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
@@ -2629,7 +2629,7 @@ implementation
         begin
           endpos := endpos + mult * (buff[bufflen] - 48);
           mult := mult * 10;
-          bufflen := bufflen - 1
+          bufflen := bufflen - 1;
         end;
       self._rxptr := endpos;
       res_pos := 0;
@@ -2640,7 +2640,7 @@ implementation
           b := buff[idx];
           res[res_pos] := b;
           inc(res_pos);
-          idx := idx + 1
+          idx := idx + 1;
         end;
       SetLength(res, res_pos);;
       result := res;
@@ -2677,7 +2677,7 @@ implementation
     begin
       if nBytes > 65535 then
         begin
-          nBytes := 65535
+          nBytes := 65535;
         end;
       // may throw an exception
       buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nBytes));
@@ -2688,7 +2688,7 @@ implementation
         begin
           endpos := endpos + mult * (buff[bufflen] - 48);
           mult := mult * 10;
-          bufflen := bufflen - 1
+          bufflen := bufflen - 1;
         end;
       self._rxptr := endpos;
       res := '';
@@ -2696,12 +2696,12 @@ implementation
       while ofs + 3 < bufflen do
         begin
           res := ''+ res+''+inttohex( buff[ofs],02)+''+inttohex( buff[ofs + 1],02)+''+inttohex( buff[ofs + 2],02)+''+inttohex(buff[ofs + 3],02);
-          ofs := ofs + 4
+          ofs := ofs + 4;
         end;
       while ofs < bufflen do
         begin
           res := ''+ res+''+inttohex(buff[ofs],02);
-          ofs := ofs + 1
+          ofs := ofs + 1;
         end;
       result := res;
       exit;
@@ -2745,7 +2745,7 @@ implementation
       if msglen = 0 then
         begin
           result := '';
-          exit
+          exit;
         end;
       // last element of array is the new position
       msglen := msglen - 1;
@@ -2753,7 +2753,7 @@ implementation
       if msglen = 0 then
         begin
           result := '';
-          exit
+          exit;
         end;
       res := self._json_get_string(_StrToByte(msgarr[0]));
       result := res;
@@ -2813,7 +2813,7 @@ implementation
       if msglen = 0 then
         begin
           result := res;
-          exit
+          exit;
         end;
       // last element of array is the new position
       msglen := msglen - 1;
@@ -2825,7 +2825,7 @@ implementation
         begin
           res[res_pos] := self._json_get_string(_StrToByte(msgarr[idx]));
           inc(res_pos);
-          idx := idx + 1
+          idx := idx + 1;
         end;
       SetLength(res, res_pos);;
       result := res;
@@ -2895,7 +2895,7 @@ implementation
       bufflen := length(buff) - 1;
       while (bufflen > 0) and(buff[bufflen] <> 64) do
         begin
-          bufflen := bufflen - 1
+          bufflen := bufflen - 1;
         end;
       res := _atoi(Copy(_ByteToString(buff),  0 + 1, bufflen));
       result := res;
@@ -2941,7 +2941,7 @@ implementation
       if msglen = 0 then
         begin
           result := '';
-          exit
+          exit;
         end;
       // last element of array is the new position
       msglen := msglen - 1;
@@ -2949,7 +2949,7 @@ implementation
       if msglen = 0 then
         begin
           result := '';
-          exit
+          exit;
         end;
       res := self._json_get_string(_StrToByte(msgarr[0]));
       result := res;
@@ -3004,7 +3004,7 @@ implementation
       while i < length(pduBytes) do
         begin
           cmd := ''+ cmd+''+inttohex(((pduBytes[i]) and ($0ff)),02);
-          i := i + 1
+          i := i + 1;
         end;
       // may throw an exception
       url := 'rxmsg.json?cmd=:'+ cmd+'&pat=:'+pat;
@@ -3028,7 +3028,7 @@ implementation
               hexb := StrToInt('$0' + Copy(rep, 2 * i + 3 + 1, 2));
               res[res_pos] := hexb;
               inc(res_pos);
-              i := i + 1
+              i := i + 1;
             end;
           SetLength(res, res_pos);
           if res[0] <> funCode then
@@ -3118,12 +3118,12 @@ implementation
       if length(reply) = 0 then
         begin
           result := res;
-          exit
+          exit;
         end;
       if reply[0] <> pdu[0] then
         begin
           result := res;
-          exit
+          exit;
         end;
       res_pos := length(res);
       SetLength(res, res_pos+nBits);;
@@ -3136,23 +3136,23 @@ implementation
           if ((val) and (mask)) = 0 then
             begin
               res[res_pos] := 0;
-              inc(res_pos)
+              inc(res_pos);
             end
           else
             begin
               res[res_pos] := 1;
-              inc(res_pos)
+              inc(res_pos);
             end;
           bitpos := bitpos + 1;
           if mask = $080 then
             begin
               idx := idx + 1;
               val := reply[idx];
-              mask := 1
+              mask := 1;
             end
           else
             begin
-              mask := ((mask) shl 1)
+              mask := ((mask) shl 1);
             end;
         end;
       SetLength(res, res_pos);;
@@ -3214,12 +3214,12 @@ implementation
       if length(reply) = 0 then
         begin
           result := res;
-          exit
+          exit;
         end;
       if reply[0] <> pdu[0] then
         begin
           result := res;
-          exit
+          exit;
         end;
       res_pos := length(res);
       SetLength(res, res_pos+nBits);;
@@ -3232,23 +3232,23 @@ implementation
           if ((val) and (mask)) = 0 then
             begin
               res[res_pos] := 0;
-              inc(res_pos)
+              inc(res_pos);
             end
           else
             begin
               res[res_pos] := 1;
-              inc(res_pos)
+              inc(res_pos);
             end;
           bitpos := bitpos + 1;
           if mask = $080 then
             begin
               idx := idx + 1;
               val := reply[idx];
-              mask := 1
+              mask := 1;
             end
           else
             begin
-              mask := ((mask) shl 1)
+              mask := ((mask) shl 1);
             end;
         end;
       SetLength(res, res_pos);;
@@ -3309,12 +3309,12 @@ implementation
       if length(reply) = 0 then
         begin
           result := res;
-          exit
+          exit;
         end;
       if reply[0] <> pdu[0] then
         begin
           result := res;
-          exit
+          exit;
         end;
       res_pos := length(res);
       SetLength(res, res_pos+nWords);;
@@ -3328,7 +3328,7 @@ implementation
           idx := idx + 1;
           res[res_pos] := val;
           inc(res_pos);
-          regpos := regpos + 1
+          regpos := regpos + 1;
         end;
       SetLength(res, res_pos);;
       result := res;
@@ -3388,12 +3388,12 @@ implementation
       if length(reply) = 0 then
         begin
           result := res;
-          exit
+          exit;
         end;
       if reply[0] <> pdu[0] then
         begin
           result := res;
-          exit
+          exit;
         end;
       res_pos := length(res);
       SetLength(res, res_pos+nWords);;
@@ -3407,7 +3407,7 @@ implementation
           idx := idx + 1;
           res[res_pos] := val;
           inc(res_pos);
-          regpos := regpos + 1
+          regpos := regpos + 1;
         end;
       SetLength(res, res_pos);;
       result := res;
@@ -3448,7 +3448,7 @@ implementation
       res := 0;
       if value <> 0 then
         begin
-          value := $0ff
+          value := $0ff;
         end;
       pdu_pos := length(pdu);
       SetLength(pdu, pdu_pos+5);;
@@ -3468,12 +3468,12 @@ implementation
       if length(reply) = 0 then
         begin
           result := res;
-          exit
+          exit;
         end;
       if reply[0] <> pdu[0] then
         begin
           result := res;
-          exit
+          exit;
         end;
       res := 1;
       result := res;
@@ -3540,7 +3540,7 @@ implementation
         begin
           if bits[bitpos] <> 0 then
             begin
-              val := ((val) or (mask))
+              val := ((val) or (mask));
             end;
           bitpos := bitpos + 1;
           if mask = $080 then
@@ -3548,17 +3548,17 @@ implementation
               pdu[pdu_pos] := val;
               inc(pdu_pos);
               val := 0;
-              mask := 1
+              mask := 1;
             end
           else
             begin
-              mask := ((mask) shl 1)
+              mask := ((mask) shl 1);
             end;
         end;
       if mask <> 1 then
         begin
           pdu[pdu_pos] := val;
-          inc(pdu_pos)
+          inc(pdu_pos);
         end;
       SetLength(pdu, pdu_pos);;
       // may throw an exception
@@ -3566,12 +3566,12 @@ implementation
       if length(reply) = 0 then
         begin
           result := res;
-          exit
+          exit;
         end;
       if reply[0] <> pdu[0] then
         begin
           result := res;
-          exit
+          exit;
         end;
       res := ((reply[3]) shl 8);
       res := res + reply[4];
@@ -3613,7 +3613,7 @@ implementation
       res := 0;
       if value <> 0 then
         begin
-          value := $0ff
+          value := $0ff;
         end;
       pdu_pos := length(pdu);
       SetLength(pdu, pdu_pos+5);;
@@ -3633,12 +3633,12 @@ implementation
       if length(reply) = 0 then
         begin
           result := res;
-          exit
+          exit;
         end;
       if reply[0] <> pdu[0] then
         begin
           result := res;
-          exit
+          exit;
         end;
       res := 1;
       result := res;
@@ -3705,7 +3705,7 @@ implementation
           inc(pdu_pos);
           pdu[pdu_pos] := ((val) and ($0ff));
           inc(pdu_pos);
-          regpos := regpos + 1
+          regpos := regpos + 1;
         end;
       SetLength(pdu, pdu_pos);;
       // may throw an exception
@@ -3713,12 +3713,12 @@ implementation
       if length(reply) = 0 then
         begin
           result := res;
-          exit
+          exit;
         end;
       if reply[0] <> pdu[0] then
         begin
           result := res;
-          exit
+          exit;
         end;
       res := ((reply[3]) shl 8);
       res := res + reply[4];
@@ -3802,7 +3802,7 @@ implementation
           inc(pdu_pos);
           pdu[pdu_pos] := ((val) and ($0ff));
           inc(pdu_pos);
-          regpos := regpos + 1
+          regpos := regpos + 1;
         end;
       SetLength(pdu, pdu_pos);;
       // may throw an exception
@@ -3810,12 +3810,12 @@ implementation
       if length(reply) = 0 then
         begin
           result := res;
-          exit
+          exit;
         end;
       if reply[0] <> pdu[0] then
         begin
           result := res;
-          exit
+          exit;
         end;
       res_pos := length(res);
       SetLength(res, res_pos+nReadWords);;
@@ -3829,7 +3829,7 @@ implementation
           idx := idx + 1;
           res[res_pos] := val;
           inc(res_pos);
-          regpos := regpos + 1
+          regpos := regpos + 1;
         end;
       SetLength(res, res_pos);;
       result := res;

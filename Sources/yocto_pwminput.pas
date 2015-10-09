@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwminput.pas 20400 2015-05-21 14:58:16Z mvuilleu $
+ * $Id: yocto_pwminput.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindPwmInput(), the high-level API for PwmInput functions
  *
@@ -554,7 +554,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_DUTYCYCLE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._dutyCycle;
@@ -584,7 +584,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PULSEDURATION_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._pulseDuration;
@@ -614,7 +614,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_FREQUENCY_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._frequency;
@@ -644,7 +644,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PERIOD_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._period;
@@ -677,7 +677,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PULSECOUNTER_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._pulseCounter;
@@ -713,7 +713,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PULSETIMER_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._pulseTimer;
@@ -746,7 +746,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PWMREPORTMODE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._pwmReportMode;
@@ -835,7 +835,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYPwmInput.create(func);
-          TYFunction._AddToCache('PwmInput',  func, obj)
+          TYFunction._AddToCache('PwmInput',  func, obj);
         end;
       result := obj;
       exit;
@@ -866,11 +866,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackPwmInput := callback;
       // Immediately invoke value callback with current value
@@ -879,7 +879,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -891,11 +891,11 @@ implementation
     begin
       if (addr(self._valueCallbackPwmInput) <> nil) then
         begin
-          self._valueCallbackPwmInput(self, value)
+          self._valueCallbackPwmInput(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;
@@ -924,11 +924,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, true)
+          TYFunction._UpdateTimedReportCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, false)
+          TYFunction._UpdateTimedReportCallbackList(self, false);
         end;
       self._timedReportCallbackPwmInput := callback;
       result := 0;
@@ -940,11 +940,11 @@ implementation
     begin
       if (addr(self._timedReportCallbackPwmInput) <> nil) then
         begin
-          self._timedReportCallbackPwmInput(self, value)
+          self._timedReportCallbackPwmInput(self, value);
         end
       else
         begin
-          inherited _invokeTimedReportCallback(value)
+          inherited _invokeTimedReportCallback(value);
         end;
       result := 0;
       exit;

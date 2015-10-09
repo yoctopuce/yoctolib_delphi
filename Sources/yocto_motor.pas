@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_motor.pas 18320 2014-11-10 10:47:48Z seb $
+ * $Id: yocto_motor.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindMotor(), the high-level API for Motor functions
  *
@@ -813,7 +813,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_MOTORSTATUS_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._motorStatus;
@@ -884,7 +884,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_DRIVINGFORCE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._drivingForce;
@@ -945,7 +945,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_BRAKINGFORCE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._brakingForce;
@@ -1015,7 +1015,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_CUTOFFVOLTAGE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._cutOffVoltage;
@@ -1048,7 +1048,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_OVERCURRENTLIMIT_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._overCurrentLimit;
@@ -1143,7 +1143,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_FREQUENCY_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._frequency;
@@ -1175,7 +1175,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_STARTERTIME_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._starterTime;
@@ -1240,7 +1240,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_FAILSAFETIMEOUT_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._failSafeTimeout;
@@ -1288,7 +1288,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_COMMAND_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._command;
@@ -1354,7 +1354,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYMotor.create(func);
-          TYFunction._AddToCache('Motor',  func, obj)
+          TYFunction._AddToCache('Motor',  func, obj);
         end;
       result := obj;
       exit;
@@ -1385,11 +1385,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackMotor := callback;
       // Immediately invoke value callback with current value
@@ -1398,7 +1398,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -1410,11 +1410,11 @@ implementation
     begin
       if (addr(self._valueCallbackMotor) <> nil) then
         begin
-          self._valueCallbackMotor(self, value)
+          self._valueCallbackMotor(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;

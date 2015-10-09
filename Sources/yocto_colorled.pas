@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_colorled.pas 19338 2015-02-17 17:44:58Z seb $
+ * $Id: yocto_colorled.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindColorLed(), the high-level API for ColorLed functions
  *
@@ -723,7 +723,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_RGBCOLOR_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._rgbColor;
@@ -782,7 +782,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_HSLCOLOR_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._hslColor;
@@ -826,7 +826,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_RGBMOVE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._rgbMove;
@@ -880,7 +880,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_HSLMOVE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._hslMove;
@@ -949,7 +949,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_RGBCOLORATPOWERON_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._rgbColorAtPowerOn;
@@ -1005,7 +1005,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_BLINKSEQSIZE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._blinkSeqSize;
@@ -1033,7 +1033,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_BLINKSEQMAXSIZE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._blinkSeqMaxSize;
@@ -1067,7 +1067,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_BLINKSEQSIGNATURE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._blinkSeqSignature;
@@ -1082,7 +1082,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_COMMAND_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._command;
@@ -1148,7 +1148,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYColorLed.create(func);
-          TYFunction._AddToCache('ColorLed',  func, obj)
+          TYFunction._AddToCache('ColorLed',  func, obj);
         end;
       result := obj;
       exit;
@@ -1179,11 +1179,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackColorLed := callback;
       // Immediately invoke value callback with current value
@@ -1192,7 +1192,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -1204,11 +1204,11 @@ implementation
     begin
       if (addr(self._valueCallbackColorLed) <> nil) then
         begin
-          self._valueCallbackColorLed(self, value)
+          self._valueCallbackColorLed(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;

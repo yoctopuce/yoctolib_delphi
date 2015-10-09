@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 19338 2015-02-17 17:44:58Z seb $
+ * $Id: yocto_display.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -1642,7 +1642,7 @@ destructor TYDisplay.destroy();
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_ENABLED_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._enabled;
@@ -1700,7 +1700,7 @@ destructor TYDisplay.destroy();
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_STARTUPSEQ_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._startupSeq;
@@ -1760,7 +1760,7 @@ destructor TYDisplay.destroy();
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_BRIGHTNESS_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._brightness;
@@ -1822,7 +1822,7 @@ destructor TYDisplay.destroy();
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_ORIENTATION_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._orientation;
@@ -1883,7 +1883,7 @@ destructor TYDisplay.destroy();
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_DISPLAYWIDTH_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._displayWidth;
@@ -1913,7 +1913,7 @@ destructor TYDisplay.destroy();
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_DISPLAYHEIGHT_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._displayHeight;
@@ -1944,7 +1944,7 @@ destructor TYDisplay.destroy();
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_DISPLAYTYPE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._displayType;
@@ -1974,7 +1974,7 @@ destructor TYDisplay.destroy();
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_LAYERWIDTH_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._layerWidth;
@@ -2004,7 +2004,7 @@ destructor TYDisplay.destroy();
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_LAYERHEIGHT_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._layerHeight;
@@ -2034,7 +2034,7 @@ destructor TYDisplay.destroy();
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_LAYERCOUNT_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._layerCount;
@@ -2049,7 +2049,7 @@ destructor TYDisplay.destroy();
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_COMMAND_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._command;
@@ -2115,7 +2115,7 @@ destructor TYDisplay.destroy();
       if obj = nil then
         begin
           obj :=  TYDisplay.create(func);
-          TYFunction._AddToCache('Display',  func, obj)
+          TYFunction._AddToCache('Display',  func, obj);
         end;
       result := obj;
       exit;
@@ -2146,11 +2146,11 @@ destructor TYDisplay.destroy();
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackDisplay := callback;
       // Immediately invoke value callback with current value
@@ -2159,7 +2159,7 @@ destructor TYDisplay.destroy();
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -2171,11 +2171,11 @@ destructor TYDisplay.destroy();
     begin
       if (addr(self._valueCallbackDisplay) <> nil) then
         begin
-          self._valueCallbackDisplay(self, value)
+          self._valueCallbackDisplay(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_buzzer.pas 18762 2014-12-16 16:00:39Z seb $
+ * $Id: yocto_buzzer.pas 21551 2015-09-17 16:50:38Z seb $
  *
  * Implements yFindBuzzer(), the high-level API for Buzzer functions
  *
@@ -670,7 +670,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_FREQUENCY_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._frequency;
@@ -700,7 +700,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_VOLUME_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._volume;
@@ -756,7 +756,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PLAYSEQSIZE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._playSeqSize;
@@ -784,7 +784,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PLAYSEQMAXSIZE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._playSeqMaxSize;
@@ -818,7 +818,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_PLAYSEQSIGNATURE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._playSeqSignature;
@@ -833,7 +833,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_COMMAND_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._command;
@@ -899,7 +899,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYBuzzer.create(func);
-          TYFunction._AddToCache('Buzzer',  func, obj)
+          TYFunction._AddToCache('Buzzer',  func, obj);
         end;
       result := obj;
       exit;
@@ -930,11 +930,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackBuzzer := callback;
       // Immediately invoke value callback with current value
@@ -943,7 +943,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -955,11 +955,11 @@ implementation
     begin
       if (addr(self._valueCallbackBuzzer) <> nil) then
         begin
-          self._valueCallbackBuzzer(self, value)
+          self._valueCallbackBuzzer(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;

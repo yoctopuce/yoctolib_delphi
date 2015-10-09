@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_temperature.pas 21211 2015-08-19 16:03:29Z seb $
+ * $Id: yocto_temperature.pas 21576 2015-09-21 13:17:28Z seb $
  *
  * Implements yFindTemperature(), the high-level API for Temperature functions
  *
@@ -568,7 +568,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_SENSORTYPE_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._sensorType;
@@ -619,7 +619,7 @@ implementation
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
               result := Y_COMMAND_INVALID;
-              exit
+              exit;
             end;
         end;
       result := self._command;
@@ -685,7 +685,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYTemperature.create(func);
-          TYFunction._AddToCache('Temperature',  func, obj)
+          TYFunction._AddToCache('Temperature',  func, obj);
         end;
       result := obj;
       exit;
@@ -716,11 +716,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateValueCallbackList(self, true)
+          TYFunction._UpdateValueCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateValueCallbackList(self, false)
+          TYFunction._UpdateValueCallbackList(self, false);
         end;
       self._valueCallbackTemperature := callback;
       // Immediately invoke value callback with current value
@@ -729,7 +729,7 @@ implementation
           val := self._advertisedValue;
           if not((val = '')) then
             begin
-              self._invokeValueCallback(val)
+              self._invokeValueCallback(val);
             end;
         end;
       result := 0;
@@ -741,11 +741,11 @@ implementation
     begin
       if (addr(self._valueCallbackTemperature) <> nil) then
         begin
-          self._valueCallbackTemperature(self, value)
+          self._valueCallbackTemperature(self, value);
         end
       else
         begin
-          inherited _invokeValueCallback(value)
+          inherited _invokeValueCallback(value);
         end;
       result := 0;
       exit;
@@ -774,11 +774,11 @@ implementation
     begin
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, true)
+          TYFunction._UpdateTimedReportCallbackList(self, true);
         end
       else
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, false)
+          TYFunction._UpdateTimedReportCallbackList(self, false);
         end;
       self._timedReportCallbackTemperature := callback;
       result := 0;
@@ -790,11 +790,11 @@ implementation
     begin
       if (addr(self._timedReportCallbackTemperature) <> nil) then
         begin
-          self._timedReportCallbackTemperature(self, value)
+          self._timedReportCallbackTemperature(self, value);
         end
       else
         begin
-          inherited _invokeTimedReportCallback(value)
+          inherited _invokeTimedReportCallback(value);
         end;
       result := 0;
       exit;
@@ -934,9 +934,9 @@ implementation
                 begin
                   curr := idxres;
                   currTemp := tempValues[idx];
-                  found := 1
+                  found := 1;
                 end;
-              idx := idx + 1
+              idx := idx + 1;
             end;
           if found > 0 then
             begin
@@ -947,7 +947,7 @@ implementation
                   result:=YAPI_IO_ERROR;
                   exit;
                 end;
-              prev := curr
+              prev := curr;
             end;
         end;
       result := YAPI_SUCCESS;
@@ -1005,7 +1005,7 @@ implementation
       SetLength(resValues, 0);
       // may throw an exception
       id := self.get_functionId;
-      id := Copy(id,  11 + 1, Length(id)-1);
+      id := Copy(id,  11 + 1, Length(id) - 11);
       bin_json := self._download('extra.json?page='+id);
       paramlist := self._json_get_array(bin_json);
       // first convert all temperatures to float
@@ -1018,7 +1018,7 @@ implementation
           temp := StrToFloat(paramlist[2*idx+1])/1000.0;
           templist[templist_pos] := temp;
           inc(templist_pos);
-          idx := idx + 1
+          idx := idx + 1;
         end;
       // then add records in growing temperature value
       tempValues_pos := 0;
@@ -1040,9 +1040,9 @@ implementation
                 begin
                   curr := temp;
                   currRes := StrToFloat(paramlist[2*idx])/1000.0;
-                  found := 1
+                  found := 1;
                 end;
-              idx := idx + 1
+              idx := idx + 1;
             end;
           if found > 0 then
             begin
@@ -1050,7 +1050,7 @@ implementation
               inc(tempValues_pos);
               resValues[resValues_pos] := currRes;
               inc(resValues_pos);
-              prev := curr
+              prev := curr;
             end;
         end;
       SetLength(tempValues, tempValues_pos);;
