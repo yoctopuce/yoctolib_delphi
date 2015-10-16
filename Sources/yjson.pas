@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yjson.pas 21405 2015-09-03 13:29:00Z seb $
+ * $Id: yjson.pas 21797 2015-10-16 10:07:42Z martinm $
  *
  * Simple JSON parser to parse the output of Yoctopuce devices
  *
@@ -56,7 +56,7 @@ type
    name : string [64];
    case recordtype :  TJSONRECORDTYPE OF
       JSON_STRING  : (svalue  : pansichar);
-     JSON_INTEGER  : (ivalue  : integer);
+     JSON_INTEGER  : (ivalue  : int64);
      JSON_BOOLEAN  : (bvalue  : boolean);
       JSON_STRUCT  : (membercount     : integer;
                       memberAllocated : integer;
@@ -86,7 +86,7 @@ type
    function  Parse(st:string): PJSONRECORD;
    procedure FreeStructure(p:PJSONRECORD);
    function  createStrRecord(name,value:string):PJSONRECORD;
-   function  createIntrecord(name:string;value:integer):PJSONRECORD;
+   function  createIntrecord(name:string;value:int64):PJSONRECORD;
    function  createBoolRecord(name:string;value:boolean):PJSONRECORD;
    function  createStructRecord(name:string):PJSONRECORD;
    procedure add2StructRecord(container:PJSONRECORD;element:PJSONRECORD);
@@ -265,7 +265,7 @@ function  TJsonParser.createStrRecord(name,value:string):PJSONRECORD;
    createStrRecord := res;
  end;
 
-function  TJsonParser.createIntrecord(name:string;value:integer):PJSONRECORD;
+function  TJsonParser.createIntrecord(name:string;value:int64):PJSONRECORD;
  var res : PJSONRECORD;
 
  begin
@@ -382,7 +382,8 @@ function TJsonParser.ParseEx(initialstate:Tjstate;defaultname:string; var st:str
   state:Tjstate;
   svalue:string;
   //current  :string;
-  ivalue,isign,v:integer;
+  ivalue:int64;
+  isign,v:integer;
   c :char;
   name:string ;
 
