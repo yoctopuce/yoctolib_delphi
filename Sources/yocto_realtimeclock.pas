@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_realtimeclock.pas 21551 2015-09-17 16:50:38Z seb $
+ * $Id: yocto_realtimeclock.pas 21894 2015-11-02 10:30:24Z seb $
  *
  * Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
@@ -117,7 +117,6 @@ type
     ///   Changes the current time.
     /// <para>
     ///   Time is specifid in Unix format (number of elapsed seconds since Jan 1st, 1970).
-    ///   If current UTC time is known, utcOffset will be automatically adjusted for the new specified time.
     /// </para>
     /// <para>
     /// </para>
@@ -173,8 +172,6 @@ type
     ///   Changes the number of seconds between current time and UTC time (time zone).
     /// <para>
     ///   The timezone is automatically rounded to the nearest multiple of 15 minutes.
-    ///   If current UTC time is known, the current time will automatically be updated according to the
-    ///   selected time zone.
     /// </para>
     /// <para>
     /// </para>
@@ -453,7 +450,6 @@ implementation
   ///   Changes the current time.
   /// <para>
   ///   Time is specifid in Unix format (number of elapsed seconds since Jan 1st, 1970).
-  ///   If current UTC time is known, utcOffset will be automatically adjusted for the new specified time.
   /// </para>
   /// <para>
   /// </para>
@@ -541,8 +537,6 @@ implementation
   ///   Changes the number of seconds between current time and UTC time (time zone).
   /// <para>
   ///   The timezone is automatically rounded to the nearest multiple of 15 minutes.
-  ///   If current UTC time is known, the current time will automatically be updated according to the
-  ///   selected time zone.
   /// </para>
   /// <para>
   /// </para>

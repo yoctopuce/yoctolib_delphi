@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 21680 2015-10-02 13:42:44Z seb $
+ * $Id: yocto_api.pas 22199 2015-12-02 15:02:47Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -115,7 +115,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '21816';
+  YOCTO_API_BUILD_NO        = '22324';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -573,10 +573,10 @@ type
 
     ////
     /// <summary>
-    ///   Invalidate the cache.
+    ///   Invalidates the cache.
     /// <para>
-    ///   Invalidate the cache of the function attributes. Force the
-    ///   next call to get_xxx() or loadxxx() to use value that come from the device..
+    ///   Invalidates the cache of the function attributes. Forces the
+    ///   next call to get_xxx() or loadxxx() to use values that come from the device.
     /// </para>
     /// <para>
     /// @noreturn
@@ -723,6 +723,8 @@ type
     ///-
     function get_advertisedValue():string;
 
+    function set_advertisedValue(newval:string):integer;
+
     ////
     /// <summary>
     ///   Retrieves $AFUNCTION$ for a given identifier.
@@ -788,6 +790,43 @@ type
     function registerValueCallback(callback: TYFunctionValueCallback):LongInt; overload; virtual;
 
     function _invokeValueCallback(value: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Disable the propagation of every new advertised value to the parent hub.
+    /// <para>
+    ///   You can use this function to save bandwidth and CPU on computers with limited
+    ///   resources, or to prevent unwanted invocations of the HTTP callback.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function muteValueCallbacks():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Re-enable the propagation of every new advertised value to the parent hub.
+    /// <para>
+    ///   This function reverts the effect of a previous call to <c>muteValueCallbacks()</c>.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function unmuteValueCallbacks():LongInt; overload; virtual;
 
     function _parserHelper():LongInt; overload; virtual;
 
@@ -857,7 +896,7 @@ type
     //--- (end of generated code: YModule declaration)
 
     // Return the properties of the nth function of our device
-    function _getFunction(idx:integer; var serial,funcId,funcName,funcVal,errMsg:string):YRETCODE;
+    function _getFunction(idx:integer; var serial,funcId,baseType,funcName,funcVal,errMsg:string):YRETCODE;
 
   public
 
@@ -914,6 +953,24 @@ type
     /// </para>
     ///-
     function functionType(functionIndex:integer):string;
+
+    ////
+    /// <summary>
+    ///   Retrieves the base type of the <i>n</i>th function on the module.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="functionIndex">
+    ///   the index of the function for which the information is desired, starting at 0 for the first function.
+    /// </param>
+    /// <returns>
+    ///   a the base type of the function
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty string.
+    /// </para>
+    ///-
+    function functionBaseType(functionIndex:integer):string;
 
     ////
     /// <summary>
@@ -2464,9 +2521,9 @@ end;
   //--- (generated code: YDataStream accessors declaration)
     function _initFromDataSet(dataset: TYDataSet; encoded: TLongIntArray):LongInt; overload; virtual;
 
-    function parse(sdata: TByteArray):LongInt; overload; virtual;
+    function _parseStream(sdata: TByteArray):LongInt; overload; virtual;
 
-    function get_url():string; overload; virtual;
+    function _get_url():string; overload; virtual;
 
     function loadStream():LongInt; overload; virtual;
 
@@ -2928,18 +2985,19 @@ end;
 
     //--- (end of generated code: YDataSet declaration)
 
-    function _parse(data:string):integer;
 
   public
 
     constructor Create(parent:TYFunction; functionId,func_unit:string; startTime,endTime: LongWord); Overload;
 
-    constructor Create(parent:TYFunction; data:string); Overload;
+    constructor Create(parent:TYFunction); Overload;
 
     destructor Destroy();override;
 
+    function _parse(data:string):integer;
+
   //--- (generated code: YDataSet accessors declaration)
-    function get_calibration():TLongIntArray; overload; virtual;
+    function _get_calibration():TLongIntArray; overload; virtual;
 
     function processMore(progress: LongInt; data: TByteArray):LongInt; overload; virtual;
 
@@ -4070,6 +4128,7 @@ const
   function  _yapiGetFunctionsByClass( class_str:pansichar; precFuncDesc:YFUN_DESCR; buffer:PyHandleArray;maxsize:integer;var neededsize:integer;errmsg : pansichar):integer; cdecl;  external dllfile name 'yapiGetFunctionsByClass';
   function  _yapiGetFunctionsByDevice( device:YDEV_DESCR; precFuncDesc:YFUN_DESCR; buffer:PyHandleArray;maxsize:integer;var neededsize:integer;errmsg : pansichar):integer; cdecl;  external dllfile name 'yapiGetFunctionsByDevice';
   function  _yapiGetFunctionInfo(fundesc:YFUN_DESCR;var devdesc:YDEV_DESCR;serial,funcId,funcName,funcVal,errmsg : pansichar):integer;  cdecl; external dllfile name 'yapiGetFunctionInfo';
+  function  _yapiGetFunctionInfoEx(fundesc:YFUN_DESCR;var devdesc:YDEV_DESCR;serial,funcId,baseType,funcName,funcVal,errmsg : pansichar):integer;  cdecl; external dllfile name 'yapiGetFunctionInfoEx';
   function  _yapiGetErrorString(errorcode:integer;buffer:pansichar; maxsize:integer;errmsg : pansichar):integer;  cdecl; external dllfile name 'yapiGetErrorString';
   function  _yapiHTTPRequestSyncStart(iohdl:PYIOHDL;device:pansichar;url:pansichar; var reply:pansichar; var replysize:integer; errmsg : pansichar):integer;cdecl;external dllfile name 'yapiHTTPRequestSyncStart';
   function  _yapiHTTPRequestSyncStartEx(iohdl:PYIOHDL;device:pansichar;url:pansichar;urllen:integer; var reply:pansichar; var replysize:integer; errmsg : pansichar):integer;cdecl;external dllfile name 'yapiHTTPRequestSyncStartEx';
@@ -5163,7 +5222,32 @@ var
 
 
 
-  function yapiGetFunctionInfo(fundesc:YFUN_DESCR;var devdesc:YDEV_DESCR;var serial,funcId,funcName,funcVal,errmsg : string):integer;
+  function yapiGetFunctionInfoEx(fundesc:YFUN_DESCR;var devdesc:YDEV_DESCR;var serial,funcId,baseType,funcName,funcVal,errmsg : string):integer;
+    var
+      serialBuffer   : array[0..YOCTO_SERIAL_LEN] of ansichar;
+      funcIdBuffer   : array[0..YOCTO_FUNCTION_LEN] of ansichar;
+      baseTypeBuffer : array[0..YOCTO_FUNCTION_LEN] of ansichar;
+      funcNameBuffer : array[0..YOCTO_LOGICAL_LEN] of ansichar;
+      funcValBuffer  : array[0..YOCTO_PUBVAL_LEN] of ansichar;
+      errBuffer      : array[0..YOCTO_ERRMSG_LEN] of ansichar;
+      pError,pSerial,pFuncId,pBaseType,pFuncname,pFuncVal : pansichar;
+    begin
+      serialBuffer[0]:=#0;  pSerial    := @serialBuffer;
+      funcIdBuffer[0]:=#0;  pFuncId    := @funcIdBuffer;
+      baseTypeBuffer[0]:=#0;pBaseType  := @baseTypeBuffer;
+      funcNameBuffer[0]:=#0;pFuncname  := @funcNameBuffer;
+      funcValBuffer[0]:=#0; pFuncVal   := @funcValBuffer;
+      errBuffer[0]:=#0;     pError     := @errBuffer;
+      yapiGetFunctionInfoEx :=_yapiGetFunctionInfoEx(fundesc,devdesc,pSerial,pFuncId,pBaseType,pFuncname,pFuncVal,pError);
+      serial    := string(pSerial);
+      funcId    := string(pFuncId);
+      baseType  := string(pBaseType);
+      funcName  := string(pFuncname);
+      funcVal   := string(pFuncVal);
+      errmsg    := string(perror);
+    end;
+
+    function yapiGetFunctionInfo(fundesc:YFUN_DESCR;var devdesc:YDEV_DESCR;var serial,funcId,funcName,funcVal,errmsg : string):integer;
     var
       serialBuffer   : array[0..YOCTO_SERIAL_LEN] of ansichar;
       funcIdBuffer   : array[0..YOCTO_FUNCTION_LEN] of ansichar;
@@ -5177,7 +5261,7 @@ var
       funcNameBuffer[0]:=#0;pFuncname  := @funcNameBuffer;
       funcValBuffer[0]:=#0; pFuncVal   := @funcValBuffer;
       errBuffer[0]:=#0;     pError     := @errBuffer;
-      yapiGetFunctionInfo :=_yapiGetFunctionInfo(fundesc,devdesc,pSerial,pFuncId,pFuncname,pFuncVal,pError);
+      yapiGetFunctionInfo :=_yapiGetFunctionInfoEx(fundesc,devdesc,pSerial,pFuncId,nil,pFuncname,pFuncVal,pError);
       serial    := string(pSerial);
       funcId    := string(pFuncId);
       funcName  := string(pFuncname);
@@ -6130,6 +6214,14 @@ const
     end;
 
 
+  function TYFunction.set_advertisedValue(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('advertisedValue',rest_val);
+    end;
+
   ////
   /// <summary>
   ///   Retrieves $AFUNCTION$ for a given identifier.
@@ -6242,6 +6334,53 @@ const
         begin
         end;
       result := 0;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Disable the propagation of every new advertised value to the parent hub.
+  /// <para>
+  ///   You can use this function to save bandwidth and CPU on computers with limited
+  ///   resources, or to prevent unwanted invocations of the HTTP callback.
+  ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+  ///   modification must be kept.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYFunction.muteValueCallbacks():LongInt;
+    begin
+      result := self.set_advertisedValue('SILENT');
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Re-enable the propagation of every new advertised value to the parent hub.
+  /// <para>
+  ///   This function reverts the effect of a previous call to <c>muteValueCallbacks()</c>.
+  ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+  ///   modification must be kept.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYFunction.unmuteValueCallbacks():LongInt;
+    begin
+      result := self.set_advertisedValue('');
       exit;
     end;
 
@@ -6774,7 +6913,7 @@ const
 
 
   // Return the properties of the nth function of our device
-  function TYModule._getFunction(idx:integer; var serial,funcId,funcName,funcVal,errmsg:string):YRETCODE;
+  function TYModule._getFunction(idx:integer; var serial,funcId,baseType,funcName,funcVal,errmsg:string):YRETCODE;
     var
       functions  : tlist;
       dev        : TYDevice;
@@ -6795,7 +6934,7 @@ const
       if(YISERR(res))  then begin result:=res;exit;end;
       // get latest function info from yellow pages
       fundescr := YFUN_DESCR(functions.items[idx]);
-      res := yapiGetFunctionInfo(fundescr, devdescr, serial, funcId, funcName, funcVal, errmsg);
+      res := yapiGetFunctionInfoEx(fundescr, devdescr, serial, funcId, baseType, funcName, funcVal, errmsg);
       if(YISERR(res))then begin   result:=res;exit;end;
       result := YAPI_SUCCESS;
     end;
@@ -6818,10 +6957,10 @@ const
   // Retrieve the Id of the nth function (beside "module") in the device
   function TYModule.functionId(functionIndex:integer):string;
     var
-      serial, funcId, funcName, funcVal, errmsg:string;
+      serial, funcId, baseType, funcName, funcVal, errmsg:string;
       res:integer;
     begin
-      res := _getFunction(functionIndex, serial, funcId, funcName, funcVal, errmsg);
+      res := _getFunction(functionIndex, serial, funcId, baseType, funcName, funcVal, errmsg);
       if(YISERR(res)) then
         begin
           _throw(res, errmsg);
@@ -6834,11 +6973,11 @@ const
   // Retrieve the type of the nth function (beside "module") in the device
   function TYModule.functionType(functionIndex:integer):string;
     var
-      serial, funcId, funcName, funcVal, errmsg:string;
+      serial, funcId, baseType, funcName, funcVal, errmsg:string;
       res, i: integer;
       first, c : char;
     begin
-      res := _getFunction(functionIndex, serial, funcId, funcName, funcVal, errmsg);
+      res := _getFunction(functionIndex, serial, funcId, baseType, funcName, funcVal, errmsg);
       if(YISERR(res)) then
         begin
           _throw(res, errmsg);
@@ -6855,13 +6994,29 @@ const
       result := UpCase(first) + Copy(funcId, 2, i - 2);
     end;
 
+ // Retrieve the type of the nth function (beside "module") in the device
+  function TYModule.functionBaseType(functionIndex:integer):string;
+    var
+      serial, funcId, funcName, baseType, funcVal, errmsg:string;
+      res: integer;
+    begin
+      res := _getFunction(functionIndex, serial, funcId, baseType, funcName, funcVal, errmsg);
+      if(YISERR(res)) then
+        begin
+          _throw(res, errmsg);
+          result:=YAPI_INVALID_STRING;
+          exit;
+        end;
+      result := baseType;
+    end;
+
   // Retrieve the logical name of the nth function (beside "module") in the device
   function TYModule.functionName(functionIndex:integer):string;
     var
-      serial, funcId, funcName, funcVal, errmsg :  string;
+      serial, funcId, baseType, funcName, funcVal, errmsg :  string;
       res:integer;
     begin
-      res := _getFunction(functionIndex, serial, funcId, funcName, funcVal, errmsg);
+      res := _getFunction(functionIndex, serial, funcId, baseType, funcName, funcVal, errmsg);
       if(YISERR(res)) then
         begin
           _throw(res, errmsg);
@@ -6874,10 +7029,10 @@ const
   // Retrieve the advertised value of the nth function (beside "module") in the device
   function TYModule.functionValue(functionIndex:integer):string;
     var
-      serial, funcId, funcName, funcVal, errmsg:string;
+      serial, funcId, baseType, funcName, funcVal, errmsg:string;
       res: integer;
     begin
-      res := _getFunction(functionIndex, serial, funcId, funcName, funcVal, errmsg);
+      res := _getFunction(functionIndex, serial, funcId, baseType, funcName, funcVal, errmsg);
       if(YISERR(res)) then
         begin
           _throw(res, errmsg);
@@ -8322,11 +8477,20 @@ var
       SetLength(res, res_pos+count);;
       while i < count do
         begin
-          ftype  := self.functionType(i);
+          ftype := self.functionType(i);
           if (ftype = funType) then
             begin
               res[res_pos] := self.functionId(i);
               inc(res_pos);
+            end
+          else
+            begin
+              ftype := self.functionBaseType(i);
+              if (ftype = funType) then
+                begin
+                  res[res_pos] := self.functionId(i);
+                  inc(res_pos);
+                end;
             end;
           i := i + 1;
         end;
@@ -11211,7 +11375,7 @@ var
               i := i + 1;
             end;
         end;
-      iCalib := dataset.get_calibration();
+      iCalib := dataset._get_calibration();
       self._caltyp := iCalib[0];
       if self._caltyp <> 0 then
         begin
@@ -11327,7 +11491,7 @@ var
     end;
 
 
-  function TYDataStream.parse(sdata: TByteArray):LongInt;
+  function TYDataStream._parseStream(sdata: TByteArray):LongInt;
     var
       idx : LongInt;
       udat : TLongIntArray;
@@ -11415,7 +11579,7 @@ var
     end;
 
 
-  function TYDataStream.get_url():string;
+  function TYDataStream._get_url():string;
     var
       url : string;
     begin
@@ -11428,7 +11592,7 @@ var
 
   function TYDataStream.loadStream():LongInt;
     begin
-      result := self.parse(self._parent._download(self.get_url));
+      result := self._parseStream(self._parent._download(self._get_url));
       exit;
     end;
 
@@ -12046,13 +12210,12 @@ var
       self._progress   := -1;
     end;
 
-  constructor TYDataSet.Create(parent:TYFunction; data:string);
+  constructor TYDataSet.Create(parent:TYFunction);
     begin
       self._parent := parent;
       self._startTime := 0;
       self._endTime := 0;
       self._summary := TYMeasure.create(0, 0, 0, 0, 0);
-      self._parse(data);
     end;
 
   destructor TYDataSet.Destroy();
@@ -12195,7 +12358,7 @@ var
 
 //--- (generated code: YDataSet implementation)
 
-  function TYDataSet.get_calibration():TLongIntArray;
+  function TYDataSet._get_calibration():TLongIntArray;
     begin
       result := self._calib;
       exit;
@@ -12234,7 +12397,7 @@ var
           exit;
         end;
       stream := self._streams[self._progress];
-      stream.parse(data);
+      stream._parseStream(data);
       dataRows := stream.get_dataRows();
       self._progress := self._progress + 1;
       if length(dataRows) = 0 then
@@ -12490,7 +12653,7 @@ var
           else
             begin
               stream := self._streams[self._progress];
-              url := stream.get_url();
+              url := stream._get_url();
             end;
         end;
       result := self.processMore(self._progress, self._parent._download(url));
