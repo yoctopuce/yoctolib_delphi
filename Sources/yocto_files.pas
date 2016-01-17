@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 21551 2015-09-17 16:50:38Z seb $
+ * $Id: yocto_files.pas 22695 2016-01-12 23:13:53Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -270,6 +270,24 @@ public
     /// </para>
     ///-
     function get_list(pattern: string):TYFileRecordArray; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Test if a file exist on the filesystem of the module.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="filename">
+    ///   the file name to test.
+    /// </param>
+    /// <returns>
+    ///   a true if the file existe, false ortherwise.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception.
+    /// </para>
+    ///-
+    function fileExist(filename: string):boolean; overload; virtual;
 
     ////
     /// <summary>
@@ -720,6 +738,45 @@ implementation
           inc(res_pos);
         end;
       result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Test if a file exist on the filesystem of the module.
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="filename">
+  ///   the file name to test.
+  /// </param>
+  /// <returns>
+  ///   a true if the file existe, false ortherwise.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception.
+  /// </para>
+  ///-
+  function TYFiles.fileExist(filename: string):boolean;
+    var
+      json : TByteArray;
+      filelist : TStringArray;
+    begin
+      SetLength(filelist, 0);
+      if Length(filename) = 0 then
+        begin
+          result := false;
+          exit;
+        end;
+      json := self.sendCommand('dir&f='+filename);
+      filelist := self._json_get_array(json);
+      if length(filelist) > 0  then
+        begin
+          result := true;
+          exit;
+        end;
+      result := false;
       exit;
     end;
 

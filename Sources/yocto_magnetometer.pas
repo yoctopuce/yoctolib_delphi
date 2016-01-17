@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_magnetometer.pas 21551 2015-09-17 16:50:38Z seb $
+ * $Id: yocto_magnetometer.pas 22695 2016-01-12 23:13:53Z seb $
  *
  * Implements yFindMagnetometer(), the high-level API for Magnetometer functions
  *
@@ -607,14 +607,17 @@ implementation
   /// </param>
   ///-
   function TYMagnetometer.registerTimedReportCallback(callback: TYMagnetometerTimedReportCallback):LongInt;
+    var
+      sensor : TYSensor;
     begin
+      sensor := self;
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, true);
+          TYFunction._UpdateTimedReportCallbackList(sensor, true);
         end
       else
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, false);
+          TYFunction._UpdateTimedReportCallbackList(sensor, false);
         end;
       self._timedReportCallbackMagnetometer := callback;
       result := 0;

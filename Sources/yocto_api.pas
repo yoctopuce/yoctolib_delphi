@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 22199 2015-12-02 15:02:47Z seb $
+ * $Id: yocto_api.pas 22819 2016-01-17 19:13:58Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -115,7 +115,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '22324';
+  YOCTO_API_BUILD_NO        = '22835';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -1677,6 +1677,50 @@ type
     ///-
     function get_lastLogs():string; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns a list of all the modules that are plugged into the current module.
+    /// <para>
+    ///   This
+    ///   method is only useful on a YoctoHub/VirtualHub. This method return the serial number of all
+    ///   module connected to a YoctoHub. Calling this method on a standard device is not an
+    ///   error, and an empty array will be returned.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an array of strings containing the sub modules.
+    /// </returns>
+    ///-
+    function get_subDevices():TStringArray; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the serial number of the YoctoHub on which this module is connected.
+    /// <para>
+    ///   If the module is connected by USB or if the module is the root YoctoHub an
+    ///   empty string is returned.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string with the serial number of the YoctoHub or an empty string
+    /// </returns>
+    ///-
+    function get_parentHub():string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the URL used to access the module.
+    /// <para>
+    ///   If the module is connected by USB the
+    ///   string 'usb' is returned.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string with the URL of the module.
+    /// </returns>
+    ///-
+    function get_url():string; overload; virtual;
+
 
     ////
     /// <summary>
@@ -2386,13 +2430,13 @@ end;
     ///   the serial number of the module to update
     /// </param>
     /// <param name="path">
-    ///   the path of a byn file or a directory that contain byn files
+    ///   the path of a byn file or a directory that contains byn files
     /// </param>
     /// <param name="minrelease">
-    ///   an positif integer
+    ///   a positive integer
     /// </param>
     /// <returns>
-    ///   : the path of the byn file to use or a empty string if no byn files match the requirement
+    ///   : the path of the byn file to use or an empty string if no byn files match the requirement
     /// </returns>
     /// <para>
     ///   On failure, returns a string that start with "error:".
@@ -4154,6 +4198,8 @@ const
   function _yapiTestHub(url:pansichar; mstimeout:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiTestHub';
   function _yapiJsonGetPath(path:pansichar; json_data:pansichar; json_len:integer; var result:pansichar; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiJsonGetPath';
   function _yapiJsonDecodeString(json_data:pansichar; output:pansichar):integer; cdecl; external dllfile name 'yapiJsonDecodeString';
+  function _yapiGetSubdevices(serial:pansichar; buffer:pansichar; buffersize:integer; var totalSize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetSubdevices';
+  function _yapiGetDevicePathEx(serial:pansichar; rootdevice:pansichar; path:pansichar; pathsize:integer; var neededsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetDevicePathEx';
 //--- (end of generated code: YFunction dlldef)
 
 
@@ -6890,6 +6936,7 @@ const
       _serialNumber := string(pansichar(addr(infos.serial)));
       _productName  := string(pansichar(addr(infos.productname)));
       _productId    := infos.deviceid;
+      self._cacheExpiration := yGetTickCount;
     end;
 
     function TYModule.registerLogCallback(callback : TYModuleLogCallback): integer;
@@ -7514,7 +7561,7 @@ var
   ///-
   function TYModule.get_productRelease():LongInt;
     begin
-      if self._cacheExpiration = 0 then
+      if self._cacheExpiration <= yGetTickCount then
         begin
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
@@ -9349,6 +9396,154 @@ var
     end;
 
 
+  ////
+  /// <summary>
+  ///   Returns a list of all the modules that are plugged into the current module.
+  /// <para>
+  ///   This
+  ///   method is only useful on a YoctoHub/VirtualHub. This method return the serial number of all
+  ///   module connected to a YoctoHub. Calling this method on a standard device is not an
+  ///   error, and an empty array will be returned.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an array of strings containing the sub modules.
+  /// </returns>
+  ///-
+  function TYModule.get_subDevices():TStringArray;
+    var
+      errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
+      errmsg : pansichar;
+      smallbuff_buffer : array[0..1024] of ansichar;
+      smallbuff : pansichar;
+      bigbuff : pansichar;
+      buffsize : LongInt;
+      fullsize : LongInt;
+      yapi_res : LongInt;
+      subdevice_list : string;
+      subdevices : TStringArray;
+      serial : string;
+    begin
+      errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
+      smallbuff_buffer[0]:=#0;smallbuff:=@smallbuff_buffer;
+      SetLength(subdevices, 0);
+      // may throw an exception
+      serial := self.get_serialNumber;
+      fullsize := 0;
+      yapi_res := _yapiGetSubdevices(pansichar(ansistring(serial)), smallbuff, 1024, fullsize, errmsg);
+      if yapi_res < 0 then
+        begin
+          result := subdevices;
+          exit;
+        end;
+      if fullsize <= 1024 then
+        begin
+          subdevice_list := string(smallbuff);
+        end
+      else
+        begin
+          buffsize := fullsize;
+          getmem(bigbuff, buffsize);
+          yapi_res := _yapiGetSubdevices(pansichar(ansistring(serial)), bigbuff, buffsize, fullsize, errmsg);
+          if yapi_res < 0 then
+            begin
+              freemem(bigbuff);
+              result := subdevices;
+              exit;
+            end
+          else
+            begin
+              subdevice_list := string(bigbuff);
+            end;
+          freemem(bigbuff);
+        end;
+      if not((subdevice_list = '')) then
+        begin
+          subdevices := _stringSplit(subdevice_list, ',');
+        end;
+      result := subdevices;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the serial number of the YoctoHub on which this module is connected.
+  /// <para>
+  ///   If the module is connected by USB or if the module is the root YoctoHub an
+  ///   empty string is returned.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a string with the serial number of the YoctoHub or an empty string
+  /// </returns>
+  ///-
+  function TYModule.get_parentHub():string;
+    var
+      errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
+      errmsg : pansichar;
+      hubserial_buffer : array[0..YOCTO_SERIAL_LEN] of ansichar;
+      hubserial : pansichar;
+      pathsize : LongInt;
+      yapi_res : LongInt;
+      serial : string;
+    begin
+      errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
+      hubserial_buffer[0]:=#0;hubserial:=@hubserial_buffer;
+      // may throw an exception
+      serial := self.get_serialNumber;
+      // retrieve device object
+      pathsize := 0;
+      yapi_res := _yapiGetDevicePathEx(pansichar(ansistring(serial)), hubserial, nil, 0, pathsize, errmsg);
+      if yapi_res < 0 then
+        begin
+          result := '';
+          exit;
+        end;
+      result := string(hubserial);
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the URL used to access the module.
+  /// <para>
+  ///   If the module is connected by USB the
+  ///   string 'usb' is returned.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a string with the URL of the module.
+  /// </returns>
+  ///-
+  function TYModule.get_url():string;
+    var
+      errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
+      errmsg : pansichar;
+      path_buffer : array[0..1024] of ansichar;
+      path : pansichar;
+      pathsize : LongInt;
+      yapi_res : LongInt;
+      serial : string;
+    begin
+      errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
+      path_buffer[0]:=#0;path:=@path_buffer;
+      // may throw an exception
+      serial := self.get_serialNumber;
+      // retrieve device object
+      pathsize := 0;
+      yapi_res := _yapiGetDevicePathEx(pansichar(ansistring(serial)), nil, path, 1024, pathsize, errmsg);
+      if yapi_res < 0 then
+        begin
+          result := '';
+          exit;
+        end;
+      result := string(path);
+      exit;
+    end;
+
+
   function TYModule.nextModule(): TYModule;
     var
       hwid: string;
@@ -10457,14 +10652,17 @@ var
   /// </param>
   ///-
   function TYSensor.registerTimedReportCallback(callback: TYSensorTimedReportCallback):LongInt;
+    var
+      sensor : TYSensor;
     begin
+      sensor := self;
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, true);
+          TYFunction._UpdateTimedReportCallbackList(sensor, true);
         end
       else
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, false);
+          TYFunction._UpdateTimedReportCallbackList(sensor, false);
         end;
       self._timedReportCallbackSensor := callback;
       result := 0;
@@ -11156,13 +11354,13 @@ var
   ///   the serial number of the module to update
   /// </param>
   /// <param name="path">
-  ///   the path of a byn file or a directory that contain byn files
+  ///   the path of a byn file or a directory that contains byn files
   /// </param>
   /// <param name="minrelease">
-  ///   an positif integer
+  ///   a positive integer
   /// </param>
   /// <returns>
-  ///   : the path of the byn file to use or a empty string if no byn files match the requirement
+  ///   : the path of the byn file to use or an empty string if no byn files match the requirement
   /// </returns>
   /// <para>
   ///   On failure, returns a string that start with "error:".

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_longitude.pas 21551 2015-09-17 16:50:38Z seb $
+ * $Id: yocto_longitude.pas 22695 2016-01-12 23:13:53Z seb $
  *
  * Implements yFindLongitude(), the high-level API for Longitude functions
  *
@@ -434,14 +434,17 @@ implementation
   /// </param>
   ///-
   function TYLongitude.registerTimedReportCallback(callback: TYLongitudeTimedReportCallback):LongInt;
+    var
+      sensor : TYSensor;
     begin
+      sensor := self;
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, true);
+          TYFunction._UpdateTimedReportCallbackList(sensor, true);
         end
       else
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, false);
+          TYFunction._UpdateTimedReportCallbackList(sensor, false);
         end;
       self._timedReportCallbackLongitude := callback;
       result := 0;

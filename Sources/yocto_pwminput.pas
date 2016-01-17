@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwminput.pas 21776 2015-10-15 16:57:56Z mvuilleu $
+ * $Id: yocto_pwminput.pas 22695 2016-01-12 23:13:53Z seb $
  *
  * Implements yFindPwmInput(), the high-level API for PwmInput functions
  *
@@ -921,14 +921,17 @@ implementation
   /// </param>
   ///-
   function TYPwmInput.registerTimedReportCallback(callback: TYPwmInputTimedReportCallback):LongInt;
+    var
+      sensor : TYSensor;
     begin
+      sensor := self;
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, true);
+          TYFunction._UpdateTimedReportCallbackList(sensor, true);
         end
       else
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, false);
+          TYFunction._UpdateTimedReportCallbackList(sensor, false);
         end;
       self._timedReportCallbackPwmInput := callback;
       result := 0;

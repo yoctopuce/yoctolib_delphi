@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_quadraturedecoder.pas 21782 2015-10-16 07:53:41Z seb $
+ * $Id: yocto_quadraturedecoder.pas 22695 2016-01-12 23:13:53Z seb $
  *
  * Implements yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
  *
@@ -651,14 +651,17 @@ implementation
   /// </param>
   ///-
   function TYQuadratureDecoder.registerTimedReportCallback(callback: TYQuadratureDecoderTimedReportCallback):LongInt;
+    var
+      sensor : TYSensor;
     begin
+      sensor := self;
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, true);
+          TYFunction._UpdateTimedReportCallbackList(sensor, true);
         end
       else
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, false);
+          TYFunction._UpdateTimedReportCallbackList(sensor, false);
         end;
       self._timedReportCallbackQuadratureDecoder := callback;
       result := 0;

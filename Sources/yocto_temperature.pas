@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_temperature.pas 21576 2015-09-21 13:17:28Z seb $
+ * $Id: yocto_temperature.pas 22695 2016-01-12 23:13:53Z seb $
  *
  * Implements yFindTemperature(), the high-level API for Temperature functions
  *
@@ -771,14 +771,17 @@ implementation
   /// </param>
   ///-
   function TYTemperature.registerTimedReportCallback(callback: TYTemperatureTimedReportCallback):LongInt;
+    var
+      sensor : TYSensor;
     begin
+      sensor := self;
       if (addr(callback) <> nil) then
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, true);
+          TYFunction._UpdateTimedReportCallbackList(sensor, true);
         end
       else
         begin
-          TYFunction._UpdateTimedReportCallbackList(self, false);
+          TYFunction._UpdateTimedReportCallbackList(sensor, false);
         end;
       self._timedReportCallbackTemperature := callback;
       result := 0;

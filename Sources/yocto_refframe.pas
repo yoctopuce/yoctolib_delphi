@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_refframe.pas 21551 2015-09-17 16:50:38Z seb $
+ * $Id: yocto_refframe.pas 22360 2015-12-15 13:31:40Z seb $
  *
  * Implements yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -1115,7 +1115,6 @@ implementation
           result := YAPI_SUCCESS;
           exit;
         end;
-      
       // make sure we leave at least 160ms between samples
       currTick :=  ((yGetTickCount) and ($07FFFFFFF));
       if ((currTick - self._calibPrevTick) and ($07FFFFFFF)) < 160 then
@@ -1171,7 +1170,6 @@ implementation
           exit;
         end;
       self._calibPrevTick := currTick;
-      
       // Determine the device orientation index
       orient := 0;
       if zSq > 0.5 then
@@ -1207,7 +1205,6 @@ implementation
               orient := 5;
             end;
         end;
-      
       // Discard measures that are not in the proper orientation
       if self._calibStageProgress = 0 then
         begin
@@ -1239,7 +1236,6 @@ implementation
               exit;
             end;
         end;
-      
       // Save measure
       self._calibStageHint := 'calibrating..';
       self._calibDataAccX[calibDataAccX_pos] := xVal;
@@ -1258,7 +1254,6 @@ implementation
           result := YAPI_SUCCESS;
           exit;
         end;
-      
       // Stage done, compute preliminary result
       intpos := (self._calibStage - 1) * self._calibCount;
       self._calibSort(intpos, intpos + self._calibCount);
@@ -1266,7 +1261,6 @@ implementation
       self._calibLogMsg := 'Stage '+inttostr( self._calibStage)+': median is '+inttostr(
       round(1000*self._calibDataAccX[intpos]))+','+inttostr(
       round(1000*self._calibDataAccY[intpos]))+','+inttostr(round(1000*self._calibDataAccZ[intpos]));
-      
       // move to next stage
       self._calibStage := self._calibStage + 1;
       if self._calibStage < 7 then
@@ -1304,7 +1298,6 @@ implementation
       self._calibAccXOfs := xVal / 2.0;
       self._calibAccYOfs := yVal / 2.0;
       self._calibAccZOfs := zVal / 2.0;
-      
       // Recompute all norms, taking into account the computed shift, and re-sort
       intpos := 0;
       while intpos < length(self._calibDataAcc) do
@@ -1323,7 +1316,6 @@ implementation
           self._calibSort(intpos, intpos + self._calibCount);
           idx := idx + 1;
         end;
-      
       // Compute the scaling factor for each axis
       xVal := 0;
       yVal := 0;
@@ -1350,7 +1342,6 @@ implementation
       self._calibAccXScale := xVal / 2.0;
       self._calibAccYScale := yVal / 2.0;
       self._calibAccZScale := zVal / 2.0;
-      
       // Report completion
       self._calibProgress := 100;
       self._calibStageHint := 'Calibration data ready for saving';
@@ -1483,7 +1474,6 @@ implementation
           result := YAPI_INVALID_ARGUMENT;
           exit;
         end;
-      
       // Compute integer values (correction unit is 732ug/count)
       shiftX := -round(self._calibAccXOfs / 0.000732);
       if shiftX < 0 then
@@ -1545,7 +1535,6 @@ implementation
         end;
       scaleLo := ((((scaleY) and 15)) shl 12) + ((scaleX) shl 2) + scaleExp;
       scaleHi := ((scaleZ) shl 6) + ((scaleY) shr 4);
-      
       // Save calibration parameters
       newcalib := '5,'+inttostr( shiftX)+','+inttostr( shiftY)+','+inttostr( shiftZ)+','+inttostr( scaleLo)+','+inttostr(scaleHi);
       self._calibStage := 0;
@@ -1571,7 +1560,7 @@ implementation
           result := YAPI_SUCCESS;
           exit;
         end;
-      // may throw an exception        
+      // may throw an exception
       self._calibStage := 0;
       result := self.set_calibrationParam(self._calibSavedParams);
       exit;
