@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_temperature.pas 22695 2016-01-12 23:13:53Z seb $
+ * $Id: yocto_temperature.pas 23527 2016-03-18 21:49:19Z mvuilleu $
  *
  * Implements yFindTemperature(), the high-level API for Temperature functions
  *
@@ -28,8 +28,8 @@
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
  *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
- *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
  *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
  *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -62,6 +62,8 @@ const Y_SENSORTYPE_RES_OHM = 11;
 const Y_SENSORTYPE_RES_NTC = 12;
 const Y_SENSORTYPE_RES_LINEAR = 13;
 const Y_SENSORTYPE_INVALID = -1;
+const Y_SIGNALVALUE_INVALID           = YAPI_INVALID_DOUBLE;
+const Y_SIGNALUNIT_INVALID            = YAPI_INVALID_STRING;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 
@@ -103,6 +105,8 @@ type
     _resolution               : double;
     _sensorState              : LongInt;
     _sensorType               : Integer;
+    _signalValue              : double;
+    _signalUnit               : string;
     _command                  : string;
     _valueCallbackTemperature : TYTemperatureValueCallback;
     _timedReportCallbackTemperature : TYTemperatureTimedReportCallback;
@@ -197,6 +201,40 @@ type
     /// </para>
     ///-
     function set_sensorType(newval:Integer):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the current value of the electrical signal measured by the sensor.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a floating point number corresponding to the current value of the electrical signal measured by the sensor
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_SIGNALVALUE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_signalValue():double;
+
+    ////
+    /// <summary>
+    ///   Returns the measuring unit of the electrical signal used by the sensor.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the measuring unit of the electrical signal used by the sensor
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_SIGNALUNIT_INVALID</c>.
+    /// </para>
+    ///-
+    function get_signalUnit():string;
 
     function get_command():string;
 
@@ -475,6 +513,8 @@ implementation
       _className := 'Temperature';
       //--- (YTemperature accessors initialization)
       _sensorType := Y_SENSORTYPE_INVALID;
+      _signalValue := Y_SIGNALVALUE_INVALID;
+      _signalUnit := Y_SIGNALUNIT_INVALID;
       _command := Y_COMMAND_INVALID;
       _valueCallbackTemperature := nil;
       _timedReportCallbackTemperature := nil;
@@ -492,6 +532,18 @@ implementation
       if (member^.name = 'sensorType') then
         begin
           _sensorType := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'signalValue') then
+        begin
+          _signalValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'signalUnit') then
+        begin
+          _signalUnit := string(member^.svalue);
          result := 1;
          exit;
          end;
@@ -611,6 +663,66 @@ implementation
       rest_val := inttostr(newval);
       result := _setAttr('sensorType',rest_val);
     end;
+
+  ////
+  /// <summary>
+  ///   Returns the current value of the electrical signal measured by the sensor.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a floating point number corresponding to the current value of the electrical signal measured by the sensor
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_SIGNALVALUE_INVALID.
+  /// </para>
+  ///-
+  function TYTemperature.get_signalValue():double;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_SIGNALVALUE_INVALID;
+              exit;
+            end;
+        end;
+      result := round(self._signalValue * 1000) / 1000;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the measuring unit of the electrical signal used by the sensor.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a string corresponding to the measuring unit of the electrical signal used by the sensor
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_SIGNALUNIT_INVALID.
+  /// </para>
+  ///-
+  function TYTemperature.get_signalUnit():string;
+    begin
+      if self._cacheExpiration = 0 then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_SIGNALUNIT_INVALID;
+              exit;
+            end;
+        end;
+      result := self._signalUnit;
+      exit;
+    end;
+
 
   function TYTemperature.get_command():string;
     begin

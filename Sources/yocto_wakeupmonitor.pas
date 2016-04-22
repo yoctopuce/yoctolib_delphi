@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.pas 21551 2015-09-17 16:50:38Z seb $
+ * $Id: yocto_wakeupmonitor.pas 23240 2016-02-23 14:10:10Z seb $
  *
  * Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -28,8 +28,8 @@
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
  *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
- *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
  *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
  *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -184,7 +184,9 @@ type
 
     ////
     /// <summary>
-    ///   Returns the next scheduled wake up date/time (UNIX format)
+    ///   Returns the next scheduled wake up date/time (UNIX format).
+    /// <para>
+    /// </para>
     /// <para>
     /// </para>
     /// </summary>
@@ -240,7 +242,9 @@ type
 
     ////
     /// <summary>
-    ///   Returns  the current state of the monitor
+    ///   Returns  the current state of the monitor.
+    /// <para>
+    /// </para>
     /// <para>
     /// </para>
     /// </summary>
@@ -687,7 +691,9 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the next scheduled wake up date/time (UNIX format)
+  ///   Returns the next scheduled wake up date/time (UNIX format).
+  /// <para>
+  /// </para>
   /// <para>
   /// </para>
   /// </summary>
@@ -775,7 +781,9 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns  the current state of the monitor
+  ///   Returns  the current state of the monitor.
+  /// <para>
+  /// </para>
   /// <para>
   /// </para>
   /// </summary>

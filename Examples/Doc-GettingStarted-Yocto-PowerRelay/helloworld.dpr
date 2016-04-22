@@ -2,7 +2,6 @@ program helloworld;
 {$APPTYPE CONSOLE}
 uses
   SysUtils,
-  Windows,
   yocto_api,
   yocto_relay;
 
@@ -19,8 +18,7 @@ Procedure  Usage();
     WriteLn('');
     WriteLn('Example:');
     WriteLn(exe+' any B');
-    sleep(2500);
-    halt;
+  halt;
   End;
 
 

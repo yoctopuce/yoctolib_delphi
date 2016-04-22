@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 21551 2015-09-17 16:50:38Z seb $
+ * $Id: yocto_serialport.pas 23780 2016-04-06 10:27:21Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -28,8 +28,8 @@
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
  *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
- *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
  *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
  *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -47,16 +47,6 @@ uses
 
 //--- (YSerialPort definitions)
 
-const Y_SERIALMODE_INVALID            = YAPI_INVALID_STRING;
-const Y_PROTOCOL_INVALID              = YAPI_INVALID_STRING;
-const Y_VOLTAGELEVEL_OFF = 0;
-const Y_VOLTAGELEVEL_TTL3V = 1;
-const Y_VOLTAGELEVEL_TTL3VR = 2;
-const Y_VOLTAGELEVEL_TTL5V = 3;
-const Y_VOLTAGELEVEL_TTL5VR = 4;
-const Y_VOLTAGELEVEL_RS232 = 5;
-const Y_VOLTAGELEVEL_RS485 = 6;
-const Y_VOLTAGELEVEL_INVALID = -1;
 const Y_RXCOUNT_INVALID               = YAPI_INVALID_UINT;
 const Y_TXCOUNT_INVALID               = YAPI_INVALID_UINT;
 const Y_ERRCOUNT_INVALID              = YAPI_INVALID_UINT;
@@ -66,6 +56,16 @@ const Y_LASTMSG_INVALID               = YAPI_INVALID_STRING;
 const Y_CURRENTJOB_INVALID            = YAPI_INVALID_STRING;
 const Y_STARTUPJOB_INVALID            = YAPI_INVALID_STRING;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
+const Y_VOLTAGELEVEL_OFF = 0;
+const Y_VOLTAGELEVEL_TTL3V = 1;
+const Y_VOLTAGELEVEL_TTL3VR = 2;
+const Y_VOLTAGELEVEL_TTL5V = 3;
+const Y_VOLTAGELEVEL_TTL5VR = 4;
+const Y_VOLTAGELEVEL_RS232 = 5;
+const Y_VOLTAGELEVEL_RS485 = 6;
+const Y_VOLTAGELEVEL_INVALID = -1;
+const Y_PROTOCOL_INVALID              = YAPI_INVALID_STRING;
+const Y_SERIALMODE_INVALID            = YAPI_INVALID_STRING;
 
 
 //--- (end of YSerialPort definitions)
@@ -95,9 +95,6 @@ type
     // Attributes (function value cache)
     _logicalName              : string;
     _advertisedValue          : string;
-    _serialMode               : string;
-    _protocol                 : string;
-    _voltageLevel             : Integer;
     _rxCount                  : LongInt;
     _txCount                  : LongInt;
     _errCount                 : LongInt;
@@ -107,6 +104,9 @@ type
     _currentJob               : string;
     _startupJob               : string;
     _command                  : string;
+    _voltageLevel             : Integer;
+    _protocol                 : string;
+    _serialMode               : string;
     _valueCallbackSerialPort  : TYSerialPortValueCallback;
     _rxptr                    : LongInt;
     // Function-specific method for reading JSON output and caching result
@@ -117,160 +117,6 @@ type
   public
     //--- (YSerialPort accessors declaration)
     constructor Create(func:string);
-
-    ////
-    /// <summary>
-    ///   Returns the serial port communication parameters, as a string such as
-    ///   "9600,8N1".
-    /// <para>
-    ///   The string includes the baud rate, the number of data bits,
-    ///   the parity, and the number of stop bits. An optional suffix is included
-    ///   if flow control is active: "CtsRts" for hardware handshake, "XOnXOff"
-    ///   for logical flow control and "Simplex" for acquiring a shared bus using
-    ///   the RTS line (as used by some RS485 adapters for instance).
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   a string corresponding to the serial port communication parameters, as a string such as
-    ///   "9600,8N1"
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SERIALMODE_INVALID</c>.
-    /// </para>
-    ///-
-    function get_serialMode():string;
-
-    ////
-    /// <summary>
-    ///   Changes the serial port communication parameters, with a string such as
-    ///   "9600,8N1".
-    /// <para>
-    ///   The string includes the baud rate, the number of data bits,
-    ///   the parity, and the number of stop bits. An optional suffix can be added
-    ///   to enable flow control: "CtsRts" for hardware handshake, "XOnXOff"
-    ///   for logical flow control and "Simplex" for acquiring a shared bus using
-    ///   the RTS line (as used by some RS485 adapters for instance).
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="newval">
-    ///   a string corresponding to the serial port communication parameters, with a string such as
-    ///   "9600,8N1"
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_serialMode(newval:string):integer;
-
-    ////
-    /// <summary>
-    ///   Returns the type of protocol used over the serial line, as a string.
-    /// <para>
-    ///   Possible values are "Line" for ASCII messages separated by CR and/or LF,
-    ///   "Frame:[timeout]ms" for binary messages separated by a delay time,
-    ///   "Modbus-ASCII" for MODBUS messages in ASCII mode,
-    ///   "Modbus-RTU" for MODBUS messages in RTU mode,
-    ///   "Char" for a continuous ASCII stream or
-    ///   "Byte" for a continuous binary stream.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   a string corresponding to the type of protocol used over the serial line, as a string
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PROTOCOL_INVALID</c>.
-    /// </para>
-    ///-
-    function get_protocol():string;
-
-    ////
-    /// <summary>
-    ///   Changes the type of protocol used over the serial line.
-    /// <para>
-    ///   Possible values are "Line" for ASCII messages separated by CR and/or LF,
-    ///   "Frame:[timeout]ms" for binary messages separated by a delay time,
-    ///   "Modbus-ASCII" for MODBUS messages in ASCII mode,
-    ///   "Modbus-RTU" for MODBUS messages in RTU mode,
-    ///   "Char" for a continuous ASCII stream or
-    ///   "Byte" for a continuous binary stream.
-    ///   The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
-    ///   is always at lest the specified number of milliseconds between each bytes sent.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="newval">
-    ///   a string corresponding to the type of protocol used over the serial line
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_protocol(newval:string):integer;
-
-    ////
-    /// <summary>
-    ///   Returns the voltage level used on the serial line.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   a value among <c>Y_VOLTAGELEVEL_OFF</c>, <c>Y_VOLTAGELEVEL_TTL3V</c>, <c>Y_VOLTAGELEVEL_TTL3VR</c>,
-    ///   <c>Y_VOLTAGELEVEL_TTL5V</c>, <c>Y_VOLTAGELEVEL_TTL5VR</c>, <c>Y_VOLTAGELEVEL_RS232</c> and
-    ///   <c>Y_VOLTAGELEVEL_RS485</c> corresponding to the voltage level used on the serial line
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>Y_VOLTAGELEVEL_INVALID</c>.
-    /// </para>
-    ///-
-    function get_voltageLevel():Integer;
-
-    ////
-    /// <summary>
-    ///   Changes the voltage type used on the serial line.
-    /// <para>
-    ///   Valid
-    ///   values  will depend on the Yoctopuce device model featuring
-    ///   the serial port feature.  Check your device documentation
-    ///   to find out which values are valid for that specific model.
-    ///   Trying to set an invalid value will have no effect.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="newval">
-    ///   a value among <c>Y_VOLTAGELEVEL_OFF</c>, <c>Y_VOLTAGELEVEL_TTL3V</c>, <c>Y_VOLTAGELEVEL_TTL3VR</c>,
-    ///   <c>Y_VOLTAGELEVEL_TTL5V</c>, <c>Y_VOLTAGELEVEL_TTL5VR</c>, <c>Y_VOLTAGELEVEL_RS232</c> and
-    ///   <c>Y_VOLTAGELEVEL_RS485</c> corresponding to the voltage type used on the serial line
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_voltageLevel(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -462,6 +308,160 @@ type
 
     ////
     /// <summary>
+    ///   Returns the voltage level used on the serial line.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a value among <c>Y_VOLTAGELEVEL_OFF</c>, <c>Y_VOLTAGELEVEL_TTL3V</c>, <c>Y_VOLTAGELEVEL_TTL3VR</c>,
+    ///   <c>Y_VOLTAGELEVEL_TTL5V</c>, <c>Y_VOLTAGELEVEL_TTL5VR</c>, <c>Y_VOLTAGELEVEL_RS232</c> and
+    ///   <c>Y_VOLTAGELEVEL_RS485</c> corresponding to the voltage level used on the serial line
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_VOLTAGELEVEL_INVALID</c>.
+    /// </para>
+    ///-
+    function get_voltageLevel():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the voltage type used on the serial line.
+    /// <para>
+    ///   Valid
+    ///   values  will depend on the Yoctopuce device model featuring
+    ///   the serial port feature.  Check your device documentation
+    ///   to find out which values are valid for that specific model.
+    ///   Trying to set an invalid value will have no effect.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a value among <c>Y_VOLTAGELEVEL_OFF</c>, <c>Y_VOLTAGELEVEL_TTL3V</c>, <c>Y_VOLTAGELEVEL_TTL3VR</c>,
+    ///   <c>Y_VOLTAGELEVEL_TTL5V</c>, <c>Y_VOLTAGELEVEL_TTL5VR</c>, <c>Y_VOLTAGELEVEL_RS232</c> and
+    ///   <c>Y_VOLTAGELEVEL_RS485</c> corresponding to the voltage type used on the serial line
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_voltageLevel(newval:Integer):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the type of protocol used over the serial line, as a string.
+    /// <para>
+    ///   Possible values are "Line" for ASCII messages separated by CR and/or LF,
+    ///   "Frame:[timeout]ms" for binary messages separated by a delay time,
+    ///   "Modbus-ASCII" for MODBUS messages in ASCII mode,
+    ///   "Modbus-RTU" for MODBUS messages in RTU mode,
+    ///   "Char" for a continuous ASCII stream or
+    ///   "Byte" for a continuous binary stream.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the type of protocol used over the serial line, as a string
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_PROTOCOL_INVALID</c>.
+    /// </para>
+    ///-
+    function get_protocol():string;
+
+    ////
+    /// <summary>
+    ///   Changes the type of protocol used over the serial line.
+    /// <para>
+    ///   Possible values are "Line" for ASCII messages separated by CR and/or LF,
+    ///   "Frame:[timeout]ms" for binary messages separated by a delay time,
+    ///   "Modbus-ASCII" for MODBUS messages in ASCII mode,
+    ///   "Modbus-RTU" for MODBUS messages in RTU mode,
+    ///   "Char" for a continuous ASCII stream or
+    ///   "Byte" for a continuous binary stream.
+    ///   The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
+    ///   is always at lest the specified number of milliseconds between each bytes sent.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a string corresponding to the type of protocol used over the serial line
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_protocol(newval:string):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the serial port communication parameters, as a string such as
+    ///   "9600,8N1".
+    /// <para>
+    ///   The string includes the baud rate, the number of data bits,
+    ///   the parity, and the number of stop bits. An optional suffix is included
+    ///   if flow control is active: "CtsRts" for hardware handshake, "XOnXOff"
+    ///   for logical flow control and "Simplex" for acquiring a shared bus using
+    ///   the RTS line (as used by some RS485 adapters for instance).
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the serial port communication parameters, as a string such as
+    ///   "9600,8N1"
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_SERIALMODE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_serialMode():string;
+
+    ////
+    /// <summary>
+    ///   Changes the serial port communication parameters, with a string such as
+    ///   "9600,8N1".
+    /// <para>
+    ///   The string includes the baud rate, the number of data bits,
+    ///   the parity, and the number of stop bits. An optional suffix can be added
+    ///   to enable flow control: "CtsRts" for hardware handshake, "XOnXOff"
+    ///   for logical flow control and "Simplex" for acquiring a shared bus using
+    ///   the RTS line (as used by some RS485 adapters for instance).
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a string corresponding to the serial port communication parameters, with a string such as
+    ///   "9600,8N1"
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_serialMode(newval:string):integer;
+
+    ////
+    /// <summary>
     ///   Retrieves $AFUNCTION$ for a given identifier.
     /// <para>
     ///   The identifier can be specified using several formats:
@@ -544,47 +544,6 @@ type
     /// </para>
     ///-
     function reset():LongInt; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Manually sets the state of the RTS line.
-    /// <para>
-    ///   This function has no effect when
-    ///   hardware handshake is enabled, as the RTS line is driven automatically.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="val">
-    ///   1 to turn RTS on, 0 to turn RTS off
-    /// </param>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_RTS(val: LongInt):LongInt; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Reads the level of the CTS line.
-    /// <para>
-    ///   The CTS line is usually driven by
-    ///   the RTS signal of the connected serial device.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   1 if the CTS line is high, 0 if the CTS line is low.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function get_CTS():LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -696,26 +655,6 @@ type
 
     ////
     /// <summary>
-    ///   Sends a MODBUS message (provided as a hexadecimal string) to the serial port.
-    /// <para>
-    ///   The message must start with the slave address. The MODBUS CRC/LRC is
-    ///   automatically added by the function. This function does not wait for a reply.
-    /// </para>
-    /// </summary>
-    /// <param name="hexString">
-    ///   a hexadecimal message string, including device address but no CRC/LRC
-    /// </param>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function writeMODBUS(hexString: string):LongInt; overload; virtual;
-
-    ////
-    /// <summary>
     ///   Reads one byte from the receive buffer, starting at current stream position.
     /// <para>
     ///   If data at current stream position is not available anymore in the receive buffer,
@@ -816,7 +755,7 @@ type
     ///   Reads a single line (or message) from the receive buffer, starting at current stream position.
     /// <para>
     ///   This function is intended to be used when the serial port is configured for a message protocol,
-    ///   such as 'Line' mode or MODBUS protocols.
+    ///   such as 'Line' mode or frame protocols.
     /// </para>
     /// <para>
     ///   If data at current stream position is not available anymore in the receive buffer,
@@ -872,7 +811,7 @@ type
     ///   Changes the current internal stream position to the specified value.
     /// <para>
     ///   This function
-    ///   does not affect the device, it only changes the value stored in the YSerialPort object
+    ///   does not affect the device, it only changes the value stored in the API object
     ///   for the next read operations.
     /// </para>
     /// </summary>
@@ -887,7 +826,7 @@ type
 
     ////
     /// <summary>
-    ///   Returns the current absolute stream position pointer of the YSerialPort object.
+    ///   Returns the current absolute stream position pointer of the API object.
     /// <para>
     /// </para>
     /// </summary>
@@ -900,7 +839,7 @@ type
     ////
     /// <summary>
     ///   Returns the number of bytes available to read in the input buffer starting from the
-    ///   current absolute stream position pointer of the YSerialPort object.
+    ///   current absolute stream position pointer of the API object.
     /// <para>
     /// </para>
     /// </summary>
@@ -932,6 +871,112 @@ type
     /// </para>
     ///-
     function queryLine(query: string; maxWait: LongInt):string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Saves the job definition string (JSON data) into a job file.
+    /// <para>
+    ///   The job file can be later enabled using <c>selectJob()</c>.
+    /// </para>
+    /// </summary>
+    /// <param name="jobfile">
+    ///   name of the job file to save on the device filesystem
+    /// </param>
+    /// <param name="jsonDef">
+    ///   a string containing a JSON definition of the job
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function uploadJob(jobfile: string; jsonDef: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Load and start processing the specified job file.
+    /// <para>
+    ///   The file must have
+    ///   been previously created using the user interface or uploaded on the
+    ///   device filesystem using the <c>uploadJob()</c> function.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="jobfile">
+    ///   name of the job file (on the device filesystem)
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function selectJob(jobfile: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Manually sets the state of the RTS line.
+    /// <para>
+    ///   This function has no effect when
+    ///   hardware handshake is enabled, as the RTS line is driven automatically.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="val">
+    ///   1 to turn RTS on, 0 to turn RTS off
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_RTS(val: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Reads the level of the CTS line.
+    /// <para>
+    ///   The CTS line is usually driven by
+    ///   the RTS signal of the connected serial device.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   1 if the CTS line is high, 0 if the CTS line is low.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function get_CTS():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Sends a MODBUS message (provided as a hexadecimal string) to the serial port.
+    /// <para>
+    ///   The message must start with the slave address. The MODBUS CRC/LRC is
+    ///   automatically added by the function. This function does not wait for a reply.
+    /// </para>
+    /// </summary>
+    /// <param name="hexString">
+    ///   a hexadecimal message string, including device address but no CRC/LRC
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function writeMODBUS(hexString: string):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -1189,51 +1234,6 @@ type
     ///-
     function modbusWriteAndReadRegisters(slaveNo: LongInt; pduWriteAddr: LongInt; values: TLongIntArray; pduReadAddr: LongInt; nReadWords: LongInt):TLongIntArray; overload; virtual;
 
-    ////
-    /// <summary>
-    ///   Saves the job definition string (JSON data) into a job file.
-    /// <para>
-    ///   The job file can be later enabled using <c>selectJob()</c>.
-    /// </para>
-    /// </summary>
-    /// <param name="jobfile">
-    ///   name of the job file to save on the device filesystem
-    /// </param>
-    /// <param name="jsonDef">
-    ///   a string containing a JSON definition of the job
-    /// </param>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function uploadJob(jobfile: string; jsonDef: string):LongInt; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Load and start processing the specified job file.
-    /// <para>
-    ///   The file must have
-    ///   been previously created using the user interface or uploaded on the
-    ///   device filesystem using the <c>uploadJob()</c> function.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="jobfile">
-    ///   name of the job file (on the device filesystem)
-    /// </param>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function selectJob(jobfile: string):LongInt; overload; virtual;
-
 
     ////
     /// <summary>
@@ -1331,9 +1331,6 @@ implementation
       inherited Create(func);
       _className := 'SerialPort';
       //--- (YSerialPort accessors initialization)
-      _serialMode := Y_SERIALMODE_INVALID;
-      _protocol := Y_PROTOCOL_INVALID;
-      _voltageLevel := Y_VOLTAGELEVEL_INVALID;
       _rxCount := Y_RXCOUNT_INVALID;
       _txCount := Y_TXCOUNT_INVALID;
       _errCount := Y_ERRCOUNT_INVALID;
@@ -1343,6 +1340,9 @@ implementation
       _currentJob := Y_CURRENTJOB_INVALID;
       _startupJob := Y_STARTUPJOB_INVALID;
       _command := Y_COMMAND_INVALID;
+      _voltageLevel := Y_VOLTAGELEVEL_INVALID;
+      _protocol := Y_PROTOCOL_INVALID;
+      _serialMode := Y_SERIALMODE_INVALID;
       _valueCallbackSerialPort := nil;
       _rxptr := 0;
       //--- (end of YSerialPort accessors initialization)
@@ -1356,24 +1356,6 @@ implementation
       sub : PJSONRECORD;
       i,l        : integer;
     begin
-      if (member^.name = 'serialMode') then
-        begin
-          _serialMode := string(member^.svalue);
-         result := 1;
-         exit;
-         end;
-      if (member^.name = 'protocol') then
-        begin
-          _protocol := string(member^.svalue);
-         result := 1;
-         exit;
-         end;
-      if (member^.name = 'voltageLevel') then
-        begin
-          _voltageLevel := integer(member^.ivalue);
-         result := 1;
-         exit;
-         end;
       if (member^.name = 'rxCount') then
         begin
           _rxCount := integer(member^.ivalue);
@@ -1428,220 +1410,27 @@ implementation
          result := 1;
          exit;
          end;
+      if (member^.name = 'voltageLevel') then
+        begin
+          _voltageLevel := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'protocol') then
+        begin
+          _protocol := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'serialMode') then
+        begin
+          _serialMode := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
-
-  ////
-  /// <summary>
-  ///   Returns the serial port communication parameters, as a string such as
-  ///   "9600,8N1".
-  /// <para>
-  ///   The string includes the baud rate, the number of data bits,
-  ///   the parity, and the number of stop bits. An optional suffix is included
-  ///   if flow control is active: "CtsRts" for hardware handshake, "XOnXOff"
-  ///   for logical flow control and "Simplex" for acquiring a shared bus using
-  ///   the RTS line (as used by some RS485 adapters for instance).
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the serial port communication parameters, as a string such as
-  ///   "9600,8N1"
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_SERIALMODE_INVALID.
-  /// </para>
-  ///-
-  function TYSerialPort.get_serialMode():string;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
-            begin
-              result := Y_SERIALMODE_INVALID;
-              exit;
-            end;
-        end;
-      result := self._serialMode;
-      exit;
-    end;
-
-
-  ////
-  /// <summary>
-  ///   Changes the serial port communication parameters, with a string such as
-  ///   "9600,8N1".
-  /// <para>
-  ///   The string includes the baud rate, the number of data bits,
-  ///   the parity, and the number of stop bits. An optional suffix can be added
-  ///   to enable flow control: "CtsRts" for hardware handshake, "XOnXOff"
-  ///   for logical flow control and "Simplex" for acquiring a shared bus using
-  ///   the RTS line (as used by some RS485 adapters for instance).
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the serial port communication parameters, with a string such as
-  ///   "9600,8N1"
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYSerialPort.set_serialMode(newval:string):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := newval;
-      result := _setAttr('serialMode',rest_val);
-    end;
-
-  ////
-  /// <summary>
-  ///   Returns the type of protocol used over the serial line, as a string.
-  /// <para>
-  ///   Possible values are "Line" for ASCII messages separated by CR and/or LF,
-  ///   "Frame:[timeout]ms" for binary messages separated by a delay time,
-  ///   "Modbus-ASCII" for MODBUS messages in ASCII mode,
-  ///   "Modbus-RTU" for MODBUS messages in RTU mode,
-  ///   "Char" for a continuous ASCII stream or
-  ///   "Byte" for a continuous binary stream.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the type of protocol used over the serial line, as a string
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PROTOCOL_INVALID.
-  /// </para>
-  ///-
-  function TYSerialPort.get_protocol():string;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
-            begin
-              result := Y_PROTOCOL_INVALID;
-              exit;
-            end;
-        end;
-      result := self._protocol;
-      exit;
-    end;
-
-
-  ////
-  /// <summary>
-  ///   Changes the type of protocol used over the serial line.
-  /// <para>
-  ///   Possible values are "Line" for ASCII messages separated by CR and/or LF,
-  ///   "Frame:[timeout]ms" for binary messages separated by a delay time,
-  ///   "Modbus-ASCII" for MODBUS messages in ASCII mode,
-  ///   "Modbus-RTU" for MODBUS messages in RTU mode,
-  ///   "Char" for a continuous ASCII stream or
-  ///   "Byte" for a continuous binary stream.
-  ///   The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
-  ///   is always at lest the specified number of milliseconds between each bytes sent.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the type of protocol used over the serial line
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYSerialPort.set_protocol(newval:string):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := newval;
-      result := _setAttr('protocol',rest_val);
-    end;
-
-  ////
-  /// <summary>
-  ///   Returns the voltage level used on the serial line.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
-  ///   Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232 and Y_VOLTAGELEVEL_RS485
-  ///   corresponding to the voltage level used on the serial line
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
-  /// </para>
-  ///-
-  function TYSerialPort.get_voltageLevel():Integer;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
-            begin
-              result := Y_VOLTAGELEVEL_INVALID;
-              exit;
-            end;
-        end;
-      result := self._voltageLevel;
-      exit;
-    end;
-
-
-  ////
-  /// <summary>
-  ///   Changes the voltage type used on the serial line.
-  /// <para>
-  ///   Valid
-  ///   values  will depend on the Yoctopuce device model featuring
-  ///   the serial port feature.  Check your device documentation
-  ///   to find out which values are valid for that specific model.
-  ///   Trying to set an invalid value will have no effect.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
-  ///   Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232 and Y_VOLTAGELEVEL_RS485
-  ///   corresponding to the voltage type used on the serial line
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYSerialPort.set_voltageLevel(newval:Integer):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := inttostr(newval);
-      result := _setAttr('voltageLevel',rest_val);
-    end;
 
   ////
   /// <summary>
@@ -1968,6 +1757,217 @@ implementation
 
   ////
   /// <summary>
+  ///   Returns the voltage level used on the serial line.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
+  ///   Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232 and Y_VOLTAGELEVEL_RS485
+  ///   corresponding to the voltage level used on the serial line
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
+  /// </para>
+  ///-
+  function TYSerialPort.get_voltageLevel():Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_VOLTAGELEVEL_INVALID;
+              exit;
+            end;
+        end;
+      result := self._voltageLevel;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the voltage type used on the serial line.
+  /// <para>
+  ///   Valid
+  ///   values  will depend on the Yoctopuce device model featuring
+  ///   the serial port feature.  Check your device documentation
+  ///   to find out which values are valid for that specific model.
+  ///   Trying to set an invalid value will have no effect.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
+  ///   Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232 and Y_VOLTAGELEVEL_RS485
+  ///   corresponding to the voltage type used on the serial line
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYSerialPort.set_voltageLevel(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('voltageLevel',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the type of protocol used over the serial line, as a string.
+  /// <para>
+  ///   Possible values are "Line" for ASCII messages separated by CR and/or LF,
+  ///   "Frame:[timeout]ms" for binary messages separated by a delay time,
+  ///   "Modbus-ASCII" for MODBUS messages in ASCII mode,
+  ///   "Modbus-RTU" for MODBUS messages in RTU mode,
+  ///   "Char" for a continuous ASCII stream or
+  ///   "Byte" for a continuous binary stream.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a string corresponding to the type of protocol used over the serial line, as a string
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_PROTOCOL_INVALID.
+  /// </para>
+  ///-
+  function TYSerialPort.get_protocol():string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_PROTOCOL_INVALID;
+              exit;
+            end;
+        end;
+      result := self._protocol;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the type of protocol used over the serial line.
+  /// <para>
+  ///   Possible values are "Line" for ASCII messages separated by CR and/or LF,
+  ///   "Frame:[timeout]ms" for binary messages separated by a delay time,
+  ///   "Modbus-ASCII" for MODBUS messages in ASCII mode,
+  ///   "Modbus-RTU" for MODBUS messages in RTU mode,
+  ///   "Char" for a continuous ASCII stream or
+  ///   "Byte" for a continuous binary stream.
+  ///   The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
+  ///   is always at lest the specified number of milliseconds between each bytes sent.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a string corresponding to the type of protocol used over the serial line
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYSerialPort.set_protocol(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('protocol',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the serial port communication parameters, as a string such as
+  ///   "9600,8N1".
+  /// <para>
+  ///   The string includes the baud rate, the number of data bits,
+  ///   the parity, and the number of stop bits. An optional suffix is included
+  ///   if flow control is active: "CtsRts" for hardware handshake, "XOnXOff"
+  ///   for logical flow control and "Simplex" for acquiring a shared bus using
+  ///   the RTS line (as used by some RS485 adapters for instance).
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a string corresponding to the serial port communication parameters, as a string such as
+  ///   "9600,8N1"
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_SERIALMODE_INVALID.
+  /// </para>
+  ///-
+  function TYSerialPort.get_serialMode():string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_SERIALMODE_INVALID;
+              exit;
+            end;
+        end;
+      result := self._serialMode;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the serial port communication parameters, with a string such as
+  ///   "9600,8N1".
+  /// <para>
+  ///   The string includes the baud rate, the number of data bits,
+  ///   the parity, and the number of stop bits. An optional suffix can be added
+  ///   to enable flow control: "CtsRts" for hardware handshake, "XOnXOff"
+  ///   for logical flow control and "Simplex" for acquiring a shared bus using
+  ///   the RTS line (as used by some RS485 adapters for instance).
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a string corresponding to the serial port communication parameters, with a string such as
+  ///   "9600,8N1"
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYSerialPort.set_serialMode(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('serialMode',rest_val);
+    end;
+
+  ////
+  /// <summary>
   ///   Retrieves $AFUNCTION$ for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
@@ -2110,68 +2110,6 @@ implementation
       self._rxptr := 0;
       // may throw an exception
       result := self.sendCommand('Z');
-      exit;
-    end;
-
-
-  ////
-  /// <summary>
-  ///   Manually sets the state of the RTS line.
-  /// <para>
-  ///   This function has no effect when
-  ///   hardware handshake is enabled, as the RTS line is driven automatically.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="val">
-  ///   1 to turn RTS on, 0 to turn RTS off
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYSerialPort.set_RTS(val: LongInt):LongInt;
-    begin
-      result := self.sendCommand('R'+inttostr(val));
-      exit;
-    end;
-
-
-  ////
-  /// <summary>
-  ///   Reads the level of the CTS line.
-  /// <para>
-  ///   The CTS line is usually driven by
-  ///   the RTS signal of the connected serial device.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   1 if the CTS line is high, 0 if the CTS line is low.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYSerialPort.get_CTS():LongInt;
-    var
-      buff : TByteArray;
-      res : LongInt;
-    begin
-      buff := self._download('cts.txt');
-      if not(length(buff) = 1) then
-        begin
-          self._throw( YAPI_IO_ERROR, 'invalid CTS reply');
-          result:=YAPI_IO_ERROR;
-          exit;
-        end;
-      res := buff[0] - 48;
-      result := res;
       exit;
     end;
 
@@ -2410,31 +2348,6 @@ implementation
         end;
       // send string using file upload
       result := self._upload('txdata', buff);
-      exit;
-    end;
-
-
-  ////
-  /// <summary>
-  ///   Sends a MODBUS message (provided as a hexadecimal string) to the serial port.
-  /// <para>
-  ///   The message must start with the slave address. The MODBUS CRC/LRC is
-  ///   automatically added by the function. This function does not wait for a reply.
-  /// </para>
-  /// </summary>
-  /// <param name="hexString">
-  ///   a hexadecimal message string, including device address but no CRC/LRC
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYSerialPort.writeMODBUS(hexString: string):LongInt;
-    begin
-      result := self.sendCommand(':'+hexString);
       exit;
     end;
 
@@ -2713,7 +2626,7 @@ implementation
   ///   Reads a single line (or message) from the receive buffer, starting at current stream position.
   /// <para>
   ///   This function is intended to be used when the serial port is configured for a message protocol,
-  ///   such as 'Line' mode or MODBUS protocols.
+  ///   such as 'Line' mode or frame protocols.
   /// </para>
   /// <para>
   ///   If data at current stream position is not available anymore in the receive buffer,
@@ -2838,7 +2751,7 @@ implementation
   ///   Changes the current internal stream position to the specified value.
   /// <para>
   ///   This function
-  ///   does not affect the device, it only changes the value stored in the YSerialPort object
+  ///   does not affect the device, it only changes the value stored in the API object
   ///   for the next read operations.
   /// </para>
   /// </summary>
@@ -2859,7 +2772,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the current absolute stream position pointer of the YSerialPort object.
+  ///   Returns the current absolute stream position pointer of the API object.
   /// <para>
   /// </para>
   /// </summary>
@@ -2877,7 +2790,7 @@ implementation
   ////
   /// <summary>
   ///   Returns the number of bytes available to read in the input buffer starting from the
-  ///   current absolute stream position pointer of the YSerialPort object.
+  ///   current absolute stream position pointer of the API object.
   /// <para>
   /// </para>
   /// </summary>
@@ -2953,6 +2866,149 @@ implementation
         end;
       res := self._json_get_string(_StrToByte(msgarr[0]));
       result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Saves the job definition string (JSON data) into a job file.
+  /// <para>
+  ///   The job file can be later enabled using <c>selectJob()</c>.
+  /// </para>
+  /// </summary>
+  /// <param name="jobfile">
+  ///   name of the job file to save on the device filesystem
+  /// </param>
+  /// <param name="jsonDef">
+  ///   a string containing a JSON definition of the job
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYSerialPort.uploadJob(jobfile: string; jsonDef: string):LongInt;
+    begin
+      self._upload(jobfile, _StrToByte(jsonDef));
+      result := YAPI_SUCCESS;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Load and start processing the specified job file.
+  /// <para>
+  ///   The file must have
+  ///   been previously created using the user interface or uploaded on the
+  ///   device filesystem using the <c>uploadJob()</c> function.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="jobfile">
+  ///   name of the job file (on the device filesystem)
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYSerialPort.selectJob(jobfile: string):LongInt;
+    begin
+      result := self.set_currentJob(jobfile);
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Manually sets the state of the RTS line.
+  /// <para>
+  ///   This function has no effect when
+  ///   hardware handshake is enabled, as the RTS line is driven automatically.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="val">
+  ///   1 to turn RTS on, 0 to turn RTS off
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYSerialPort.set_RTS(val: LongInt):LongInt;
+    begin
+      result := self.sendCommand('R'+inttostr(val));
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Reads the level of the CTS line.
+  /// <para>
+  ///   The CTS line is usually driven by
+  ///   the RTS signal of the connected serial device.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   1 if the CTS line is high, 0 if the CTS line is low.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYSerialPort.get_CTS():LongInt;
+    var
+      buff : TByteArray;
+      res : LongInt;
+    begin
+      buff := self._download('cts.txt');
+      if not(length(buff) = 1) then
+        begin
+          self._throw( YAPI_IO_ERROR, 'invalid CTS reply');
+          result:=YAPI_IO_ERROR;
+          exit;
+        end;
+      res := buff[0] - 48;
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Sends a MODBUS message (provided as a hexadecimal string) to the serial port.
+  /// <para>
+  ///   The message must start with the slave address. The MODBUS CRC/LRC is
+  ///   automatically added by the function. This function does not wait for a reply.
+  /// </para>
+  /// </summary>
+  /// <param name="hexString">
+  ///   a hexadecimal message string, including device address but no CRC/LRC
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYSerialPort.writeMODBUS(hexString: string):LongInt;
+    begin
+      result := self.sendCommand(':'+hexString);
       exit;
     end;
 
@@ -3833,62 +3889,6 @@ implementation
         end;
       SetLength(res, res_pos);;
       result := res;
-      exit;
-    end;
-
-
-  ////
-  /// <summary>
-  ///   Saves the job definition string (JSON data) into a job file.
-  /// <para>
-  ///   The job file can be later enabled using <c>selectJob()</c>.
-  /// </para>
-  /// </summary>
-  /// <param name="jobfile">
-  ///   name of the job file to save on the device filesystem
-  /// </param>
-  /// <param name="jsonDef">
-  ///   a string containing a JSON definition of the job
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYSerialPort.uploadJob(jobfile: string; jsonDef: string):LongInt;
-    begin
-      self._upload(jobfile, _StrToByte(jsonDef));
-      result := YAPI_SUCCESS;
-      exit;
-    end;
-
-
-  ////
-  /// <summary>
-  ///   Load and start processing the specified job file.
-  /// <para>
-  ///   The file must have
-  ///   been previously created using the user interface or uploaded on the
-  ///   device filesystem using the <c>uploadJob()</c> function.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="jobfile">
-  ///   name of the job file (on the device filesystem)
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYSerialPort.selectJob(jobfile: string):LongInt;
-    begin
-      result := self.set_currentJob(jobfile);
       exit;
     end;
 

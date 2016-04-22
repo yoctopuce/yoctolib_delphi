@@ -2,14 +2,13 @@ program helloworld;
 {$APPTYPE CONSOLE}
 uses
   SysUtils,
-  Windows,
   yocto_api,
   yocto_digitalIO;
 
 
 procedure usage();
   var
-    execname:string;
+    execname,errmsg:string;
   begin
     execname := ExtractFileName(paramstr(0));
     WriteLn('Usage:');
@@ -18,7 +17,7 @@ procedure usage();
     WriteLn(execname + ' any  ');
     WriteLn('Example:');
     WriteLn(execname + ' any ');
-    sleep(2500);
+    ysleep(2500,errmsg);
     halt;
   end;
 

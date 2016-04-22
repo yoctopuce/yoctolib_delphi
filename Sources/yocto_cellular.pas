@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 21551 2015-09-17 16:50:38Z seb $
+ * $Id: yocto_cellular.pas 23960 2016-04-15 21:30:18Z mvuilleu $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -50,16 +50,27 @@ uses
 const Y_LINKQUALITY_INVALID           = YAPI_INVALID_UINT;
 const Y_CELLOPERATOR_INVALID          = YAPI_INVALID_STRING;
 const Y_CELLIDENTIFIER_INVALID        = YAPI_INVALID_STRING;
+const Y_CELLTYPE_GPRS = 0;
+const Y_CELLTYPE_EGPRS = 1;
+const Y_CELLTYPE_WCDMA = 2;
+const Y_CELLTYPE_HSDPA = 3;
+const Y_CELLTYPE_NONE = 4;
+const Y_CELLTYPE_CDMA = 5;
+const Y_CELLTYPE_INVALID = -1;
 const Y_IMSI_INVALID                  = YAPI_INVALID_STRING;
 const Y_MESSAGE_INVALID               = YAPI_INVALID_STRING;
 const Y_PIN_INVALID                   = YAPI_INVALID_STRING;
 const Y_LOCKEDOPERATOR_INVALID        = YAPI_INVALID_STRING;
+const Y_AIRPLANEMODE_OFF = 0;
+const Y_AIRPLANEMODE_ON = 1;
+const Y_AIRPLANEMODE_INVALID = -1;
 const Y_ENABLEDATA_HOMENETWORK = 0;
 const Y_ENABLEDATA_ROAMING = 1;
 const Y_ENABLEDATA_NEVER = 2;
 const Y_ENABLEDATA_INVALID = -1;
 const Y_APN_INVALID                   = YAPI_INVALID_STRING;
 const Y_APNSECRET_INVALID             = YAPI_INVALID_STRING;
+const Y_PINGINTERVAL_INVALID          = YAPI_INVALID_UINT;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 
@@ -97,13 +108,16 @@ type
     _linkQuality              : LongInt;
     _cellOperator             : string;
     _cellIdentifier           : string;
+    _cellType                 : Integer;
     _imsi                     : string;
     _message                  : string;
     _pin                      : string;
     _lockedOperator           : string;
+    _airplaneMode             : Integer;
     _enableData               : Integer;
     _apn                      : string;
     _apnSecret                : string;
+    _pingInterval             : LongInt;
     _command                  : string;
     _valueCallbackCellular    : TYCellularValueCallback;
     // Function-specific method for reading JSON output and caching result
@@ -165,6 +179,24 @@ type
     /// </para>
     ///-
     function get_cellIdentifier():string;
+
+    ////
+    /// <summary>
+    ///   Active cellular connection type.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a value among <c>Y_CELLTYPE_GPRS</c>, <c>Y_CELLTYPE_EGPRS</c>, <c>Y_CELLTYPE_WCDMA</c>,
+    ///   <c>Y_CELLTYPE_HSDPA</c>, <c>Y_CELLTYPE_NONE</c> and <c>Y_CELLTYPE_CDMA</c>
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_CELLTYPE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_cellType():Integer;
 
     ////
     /// <summary>
@@ -306,6 +338,47 @@ type
 
     ////
     /// <summary>
+    ///   Returns true if the airplane mode is active (radio turned off).
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   either <c>Y_AIRPLANEMODE_OFF</c> or <c>Y_AIRPLANEMODE_ON</c>, according to true if the airplane
+    ///   mode is active (radio turned off)
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_AIRPLANEMODE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_airplaneMode():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the activation state of airplane mode (radio turned off).
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   either <c>Y_AIRPLANEMODE_OFF</c> or <c>Y_AIRPLANEMODE_ON</c>, according to the activation state of
+    ///   airplane mode (radio turned off)
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_airplaneMode(newval:Integer):integer;
+
+    ////
+    /// <summary>
     ///   Returns the condition for enabling IP data services (GPRS).
     /// <para>
     ///   When data services are disabled, SMS are the only mean of communication.
@@ -414,6 +487,45 @@ type
     function get_apnSecret():string;
 
     function set_apnSecret(newval:string):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the automated connectivity check interval, in seconds.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the automated connectivity check interval, in seconds
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_PINGINTERVAL_INVALID</c>.
+    /// </para>
+    ///-
+    function get_pingInterval():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the automated connectivity check interval, in seconds.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the automated connectivity check interval, in seconds
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_pingInterval(newval:LongInt):integer;
 
     function get_command():string;
 
@@ -743,13 +855,16 @@ implementation
       _linkQuality := Y_LINKQUALITY_INVALID;
       _cellOperator := Y_CELLOPERATOR_INVALID;
       _cellIdentifier := Y_CELLIDENTIFIER_INVALID;
+      _cellType := Y_CELLTYPE_INVALID;
       _imsi := Y_IMSI_INVALID;
       _message := Y_MESSAGE_INVALID;
       _pin := Y_PIN_INVALID;
       _lockedOperator := Y_LOCKEDOPERATOR_INVALID;
+      _airplaneMode := Y_AIRPLANEMODE_INVALID;
       _enableData := Y_ENABLEDATA_INVALID;
       _apn := Y_APN_INVALID;
       _apnSecret := Y_APNSECRET_INVALID;
+      _pingInterval := Y_PINGINTERVAL_INVALID;
       _command := Y_COMMAND_INVALID;
       _valueCallbackCellular := nil;
       //--- (end of generated code: YCellular accessors initialization)
@@ -781,6 +896,12 @@ implementation
          result := 1;
          exit;
          end;
+      if (member^.name = 'cellType') then
+        begin
+          _cellType := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
       if (member^.name = 'imsi') then
         begin
           _imsi := string(member^.svalue);
@@ -805,6 +926,12 @@ implementation
          result := 1;
          exit;
          end;
+      if (member^.name = 'airplaneMode') then
+        begin
+          _airplaneMode := member^.ivalue;
+         result := 1;
+         exit;
+         end;
       if (member^.name = 'enableData') then
         begin
           _enableData := integer(member^.ivalue);
@@ -820,6 +947,12 @@ implementation
       if (member^.name = 'apnSecret') then
         begin
           _apnSecret := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'pingInterval') then
+        begin
+          _pingInterval := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -919,6 +1052,37 @@ implementation
             end;
         end;
       result := self._cellIdentifier;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Active cellular connection type.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a value among Y_CELLTYPE_GPRS, Y_CELLTYPE_EGPRS, Y_CELLTYPE_WCDMA, Y_CELLTYPE_HSDPA,
+  ///   Y_CELLTYPE_NONE and Y_CELLTYPE_CDMA
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_CELLTYPE_INVALID.
+  /// </para>
+  ///-
+  function TYCellular.get_cellType():Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_CELLTYPE_INVALID;
+              exit;
+            end;
+        end;
+      result := self._cellType;
       exit;
     end;
 
@@ -1127,6 +1291,66 @@ implementation
 
   ////
   /// <summary>
+  ///   Returns true if the airplane mode is active (radio turned off).
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   either Y_AIRPLANEMODE_OFF or Y_AIRPLANEMODE_ON, according to true if the airplane mode is active
+  ///   (radio turned off)
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_AIRPLANEMODE_INVALID.
+  /// </para>
+  ///-
+  function TYCellular.get_airplaneMode():Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_AIRPLANEMODE_INVALID;
+              exit;
+            end;
+        end;
+      result := self._airplaneMode;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the activation state of airplane mode (radio turned off).
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   either Y_AIRPLANEMODE_OFF or Y_AIRPLANEMODE_ON, according to the activation state of airplane mode
+  ///   (radio turned off)
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYCellular.set_airplaneMode(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      if(newval>0) then rest_val := '1' else rest_val := '0';
+      result := _setAttr('airplaneMode',rest_val);
+    end;
+
+  ////
+  /// <summary>
   ///   Returns the condition for enabling IP data services (GPRS).
   /// <para>
   ///   When data services are disabled, SMS are the only mean of communication.
@@ -1291,6 +1515,64 @@ implementation
     begin
       rest_val := newval;
       result := _setAttr('apnSecret',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the automated connectivity check interval, in seconds.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the automated connectivity check interval, in seconds
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_PINGINTERVAL_INVALID.
+  /// </para>
+  ///-
+  function TYCellular.get_pingInterval():LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_PINGINTERVAL_INVALID;
+              exit;
+            end;
+        end;
+      result := self._pingInterval;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the automated connectivity check interval, in seconds.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   an integer corresponding to the automated connectivity check interval, in seconds
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYCellular.set_pingInterval(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('pingInterval',rest_val);
     end;
 
   function TYCellular.get_command():string;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 22819 2016-01-17 19:13:58Z seb $
+ * $Id: yocto_api.pas 23882 2016-04-12 08:38:50Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -115,7 +115,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '22936';
+  YOCTO_API_BUILD_NO        = '24182';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -1463,9 +1463,9 @@ type
     ///   This method is useful to test if the module needs to be updated.
     ///   It is possible to pass a directory as argument instead of a file. In this case, this method returns
     ///   the path of the most recent
-    ///   appropriate byn file. If the parameter onlynew is true, the function discards firmware that are
-    ///   older or equal to
-    ///   the installed firmware.
+    ///   appropriate <c>.byn</c> file. If the parameter <c>onlynew</c> is true, the function discards
+    ///   firmwares that are older or
+    ///   equal to the installed firmware.
     /// </para>
     /// <para>
     /// </para>
@@ -1479,7 +1479,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   : the path of the byn file to use or a empty string if no byn files matches the requirement
+    ///   the path of the byn file to use or a empty string if no byn files matches the requirement
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a string that start with "error:".
@@ -1498,10 +1498,32 @@ type
     /// </para>
     /// </summary>
     /// <param name="path">
-    ///   the path of the byn file to use.
+    ///   the path of the <c>.byn</c> file to use.
+    /// </param>
+    /// <param name="force">
+    ///   true to force the firmware update even if some prerequisites appear not to be met
     /// </param>
     /// <returns>
-    ///   : A <c>YFirmwareUpdate</c> object or NULL on error.
+    ///   a <c>YFirmwareUpdate</c> object or NULL on error.
+    /// </returns>
+    ///-
+    function updateFirmwareEx(path: string; force: boolean):TYFirmwareUpdate; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Prepares a firmware update of the module.
+    /// <para>
+    ///   This method returns a <c>YFirmwareUpdate</c> object which
+    ///   handles the firmware update process.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="path">
+    ///   the path of the <c>.byn</c> file to use.
+    /// </param>
+    /// <returns>
+    ///   a <c>YFirmwareUpdate</c> object or NULL on error.
     /// </returns>
     ///-
     function updateFirmware(path: string):TYFirmwareUpdate; overload; virtual;
@@ -1510,8 +1532,8 @@ type
     /// <summary>
     ///   Returns all the settings and uploaded files of the module.
     /// <para>
-    ///   Useful to backup all the logical names, calibrations parameters,
-    ///   and uploaded files of a connected module.
+    ///   Useful to backup all the
+    ///   logical names, calibrations parameters, and uploaded files of a device.
     /// </para>
     /// <para>
     /// </para>
@@ -1531,10 +1553,11 @@ type
 
     ////
     /// <summary>
-    ///   Restores all the settings and uploaded files of the module.
+    ///   Restores all the settings and uploaded files to the module.
     /// <para>
-    ///   Useful to restore all the logical names and calibrations parameters, uploaded
-    ///   files etc.. of a module from a backup.Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   This method is useful to restore all the logical names and calibrations parameters,
+    ///   uploaded files etc. of a device from a backup.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
     ///   modifications must be kept.
     /// </para>
     /// <para>
@@ -1554,10 +1577,10 @@ type
 
     ////
     /// <summary>
-    ///   Test if the device has a specific function.
+    ///   Tests if the device includes a specific function.
     /// <para>
-    ///   This method took an function identifier
-    ///   and return a boolean.
+    ///   This method takes a function identifier
+    ///   and returns a boolean.
     /// </para>
     /// <para>
     /// </para>
@@ -1565,10 +1588,8 @@ type
     /// <param name="funcId">
     ///   the requested function identifier
     /// </param>
-    /// <para>
-    /// </para>
     /// <returns>
-    ///   : true if the device has the function identifier
+    ///   true if the device has the function identifier
     /// </returns>
     ///-
     function hasFunction(funcId: string):boolean; overload; virtual;
@@ -1584,10 +1605,8 @@ type
     /// <param name="funType">
     ///   The type of function (Relay, LightSensor, Voltage,...)
     /// </param>
-    /// <para>
-    /// </para>
     /// <returns>
-    ///   : A array of string.
+    ///   an array of strings.
     /// </returns>
     ///-
     function get_functionIds(funType: string):TStringArray; overload; virtual;
@@ -1604,7 +1623,7 @@ type
 
     ////
     /// <summary>
-    ///   Restores all the settings of the module.
+    ///   Restores all the settings of the device.
     /// <para>
     ///   Useful to restore all the logical names and calibrations parameters
     ///   of a module from a backup.Remember to call the <c>saveToFlash()</c> method of the module if the
@@ -1679,12 +1698,31 @@ type
 
     ////
     /// <summary>
+    ///   Adds a text message to the device logs.
+    /// <para>
+    ///   This function is useful in
+    ///   particular to trace the execution of HTTP callbacks. If a newline
+    ///   is desired after the message, it must be included in the string.
+    /// </para>
+    /// </summary>
+    /// <param name="text">
+    ///   the string to append to the logs.
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function log(text: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Returns a list of all the modules that are plugged into the current module.
     /// <para>
-    ///   This
-    ///   method is only useful on a YoctoHub/VirtualHub. This method return the serial number of all
-    ///   module connected to a YoctoHub. Calling this method on a standard device is not an
-    ///   error, and an empty array will be returned.
+    ///   This method only makes sense when called for a YoctoHub/VirtualHub.
+    ///   Otherwise, an empty array will be returned.
     /// </para>
     /// </summary>
     /// <returns>
@@ -1697,7 +1735,7 @@ type
     /// <summary>
     ///   Returns the serial number of the YoctoHub on which this module is connected.
     /// <para>
-    ///   If the module is connected by USB or if the module is the root YoctoHub an
+    ///   If the module is connected by USB, or if the module is the root YoctoHub, an
     ///   empty string is returned.
     /// </para>
     /// </summary>
@@ -1711,7 +1749,7 @@ type
     /// <summary>
     ///   Returns the URL used to access the module.
     /// <para>
-    ///   If the module is connected by USB the
+    ///   If the module is connected by USB, the
     ///   string 'usb' is returned.
     /// </para>
     /// </summary>
@@ -2391,26 +2429,29 @@ end;
     _progress_c               : LongInt;
     _progress                 : LongInt;
     _restore_step             : LongInt;
+    _force                    : boolean;
 
     //--- (end of generated code: YFirmwareUpdate declaration)
 
   public
-    constructor Create(serial: String; path :string; settings :TByteArray);
+    constructor Create(serial: String; path :string; settings :TByteArray; force :boolean);
 
   //--- (generated code: YFirmwareUpdate accessors declaration)
     function _processMore(newupdate: LongInt):LongInt; overload; virtual;
 
     ////
     /// <summary>
-    ///   Retruns a list of all the modules in "update" mode.
+    ///   Returns a list of all the modules in "firmware update" mode.
     /// <para>
-    ///   Only USB connected
-    ///   devices are listed. For modules connected to a YoctoHub, you must
-    ///   connect yourself to the YoctoHub web interface.
+    ///   Only devices
+    ///   connected over USB are listed. For devices connected to a YoctoHub, you
+    ///   must connect yourself to the YoctoHub web interface.
+    /// </para>
+    /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an array of strings containing the serial list of module in "update" mode.
+    ///   an array of strings containing the serial numbers of devices in "firmware update" mode.
     /// </returns>
     ///-
     class function GetAllBootLoaders():TStringArray;
@@ -2419,9 +2460,9 @@ end;
     /// <summary>
     ///   Test if the byn file is valid for this module.
     /// <para>
-    ///   It's possible to pass an directory instead of a file.
-    ///   In this case this method return the path of the most recent appropriate byn file. This method will
-    ///   ignore firmware that are older than mintrelase.
+    ///   It is possible to pass a directory instead of a file.
+    ///   In that case, this method returns the path of the most recent appropriate byn file. This method will
+    ///   ignore any firmware older than minrelease.
     /// </para>
     /// <para>
     /// </para>
@@ -2436,10 +2477,10 @@ end;
     ///   a positive integer
     /// </param>
     /// <returns>
-    ///   : the path of the byn file to use or an empty string if no byn files match the requirement
+    ///   : the path of the byn file to use, or an empty string if no byn files matches the requirement
     /// </returns>
     /// <para>
-    ///   On failure, returns a string that start with "error:".
+    ///   On failure, returns a string that starts with "error:".
     /// </para>
     ///-
     class function CheckFirmware(serial: string; path: string; minrelease: LongInt):string;
@@ -4188,17 +4229,19 @@ const
   procedure _yapiRegisterHubDiscoveryCallback(fct:_yapiHubDiscoveryCallback); cdecl; external dllfile name 'yapiRegisterHubDiscoveryCallback';
   function  _yapiTriggerHubDiscovery(errmsg:pansichar):integer; cdecl; external dllfile name 'yapiTriggerHubDiscovery';
   function  _yapiGetMem(size:integer):pointer; cdecl; external dllfile name 'yapiGetMem';
-  procedure _yapiFreeMem(ptr:pointer); cdecl; external dllfile name 'yapiFreeMem';
 
   //--- (generated code: YFunction dlldef)
   function _yapiGetAllJsonKeys(jsonbuffer:pansichar; out_buffer:pansichar; out_buffersize:integer; var fullsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetAllJsonKeys';
   function _yapiCheckFirmware(serial:pansichar; rev:pansichar; path:pansichar; buffer:pansichar; buffersize:integer; var fullsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiCheckFirmware';
   function _yapiGetBootloaders(buffer:pansichar; buffersize:integer; var totalSize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetBootloaders';
-  function _yapiUpdateFirmware(serial:pansichar; firmwarePath:pansichar; settings:pansichar; startUpdate:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiUpdateFirmware';
+  function _yapiUpdateFirmwareEx(serial:pansichar; firmwarePath:pansichar; settings:pansichar; force:integer; startUpdate:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiUpdateFirmwareEx';
+  function _yapiHTTPRequestSyncStartOutOfBand(var iohdl:PYIOHDL; channel:integer; device:pansichar; request:pansichar; requestsize:integer; var reply:pansichar; var replysize:integer; var progress_cb:pointer; progress_ctx:pointer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiHTTPRequestSyncStartOutOfBand';
+  function _yapiHTTPRequestAsyncOutOfBand(channel:integer; device:pansichar; request:pansichar; requestsize:integer; var callback:pointer; context:pointer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiHTTPRequestAsyncOutOfBand';
   function _yapiTestHub(url:pansichar; mstimeout:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiTestHub';
   function _yapiJsonGetPath(path:pansichar; json_data:pansichar; json_len:integer; var result:pansichar; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiJsonGetPath';
   function _yapiJsonDecodeString(json_data:pansichar; output:pansichar):integer; cdecl; external dllfile name 'yapiJsonDecodeString';
   function _yapiGetSubdevices(serial:pansichar; buffer:pansichar; buffersize:integer; var totalSize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetSubdevices';
+  procedure _yapiFreeMem(buffer:pointer); cdecl; external dllfile name 'yapiFreeMem';
   function _yapiGetDevicePathEx(serial:pansichar; rootdevice:pansichar; path:pansichar; pathsize:integer; var neededsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetDevicePathEx';
 //--- (end of generated code: YFunction dlldef)
 
@@ -6944,11 +6987,11 @@ const
         _logCallback := callback;
         if (addr(_logCallback) = nil) then
           begin
-            _yapiStartStopDeviceLogCallback(pansiChar(ansistring(_serial)), 0)
+            _yapiStartStopDeviceLogCallback(pansiChar(ansistring(_serialNumber)), 0)
           end
         else
           begin
-            _yapiStartStopDeviceLogCallback(pansiChar(ansistring(_serial)), 1)
+            _yapiStartStopDeviceLogCallback(pansiChar(ansistring(_serialNumber)), 1)
           end;
         result := YAPI_SUCCESS;
       end;
@@ -8136,9 +8179,9 @@ var
   ///   This method is useful to test if the module needs to be updated.
   ///   It is possible to pass a directory as argument instead of a file. In this case, this method returns
   ///   the path of the most recent
-  ///   appropriate byn file. If the parameter onlynew is true, the function discards firmware that are
-  ///   older or equal to
-  ///   the installed firmware.
+  ///   appropriate <c>.byn</c> file. If the parameter <c>onlynew</c> is true, the function discards
+  ///   firmwares that are older or
+  ///   equal to the installed firmware.
   /// </para>
   /// <para>
   /// </para>
@@ -8152,7 +8195,7 @@ var
   /// <para>
   /// </para>
   /// <returns>
-  ///   : the path of the byn file to use or a empty string if no byn files matches the requirement
+  ///   the path of the byn file to use or a empty string if no byn files matches the requirement
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns a string that start with "error:".
@@ -8195,13 +8238,16 @@ var
   /// </para>
   /// </summary>
   /// <param name="path">
-  ///   the path of the byn file to use.
+  ///   the path of the <c>.byn</c> file to use.
+  /// </param>
+  /// <param name="force">
+  ///   true to force the firmware update even if some prerequisites appear not to be met
   /// </param>
   /// <returns>
-  ///   : A <c>YFirmwareUpdate</c> object or NULL on error.
+  ///   a <c>YFirmwareUpdate</c> object or NULL on error.
   /// </returns>
   ///-
-  function TYModule.updateFirmware(path: string):TYFirmwareUpdate;
+  function TYModule.updateFirmwareEx(path: string; force: boolean):TYFirmwareUpdate;
     var
       serial : string;
       settings : TByteArray;
@@ -8213,7 +8259,31 @@ var
           self._throw(YAPI_IO_ERROR, 'Unable to get device settings');
           settings := _StrToByte('error:Unable to get device settings');
         end;
-      result := TYFirmwareUpdate.create(serial, path, settings);
+      result := TYFirmwareUpdate.create(serial, path, settings, force);
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Prepares a firmware update of the module.
+  /// <para>
+  ///   This method returns a <c>YFirmwareUpdate</c> object which
+  ///   handles the firmware update process.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="path">
+  ///   the path of the <c>.byn</c> file to use.
+  /// </param>
+  /// <returns>
+  ///   a <c>YFirmwareUpdate</c> object or NULL on error.
+  /// </returns>
+  ///-
+  function TYModule.updateFirmware(path: string):TYFirmwareUpdate;
+    begin
+      result := self.updateFirmwareEx(path, false);
       exit;
     end;
 
@@ -8222,8 +8292,8 @@ var
   /// <summary>
   ///   Returns all the settings and uploaded files of the module.
   /// <para>
-  ///   Useful to backup all the logical names, calibrations parameters,
-  ///   and uploaded files of a connected module.
+  ///   Useful to backup all the
+  ///   logical names, calibrations parameters, and uploaded files of a device.
   /// </para>
   /// <para>
   /// </para>
@@ -8287,7 +8357,7 @@ var
                 end;
             end;
         end;
-      ext_settings :=  ext_settings + '],'#10'"files":[';
+      ext_settings := ext_settings + '],'#10'"files":[';
       if self.hasFunction('files') then
         begin
           json := self._download('files.json?a=dir&f=');
@@ -8301,20 +8371,17 @@ var
           for i_i:=0 to length( filelist)-1 do
             begin
               name := self._json_get_key(_StrToByte( filelist[i_i]), 'name');
-              if Length(name) = 0 then
+              if (Length(name) > 0) and not((name = 'startupConf.json')) then
                 begin
-                  result := _StrToByte(name);
-                  exit;
+                  file_data_bin := self._download(self._escapeAttr(name));
+                  file_data := _bytesToHexStr(file_data_bin, 0, length(file_data_bin));
+                  item := ''+ sep+'{"name":"'+ name+'", "data":"'+file_data+'"}'#10'';
+                  ext_settings := ext_settings + item;
+                  sep := ',';
                 end;
-              file_data_bin := self._download(self._escapeAttr(name));
-              file_data := _bytesToHexStr(file_data_bin, 0, length(file_data_bin));
-              item := ''+ sep+'{"name":"'+ name+'", "data":"'+file_data+'"}'#10'';
-              ext_settings := ext_settings + item;
-              sep := ',';
             end;
         end;
-      ext_settings := ext_settings + ']}';
-      res := _bytesMerge(_StrToByte('{ "api":'), _bytesMerge(settings, _StrToByte(ext_settings)));
+      res := _StrToByte('{ "api":' + _ByteToString(settings) + ext_settings + ']}');
       result := res;
       exit;
     end;
@@ -8376,10 +8443,11 @@ var
 
   ////
   /// <summary>
-  ///   Restores all the settings and uploaded files of the module.
+  ///   Restores all the settings and uploaded files to the module.
   /// <para>
-  ///   Useful to restore all the logical names and calibrations parameters, uploaded
-  ///   files etc.. of a module from a backup.Remember to call the <c>saveToFlash()</c> method of the module if the
+  ///   This method is useful to restore all the logical names and calibrations parameters,
+  ///   uploaded files etc. of a device from a backup.
+  ///   Remember to call the <c>saveToFlash()</c> method of the module if the
   ///   modifications must be kept.
   /// </para>
   /// <para>
@@ -8451,10 +8519,10 @@ var
 
   ////
   /// <summary>
-  ///   Test if the device has a specific function.
+  ///   Tests if the device includes a specific function.
   /// <para>
-  ///   This method took an function identifier
-  ///   and return a boolean.
+  ///   This method takes a function identifier
+  ///   and returns a boolean.
   /// </para>
   /// <para>
   /// </para>
@@ -8462,10 +8530,8 @@ var
   /// <param name="funcId">
   ///   the requested function identifier
   /// </param>
-  /// <para>
-  /// </para>
   /// <returns>
-  ///   : true if the device has the function identifier
+  ///   true if the device has the function identifier
   /// </returns>
   ///-
   function TYModule.hasFunction(funcId: string):boolean;
@@ -8502,10 +8568,8 @@ var
   /// <param name="funType">
   ///   The type of function (Relay, LightSensor, Voltage,...)
   /// </param>
-  /// <para>
-  /// </para>
   /// <returns>
-  ///   : A array of string.
+  ///   an array of strings.
   /// </returns>
   ///-
   function TYModule.get_functionIds(funType: string):TStringArray;
@@ -8929,7 +8993,7 @@ var
 
   ////
   /// <summary>
-  ///   Restores all the settings of the module.
+  ///   Restores all the settings of the device.
   /// <para>
   ///   Useful to restore all the logical names and calibrations parameters
   ///   of a module from a backup.Remember to call the <c>saveToFlash()</c> method of the module if the
@@ -9398,12 +9462,36 @@ var
 
   ////
   /// <summary>
+  ///   Adds a text message to the device logs.
+  /// <para>
+  ///   This function is useful in
+  ///   particular to trace the execution of HTTP callbacks. If a newline
+  ///   is desired after the message, it must be included in the string.
+  /// </para>
+  /// </summary>
+  /// <param name="text">
+  ///   the string to append to the logs.
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYModule.log(text: string):LongInt;
+    begin
+      result := self._upload('logs.txt', _StrToByte(text));
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
   ///   Returns a list of all the modules that are plugged into the current module.
   /// <para>
-  ///   This
-  ///   method is only useful on a YoctoHub/VirtualHub. This method return the serial number of all
-  ///   module connected to a YoctoHub. Calling this method on a standard device is not an
-  ///   error, and an empty array will be returned.
+  ///   This method only makes sense when called for a YoctoHub/VirtualHub.
+  ///   Otherwise, an empty array will be returned.
   /// </para>
   /// </summary>
   /// <returns>
@@ -9470,7 +9558,7 @@ var
   /// <summary>
   ///   Returns the serial number of the YoctoHub on which this module is connected.
   /// <para>
-  ///   If the module is connected by USB or if the module is the root YoctoHub an
+  ///   If the module is connected by USB, or if the module is the root YoctoHub, an
   ///   empty string is returned.
   /// </para>
   /// </summary>
@@ -9509,7 +9597,7 @@ var
   /// <summary>
   ///   Returns the URL used to access the module.
   /// <para>
-  ///   If the module is connected by USB the
+  ///   If the module is connected by USB, the
   ///   string 'usb' is returned.
   /// </para>
   /// </summary>
@@ -11187,11 +11275,12 @@ var
       _initFromDataSet(dataset, encoded);
     end;
 
-  constructor TYFirmwareUpdate.Create(serial: String; path :string; settings :TByteArray);
+  constructor TYFirmwareUpdate.Create(serial: String; path :string; settings :TByteArray; force: boolean);
     begin
       _serial := serial;
       _firmwarepath := path;
       _settings := settings;
+      _force := force;
     end;
 
 
@@ -11207,6 +11296,7 @@ var
       firmwarepath : string;
       settings : string;
       prod_prefix : string;
+      force : LongInt;
       ignoreErrMsg : string;
     begin
       errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
@@ -11215,7 +11305,15 @@ var
           serial := self._serial;
           firmwarepath := self._firmwarepath;
           settings := _ByteToString(self._settings);
-          res := _yapiUpdateFirmware(pansichar(ansistring(serial)), pansichar(ansistring(firmwarepath)), pansichar(ansistring(settings)), newupdate, errmsg);
+          if self._force then
+            begin
+              force := 1;
+            end
+          else
+            begin
+              force := 0;
+            end;
+          res := _yapiUpdateFirmwareEx(pansichar(ansistring(serial)), pansichar(ansistring(firmwarepath)), pansichar(ansistring(settings)), force, newupdate, errmsg);
           if res < 0 then
             begin
               self._progress := res;
@@ -11275,15 +11373,17 @@ var
 
   ////
   /// <summary>
-  ///   Retruns a list of all the modules in "update" mode.
+  ///   Returns a list of all the modules in "firmware update" mode.
   /// <para>
-  ///   Only USB connected
-  ///   devices are listed. For modules connected to a YoctoHub, you must
-  ///   connect yourself to the YoctoHub web interface.
+  ///   Only devices
+  ///   connected over USB are listed. For devices connected to a YoctoHub, you
+  ///   must connect yourself to the YoctoHub web interface.
+  /// </para>
+  /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   an array of strings containing the serial list of module in "update" mode.
+  ///   an array of strings containing the serial numbers of devices in "firmware update" mode.
   /// </returns>
   ///-
   class function TYFirmwareUpdate.GetAllBootLoaders():TStringArray;
@@ -11343,9 +11443,9 @@ var
   /// <summary>
   ///   Test if the byn file is valid for this module.
   /// <para>
-  ///   It's possible to pass an directory instead of a file.
-  ///   In this case this method return the path of the most recent appropriate byn file. This method will
-  ///   ignore firmware that are older than mintrelase.
+  ///   It is possible to pass a directory instead of a file.
+  ///   In that case, this method returns the path of the most recent appropriate byn file. This method will
+  ///   ignore any firmware older than minrelease.
   /// </para>
   /// <para>
   /// </para>
@@ -11360,10 +11460,10 @@ var
   ///   a positive integer
   /// </param>
   /// <returns>
-  ///   : the path of the byn file to use or an empty string if no byn files match the requirement
+  ///   : the path of the byn file to use, or an empty string if no byn files matches the requirement
   /// </returns>
   /// <para>
-  ///   On failure, returns a string that start with "error:".
+  ///   On failure, returns a string that starts with "error:".
   /// </para>
   ///-
   class function TYFirmwareUpdate.CheckFirmware(serial: string; path: string; minrelease: LongInt):string;
