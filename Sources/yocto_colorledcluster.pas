@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_colorledcluster.pas 24149 2016-04-22 07:02:18Z mvuilleu $
+ * $Id: yocto_colorledcluster.pas 24475 2016-05-12 14:03:35Z mvuilleu $
  *
  * Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -99,14 +99,14 @@ type
 
     ////
     /// <summary>
-    ///   Returns the count of LEDs currently handled by the device.
+    ///   Returns the number of LEDs currently handled by the device.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the count of LEDs currently handled by the device
+    ///   an integer corresponding to the number of LEDs currently handled by the device
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_ACTIVELEDCOUNT_INVALID</c>.
@@ -116,14 +116,14 @@ type
 
     ////
     /// <summary>
-    ///   Changes the count of LEDs currently handled by the device.
+    ///   Changes the number of LEDs currently handled by the device.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer corresponding to the count of LEDs currently handled by the device
+    ///   an integer corresponding to the number of LEDs currently handled by the device
     /// </param>
     /// <para>
     /// </para>
@@ -138,14 +138,14 @@ type
 
     ////
     /// <summary>
-    ///   Returns the maximum count of LEDs that the device can handle.
+    ///   Returns the maximum number of LEDs that the device can handle.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the maximum count of LEDs that the device can handle
+    ///   an integer corresponding to the maximum number of LEDs that the device can handle
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_MAXLEDCOUNT_INVALID</c>.
@@ -155,14 +155,12 @@ type
 
     ////
     /// <summary>
-    ///   Returns the maximum count of sequences.
-    /// <para>
-    /// </para>
+    ///   Returns the maximum number of sequences that the device can handle
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the maximum count of sequences
+    ///   an integer corresponding to the maximum number of sequences that the device can handle
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_BLINKSEQMAXCOUNT_INVALID</c>.
@@ -281,7 +279,27 @@ type
 
     ////
     /// <summary>
-    ///   Changes the current color of consecutive LEDs in the cluster , using a HSL color.
+    ///   Changes the  color at device startup of consecutve LEDs in the cluster , using a RGB color.
+    /// <para>
+    ///   Encoding is done as follows: 0xRRGGBB.
+    /// </para>
+    /// </summary>
+    /// <param name="ledIndex">
+    ///   index of the first affected LED.
+    /// </param>
+    /// <param name="count">
+    ///   affected LED count.
+    /// </param>
+    /// <param name="rgbValue">
+    ///   new color.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </param>
+    ///-
+    function set_rgbColorAtPowerOn(ledIndex: LongInt; count: LongInt; rgbValue: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Changes the current color of consecutive LEDs in the cluster, using a HSL color.
     /// <para>
     ///   Encoding is done as follows: 0xHHSSLL.
     /// </para>
@@ -301,10 +319,10 @@ type
 
     ////
     /// <summary>
-    ///   Allows you to modify the current color of a group of adjacent LED  to another color, in a seamless and
+    ///   Allows you to modify the current color of a group of adjacent LEDs to another color, in a seamless and
     ///   autonomous manner.
     /// <para>
-    ///   The transition is performed in the RGB space..
+    ///   The transition is performed in the RGB space.
     /// </para>
     /// </summary>
     /// <param name="ledIndex">
@@ -353,11 +371,11 @@ type
 
     ////
     /// <summary>
-    ///   Adds a RGB transition to a sequence.
+    ///   Adds an RGB transition to a sequence.
     /// <para>
-    ///   A sequence is a transitions list, which can
-    ///   be executed in loop by an group of LEDs.  Sequences are persistent and are saved
-    ///   in the device flash as soon as the module <c>saveToFlash()</c> method is called.
+    ///   A sequence is a transition list, which can
+    ///   be executed in loop by a group of LEDs.  Sequences are persistent and are saved
+    ///   in the device flash memory as soon as the module <c>saveToFlash()</c> method is called.
     /// </para>
     /// </summary>
     /// <param name="seqIndex">
@@ -375,11 +393,11 @@ type
 
     ////
     /// <summary>
-    ///   Adds a HSL transition to a sequence.
+    ///   Adds an HSL transition to a sequence.
     /// <para>
-    ///   A sequence is a transitions list, which can
+    ///   A sequence is a transition list, which can
     ///   be executed in loop by an group of LEDs.  Sequences are persistant and are saved
-    ///   in the device flash as soon as the module <c>saveToFlash()</c> method is called.
+    ///   in the device flash memory as soon as the module <c>saveToFlash()</c> method is called.
     /// </para>
     /// </summary>
     /// <param name="seqIndex">
@@ -400,9 +418,9 @@ type
     ///   Adds a mirror ending to a sequence.
     /// <para>
     ///   When the sequence will reach the end of the last
-    ///   transition, its running speed will automatically be reverted so that the sequence plays
-    ///   in the reverse direction, like in a mirror. When the first transition of the sequence
-    ///   will be played at the end of the reverse execution, the sequence will start again in
+    ///   transition, its running speed will automatically be reversed so that the sequence plays
+    ///   in the reverse direction, like in a mirror. After the first transition of the sequence
+    ///   is played at the end of the reverse execution, the sequence starts again in
     ///   the initial direction.
     /// </para>
     /// </summary>
@@ -417,10 +435,10 @@ type
     /// <summary>
     ///   Links adjacent LEDs to a specific sequence.
     /// <para>
-    ///   these LED will start to execute
+    ///   These LEDs start to execute
     ///   the sequence as soon as  startBlinkSeq is called. It is possible to add an offset
     ///   in the execution: that way we  can have several groups of LED executing the same
-    ///   sequence, with a  temporal offset. A LED cannot be linked to more than one LED.
+    ///   sequence, with a  temporal offset. A LED cannot be linked to more than one sequence.
     /// </para>
     /// </summary>
     /// <param name="ledIndex">
@@ -441,11 +459,37 @@ type
 
     ////
     /// <summary>
+    ///   Links adjacent LEDs to a specific sequence at device poweron.
+    /// <para>
+    ///   Don't forget to configure
+    ///   the sequence auto start flag as well and call saveLedsState. It is possible to add an offset
+    ///   in the execution: that way we  can have several groups of LEDs executing the same
+    ///   sequence, with a  temporal offset. A LED cannot be linked to more than one sequence.
+    /// </para>
+    /// </summary>
+    /// <param name="ledIndex">
+    ///   index of the first affected LED.
+    /// </param>
+    /// <param name="count">
+    ///   affected LED count.
+    /// </param>
+    /// <param name="seqIndex">
+    ///   sequence index.
+    /// </param>
+    /// <param name="offset">
+    ///   execution offset in ms.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </param>
+    ///-
+    function linkLedToBlinkSeqAtPowerOn(ledIndex: LongInt; count: LongInt; seqIndex: LongInt; offset: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Links adjacent LEDs to a specific sequence.
     /// <para>
-    ///   these LED will start to execute
+    ///   These LED start to execute
     ///   the sequence as soon as  startBlinkSeq is called. This function automatically
-    ///   introduce a shift between LEDs so that the specified number of sequence periods
+    ///   introduces a shift between LEDs so that the specified number of sequence periods
     ///   appears on the group of LEDs (wave effect).
     /// </para>
     /// </summary>
@@ -467,7 +511,7 @@ type
 
     ////
     /// <summary>
-    ///   UnLink adjacent LED  from a  sequence.
+    ///   Unlinks adjacent LEDs from a  sequence.
     /// <para>
     /// </para>
     /// </summary>
@@ -483,7 +527,7 @@ type
 
     ////
     /// <summary>
-    ///   Start a sequence execution: every LED linked to that sequence will start to
+    ///   Starts a sequence execution: every LED linked to that sequence starts to
     ///   run it in a loop.
     /// <para>
     /// </para>
@@ -497,10 +541,10 @@ type
 
     ////
     /// <summary>
-    ///   Stop a sequence execution.
+    ///   Stops a sequence execution.
     /// <para>
-    ///   if started again, the execution
-    ///   will restart from the beginning.
+    ///   If started again, the execution
+    ///   restarts from the beginning.
     /// </para>
     /// </summary>
     /// <param name="seqIndex">
@@ -512,10 +556,10 @@ type
 
     ////
     /// <summary>
-    ///   Stop a sequence execution and reset its contents.
+    ///   Stops a sequence execution and resets its contents.
     /// <para>
     ///   Leds linked to this
-    ///   sequences will no more be automatically updated.
+    ///   sequence are not automatically updated anymore.
     /// </para>
     /// </summary>
     /// <param name="seqIndex">
@@ -527,7 +571,26 @@ type
 
     ////
     /// <summary>
-    ///   Change the execution speed of a sequence.
+    ///   Configures a sequence to make it start automatically at device
+    ///   startup.
+    /// <para>
+    ///   Don't forget to call  saveLedsState() to make sure the
+    ///   modification is saved in the device flash memory.
+    /// </para>
+    /// </summary>
+    /// <param name="seqIndex">
+    ///   index of the sequence to reset
+    /// </param>
+    /// <param name="autostart">
+    ///   boolean telling if the sequence must start automatically or not.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </param>
+    ///-
+    function set_blinkSeqAutoStart(seqIndex: LongInt; autostart: boolean):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Changes the execution speed of a sequence.
     /// <para>
     ///   The natural execution speed is 1000 per
     ///   thousand. If you configure a slower speed, you can play the sequence in slow-motion.
@@ -542,13 +605,13 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </param>
     ///-
-    function changeBlinkSeqSpeed(seqIndex: LongInt; speed: LongInt):LongInt; overload; virtual;
+    function set_blinkSeqSpeed(seqIndex: LongInt; speed: LongInt):LongInt; overload; virtual;
 
     ////
     /// <summary>
-    ///   Save the current state of all LEDs as the initial startup state.
+    ///   Saves the cluster power-on configuration, this includes
+    ///   LED start-up colors, sequence steps and sequence auto-start flags.
     /// <para>
-    ///   The initial startup state includes the choice of sequence linked to each LED.
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     /// </summary>
@@ -593,7 +656,7 @@ type
 
     ////
     /// <summary>
-    ///   Setup a smooth RGB color transition to the specified pixel-by-pixel list of RGB
+    ///   Sets up a smooth RGB color transition to the specified pixel-by-pixel list of RGB
     ///   color codes.
     /// <para>
     ///   The first color code represents the target RGB value of the first LED,
@@ -651,7 +714,7 @@ type
 
     ////
     /// <summary>
-    ///   Setup a smooth HSL color transition to the specified pixel-by-pixel list of HSL
+    ///   Sets up a smooth HSL color transition to the specified pixel-by-pixel list of HSL
     ///   color codes.
     /// <para>
     ///   The first color code represents the target HSL value of the first LED,
@@ -716,6 +779,27 @@ type
 
     ////
     /// <summary>
+    ///   Returns a list on 24bit RGB color values with the RGB LEDs startup colors.
+    /// <para>
+    ///   The first number represents the startup RGB value of the first LED,
+    ///   the second number represents the RGB value of the second LED, etc.
+    /// </para>
+    /// </summary>
+    /// <param name="ledIndex">
+    ///   index of the first LED  which should be returned
+    /// </param>
+    /// <param name="count">
+    ///   number of LEDs which should be returned
+    /// </param>
+    /// <returns>
+    ///   a list of 24bit color codes with RGB components of selected LEDs, as 0xRRGGBB.
+    ///   On failure, throws an exception or returns an empty array.
+    /// </returns>
+    ///-
+    function get_rgbColorArrayAtPowerOn(ledIndex: LongInt; count: LongInt):TLongIntArray; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Returns a list on sequence index for each RGB LED.
     /// <para>
     ///   The first number represents the
@@ -756,6 +840,44 @@ type
     /// </returns>
     ///-
     function get_blinkSeqSignatures(seqIndex: LongInt; count: LongInt):TLongIntArray; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns a list of integers with the current speed for specified blinking sequences.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="seqIndex">
+    ///   index of the first sequence speed which should be returned
+    /// </param>
+    /// <param name="count">
+    ///   number of sequence speeds which should be returned
+    /// </param>
+    /// <returns>
+    ///   a list of integers, 0 for sequences turned off and 1 for sequences running
+    ///   On failure, throws an exception or returns an empty array.
+    /// </returns>
+    ///-
+    function get_blinkSeqStateSpeed(seqIndex: LongInt; count: LongInt):TLongIntArray; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns a list of integers with the "auto-start at power on" flag state for specified blinking sequences.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="seqIndex">
+    ///   index of the first blinking sequence which should be returned
+    /// </param>
+    /// <param name="count">
+    ///   number of blinking sequences which should be returned
+    /// </param>
+    /// <returns>
+    ///   a list of integers, 0 for sequences turned off and 1 for sequences running
+    ///   On failure, throws an exception or returns an empty array.
+    /// </returns>
+    ///-
+    function get_blinkSeqStateAtPowerOn(seqIndex: LongInt; count: LongInt):TLongIntArray; overload; virtual;
 
     ////
     /// <summary>
@@ -926,14 +1048,14 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the count of LEDs currently handled by the device.
+  ///   Returns the number of LEDs currently handled by the device.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   an integer corresponding to the count of LEDs currently handled by the device
+  ///   an integer corresponding to the number of LEDs currently handled by the device
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_ACTIVELEDCOUNT_INVALID.
@@ -956,14 +1078,14 @@ implementation
 
   ////
   /// <summary>
-  ///   Changes the count of LEDs currently handled by the device.
+  ///   Changes the number of LEDs currently handled by the device.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   an integer corresponding to the count of LEDs currently handled by the device
+  ///   an integer corresponding to the number of LEDs currently handled by the device
   /// </param>
   /// <para>
   /// </para>
@@ -984,14 +1106,14 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the maximum count of LEDs that the device can handle.
+  ///   Returns the maximum number of LEDs that the device can handle.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   an integer corresponding to the maximum count of LEDs that the device can handle
+  ///   an integer corresponding to the maximum number of LEDs that the device can handle
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_MAXLEDCOUNT_INVALID.
@@ -1014,14 +1136,12 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the maximum count of sequences.
-  /// <para>
-  /// </para>
+  ///   Returns the maximum number of sequences that the device can handle
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   an integer corresponding to the maximum count of sequences
+  ///   an integer corresponding to the maximum number of sequences that the device can handle
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_BLINKSEQMAXCOUNT_INVALID.
@@ -1246,7 +1366,32 @@ implementation
 
   ////
   /// <summary>
-  ///   Changes the current color of consecutive LEDs in the cluster , using a HSL color.
+  ///   Changes the  color at device startup of consecutve LEDs in the cluster , using a RGB color.
+  /// <para>
+  ///   Encoding is done as follows: 0xRRGGBB.
+  /// </para>
+  /// </summary>
+  /// <param name="ledIndex">
+  ///   index of the first affected LED.
+  /// </param>
+  /// <param name="count">
+  ///   affected LED count.
+  /// </param>
+  /// <param name="rgbValue">
+  ///   new color.
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </param>
+  ///-
+  function TYColorLedCluster.set_rgbColorAtPowerOn(ledIndex: LongInt; count: LongInt; rgbValue: LongInt):LongInt;
+    begin
+      result := self.sendCommand('SC'+inttostr(ledIndex)+','+inttostr(count)+','+inttohex(rgbValue,1));
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the current color of consecutive LEDs in the cluster, using a HSL color.
   /// <para>
   ///   Encoding is done as follows: 0xHHSSLL.
   /// </para>
@@ -1271,10 +1416,10 @@ implementation
 
   ////
   /// <summary>
-  ///   Allows you to modify the current color of a group of adjacent LED  to another color, in a seamless and
+  ///   Allows you to modify the current color of a group of adjacent LEDs to another color, in a seamless and
   ///   autonomous manner.
   /// <para>
-  ///   The transition is performed in the RGB space..
+  ///   The transition is performed in the RGB space.
   /// </para>
   /// </summary>
   /// <param name="ledIndex">
@@ -1333,11 +1478,11 @@ implementation
 
   ////
   /// <summary>
-  ///   Adds a RGB transition to a sequence.
+  ///   Adds an RGB transition to a sequence.
   /// <para>
-  ///   A sequence is a transitions list, which can
-  ///   be executed in loop by an group of LEDs.  Sequences are persistent and are saved
-  ///   in the device flash as soon as the module <c>saveToFlash()</c> method is called.
+  ///   A sequence is a transition list, which can
+  ///   be executed in loop by a group of LEDs.  Sequences are persistent and are saved
+  ///   in the device flash memory as soon as the module <c>saveToFlash()</c> method is called.
   /// </para>
   /// </summary>
   /// <param name="seqIndex">
@@ -1360,11 +1505,11 @@ implementation
 
   ////
   /// <summary>
-  ///   Adds a HSL transition to a sequence.
+  ///   Adds an HSL transition to a sequence.
   /// <para>
-  ///   A sequence is a transitions list, which can
+  ///   A sequence is a transition list, which can
   ///   be executed in loop by an group of LEDs.  Sequences are persistant and are saved
-  ///   in the device flash as soon as the module <c>saveToFlash()</c> method is called.
+  ///   in the device flash memory as soon as the module <c>saveToFlash()</c> method is called.
   /// </para>
   /// </summary>
   /// <param name="seqIndex">
@@ -1390,9 +1535,9 @@ implementation
   ///   Adds a mirror ending to a sequence.
   /// <para>
   ///   When the sequence will reach the end of the last
-  ///   transition, its running speed will automatically be reverted so that the sequence plays
-  ///   in the reverse direction, like in a mirror. When the first transition of the sequence
-  ///   will be played at the end of the reverse execution, the sequence will start again in
+  ///   transition, its running speed will automatically be reversed so that the sequence plays
+  ///   in the reverse direction, like in a mirror. After the first transition of the sequence
+  ///   is played at the end of the reverse execution, the sequence starts again in
   ///   the initial direction.
   /// </para>
   /// </summary>
@@ -1412,10 +1557,10 @@ implementation
   /// <summary>
   ///   Links adjacent LEDs to a specific sequence.
   /// <para>
-  ///   these LED will start to execute
+  ///   These LEDs start to execute
   ///   the sequence as soon as  startBlinkSeq is called. It is possible to add an offset
   ///   in the execution: that way we  can have several groups of LED executing the same
-  ///   sequence, with a  temporal offset. A LED cannot be linked to more than one LED.
+  ///   sequence, with a  temporal offset. A LED cannot be linked to more than one sequence.
   /// </para>
   /// </summary>
   /// <param name="ledIndex">
@@ -1441,11 +1586,42 @@ implementation
 
   ////
   /// <summary>
+  ///   Links adjacent LEDs to a specific sequence at device poweron.
+  /// <para>
+  ///   Don't forget to configure
+  ///   the sequence auto start flag as well and call saveLedsState. It is possible to add an offset
+  ///   in the execution: that way we  can have several groups of LEDs executing the same
+  ///   sequence, with a  temporal offset. A LED cannot be linked to more than one sequence.
+  /// </para>
+  /// </summary>
+  /// <param name="ledIndex">
+  ///   index of the first affected LED.
+  /// </param>
+  /// <param name="count">
+  ///   affected LED count.
+  /// </param>
+  /// <param name="seqIndex">
+  ///   sequence index.
+  /// </param>
+  /// <param name="offset">
+  ///   execution offset in ms.
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </param>
+  ///-
+  function TYColorLedCluster.linkLedToBlinkSeqAtPowerOn(ledIndex: LongInt; count: LongInt; seqIndex: LongInt; offset: LongInt):LongInt;
+    begin
+      result := self.sendCommand('LO'+inttostr(ledIndex)+','+inttostr(count)+','+inttostr(seqIndex)+','+inttostr(offset));
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
   ///   Links adjacent LEDs to a specific sequence.
   /// <para>
-  ///   these LED will start to execute
+  ///   These LED start to execute
   ///   the sequence as soon as  startBlinkSeq is called. This function automatically
-  ///   introduce a shift between LEDs so that the specified number of sequence periods
+  ///   introduces a shift between LEDs so that the specified number of sequence periods
   ///   appears on the group of LEDs (wave effect).
   /// </para>
   /// </summary>
@@ -1472,7 +1648,7 @@ implementation
 
   ////
   /// <summary>
-  ///   UnLink adjacent LED  from a  sequence.
+  ///   Unlinks adjacent LEDs from a  sequence.
   /// <para>
   /// </para>
   /// </summary>
@@ -1493,7 +1669,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Start a sequence execution: every LED linked to that sequence will start to
+  ///   Starts a sequence execution: every LED linked to that sequence starts to
   ///   run it in a loop.
   /// <para>
   /// </para>
@@ -1512,10 +1688,10 @@ implementation
 
   ////
   /// <summary>
-  ///   Stop a sequence execution.
+  ///   Stops a sequence execution.
   /// <para>
-  ///   if started again, the execution
-  ///   will restart from the beginning.
+  ///   If started again, the execution
+  ///   restarts from the beginning.
   /// </para>
   /// </summary>
   /// <param name="seqIndex">
@@ -1532,10 +1708,10 @@ implementation
 
   ////
   /// <summary>
-  ///   Stop a sequence execution and reset its contents.
+  ///   Stops a sequence execution and resets its contents.
   /// <para>
   ///   Leds linked to this
-  ///   sequences will no more be automatically updated.
+  ///   sequence are not automatically updated anymore.
   /// </para>
   /// </summary>
   /// <param name="seqIndex">
@@ -1552,7 +1728,31 @@ implementation
 
   ////
   /// <summary>
-  ///   Change the execution speed of a sequence.
+  ///   Configures a sequence to make it start automatically at device
+  ///   startup.
+  /// <para>
+  ///   Don't forget to call  saveLedsState() to make sure the
+  ///   modification is saved in the device flash memory.
+  /// </para>
+  /// </summary>
+  /// <param name="seqIndex">
+  ///   index of the sequence to reset
+  /// </param>
+  /// <param name="autostart">
+  ///   boolean telling if the sequence must start automatically or not.
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </param>
+  ///-
+  function TYColorLedCluster.set_blinkSeqAutoStart(seqIndex: LongInt; autostart: boolean):LongInt;
+    begin
+      result := self.sendCommand('AS'+inttostr(seqIndex)+','+_yapiBoolToStr(autostart));
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the execution speed of a sequence.
   /// <para>
   ///   The natural execution speed is 1000 per
   ///   thousand. If you configure a slower speed, you can play the sequence in slow-motion.
@@ -1567,18 +1767,18 @@ implementation
   ///   On failure, throws an exception or returns a negative error code.
   /// </param>
   ///-
-  function TYColorLedCluster.changeBlinkSeqSpeed(seqIndex: LongInt; speed: LongInt):LongInt;
+  function TYColorLedCluster.set_blinkSeqSpeed(seqIndex: LongInt; speed: LongInt):LongInt;
     begin
-      result := self.sendCommand('CS'+inttostr(seqIndex));
+      result := self.sendCommand('CS'+inttostr(seqIndex)+','+inttostr(speed));
       exit;
     end;
 
 
   ////
   /// <summary>
-  ///   Save the current state of all LEDs as the initial startup state.
+  ///   Saves the cluster power-on configuration, this includes
+  ///   LED start-up colors, sequence steps and sequence auto-start flags.
   /// <para>
-  ///   The initial startup state includes the choice of sequence linked to each LED.
   ///   On failure, throws an exception or returns a negative error code.
   /// </para>
   /// </summary>
@@ -1657,7 +1857,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Setup a smooth RGB color transition to the specified pixel-by-pixel list of RGB
+  ///   Sets up a smooth RGB color transition to the specified pixel-by-pixel list of RGB
   ///   color codes.
   /// <para>
   ///   The first color code represents the target RGB value of the first LED,
@@ -1768,7 +1968,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Setup a smooth HSL color transition to the specified pixel-by-pixel list of HSL
+  ///   Sets up a smooth HSL color transition to the specified pixel-by-pixel list of HSL
   ///   color codes.
   /// <para>
   ///   The first color code represents the target HSL value of the first LED,
@@ -1890,6 +2090,55 @@ implementation
 
   ////
   /// <summary>
+  ///   Returns a list on 24bit RGB color values with the RGB LEDs startup colors.
+  /// <para>
+  ///   The first number represents the startup RGB value of the first LED,
+  ///   the second number represents the RGB value of the second LED, etc.
+  /// </para>
+  /// </summary>
+  /// <param name="ledIndex">
+  ///   index of the first LED  which should be returned
+  /// </param>
+  /// <param name="count">
+  ///   number of LEDs which should be returned
+  /// </param>
+  /// <returns>
+  ///   a list of 24bit color codes with RGB components of selected LEDs, as 0xRRGGBB.
+  ///   On failure, throws an exception or returns an empty array.
+  /// </returns>
+  ///-
+  function TYColorLedCluster.get_rgbColorArrayAtPowerOn(ledIndex: LongInt; count: LongInt):TLongIntArray;
+    var
+      buff : TByteArray;
+      res : TLongIntArray;
+      idx : LongInt;
+      r : LongInt;
+      g : LongInt;
+      b : LongInt;
+      res_pos : LongInt;
+    begin
+      buff := self._download('rgb.bin?typ=4&pos='+inttostr(3*ledIndex)+'&len='+inttostr(3*count));
+      SetLength(res, 0);
+      res_pos := length(res);
+      SetLength(res, res_pos+count);;
+      idx := 0;
+      while idx < count do
+        begin
+          r := buff[3*idx];
+          g := buff[3*idx+1];
+          b := buff[3*idx+2];
+          res[res_pos] := r*65536+g*256+b;
+          inc(res_pos);
+          idx := idx + 1;
+        end;
+      SetLength(res, res_pos);;
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
   ///   Returns a list on sequence index for each RGB LED.
   /// <para>
   ///   The first number represents the
@@ -1976,6 +2225,94 @@ implementation
           lh := buff[4*idx+2];
           ll := buff[4*idx+3];
           res[res_pos] := ((hh) shl 24)+((hl) shl 16)+((lh) shl 8)+ll;
+          inc(res_pos);
+          idx := idx + 1;
+        end;
+      SetLength(res, res_pos);;
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns a list of integers with the current speed for specified blinking sequences.
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="seqIndex">
+  ///   index of the first sequence speed which should be returned
+  /// </param>
+  /// <param name="count">
+  ///   number of sequence speeds which should be returned
+  /// </param>
+  /// <returns>
+  ///   a list of integers, 0 for sequences turned off and 1 for sequences running
+  ///   On failure, throws an exception or returns an empty array.
+  /// </returns>
+  ///-
+  function TYColorLedCluster.get_blinkSeqStateSpeed(seqIndex: LongInt; count: LongInt):TLongIntArray;
+    var
+      buff : TByteArray;
+      res : TLongIntArray;
+      idx : LongInt;
+      lh : LongInt;
+      ll : LongInt;
+      res_pos : LongInt;
+    begin
+      buff := self._download('rgb.bin?typ=6&pos='+inttostr(seqIndex)+'&len='+inttostr(count));
+      SetLength(res, 0);
+      res_pos := length(res);
+      SetLength(res, res_pos+count);;
+      idx := 0;
+      while idx < count do
+        begin
+          lh := buff[2*idx];
+          ll := buff[2*idx+1];
+          res[res_pos] := ((lh) shl 8)+ll;
+          inc(res_pos);
+          idx := idx + 1;
+        end;
+      SetLength(res, res_pos);;
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns a list of integers with the "auto-start at power on" flag state for specified blinking sequences.
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="seqIndex">
+  ///   index of the first blinking sequence which should be returned
+  /// </param>
+  /// <param name="count">
+  ///   number of blinking sequences which should be returned
+  /// </param>
+  /// <returns>
+  ///   a list of integers, 0 for sequences turned off and 1 for sequences running
+  ///   On failure, throws an exception or returns an empty array.
+  /// </returns>
+  ///-
+  function TYColorLedCluster.get_blinkSeqStateAtPowerOn(seqIndex: LongInt; count: LongInt):TLongIntArray;
+    var
+      buff : TByteArray;
+      res : TLongIntArray;
+      idx : LongInt;
+      started : LongInt;
+      res_pos : LongInt;
+    begin
+      buff := self._download('rgb.bin?typ=5&pos='+inttostr(seqIndex)+'&len='+inttostr(count));
+      SetLength(res, 0);
+      res_pos := length(res);
+      SetLength(res, res_pos+count);;
+      idx := 0;
+      while idx < count do
+        begin
+          started := buff[idx];
+          res[res_pos] := started;
           inc(res_pos);
           idx := idx + 1;
         end;
