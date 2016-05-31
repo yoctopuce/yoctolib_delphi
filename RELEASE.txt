@@ -1,6 +1,2 @@
-- Report invalid admin password directly in YAPI.RegisterHub()
-- Improve network performance of WebSocket protocol
-- Add missing methods in YColorledCluster
-- Fix YCellular.sendPUK() method
-- Fix occasional lag in request
-- Fix socket leak with HTTP connection
+- Add support for sending and receiving SMS
+- Fix occasional timeout on firmware update

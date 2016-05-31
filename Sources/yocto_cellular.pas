@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 24465 2016-05-12 07:30:46Z mvuilleu $
+ * $Id: yocto_cellular.pas 24622 2016-05-27 12:51:52Z mvuilleu $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -71,6 +71,8 @@ const Y_ENABLEDATA_INVALID = -1;
 const Y_APN_INVALID                   = YAPI_INVALID_STRING;
 const Y_APNSECRET_INVALID             = YAPI_INVALID_STRING;
 const Y_PINGINTERVAL_INVALID          = YAPI_INVALID_UINT;
+const Y_DATASENT_INVALID              = YAPI_INVALID_UINT;
+const Y_DATARECEIVED_INVALID          = YAPI_INVALID_UINT;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 
@@ -118,6 +120,8 @@ type
     _apn                      : string;
     _apnSecret                : string;
     _pingInterval             : LongInt;
+    _dataSent                 : LongInt;
+    _dataReceived             : LongInt;
     _command                  : string;
     _valueCallbackCellular    : TYCellularValueCallback;
     // Function-specific method for reading JSON output and caching result
@@ -527,6 +531,84 @@ type
     ///-
     function set_pingInterval(newval:LongInt):integer;
 
+    ////
+    /// <summary>
+    ///   Returns the number of bytes sent so far.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the number of bytes sent so far
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_DATASENT_INVALID</c>.
+    /// </para>
+    ///-
+    function get_dataSent():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the value of the outgoing data counter.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the value of the outgoing data counter
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_dataSent(newval:LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the number of bytes received so far.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the number of bytes received so far
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_DATARECEIVED_INVALID</c>.
+    /// </para>
+    ///-
+    function get_dataReceived():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the value of the incoming data counter.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the value of the incoming data counter
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_dataReceived(newval:LongInt):integer;
+
     function get_command():string;
 
     function set_command(newval:string):integer;
@@ -649,6 +731,21 @@ type
     /// </para>
     ///-
     function set_apnAuth(username: string; password: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Clear the transmitted data counters.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function clearDataCounters():LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -865,6 +962,8 @@ implementation
       _apn := Y_APN_INVALID;
       _apnSecret := Y_APNSECRET_INVALID;
       _pingInterval := Y_PINGINTERVAL_INVALID;
+      _dataSent := Y_DATASENT_INVALID;
+      _dataReceived := Y_DATARECEIVED_INVALID;
       _command := Y_COMMAND_INVALID;
       _valueCallbackCellular := nil;
       //--- (end of generated code: YCellular accessors initialization)
@@ -953,6 +1052,18 @@ implementation
       if (member^.name = 'pingInterval') then
         begin
           _pingInterval := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'dataSent') then
+        begin
+          _dataSent := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'dataReceived') then
+        begin
+          _dataReceived := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -1575,6 +1686,122 @@ implementation
       result := _setAttr('pingInterval',rest_val);
     end;
 
+  ////
+  /// <summary>
+  ///   Returns the number of bytes sent so far.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the number of bytes sent so far
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_DATASENT_INVALID.
+  /// </para>
+  ///-
+  function TYCellular.get_dataSent():LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_DATASENT_INVALID;
+              exit;
+            end;
+        end;
+      result := self._dataSent;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the value of the outgoing data counter.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   an integer corresponding to the value of the outgoing data counter
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYCellular.set_dataSent(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('dataSent',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the number of bytes received so far.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the number of bytes received so far
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_DATARECEIVED_INVALID.
+  /// </para>
+  ///-
+  function TYCellular.get_dataReceived():LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_DATARECEIVED_INVALID;
+              exit;
+            end;
+        end;
+      result := self._dataReceived;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the value of the incoming data counter.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   an integer corresponding to the value of the incoming data counter
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYCellular.set_dataReceived(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('dataReceived',rest_val);
+    end;
+
   function TYCellular.get_command():string;
     begin
       if self._cacheExpiration <= yGetTickCount then
@@ -1746,7 +1973,7 @@ implementation
       gsmMsg : string;
     begin
       gsmMsg := self.get_message;
-      if not((Copy(gsmMsg, 0 + 1, 13) = 'Enter SIM PUK')) then
+      if not(not((Copy(gsmMsg, 0 + 1, 13) = 'Enter SIM PUK'))) then
         begin
           self._throw(YAPI_INVALID_ARGUMENT, 'PUK not expected at this time');
           result:=YAPI_INVALID_ARGUMENT;
@@ -1789,6 +2016,35 @@ implementation
   function TYCellular.set_apnAuth(username: string; password: string):LongInt;
     begin
       result := self.set_apnSecret(''+username+','+password);
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Clear the transmitted data counters.
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYCellular.clearDataCounters():LongInt;
+    var
+      retcode : LongInt;
+    begin
+      retcode := self.set_dataReceived(0);
+      if retcode <> YAPI_SUCCESS then
+        begin
+          result := retcode;
+          exit;
+        end;
+      retcode := self.set_dataSent(0);
+      result := retcode;
       exit;
     end;
 
