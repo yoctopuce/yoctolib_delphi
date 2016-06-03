@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_colorledcluster.pas 24586 2016-05-26 12:42:56Z seb $
+ * $Id: yocto_colorledcluster.pas 24717 2016-06-03 16:09:53Z seb $
  *
  * Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -157,7 +157,9 @@ type
 
     ////
     /// <summary>
-    ///   Returns the maximum number of sequences that the device can handle
+    ///   Returns the maximum number of sequences that the device can handle.
+    /// <para>
+    /// </para>
     /// <para>
     /// </para>
     /// </summary>
@@ -261,7 +263,7 @@ type
 
     ////
     /// <summary>
-    ///   Changes the current color of consecutve LEDs in the cluster , using a RGB color.
+    ///   Changes the current color of consecutve LEDs in the cluster, using a RGB color.
     /// <para>
     ///   Encoding is done as follows: 0xRRGGBB.
     /// </para>
@@ -274,16 +276,23 @@ type
     /// </param>
     /// <param name="rgbValue">
     ///   new color.
-    ///   On failure, throws an exception or returns a negative error code.
     /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
     function set_rgbColor(ledIndex: LongInt; count: LongInt; rgbValue: LongInt):LongInt; overload; virtual;
 
     ////
     /// <summary>
-    ///   Changes the  color at device startup of consecutve LEDs in the cluster , using a RGB color.
+    ///   Changes the  color at device startup of consecutve LEDs in the cluster, using a RGB color.
     /// <para>
     ///   Encoding is done as follows: 0xRRGGBB.
+    ///   Don't forget to call <c>saveLedsConfigAtPowerOn()</c> to make sure the modification is saved in the
+    ///   device flash memory.
     /// </para>
     /// </summary>
     /// <param name="ledIndex">
@@ -294,8 +303,13 @@ type
     /// </param>
     /// <param name="rgbValue">
     ///   new color.
-    ///   On failure, throws an exception or returns a negative error code.
     /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
     function set_rgbColorAtPowerOn(ledIndex: LongInt; count: LongInt; rgbValue: LongInt):LongInt; overload; virtual;
 
@@ -314,8 +328,13 @@ type
     /// </param>
     /// <param name="hslValue">
     ///   new color.
-    ///   On failure, throws an exception or returns a negative error code.
     /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
     function set_hslColor(ledIndex: LongInt; count: LongInt; hslValue: LongInt):LongInt; overload; virtual;
 
@@ -338,8 +357,13 @@ type
     /// </param>
     /// <param name="delay">
     ///   transition duration in ms
-    ///   On failure, throws an exception or returns a negative error code.
     /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
     function rgb_move(ledIndex: LongInt; count: LongInt; rgbValue: LongInt; delay: LongInt):LongInt; overload; virtual;
 
@@ -366,8 +390,13 @@ type
     /// </param>
     /// <param name="delay">
     ///   transition duration in ms
-    ///   On failure, throws an exception or returns a negative error code.
     /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
     function hsl_move(ledIndex: LongInt; count: LongInt; hslValue: LongInt; delay: LongInt):LongInt; overload; virtual;
 
@@ -377,7 +406,7 @@ type
     /// <para>
     ///   A sequence is a transition list, which can
     ///   be executed in loop by a group of LEDs.  Sequences are persistent and are saved
-    ///   in the device flash memory as soon as the module <c>saveToFlash()</c> method is called.
+    ///   in the device flash memory as soon as the <c>saveBlinkSeq()</c> method is called.
     /// </para>
     /// </summary>
     /// <param name="seqIndex">
@@ -388,8 +417,13 @@ type
     /// </param>
     /// <param name="delay">
     ///   transition duration in ms
-    ///   On failure, throws an exception or returns a negative error code.
     /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
     function addRgbMoveToBlinkSeq(seqIndex: LongInt; rgbValue: LongInt; delay: LongInt):LongInt; overload; virtual;
 
@@ -399,7 +433,7 @@ type
     /// <para>
     ///   A sequence is a transition list, which can
     ///   be executed in loop by an group of LEDs.  Sequences are persistant and are saved
-    ///   in the device flash memory as soon as the module <c>saveToFlash()</c> method is called.
+    ///   in the device flash memory as soon as the <c>saveBlinkSeq()</c> method is called.
     /// </para>
     /// </summary>
     /// <param name="seqIndex">
@@ -410,8 +444,13 @@ type
     /// </param>
     /// <param name="delay">
     ///   transition duration in ms
-    ///   On failure, throws an exception or returns a negative error code.
     /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
     function addHslMoveToBlinkSeq(seqIndex: LongInt; hslValue: LongInt; delay: LongInt):LongInt; overload; virtual;
 
@@ -428,8 +467,13 @@ type
     /// </summary>
     /// <param name="seqIndex">
     ///   sequence index.
-    ///   On failure, throws an exception or returns a negative error code.
     /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
     function addMirrorToBlinkSeq(seqIndex: LongInt):LongInt; overload; virtual;
 
@@ -454,8 +498,13 @@ type
     /// </param>
     /// <param name="offset">
     ///   execution offset in ms.
-    ///   On failure, throws an exception or returns a negative error code.
     /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
     function linkLedToBlinkSeq(ledIndex: LongInt; count: LongInt; seqIndex: LongInt; offset: LongInt):LongInt; overload; virtual;
 
@@ -464,7 +513,7 @@ type
     ///   Links adjacent LEDs to a specific sequence at device poweron.
     /// <para>
     ///   Don't forget to configure
-    ///   the sequence auto start flag as well and call saveLedsState. It is possible to add an offset
+    ///   the sequence auto start flag as well and call <c>saveLedsConfigAtPowerOn()</c>. It is possible to add an offset
     ///   in the execution: that way we  can have several groups of LEDs executing the same
     ///   sequence, with a  temporal offset. A LED cannot be linked to more than one sequence.
     /// </para>
@@ -480,8 +529,13 @@ type
     /// </param>
     /// <param name="offset">
     ///   execution offset in ms.
-    ///   On failure, throws an exception or returns a negative error code.
     /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
     function linkLedToBlinkSeqAtPowerOn(ledIndex: LongInt; count: LongInt; seqIndex: LongInt; offset: LongInt):LongInt; overload; virtual;
 
@@ -506,8 +560,13 @@ type
     /// </param>
     /// <param name="periods">
     ///   number of periods to show on LEDs.
-    ///   On failure, throws an exception or returns a negative error code.
     /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
     function linkLedToPeriodicBlinkSeq(ledIndex: LongInt; count: LongInt; seqIndex: LongInt; periods: LongInt):LongInt; overload; virtual;
 
@@ -522,8 +581,13 @@ type
     /// </param>
     /// <param name="count">
     ///   affected LED count.
-    ///   On failure, throws an exception or returns a negative error code.
     /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
     function unlinkLedFromBlinkSeq(ledIndex: LongInt; count: LongInt):LongInt; overload; virtual;
 
@@ -536,8 +600,13 @@ type
     /// </summary>
     /// <param name="seqIndex">
     ///   index of the sequence to start.
-    ///   On failure, throws an exception or returns a negative error code.
     /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
     function startBlinkSeq(seqIndex: LongInt):LongInt; overload; virtual;
 
@@ -551,8 +620,13 @@ type
     /// </summary>
     /// <param name="seqIndex">
     ///   index of the sequence to stop.
-    ///   On failure, throws an exception or returns a negative error code.
     /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
     function stopBlinkSeq(seqIndex: LongInt):LongInt; overload; virtual;
 
@@ -566,8 +640,13 @@ type
     /// </summary>
     /// <param name="seqIndex">
     ///   index of the sequence to reset
-    ///   On failure, throws an exception or returns a negative error code.
     /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
     function resetBlinkSeq(seqIndex: LongInt):LongInt; overload; virtual;
 
@@ -576,19 +655,24 @@ type
     ///   Configures a sequence to make it start automatically at device
     ///   startup.
     /// <para>
-    ///   Don't forget to call  saveLedsState() to make sure the
+    ///   Don't forget to call <c>saveBlinkSeq()</c> to make sure the
     ///   modification is saved in the device flash memory.
     /// </para>
     /// </summary>
     /// <param name="seqIndex">
-    ///   index of the sequence to reset
+    ///   index of the sequence to reset.
     /// </param>
     /// <param name="autostart">
-    ///   boolean telling if the sequence must start automatically or not.
-    ///   On failure, throws an exception or returns a negative error code.
+    ///   0 to keep the sequence turned off and 1 to start it automatically.
     /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
-    function set_blinkSeqAutoStart(seqIndex: LongInt; autostart: boolean):LongInt; overload; virtual;
+    function set_blinkSeqStateAtPowerOn(seqIndex: LongInt; autostart: LongInt):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -604,57 +688,100 @@ type
     /// </param>
     /// <param name="speed">
     ///   sequence running speed (-1000...1000).
-    ///   On failure, throws an exception or returns a negative error code.
     /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
     function set_blinkSeqSpeed(seqIndex: LongInt; speed: LongInt):LongInt; overload; virtual;
 
     ////
     /// <summary>
-    ///   Saves the cluster power-on configuration, this includes
-    ///   LED start-up colors, sequence steps and sequence auto-start flags.
+    ///   Saves the LEDs power-on configuration.
+    /// <para>
+    ///   This includes the start-up color or
+    ///   sequence binding for all LEDs. Warning: if some LEDs are linked to a sequence, the
+    ///   method <c>saveBlinkSeq()</c> must also be called to save the sequence definition.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
-    /// </summary>
     ///-
-    function saveLedsState():LongInt; overload; virtual;
+    function saveLedsConfigAtPowerOn():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Saves the definition of a sequence.
+    /// <para>
+    ///   Warning: only sequence steps and flags are saved.
+    ///   to save the LEDs startup bindings, the method <c>saveLedsConfigAtPowerOn()</c>
+    ///   must be called.
+    /// </para>
+    /// </summary>
+    /// <param name="seqIndex">
+    ///   index of the sequence to start.
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function saveBlinkSeq(seqIndex: LongInt):LongInt; overload; virtual;
 
     ////
     /// <summary>
     ///   Sends a binary buffer to the LED RGB buffer, as is.
     /// <para>
-    ///   First three bytes are RGB components for first LED, the
-    ///   next three bytes for the second LED, etc.
+    ///   First three bytes are RGB components for LED specified as parameter, the
+    ///   next three bytes for the next LED, etc.
     /// </para>
     /// </summary>
+    /// <param name="ledIndex">
+    ///   index of the first LED which should be updated
+    /// </param>
     /// <param name="buff">
     ///   the binary buffer to send
     /// </param>
     /// <returns>
     ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
-    function set_rgbBuffer(buff: TByteArray):LongInt; overload; virtual;
+    function set_rgbColorBuffer(ledIndex: LongInt; buff: TByteArray):LongInt; overload; virtual;
 
     ////
     /// <summary>
     ///   Sends 24bit RGB colors (provided as a list of integers) to the LED RGB buffer, as is.
     /// <para>
-    ///   The first number represents the RGB value of the first LED, the second number represents
-    ///   the RGB value of the second LED, etc.
+    ///   The first number represents the RGB value of the LED specified as parameter, the second
+    ///   number represents the RGB value of the next LED, etc.
     /// </para>
     /// </summary>
+    /// <param name="ledIndex">
+    ///   index of the first LED which should be updated
+    /// </param>
     /// <param name="rgbList">
     ///   a list of 24bit RGB codes, in the form 0xRRGGBB
     /// </param>
     /// <returns>
     ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
-    function set_rgbArray(rgbList: TLongIntArray):LongInt; overload; virtual;
+    function set_rgbColorArray(ledIndex: LongInt; rgbList: TLongIntArray):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -662,7 +789,7 @@ type
     ///   color codes.
     /// <para>
     ///   The first color code represents the target RGB value of the first LED,
-    ///   the second color code represents the target value of the second LED, etc.
+    ///   the next color code represents the target value of the next LED, etc.
     /// </para>
     /// </summary>
     /// <param name="rgbList">
@@ -673,8 +800,10 @@ type
     /// </param>
     /// <returns>
     ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
     function rgbArray_move(rgbList: TLongIntArray; delay: LongInt):LongInt; overload; virtual;
 
@@ -682,37 +811,47 @@ type
     /// <summary>
     ///   Sends a binary buffer to the LED HSL buffer, as is.
     /// <para>
-    ///   First three bytes are HSL components for first LED, the
+    ///   First three bytes are HSL components for the LED specified as parameter, the
     ///   next three bytes for the second LED, etc.
     /// </para>
     /// </summary>
+    /// <param name="ledIndex">
+    ///   index of the first LED which should be updated
+    /// </param>
     /// <param name="buff">
     ///   the binary buffer to send
     /// </param>
     /// <returns>
     ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
-    function set_hslBuffer(buff: TByteArray):LongInt; overload; virtual;
+    function set_hslColorBuffer(ledIndex: LongInt; buff: TByteArray):LongInt; overload; virtual;
 
     ////
     /// <summary>
     ///   Sends 24bit HSL colors (provided as a list of integers) to the LED HSL buffer, as is.
     /// <para>
-    ///   The first number represents the HSL value of the first LED, the second number represents
+    ///   The first number represents the HSL value of the LED specified as parameter, the second number represents
     ///   the HSL value of the second LED, etc.
     /// </para>
     /// </summary>
+    /// <param name="ledIndex">
+    ///   index of the first LED which should be updated
+    /// </param>
     /// <param name="hslList">
     ///   a list of 24bit HSL codes, in the form 0xHHSSLL
     /// </param>
     /// <returns>
     ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
-    function set_hslArray(hslList: TLongIntArray):LongInt; overload; virtual;
+    function set_hslColorArray(ledIndex: LongInt; hslList: TLongIntArray):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -731,8 +870,10 @@ type
     /// </param>
     /// <returns>
     ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
     ///-
     function hslArray_move(hslList: TLongIntArray; delay: LongInt):LongInt; overload; virtual;
 
@@ -752,8 +893,10 @@ type
     /// </param>
     /// <returns>
     ///   a binary buffer with RGB components of selected LEDs.
-    ///   On failure, throws an exception or returns an empty binary buffer.
     /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty binary buffer.
+    /// </para>
     ///-
     function get_rgbColorBuffer(ledIndex: LongInt; count: LongInt):TByteArray; overload; virtual;
 
@@ -774,8 +917,10 @@ type
     /// </param>
     /// <returns>
     ///   a list of 24bit color codes with RGB components of selected LEDs, as 0xRRGGBB.
-    ///   On failure, throws an exception or returns an empty array.
     /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty array.
+    /// </para>
     ///-
     function get_rgbColorArray(ledIndex: LongInt; count: LongInt):TLongIntArray; overload; virtual;
 
@@ -795,8 +940,10 @@ type
     /// </param>
     /// <returns>
     ///   a list of 24bit color codes with RGB components of selected LEDs, as 0xRRGGBB.
-    ///   On failure, throws an exception or returns an empty array.
     /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty array.
+    /// </para>
     ///-
     function get_rgbColorArrayAtPowerOn(ledIndex: LongInt; count: LongInt):TLongIntArray; overload; virtual;
 
@@ -817,8 +964,10 @@ type
     /// </param>
     /// <returns>
     ///   a list of integers with sequence index
-    ///   On failure, throws an exception or returns an empty array.
     /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty array.
+    /// </para>
     ///-
     function get_linkedSeqArray(ledIndex: LongInt; count: LongInt):TLongIntArray; overload; virtual;
 
@@ -838,8 +987,10 @@ type
     /// </param>
     /// <returns>
     ///   a list of 32 bit integer signatures
-    ///   On failure, throws an exception or returns an empty array.
     /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty array.
+    /// </para>
     ///-
     function get_blinkSeqSignatures(seqIndex: LongInt; count: LongInt):TLongIntArray; overload; virtual;
 
@@ -857,8 +1008,10 @@ type
     /// </param>
     /// <returns>
     ///   a list of integers, 0 for sequences turned off and 1 for sequences running
-    ///   On failure, throws an exception or returns an empty array.
     /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty array.
+    /// </para>
     ///-
     function get_blinkSeqStateSpeed(seqIndex: LongInt; count: LongInt):TLongIntArray; overload; virtual;
 
@@ -876,8 +1029,10 @@ type
     /// </param>
     /// <returns>
     ///   a list of integers, 0 for sequences turned off and 1 for sequences running
-    ///   On failure, throws an exception or returns an empty array.
     /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty array.
+    /// </para>
     ///-
     function get_blinkSeqStateAtPowerOn(seqIndex: LongInt; count: LongInt):TLongIntArray; overload; virtual;
 
@@ -895,8 +1050,10 @@ type
     /// </param>
     /// <returns>
     ///   a list of integers, 0 for sequences turned off and 1 for sequences running
-    ///   On failure, throws an exception or returns an empty array.
     /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty array.
+    /// </para>
     ///-
     function get_blinkSeqState(seqIndex: LongInt; count: LongInt):TLongIntArray; overload; virtual;
 
@@ -1138,7 +1295,9 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the maximum number of sequences that the device can handle
+  ///   Returns the maximum number of sequences that the device can handle.
+  /// <para>
+  /// </para>
   /// <para>
   /// </para>
   /// </summary>
@@ -1343,7 +1502,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Changes the current color of consecutve LEDs in the cluster , using a RGB color.
+  ///   Changes the current color of consecutve LEDs in the cluster, using a RGB color.
   /// <para>
   ///   Encoding is done as follows: 0xRRGGBB.
   /// </para>
@@ -1356,8 +1515,13 @@ implementation
   /// </param>
   /// <param name="rgbValue">
   ///   new color.
-  ///   On failure, throws an exception or returns a negative error code.
   /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
   function TYColorLedCluster.set_rgbColor(ledIndex: LongInt; count: LongInt; rgbValue: LongInt):LongInt;
     begin
@@ -1368,9 +1532,11 @@ implementation
 
   ////
   /// <summary>
-  ///   Changes the  color at device startup of consecutve LEDs in the cluster , using a RGB color.
+  ///   Changes the  color at device startup of consecutve LEDs in the cluster, using a RGB color.
   /// <para>
   ///   Encoding is done as follows: 0xRRGGBB.
+  ///   Don't forget to call <c>saveLedsConfigAtPowerOn()</c> to make sure the modification is saved in the
+  ///   device flash memory.
   /// </para>
   /// </summary>
   /// <param name="ledIndex">
@@ -1381,8 +1547,13 @@ implementation
   /// </param>
   /// <param name="rgbValue">
   ///   new color.
-  ///   On failure, throws an exception or returns a negative error code.
   /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
   function TYColorLedCluster.set_rgbColorAtPowerOn(ledIndex: LongInt; count: LongInt; rgbValue: LongInt):LongInt;
     begin
@@ -1406,8 +1577,13 @@ implementation
   /// </param>
   /// <param name="hslValue">
   ///   new color.
-  ///   On failure, throws an exception or returns a negative error code.
   /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
   function TYColorLedCluster.set_hslColor(ledIndex: LongInt; count: LongInt; hslValue: LongInt):LongInt;
     begin
@@ -1435,8 +1611,13 @@ implementation
   /// </param>
   /// <param name="delay">
   ///   transition duration in ms
-  ///   On failure, throws an exception or returns a negative error code.
   /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
   function TYColorLedCluster.rgb_move(ledIndex: LongInt; count: LongInt; rgbValue: LongInt; delay: LongInt):LongInt;
     begin
@@ -1468,8 +1649,13 @@ implementation
   /// </param>
   /// <param name="delay">
   ///   transition duration in ms
-  ///   On failure, throws an exception or returns a negative error code.
   /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
   function TYColorLedCluster.hsl_move(ledIndex: LongInt; count: LongInt; hslValue: LongInt; delay: LongInt):LongInt;
     begin
@@ -1484,7 +1670,7 @@ implementation
   /// <para>
   ///   A sequence is a transition list, which can
   ///   be executed in loop by a group of LEDs.  Sequences are persistent and are saved
-  ///   in the device flash memory as soon as the module <c>saveToFlash()</c> method is called.
+  ///   in the device flash memory as soon as the <c>saveBlinkSeq()</c> method is called.
   /// </para>
   /// </summary>
   /// <param name="seqIndex">
@@ -1495,8 +1681,13 @@ implementation
   /// </param>
   /// <param name="delay">
   ///   transition duration in ms
-  ///   On failure, throws an exception or returns a negative error code.
   /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
   function TYColorLedCluster.addRgbMoveToBlinkSeq(seqIndex: LongInt; rgbValue: LongInt; delay: LongInt):LongInt;
     begin
@@ -1511,7 +1702,7 @@ implementation
   /// <para>
   ///   A sequence is a transition list, which can
   ///   be executed in loop by an group of LEDs.  Sequences are persistant and are saved
-  ///   in the device flash memory as soon as the module <c>saveToFlash()</c> method is called.
+  ///   in the device flash memory as soon as the <c>saveBlinkSeq()</c> method is called.
   /// </para>
   /// </summary>
   /// <param name="seqIndex">
@@ -1522,8 +1713,13 @@ implementation
   /// </param>
   /// <param name="delay">
   ///   transition duration in ms
-  ///   On failure, throws an exception or returns a negative error code.
   /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
   function TYColorLedCluster.addHslMoveToBlinkSeq(seqIndex: LongInt; hslValue: LongInt; delay: LongInt):LongInt;
     begin
@@ -1545,8 +1741,13 @@ implementation
   /// </summary>
   /// <param name="seqIndex">
   ///   sequence index.
-  ///   On failure, throws an exception or returns a negative error code.
   /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
   function TYColorLedCluster.addMirrorToBlinkSeq(seqIndex: LongInt):LongInt;
     begin
@@ -1576,8 +1777,13 @@ implementation
   /// </param>
   /// <param name="offset">
   ///   execution offset in ms.
-  ///   On failure, throws an exception or returns a negative error code.
   /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
   function TYColorLedCluster.linkLedToBlinkSeq(ledIndex: LongInt; count: LongInt; seqIndex: LongInt; offset: LongInt):LongInt;
     begin
@@ -1591,7 +1797,7 @@ implementation
   ///   Links adjacent LEDs to a specific sequence at device poweron.
   /// <para>
   ///   Don't forget to configure
-  ///   the sequence auto start flag as well and call saveLedsState. It is possible to add an offset
+  ///   the sequence auto start flag as well and call <c>saveLedsConfigAtPowerOn()</c>. It is possible to add an offset
   ///   in the execution: that way we  can have several groups of LEDs executing the same
   ///   sequence, with a  temporal offset. A LED cannot be linked to more than one sequence.
   /// </para>
@@ -1607,8 +1813,13 @@ implementation
   /// </param>
   /// <param name="offset">
   ///   execution offset in ms.
-  ///   On failure, throws an exception or returns a negative error code.
   /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
   function TYColorLedCluster.linkLedToBlinkSeqAtPowerOn(ledIndex: LongInt; count: LongInt; seqIndex: LongInt; offset: LongInt):LongInt;
     begin
@@ -1638,8 +1849,13 @@ implementation
   /// </param>
   /// <param name="periods">
   ///   number of periods to show on LEDs.
-  ///   On failure, throws an exception or returns a negative error code.
   /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
   function TYColorLedCluster.linkLedToPeriodicBlinkSeq(ledIndex: LongInt; count: LongInt; seqIndex: LongInt; periods: LongInt):LongInt;
     begin
@@ -1659,8 +1875,13 @@ implementation
   /// </param>
   /// <param name="count">
   ///   affected LED count.
-  ///   On failure, throws an exception or returns a negative error code.
   /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
   function TYColorLedCluster.unlinkLedFromBlinkSeq(ledIndex: LongInt; count: LongInt):LongInt;
     begin
@@ -1678,8 +1899,13 @@ implementation
   /// </summary>
   /// <param name="seqIndex">
   ///   index of the sequence to start.
-  ///   On failure, throws an exception or returns a negative error code.
   /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
   function TYColorLedCluster.startBlinkSeq(seqIndex: LongInt):LongInt;
     begin
@@ -1698,8 +1924,13 @@ implementation
   /// </summary>
   /// <param name="seqIndex">
   ///   index of the sequence to stop.
-  ///   On failure, throws an exception or returns a negative error code.
   /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
   function TYColorLedCluster.stopBlinkSeq(seqIndex: LongInt):LongInt;
     begin
@@ -1718,8 +1949,13 @@ implementation
   /// </summary>
   /// <param name="seqIndex">
   ///   index of the sequence to reset
-  ///   On failure, throws an exception or returns a negative error code.
   /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
   function TYColorLedCluster.resetBlinkSeq(seqIndex: LongInt):LongInt;
     begin
@@ -1733,21 +1969,26 @@ implementation
   ///   Configures a sequence to make it start automatically at device
   ///   startup.
   /// <para>
-  ///   Don't forget to call  saveLedsState() to make sure the
+  ///   Don't forget to call <c>saveBlinkSeq()</c> to make sure the
   ///   modification is saved in the device flash memory.
   /// </para>
   /// </summary>
   /// <param name="seqIndex">
-  ///   index of the sequence to reset
+  ///   index of the sequence to reset.
   /// </param>
   /// <param name="autostart">
-  ///   boolean telling if the sequence must start automatically or not.
-  ///   On failure, throws an exception or returns a negative error code.
+  ///   0 to keep the sequence turned off and 1 to start it automatically.
   /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
-  function TYColorLedCluster.set_blinkSeqAutoStart(seqIndex: LongInt; autostart: boolean):LongInt;
+  function TYColorLedCluster.set_blinkSeqStateAtPowerOn(seqIndex: LongInt; autostart: LongInt):LongInt;
     begin
-      result := self.sendCommand('AS'+inttostr(seqIndex)+','+_yapiBoolToStr(autostart));
+      result := self.sendCommand('AS'+inttostr(seqIndex)+','+inttostr(autostart));
       exit;
     end;
 
@@ -1766,8 +2007,13 @@ implementation
   /// </param>
   /// <param name="speed">
   ///   sequence running speed (-1000...1000).
-  ///   On failure, throws an exception or returns a negative error code.
   /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
   function TYColorLedCluster.set_blinkSeqSpeed(seqIndex: LongInt; speed: LongInt):LongInt;
     begin
@@ -1778,16 +2024,49 @@ implementation
 
   ////
   /// <summary>
-  ///   Saves the cluster power-on configuration, this includes
-  ///   LED start-up colors, sequence steps and sequence auto-start flags.
+  ///   Saves the LEDs power-on configuration.
+  /// <para>
+  ///   This includes the start-up color or
+  ///   sequence binding for all LEDs. Warning: if some LEDs are linked to a sequence, the
+  ///   method <c>saveBlinkSeq()</c> must also be called to save the sequence definition.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns a negative error code.
   /// </para>
-  /// </summary>
   ///-
-  function TYColorLedCluster.saveLedsState():LongInt;
+  function TYColorLedCluster.saveLedsConfigAtPowerOn():LongInt;
     begin
-      result := self.sendCommand('SL');
+      result := self.sendCommand('WL');
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Saves the definition of a sequence.
+  /// <para>
+  ///   Warning: only sequence steps and flags are saved.
+  ///   to save the LEDs startup bindings, the method <c>saveLedsConfigAtPowerOn()</c>
+  ///   must be called.
+  /// </para>
+  /// </summary>
+  /// <param name="seqIndex">
+  ///   index of the sequence to start.
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYColorLedCluster.saveBlinkSeq(seqIndex: LongInt):LongInt;
+    begin
+      result := self.sendCommand('WS'+inttostr(seqIndex));
       exit;
     end;
 
@@ -1796,21 +2075,26 @@ implementation
   /// <summary>
   ///   Sends a binary buffer to the LED RGB buffer, as is.
   /// <para>
-  ///   First three bytes are RGB components for first LED, the
-  ///   next three bytes for the second LED, etc.
+  ///   First three bytes are RGB components for LED specified as parameter, the
+  ///   next three bytes for the next LED, etc.
   /// </para>
   /// </summary>
+  /// <param name="ledIndex">
+  ///   index of the first LED which should be updated
+  /// </param>
   /// <param name="buff">
   ///   the binary buffer to send
   /// </param>
   /// <returns>
   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
   /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
-  function TYColorLedCluster.set_rgbBuffer(buff: TByteArray):LongInt;
+  function TYColorLedCluster.set_rgbColorBuffer(ledIndex: LongInt; buff: TByteArray):LongInt;
     begin
-      result := self._upload('rgb:0', buff);
+      result := self._upload('rgb:0:'+inttostr(ledIndex), buff);
       exit;
     end;
 
@@ -1819,19 +2103,24 @@ implementation
   /// <summary>
   ///   Sends 24bit RGB colors (provided as a list of integers) to the LED RGB buffer, as is.
   /// <para>
-  ///   The first number represents the RGB value of the first LED, the second number represents
-  ///   the RGB value of the second LED, etc.
+  ///   The first number represents the RGB value of the LED specified as parameter, the second
+  ///   number represents the RGB value of the next LED, etc.
   /// </para>
   /// </summary>
+  /// <param name="ledIndex">
+  ///   index of the first LED which should be updated
+  /// </param>
   /// <param name="rgbList">
   ///   a list of 24bit RGB codes, in the form 0xRRGGBB
   /// </param>
   /// <returns>
   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
   /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
-  function TYColorLedCluster.set_rgbArray(rgbList: TLongIntArray):LongInt;
+  function TYColorLedCluster.set_rgbColorArray(ledIndex: LongInt; rgbList: TLongIntArray):LongInt;
     var
       listlen : LongInt;
       buff : TByteArray;
@@ -1851,7 +2140,7 @@ implementation
           idx := idx + 1;
         end;
       // may throw an exception
-      res := self._upload('rgb:0', buff);
+      res := self._upload('rgb:0:'+inttostr(ledIndex), buff);
       result := res;
       exit;
     end;
@@ -1863,7 +2152,7 @@ implementation
   ///   color codes.
   /// <para>
   ///   The first color code represents the target RGB value of the first LED,
-  ///   the second color code represents the target value of the second LED, etc.
+  ///   the next color code represents the target value of the next LED, etc.
   /// </para>
   /// </summary>
   /// <param name="rgbList">
@@ -1874,8 +2163,10 @@ implementation
   /// </param>
   /// <returns>
   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
   /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
   function TYColorLedCluster.rgbArray_move(rgbList: TLongIntArray; delay: LongInt):LongInt;
     var
@@ -1907,21 +2198,26 @@ implementation
   /// <summary>
   ///   Sends a binary buffer to the LED HSL buffer, as is.
   /// <para>
-  ///   First three bytes are HSL components for first LED, the
+  ///   First three bytes are HSL components for the LED specified as parameter, the
   ///   next three bytes for the second LED, etc.
   /// </para>
   /// </summary>
+  /// <param name="ledIndex">
+  ///   index of the first LED which should be updated
+  /// </param>
   /// <param name="buff">
   ///   the binary buffer to send
   /// </param>
   /// <returns>
   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
   /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
-  function TYColorLedCluster.set_hslBuffer(buff: TByteArray):LongInt;
+  function TYColorLedCluster.set_hslColorBuffer(ledIndex: LongInt; buff: TByteArray):LongInt;
     begin
-      result := self._upload('hsl:0', buff);
+      result := self._upload('hsl:0:'+inttostr(ledIndex), buff);
       exit;
     end;
 
@@ -1930,19 +2226,24 @@ implementation
   /// <summary>
   ///   Sends 24bit HSL colors (provided as a list of integers) to the LED HSL buffer, as is.
   /// <para>
-  ///   The first number represents the HSL value of the first LED, the second number represents
+  ///   The first number represents the HSL value of the LED specified as parameter, the second number represents
   ///   the HSL value of the second LED, etc.
   /// </para>
   /// </summary>
+  /// <param name="ledIndex">
+  ///   index of the first LED which should be updated
+  /// </param>
   /// <param name="hslList">
   ///   a list of 24bit HSL codes, in the form 0xHHSSLL
   /// </param>
   /// <returns>
   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
   /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
-  function TYColorLedCluster.set_hslArray(hslList: TLongIntArray):LongInt;
+  function TYColorLedCluster.set_hslColorArray(ledIndex: LongInt; hslList: TLongIntArray):LongInt;
     var
       listlen : LongInt;
       buff : TByteArray;
@@ -1962,7 +2263,7 @@ implementation
           idx := idx + 1;
         end;
       // may throw an exception
-      res := self._upload('hsl:0', buff);
+      res := self._upload('hsl:0:'+inttostr(ledIndex), buff);
       result := res;
       exit;
     end;
@@ -1985,8 +2286,10 @@ implementation
   /// </param>
   /// <returns>
   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
   /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
   ///-
   function TYColorLedCluster.hslArray_move(hslList: TLongIntArray; delay: LongInt):LongInt;
     var
@@ -2030,8 +2333,10 @@ implementation
   /// </param>
   /// <returns>
   ///   a binary buffer with RGB components of selected LEDs.
-  ///   On failure, throws an exception or returns an empty binary buffer.
   /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns an empty binary buffer.
+  /// </para>
   ///-
   function TYColorLedCluster.get_rgbColorBuffer(ledIndex: LongInt; count: LongInt):TByteArray;
     begin
@@ -2057,8 +2362,10 @@ implementation
   /// </param>
   /// <returns>
   ///   a list of 24bit color codes with RGB components of selected LEDs, as 0xRRGGBB.
-  ///   On failure, throws an exception or returns an empty array.
   /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns an empty array.
+  /// </para>
   ///-
   function TYColorLedCluster.get_rgbColorArray(ledIndex: LongInt; count: LongInt):TLongIntArray;
     var
@@ -2106,8 +2413,10 @@ implementation
   /// </param>
   /// <returns>
   ///   a list of 24bit color codes with RGB components of selected LEDs, as 0xRRGGBB.
-  ///   On failure, throws an exception or returns an empty array.
   /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns an empty array.
+  /// </para>
   ///-
   function TYColorLedCluster.get_rgbColorArrayAtPowerOn(ledIndex: LongInt; count: LongInt):TLongIntArray;
     var
@@ -2156,8 +2465,10 @@ implementation
   /// </param>
   /// <returns>
   ///   a list of integers with sequence index
-  ///   On failure, throws an exception or returns an empty array.
   /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns an empty array.
+  /// </para>
   ///-
   function TYColorLedCluster.get_linkedSeqArray(ledIndex: LongInt; count: LongInt):TLongIntArray;
     var
@@ -2201,8 +2512,10 @@ implementation
   /// </param>
   /// <returns>
   ///   a list of 32 bit integer signatures
-  ///   On failure, throws an exception or returns an empty array.
   /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns an empty array.
+  /// </para>
   ///-
   function TYColorLedCluster.get_blinkSeqSignatures(seqIndex: LongInt; count: LongInt):TLongIntArray;
     var
@@ -2250,8 +2563,10 @@ implementation
   /// </param>
   /// <returns>
   ///   a list of integers, 0 for sequences turned off and 1 for sequences running
-  ///   On failure, throws an exception or returns an empty array.
   /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns an empty array.
+  /// </para>
   ///-
   function TYColorLedCluster.get_blinkSeqStateSpeed(seqIndex: LongInt; count: LongInt):TLongIntArray;
     var
@@ -2295,8 +2610,10 @@ implementation
   /// </param>
   /// <returns>
   ///   a list of integers, 0 for sequences turned off and 1 for sequences running
-  ///   On failure, throws an exception or returns an empty array.
   /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns an empty array.
+  /// </para>
   ///-
   function TYColorLedCluster.get_blinkSeqStateAtPowerOn(seqIndex: LongInt; count: LongInt):TLongIntArray;
     var
@@ -2338,8 +2655,10 @@ implementation
   /// </param>
   /// <returns>
   ///   a list of integers, 0 for sequences turned off and 1 for sequences running
-  ///   On failure, throws an exception or returns an empty array.
   /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns an empty array.
+  /// </para>
   ///-
   function TYColorLedCluster.get_blinkSeqState(seqIndex: LongInt; count: LongInt):TLongIntArray;
     var
