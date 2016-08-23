@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_compass.pas 23240 2016-02-23 14:10:10Z seb $
+ * $Id: yocto_compass.pas 24934 2016-06-30 22:32:01Z mvuilleu $
  *
  * Implements yFindCompass(), the high-level API for Compass functions
  *
@@ -47,6 +47,7 @@ uses
 
 //--- (YCompass definitions)
 
+const Y_BANDWIDTH_INVALID             = YAPI_INVALID_INT;
 const Y_AXIS_X = 0;
 const Y_AXIS_Y = 1;
 const Y_AXIS_Z = 2;
@@ -95,6 +96,7 @@ type
     _calibrationParam         : string;
     _resolution               : double;
     _sensorState              : LongInt;
+    _bandwidth                : LongInt;
     _axis                     : Integer;
     _magneticHeading          : double;
     _valueCallbackCompass     : TYCompassValueCallback;
@@ -107,6 +109,47 @@ type
   public
     //--- (YCompass accessors declaration)
     constructor Create(func:string);
+
+    ////
+    /// <summary>
+    ///   Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_BANDWIDTH_INVALID</c>.
+    /// </para>
+    ///-
+    function get_bandwidth():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+    /// <para>
+    ///   When the
+    ///   frequency is lower, the device performs averaging.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_bandwidth(newval:LongInt):integer;
 
     function get_axis():Integer;
 
@@ -312,6 +355,7 @@ implementation
       inherited Create(func);
       _className := 'Compass';
       //--- (YCompass accessors initialization)
+      _bandwidth := Y_BANDWIDTH_INVALID;
       _axis := Y_AXIS_INVALID;
       _magneticHeading := Y_MAGNETICHEADING_INVALID;
       _valueCallbackCompass := nil;
@@ -327,6 +371,12 @@ implementation
       sub : PJSONRECORD;
       i,l        : integer;
     begin
+      if (member^.name = 'bandwidth') then
+        begin
+          _bandwidth := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
       if (member^.name = 'axis') then
         begin
           _axis := integer(member^.ivalue);
@@ -342,6 +392,66 @@ implementation
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
+
+  ////
+  /// <summary>
+  ///   Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+  /// </para>
+  ///-
+  function TYCompass.get_bandwidth():LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_BANDWIDTH_INVALID;
+              exit;
+            end;
+        end;
+      result := self._bandwidth;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+  /// <para>
+  ///   When the
+  ///   frequency is lower, the device performs averaging.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYCompass.set_bandwidth(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('bandwidth',rest_val);
+    end;
 
   function TYCompass.get_axis():Integer;
     begin

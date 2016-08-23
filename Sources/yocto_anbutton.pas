@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_anbutton.pas 23240 2016-02-23 14:10:10Z seb $
+ * $Id: yocto_anbutton.pas 24849 2016-06-17 15:21:23Z seb $
  *
  * Implements yFindAnButton(), the high-level API for AnButton functions
  *
@@ -380,6 +380,9 @@ type
     /// <summary>
     ///   Returns the pulse counter value.
     /// <para>
+    ///   The value is a 32 bit integer. In case
+    ///   of overflow (>=2^32), the counter will wrap. To reset the counter, just
+    ///   call the resetCounter() method.
     /// </para>
     /// <para>
     /// </para>
@@ -1091,6 +1094,9 @@ implementation
   /// <summary>
   ///   Returns the pulse counter value.
   /// <para>
+  ///   The value is a 32 bit integer. In case
+  ///   of overflow (>=2^32), the counter will wrap. To reset the counter, just
+  ///   call the resetCounter() method.
   /// </para>
   /// <para>
   /// </para>

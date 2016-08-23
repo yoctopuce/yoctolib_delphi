@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 23780 2016-04-06 10:27:21Z seb $
+ * $Id: yocto_serialport.pas 25248 2016-08-22 15:51:04Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -109,6 +109,8 @@ type
     _serialMode               : string;
     _valueCallbackSerialPort  : TYSerialPortValueCallback;
     _rxptr                    : LongInt;
+    _rxbuff                   : TByteArray;
+    _rxbuffptr                : LongInt;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
 
@@ -1345,6 +1347,7 @@ implementation
       _serialMode := Y_SERIALMODE_INVALID;
       _valueCallbackSerialPort := nil;
       _rxptr := 0;
+      _rxbuffptr := 0;
       //--- (end of YSerialPort accessors initialization)
     end;
 
@@ -2108,6 +2111,8 @@ implementation
   function TYSerialPort.reset():LongInt;
     begin
       self._rxptr := 0;
+      self._rxbuffptr := 0;
+      setlength(self._rxbuff,0);
       // may throw an exception
       result := self.sendCommand('Z');
       exit;
@@ -2369,12 +2374,55 @@ implementation
   ///-
   function TYSerialPort.readByte():LongInt;
     var
+      currpos : LongInt;
+      reqlen : LongInt;
       buff : TByteArray;
       bufflen : LongInt;
       mult : LongInt;
       endpos : LongInt;
       res : LongInt;
     begin
+      bufflen := length(self._rxbuff);
+      if (self._rxptr >= self._rxbuffptr) and(self._rxptr < self._rxbuffptr+bufflen) then
+        begin
+          res := self._rxbuff[self._rxptr-self._rxbuffptr];
+          self._rxptr := self._rxptr + 1;
+          result := res;
+          exit;
+        end;
+      
+      // try to preload more than one byte to speed-up byte-per-byte access
+      currpos := self._rxptr;
+      reqlen := 1024;
+      buff := self.readBin(reqlen);
+      bufflen := length(buff);
+      if self._rxptr = currpos+bufflen then
+        begin
+          res := buff[0];
+          self._rxptr := currpos+1;
+          self._rxbuffptr := currpos;
+          self._rxbuff := buff;
+          result := res;
+          exit;
+        end;
+      // mixed bidirectional data, retry with a smaller block
+      self._rxptr := currpos;
+      reqlen := 16;
+      buff := self.readBin(reqlen);
+      bufflen := length(buff);
+      if self._rxptr = currpos+bufflen then
+        begin
+          res := buff[0];
+          self._rxptr := currpos+1;
+          self._rxbuffptr := currpos;
+          self._rxbuff := buff;
+          result := res;
+          exit;
+        end;
+      // still mixed, need to process character by character
+      self._rxptr := currpos;
+      
+      // may throw an exception
       buff := self._download('rxdata.bin?pos='+inttostr(self._rxptr)+'&len=1');
       bufflen := length(buff) - 1;
       endpos := 0;
@@ -3667,10 +3715,6 @@ implementation
       pdu_pos : LongInt;
     begin
       res := 0;
-      if value <> 0 then
-        begin
-          value := $0ff;
-        end;
       pdu_pos := length(pdu);
       SetLength(pdu, pdu_pos+5);;
       pdu[pdu_pos] := $006;

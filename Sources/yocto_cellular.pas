@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 24622 2016-05-27 12:51:52Z mvuilleu $
+ * $Id: yocto_cellular.pas 24921 2016-06-29 13:15:24Z mvuilleu $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -67,6 +67,7 @@ const Y_AIRPLANEMODE_INVALID = -1;
 const Y_ENABLEDATA_HOMENETWORK = 0;
 const Y_ENABLEDATA_ROAMING = 1;
 const Y_ENABLEDATA_NEVER = 2;
+const Y_ENABLEDATA_NEUTRALITY = 3;
 const Y_ENABLEDATA_INVALID = -1;
 const Y_APN_INVALID                   = YAPI_INVALID_STRING;
 const Y_APNSECRET_INVALID             = YAPI_INVALID_STRING;
@@ -391,8 +392,9 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_ENABLEDATA_HOMENETWORK</c>, <c>Y_ENABLEDATA_ROAMING</c> and
-    ///   <c>Y_ENABLEDATA_NEVER</c> corresponding to the condition for enabling IP data services (GPRS)
+    ///   a value among <c>Y_ENABLEDATA_HOMENETWORK</c>, <c>Y_ENABLEDATA_ROAMING</c>,
+    ///   <c>Y_ENABLEDATA_NEVER</c> and <c>Y_ENABLEDATA_NEUTRALITY</c> corresponding to the condition for
+    ///   enabling IP data services (GPRS)
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_ENABLEDATA_INVALID</c>.
@@ -415,8 +417,9 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>Y_ENABLEDATA_HOMENETWORK</c>, <c>Y_ENABLEDATA_ROAMING</c> and
-    ///   <c>Y_ENABLEDATA_NEVER</c> corresponding to the condition for enabling IP data services (GPRS)
+    ///   a value among <c>Y_ENABLEDATA_HOMENETWORK</c>, <c>Y_ENABLEDATA_ROAMING</c>,
+    ///   <c>Y_ENABLEDATA_NEVER</c> and <c>Y_ENABLEDATA_NEUTRALITY</c> corresponding to the condition for
+    ///   enabling IP data services (GPRS)
     /// </param>
     /// <para>
     /// </para>
@@ -1470,8 +1473,8 @@ implementation
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a value among Y_ENABLEDATA_HOMENETWORK, Y_ENABLEDATA_ROAMING and Y_ENABLEDATA_NEVER corresponding
-  ///   to the condition for enabling IP data services (GPRS)
+  ///   a value among Y_ENABLEDATA_HOMENETWORK, Y_ENABLEDATA_ROAMING, Y_ENABLEDATA_NEVER and
+  ///   Y_ENABLEDATA_NEUTRALITY corresponding to the condition for enabling IP data services (GPRS)
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_ENABLEDATA_INVALID.
@@ -1507,8 +1510,8 @@ implementation
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   a value among Y_ENABLEDATA_HOMENETWORK, Y_ENABLEDATA_ROAMING and Y_ENABLEDATA_NEVER corresponding
-  ///   to the condition for enabling IP data services (GPRS)
+  ///   a value among Y_ENABLEDATA_HOMENETWORK, Y_ENABLEDATA_ROAMING, Y_ENABLEDATA_NEVER and
+  ///   Y_ENABLEDATA_NEUTRALITY corresponding to the condition for enabling IP data services (GPRS)
   /// </param>
   /// <para>
   /// </para>

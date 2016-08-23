@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_gyro.pas 22695 2016-01-12 23:13:53Z seb $
+ * $Id: yocto_gyro.pas 24948 2016-07-01 20:57:28Z mvuilleu $
  *
  * Implements yFindGyro(), the high-level API for Gyro functions
  *
@@ -53,6 +53,7 @@ uses
 
 //--- (generated code: YGyro definitions)
 
+const Y_BANDWIDTH_INVALID             = YAPI_INVALID_INT;
 const Y_XVALUE_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_YVALUE_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_ZVALUE_INVALID                = YAPI_INVALID_DOUBLE;
@@ -322,6 +323,7 @@ type
     _calibrationParam         : string;
     _resolution               : double;
     _sensorState              : LongInt;
+    _bandwidth                : LongInt;
     _xValue                   : double;
     _yValue                   : double;
     _zValue                   : double;
@@ -350,6 +352,47 @@ type
   public
     //--- (generated code: YGyro accessors declaration)
     constructor Create(func:string);
+
+    ////
+    /// <summary>
+    ///   Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_BANDWIDTH_INVALID</c>.
+    /// </para>
+    ///-
+    function get_bandwidth():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+    /// <para>
+    ///   When the
+    ///   frequency is lower, the device performs averaging.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_bandwidth(newval:LongInt):integer;
 
     ////
     /// <summary>
@@ -1048,6 +1091,7 @@ constructor TYQt.Create(func:string);
       inherited Create(func);
       _className := 'Gyro';
       //--- (generated code: YGyro accessors initialization)
+      _bandwidth := Y_BANDWIDTH_INVALID;
       _xValue := Y_XVALUE_INVALID;
       _yValue := Y_YVALUE_INVALID;
       _zValue := Y_ZVALUE_INVALID;
@@ -1073,6 +1117,12 @@ constructor TYQt.Create(func:string);
       sub : PJSONRECORD;
       i,l        : integer;
     begin
+      if (member^.name = 'bandwidth') then
+        begin
+          _bandwidth := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
       if (member^.name = 'xValue') then
         begin
           _xValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
@@ -1094,6 +1144,66 @@ constructor TYQt.Create(func:string);
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
+
+  ////
+  /// <summary>
+  ///   Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+  /// </para>
+  ///-
+  function TYGyro.get_bandwidth():LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_BANDWIDTH_INVALID;
+              exit;
+            end;
+        end;
+      result := self._bandwidth;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+  /// <para>
+  ///   When the
+  ///   frequency is lower, the device performs averaging.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYGyro.set_bandwidth(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('bandwidth',rest_val);
+    end;
 
   ////
   /// <summary>
@@ -1434,14 +1544,14 @@ constructor TYQt.Create(func:string);
           if delta > 0.499 * norm then
             begin
               self._pitch := 90.0;
-              self._head  := round(2.0 * 1800.0/PI * ArcTan2(self._x,self._w)) / 10.0;
+              self._head  := round(2.0 * 1800.0/PI * ArcTan2(self._x,-self._w)) / 10.0;
             end
           else
             begin
               if delta < -0.499 * norm then
                 begin
                   self._pitch := -90.0;
-                  self._head  := round(-2.0 * 1800.0/PI * ArcTan2(self._x,self._w)) / 10.0;
+                  self._head  := round(-2.0 * 1800.0/PI * ArcTan2(self._x,-self._w)) / 10.0;
                 end
               else
                 begin

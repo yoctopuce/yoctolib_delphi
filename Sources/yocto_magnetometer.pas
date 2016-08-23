@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_magnetometer.pas 23240 2016-02-23 14:10:10Z seb $
+ * $Id: yocto_magnetometer.pas 24934 2016-06-30 22:32:01Z mvuilleu $
  *
  * Implements yFindMagnetometer(), the high-level API for Magnetometer functions
  *
@@ -47,6 +47,7 @@ uses
 
 //--- (YMagnetometer definitions)
 
+const Y_BANDWIDTH_INVALID             = YAPI_INVALID_INT;
 const Y_XVALUE_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_YVALUE_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_ZVALUE_INVALID                = YAPI_INVALID_DOUBLE;
@@ -93,6 +94,7 @@ type
     _calibrationParam         : string;
     _resolution               : double;
     _sensorState              : LongInt;
+    _bandwidth                : LongInt;
     _xValue                   : double;
     _yValue                   : double;
     _zValue                   : double;
@@ -106,6 +108,47 @@ type
   public
     //--- (YMagnetometer accessors declaration)
     constructor Create(func:string);
+
+    ////
+    /// <summary>
+    ///   Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_BANDWIDTH_INVALID</c>.
+    /// </para>
+    ///-
+    function get_bandwidth():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+    /// <para>
+    ///   When the
+    ///   frequency is lower, the device performs averaging.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_bandwidth(newval:LongInt):integer;
 
     ////
     /// <summary>
@@ -343,6 +386,7 @@ implementation
       inherited Create(func);
       _className := 'Magnetometer';
       //--- (YMagnetometer accessors initialization)
+      _bandwidth := Y_BANDWIDTH_INVALID;
       _xValue := Y_XVALUE_INVALID;
       _yValue := Y_YVALUE_INVALID;
       _zValue := Y_ZVALUE_INVALID;
@@ -359,6 +403,12 @@ implementation
       sub : PJSONRECORD;
       i,l        : integer;
     begin
+      if (member^.name = 'bandwidth') then
+        begin
+          _bandwidth := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
       if (member^.name = 'xValue') then
         begin
           _xValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
@@ -380,6 +430,66 @@ implementation
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
+
+  ////
+  /// <summary>
+  ///   Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
+  /// </para>
+  ///-
+  function TYMagnetometer.get_bandwidth():LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_BANDWIDTH_INVALID;
+              exit;
+            end;
+        end;
+      result := self._bandwidth;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+  /// <para>
+  ///   When the
+  ///   frequency is lower, the device performs averaging.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYMagnetometer.set_bandwidth(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('bandwidth',rest_val);
+    end;
 
   ////
   /// <summary>

@@ -140,7 +140,7 @@ Procedure TForm1.refresh();
    ok        : boolean;
    iconindex : integer;
  begin
-   ok:=false;
+   ok:=true;
    module:=nil;
    iconindex := 0;
    if  (not(combobox1.enabled) or (combobox1.itemindex<0)) then

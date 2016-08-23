@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_refframe.pas 23240 2016-02-23 14:10:10Z seb $
+ * $Id: yocto_refframe.pas 24943 2016-07-01 14:02:25Z seb $
  *
  * Implements yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -85,6 +85,7 @@ type
     _bearing                  : double;
     _calibrationParam         : string;
     _valueCallbackRefFrame    : TYRefFrameValueCallback;
+    _calibV2                  : boolean;
     _calibStage               : LongInt;
     _calibStageHint           : string;
     _calibStageProgress       : LongInt;
@@ -334,6 +335,51 @@ type
     ///-
     function set_mountPosition(position: TYMOUNTPOSITION; orientation: TYMOUNTORIENTATION):LongInt; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the 3D sensor calibration state (Yocto-3D-V2 only).
+    /// <para>
+    ///   This function returns
+    ///   an integer representing the calibration state of the 3 inertial sensors of
+    ///   the BNO055 chip, found in the Yocto-3D-V2. Hundredths show the calibration state
+    ///   of the accelerometer, tenths show the calibration state of the magnetometer while
+    ///   units show the calibration state of the gyroscope. For each sensor, the value 0
+    ///   means no calibration and the value 3 means full calibration.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer representing the calibration state of Yocto-3D-V2:
+    ///   333 when fully calibrated, 0 when not calibrated at all.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    ///   For the Yocto-3D (V1), this function always return -3 (unsupported function).
+    /// </para>
+    ///-
+    function get_calibrationState():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns estimated quality of the orientation (Yocto-3D-V2 only).
+    /// <para>
+    ///   This function returns
+    ///   an integer between 0 and 3 representing the degree of confidence of the position
+    ///   estimate. When the value is 3, the estimation is reliable. Below 3, one should
+    ///   expect sudden corrections, in particular for heading (<c>compass</c> function).
+    ///   The most frequent causes for values below 3 are magnetic interferences, and
+    ///   accelerations or rotations beyond the sensor range.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer between 0 and 3 (3 when the measure is reliable)
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    ///   For the Yocto-3D (V1), this function always return -3 (unsupported function).
+    /// </para>
+    ///-
+    function get_measureQuality():LongInt; overload; virtual;
+
     function _calibSort(start: LongInt; stopidx: LongInt):LongInt; overload; virtual;
 
     ////
@@ -376,6 +422,10 @@ type
     /// </summary>
     ///-
     function more3DCalibration():LongInt; overload; virtual;
+
+    function more3DCalibrationV1():LongInt; overload; virtual;
+
+    function more3DCalibrationV2():LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -455,6 +505,10 @@ type
     /// </summary>
     ///-
     function save3DCalibration():LongInt; overload; virtual;
+
+    function save3DCalibrationV1():LongInt; overload; virtual;
+
+    function save3DCalibrationV2():LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -963,6 +1017,89 @@ implementation
     end;
 
 
+  ////
+  /// <summary>
+  ///   Returns the 3D sensor calibration state (Yocto-3D-V2 only).
+  /// <para>
+  ///   This function returns
+  ///   an integer representing the calibration state of the 3 inertial sensors of
+  ///   the BNO055 chip, found in the Yocto-3D-V2. Hundredths show the calibration state
+  ///   of the accelerometer, tenths show the calibration state of the magnetometer while
+  ///   units show the calibration state of the gyroscope. For each sensor, the value 0
+  ///   means no calibration and the value 3 means full calibration.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer representing the calibration state of Yocto-3D-V2:
+  ///   333 when fully calibrated, 0 when not calibrated at all.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  ///   For the Yocto-3D (V1), this function always return -3 (unsupported function).
+  /// </para>
+  ///-
+  function TYRefFrame.get_calibrationState():LongInt;
+    var
+      calibParam : string;
+      iCalib : TLongIntArray;
+      caltyp : LongInt;
+      res : LongInt;
+    begin
+      calibParam := self.get_calibrationParam;
+      iCalib := _decodeFloats(calibParam);
+      caltyp := (iCalib[0] div 1000);
+      if caltyp <> 33 then
+        begin
+          result := YAPI_NOT_SUPPORTED;
+          exit;
+        end;
+      res := (iCalib[1] div 1000);
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns estimated quality of the orientation (Yocto-3D-V2 only).
+  /// <para>
+  ///   This function returns
+  ///   an integer between 0 and 3 representing the degree of confidence of the position
+  ///   estimate. When the value is 3, the estimation is reliable. Below 3, one should
+  ///   expect sudden corrections, in particular for heading (<c>compass</c> function).
+  ///   The most frequent causes for values below 3 are magnetic interferences, and
+  ///   accelerations or rotations beyond the sensor range.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer between 0 and 3 (3 when the measure is reliable)
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  ///   For the Yocto-3D (V1), this function always return -3 (unsupported function).
+  /// </para>
+  ///-
+  function TYRefFrame.get_measureQuality():LongInt;
+    var
+      calibParam : string;
+      iCalib : TLongIntArray;
+      caltyp : LongInt;
+      res : LongInt;
+    begin
+      calibParam := self.get_calibrationParam;
+      iCalib := _decodeFloats(calibParam);
+      caltyp := (iCalib[0] div 1000);
+      if caltyp <> 33 then
+        begin
+          result := YAPI_NOT_SUPPORTED;
+          exit;
+        end;
+      res := (iCalib[2] div 1000);
+      result := res;
+      exit;
+    end;
+
+
   function TYRefFrame._calibSort(start: LongInt; stopidx: LongInt):LongInt;
     var
       idx : LongInt;
@@ -1051,6 +1188,7 @@ implementation
           self.cancel3DCalibration;
         end;
       self._calibSavedParams := self.get_calibrationParam;
+      self._calibV2 := (_atoi(self._calibSavedParams) = 33);
       self.set_calibrationParam('0');
       self._calibCount := 50;
       self._calibStage := 1;
@@ -1090,6 +1228,18 @@ implementation
   /// </summary>
   ///-
   function TYRefFrame.more3DCalibration():LongInt;
+    begin
+      if self._calibV2 then
+        begin
+          result := self.more3DCalibrationV2;
+          exit;
+        end;
+      result := self.more3DCalibrationV1;
+      exit;
+    end;
+
+
+  function TYRefFrame.more3DCalibrationV1():LongInt;
     var
       currTick : LongInt;
       jsonData : TByteArray;
@@ -1350,6 +1500,83 @@ implementation
     end;
 
 
+  function TYRefFrame.more3DCalibrationV2():LongInt;
+    var
+      currTick : LongInt;
+      calibParam : TByteArray;
+      iCalib : TLongIntArray;
+      cal3 : LongInt;
+      calAcc : LongInt;
+      calMag : LongInt;
+      calGyr : LongInt;
+    begin
+      if self._calibStage = 0 then
+        begin
+          result := YAPI_INVALID_ARGUMENT;
+          exit;
+        end;
+      if self._calibProgress = 100 then
+        begin
+          result := YAPI_SUCCESS;
+          exit;
+        end;
+      // make sure we don't start before previous calibration is cleared
+      if self._calibStage = 1 then
+        begin
+          currTick := ((yGetTickCount) and ($07FFFFFFF));
+          currTick := ((currTick - self._calibPrevTick) and ($07FFFFFFF));
+          if currTick < 1600 then
+            begin
+              self._calibStageHint := 'Set down the device on a steady horizontal surface';
+              self._calibStageProgress = (currTick div 40);
+              self._calibProgress = 1;
+              result := YAPI_SUCCESS;
+              exit;
+            end;
+        end;
+      // may throw an exception
+      calibParam := self._download('api/refFrame/calibrationParam.txt');
+      iCalib := _decodeFloats(_ByteToString(calibParam));
+      cal3 := (iCalib[1] div 1000);
+      calAcc = (cal3 div 100);
+      calMag = (cal3 div 10) - 10*calAcc;
+      calGyr = ((cal3) Mod (10));
+      if calGyr < 3 then
+        begin
+          self._calibStageHint := 'Set down the device on a steady horizontal surface';
+          self._calibStageProgress = 40 + calGyr*20;
+          self._calibProgress = 4 + calGyr*2;
+        end
+      else
+        begin
+          self._calibStage = 2;
+          if calMag < 3 then
+            begin
+              self._calibStageHint := 'Slowly draw ''8'' shapes along the 3 axis';
+              self._calibStageProgress = 1 + calMag*33;
+              self._calibProgress = 10 + calMag*5;
+            end
+          else
+            begin
+              self._calibStage = 3;
+              if calAcc < 3 then
+                begin
+                  self._calibStageHint := 'Slowly turn the device, stopping at each 90 degrees';
+                  self._calibStageProgress = 1 + calAcc*33;
+                  self._calibProgress = 25 + calAcc*25;
+                end
+              else
+                begin
+                  self._calibStageProgress = 99;
+                  self._calibProgress = 100;
+                end;
+            end;
+        end;
+      result := YAPI_SUCCESS;
+      exit;
+    end;
+
+
   ////
   /// <summary>
   ///   Returns instructions to proceed to the tridimensional calibration initiated with
@@ -1457,6 +1684,18 @@ implementation
   /// </summary>
   ///-
   function TYRefFrame.save3DCalibration():LongInt;
+    begin
+      if self._calibV2 then
+        begin
+          result := self.save3DCalibrationV2;
+          exit;
+        end;
+      result := self.save3DCalibrationV1;
+      exit;
+    end;
+
+
+  function TYRefFrame.save3DCalibrationV1():LongInt;
     var
       shiftX : LongInt;
       shiftY : LongInt;
@@ -1539,6 +1778,13 @@ implementation
       newcalib := '5,'+inttostr( shiftX)+','+inttostr( shiftY)+','+inttostr( shiftZ)+','+inttostr( scaleLo)+','+inttostr(scaleHi);
       self._calibStage := 0;
       result := self.set_calibrationParam(newcalib);
+      exit;
+    end;
+
+
+  function TYRefFrame.save3DCalibrationV2():LongInt;
+    begin
+      result := self.set_calibrationParam('5,5,5,5,5,5');
       exit;
     end;
 

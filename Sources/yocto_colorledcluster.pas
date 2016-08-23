@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_colorledcluster.pas 24717 2016-06-03 16:09:53Z seb $
+ * $Id: yocto_colorledcluster.pas 24934 2016-06-30 22:32:01Z mvuilleu $
  *
  * Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -715,6 +715,8 @@ type
     /// </para>
     ///-
     function saveLedsConfigAtPowerOn():LongInt; overload; virtual;
+
+    function saveLedsState():LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -2039,6 +2041,13 @@ implementation
   /// </para>
   ///-
   function TYColorLedCluster.saveLedsConfigAtPowerOn():LongInt;
+    begin
+      result := self.sendCommand('WL');
+      exit;
+    end;
+
+
+  function TYColorLedCluster.saveLedsState():LongInt;
     begin
       result := self.sendCommand('WL');
       exit;
