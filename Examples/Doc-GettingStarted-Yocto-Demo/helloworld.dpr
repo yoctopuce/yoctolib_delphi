@@ -74,5 +74,6 @@ begin
       '1' : setLedState(led,true);
     end;
   until c='x';
+  yFreeAPI();
 
 end.

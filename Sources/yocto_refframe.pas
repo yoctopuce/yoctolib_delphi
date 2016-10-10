@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_refframe.pas 24943 2016-07-01 14:02:25Z seb $
+ * $Id: yocto_refframe.pas 25275 2016-08-24 13:42:24Z mvuilleu $
  *
  * Implements yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -46,8 +46,8 @@ uses
   sysutils, classes, windows, yocto_api, yjson;
 
 //--- (YRefFrame definitions)
-type  TYMOUNTPOSITION = (Y_MOUNTPOSITION_BOTTOM,Y_MOUNTPOSITION_TOP,Y_MOUNTPOSITION_FRONT,Y_MOUNTPOSITION_REAR,Y_MOUNTPOSITION_RIGHT,Y_MOUNTPOSITION_LEFT);
-type  TYMOUNTORIENTATION = (Y_MOUNTORIENTATION_TWELVE,Y_MOUNTORIENTATION_THREE,Y_MOUNTORIENTATION_SIX,Y_MOUNTORIENTATION_NINE);
+type  TYMOUNTPOSITION = (Y_MOUNTPOSITION_BOTTOM,Y_MOUNTPOSITION_TOP,Y_MOUNTPOSITION_FRONT,Y_MOUNTPOSITION_REAR,Y_MOUNTPOSITION_RIGHT,Y_MOUNTPOSITION_LEFT,Y_MOUNTPOSITION_INVALID);
+type  TYMOUNTORIENTATION = (Y_MOUNTORIENTATION_TWELVE,Y_MOUNTORIENTATION_THREE,Y_MOUNTORIENTATION_SIX,Y_MOUNTORIENTATION_NINE,Y_MOUNTORIENTATION_INVALID);
 
 const Y_MOUNTPOS_INVALID              = YAPI_INVALID_UINT;
 const Y_BEARING_INVALID               = YAPI_INVALID_DOUBLE;
@@ -232,13 +232,13 @@ type
     /// <para>
     ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
     ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-    ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+    ///   one of these two functions periodically. To unregister a callback, pass a NIL pointer as argument.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="callback">
-    ///   the callback function to call, or a null pointer. The callback function should take two
+    ///   the callback function to call, or a NIL pointer. The callback function should take two
     ///   arguments: the function object of which the value has changed, and the character string describing
     ///   the new advertised value.
     /// @noreturn
@@ -266,7 +266,7 @@ type
     ///   corresponding to the installation in a box, on one of the six faces.
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
+    ///   On failure, throws an exception or returns Y_MOUNTPOSITION_INVALID.
     /// </para>
     ///-
     function get_mountPosition():TYMOUNTPOSITION; overload; virtual;
@@ -291,7 +291,7 @@ type
     ///   on the top face, the 12H orientation points to the rear.
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
+    ///   On failure, throws an exception or returns Y_MOUNTORIENTATION_INVALID.
     /// </para>
     ///-
     function get_mountOrientation():TYMOUNTORIENTATION; overload; virtual;
@@ -531,7 +531,7 @@ type
     /// </summary>
     /// <returns>
     ///   a pointer to a <c>YRefFrame</c> object, corresponding to
-    ///   a reference frame currently online, or a <c>null</c> pointer
+    ///   a reference frame currently online, or a <c>NIL</c> pointer
     ///   if there are no more reference frames to enumerate.
     /// </returns>
     ///-
@@ -602,7 +602,7 @@ type
   /// </summary>
   /// <returns>
   ///   a pointer to a <c>YRefFrame</c> object, corresponding to
-  ///   the first reference frame currently online, or a <c>null</c> pointer
+  ///   the first reference frame currently online, or a <c>NIL</c> pointer
   ///   if there are none.
   /// </returns>
   ///-
@@ -927,7 +927,7 @@ implementation
   ///   corresponding to the installation in a box, on one of the six faces.
   /// </returns>
   /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
+  ///   On failure, throws an exception or returns Y_MOUNTPOSITION_INVALID.
   /// </para>
   ///-
   function TYRefFrame.get_mountPosition():TYMOUNTPOSITION;
@@ -935,6 +935,11 @@ implementation
       position : LongInt;
     begin
       position := self.get_mountPos;
+      if position < 0 then
+        begin
+          result := Y_MOUNTPOSITION_INVALID;
+          exit;
+        end;
       return TYMOUNTPOSITION(((position) shr 2));
     end;
 
@@ -959,7 +964,7 @@ implementation
   ///   on the top face, the 12H orientation points to the rear.
   /// </returns>
   /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
+  ///   On failure, throws an exception or returns Y_MOUNTORIENTATION_INVALID.
   /// </para>
   ///-
   function TYRefFrame.get_mountOrientation():TYMOUNTORIENTATION;
@@ -967,6 +972,11 @@ implementation
       position : LongInt;
     begin
       position := self.get_mountPos;
+      if position < 0 then
+        begin
+          result := Y_MOUNTORIENTATION_INVALID;
+          exit;
+        end;
       return TYMOUNTORIENTATION(((position) and 3));
     end;
 

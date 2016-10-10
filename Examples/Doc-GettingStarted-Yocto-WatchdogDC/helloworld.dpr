@@ -18,7 +18,7 @@ Procedure  Usage();
     sleep(2500);
     halt;
   End;
-  
+
 var
   c         : char;
   watchdog  : TYWatchdog;
@@ -31,7 +31,7 @@ begin
     Write('RegisterHub error: '+errmsg);
     exit;
   end;
-  
+
   if paramstr(1)='any' then
     begin
       watchdog := yFirstWatchdog();
@@ -43,7 +43,7 @@ begin
        end
    else
     watchdog:= YFindWatchdog(paramstr(1)+'.watchdog1');
-  
+
   Writeln('1: Start the watchdog');
   Writeln('0: Stop the watchdog');
   Writeln('r: Reset the watchdog');
@@ -58,5 +58,6 @@ begin
       'r' : watchdog.resetWatchdog();
     end;
   until c='x';
+  yFreeAPI();
 
 end.

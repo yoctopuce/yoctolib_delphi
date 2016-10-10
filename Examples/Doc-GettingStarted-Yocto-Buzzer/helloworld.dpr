@@ -94,4 +94,5 @@ begin
         led.set_power(Y_POWER_OFF);
      end;
    end;
+  yFreeAPI();
 end.

@@ -72,7 +72,5 @@ begin
    // lets drive the relay
   if paramstr(2)='B' then   setRelayState(relay,true)
                       else   setRelayState(relay,false);
-
-
-
+  yFreeAPI();
 end.

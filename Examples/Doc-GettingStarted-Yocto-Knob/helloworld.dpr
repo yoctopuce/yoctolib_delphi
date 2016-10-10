@@ -83,5 +83,6 @@ begin
         Sleep(1000);
       end
   until done;
-  
+  yFreeAPI();
+
 end.

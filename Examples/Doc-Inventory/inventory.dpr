@@ -24,5 +24,6 @@ begin
      Writeln( module.get_serialNumber()+' ('+module.get_productName()+')');
      module := module.nextModule();
    end;
+  yFreeAPI();
 
-end. 
+end.

@@ -138,8 +138,6 @@ end;
 var
  errmsg : string;
 
-
-
 initialization
   if yRegisterHub('usb', errmsg)<>YAPI_SUCCESS then
     begin

@@ -53,10 +53,12 @@ begin
 
   if (spiPort.isOnline()) then
     begin
-      spiPort.set_spiMode('250000,2,msb');
+      spiPort.set_spiMode('250000,3,msb');
       spiPort.set_ssPolarity(Y_SSPOLARITY_ACTIVE_LOW);
       spiPort.set_protocol('Frame:5ms');
       spiPort.reset();
+      // do not forget to configure the powerOutput of the Yocto-SPI
+      // ( for SPI7SEGDISP8.56 powerOutput need to be set at 5v )
       writeln('****************************');
       writeln('* make sure voltage levels *');
       writeln('* are properly configured  *');

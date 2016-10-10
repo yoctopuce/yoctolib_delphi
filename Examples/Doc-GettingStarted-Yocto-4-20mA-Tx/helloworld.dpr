@@ -67,5 +67,5 @@ begin
       error('Insufficient voltage on current loop');
 
   writeln('current loop set to ' + FloatToStrF(value,ffFixed,2,2) + ' mA');
-  ySleep(2500,errmsg);
+  yFreeAPI();
 end.

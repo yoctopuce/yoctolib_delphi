@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 23882 2016-04-12 08:38:50Z seb $
+ * $Id: yocto_api.pas 25275 2016-08-24 13:42:24Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -115,7 +115,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '25250';
+  YOCTO_API_BUILD_NO        = '25534';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -775,13 +775,13 @@ type
     /// <para>
     ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
     ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-    ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+    ///   one of these two functions periodically. To unregister a callback, pass a NIL pointer as argument.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="callback">
-    ///   the callback function to call, or a null pointer. The callback function should take two
+    ///   the callback function to call, or a NIL pointer. The callback function should take two
     ///   arguments: the function object of which the value has changed, and the character string describing
     ///   the new advertised value.
     /// @noreturn
@@ -1371,13 +1371,13 @@ type
     /// <para>
     ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
     ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-    ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+    ///   one of these two functions periodically. To unregister a callback, pass a NIL pointer as argument.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="callback">
-    ///   the callback function to call, or a null pointer. The callback function should take two
+    ///   the callback function to call, or a NIL pointer. The callback function should take two
     ///   arguments: the function object of which the value has changed, and the character string describing
     ///   the new advertised value.
     /// @noreturn
@@ -1504,7 +1504,7 @@ type
     ///   true to force the firmware update even if some prerequisites appear not to be met
     /// </param>
     /// <returns>
-    ///   a <c>YFirmwareUpdate</c> object or NULL on error.
+    ///   a <c>YFirmwareUpdate</c> object or NIL on error.
     /// </returns>
     ///-
     function updateFirmwareEx(path: string; force: boolean):TYFirmwareUpdate; overload; virtual;
@@ -1523,7 +1523,7 @@ type
     ///   the path of the <c>.byn</c> file to use.
     /// </param>
     /// <returns>
-    ///   a <c>YFirmwareUpdate</c> object or NULL on error.
+    ///   a <c>YFirmwareUpdate</c> object or NIL on error.
     /// </returns>
     ///-
     function updateFirmware(path: string):TYFirmwareUpdate; overload; virtual;
@@ -1768,7 +1768,7 @@ type
     /// </summary>
     /// <returns>
     ///   a pointer to a <c>YModule</c> object, corresponding to
-    ///   the next module found, or a <c>null</c> pointer
+    ///   the next module found, or a <c>NIL</c> pointer
     ///   if there are no more modules to enumerate.
     /// </returns>
     ///-
@@ -2183,13 +2183,13 @@ end;
     /// <para>
     ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
     ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-    ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+    ///   one of these two functions periodically. To unregister a callback, pass a NIL pointer as argument.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="callback">
-    ///   the callback function to call, or a null pointer. The callback function should take two
+    ///   the callback function to call, or a NIL pointer. The callback function should take two
     ///   arguments: the function object of which the value has changed, and the character string describing
     ///   the new advertised value.
     /// @noreturn
@@ -2291,13 +2291,13 @@ end;
     /// <para>
     ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
     ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-    ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+    ///   one of these two functions periodically. To unregister a callback, pass a NIL pointer as argument.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="callback">
-    ///   the callback function to call, or a null pointer. The callback function should take two
+    ///   the callback function to call, or a NIL pointer. The callback function should take two
     ///   arguments: the function object of which the value has changed, and an YMeasure object describing
     ///   the new advertised value.
     /// @noreturn
@@ -2388,7 +2388,7 @@ end;
     /// </summary>
     /// <returns>
     ///   a pointer to a <c>YSensor</c> object, corresponding to
-    ///   a sensor currently online, or a <c>null</c> pointer
+    ///   a sensor currently online, or a <c>NIL</c> pointer
     ///   if there are no more sensors to enumerate.
     /// </returns>
     ///-
@@ -3458,7 +3458,7 @@ type
   /// </para>
   /// </summary>
   /// <param name="logfun">
-  ///   a procedure taking a string parameter, or <c>null</c>
+  ///   a procedure taking a string parameter, or <c>NIL</c>
   ///   to unregister a previously registered  callback.
   /// </param>
   ///-
@@ -3474,7 +3474,7 @@ type
   /// </para>
   /// </summary>
   /// <param name="arrivalCallback">
-  ///   a procedure taking a <c>YModule</c> parameter, or <c>null</c>
+  ///   a procedure taking a <c>YModule</c> parameter, or <c>NIL</c>
   ///   to unregister a previously registered  callback.
   /// </param>
   ///-
@@ -3490,7 +3490,7 @@ type
   /// </para>
   /// </summary>
   /// <param name="removalCallback">
-  ///   a procedure taking a <c>YModule</c> parameter, or <c>null</c>
+  ///   a procedure taking a <c>YModule</c> parameter, or <c>NIL</c>
   ///   to unregister a previously registered  callback.
   /// </param>
   ///-
@@ -3775,7 +3775,7 @@ type
   /// </para>
   /// </summary>
   /// <param name="hubDiscoveryCallback">
-  ///   a procedure taking two string parameter, or null
+  ///   a procedure taking two string parameter, or NIL
   ///   to unregister a previously registered  callback.
   /// </param>
   ///-
@@ -3890,7 +3890,7 @@ type
   /// </summary>
   /// <returns>
   ///   a pointer to a <c>YModule</c> object, corresponding to
-  ///   the first module currently online, or a <c>null</c> pointer
+  ///   the first module currently online, or a <c>NIL</c> pointer
   ///   if there are none.
   /// </returns>
   ///-
@@ -3952,7 +3952,7 @@ type
   /// </summary>
   /// <returns>
   ///   a pointer to a <c>YSensor</c> object, corresponding to
-  ///   the first sensor currently online, or a <c>null</c> pointer
+  ///   the first sensor currently online, or a <c>NIL</c> pointer
   ///   if there are none.
   /// </returns>
   ///-

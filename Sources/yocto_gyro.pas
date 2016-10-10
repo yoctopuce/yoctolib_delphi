@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_gyro.pas 24948 2016-07-01 20:57:28Z mvuilleu $
+ * $Id: yocto_gyro.pas 25275 2016-08-24 13:42:24Z mvuilleu $
  *
  * Implements yFindGyro(), the high-level API for Gyro functions
  *
@@ -155,13 +155,13 @@ type
     /// <para>
     ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
     ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-    ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+    ///   one of these two functions periodically. To unregister a callback, pass a NIL pointer as argument.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="callback">
-    ///   the callback function to call, or a null pointer. The callback function should take two
+    ///   the callback function to call, or a NIL pointer. The callback function should take two
     ///   arguments: the function object of which the value has changed, and the character string describing
     ///   the new advertised value.
     /// @noreturn
@@ -177,13 +177,13 @@ type
     /// <para>
     ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
     ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-    ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+    ///   one of these two functions periodically. To unregister a callback, pass a NIL pointer as argument.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="callback">
-    ///   the callback function to call, or a null pointer. The callback function should take two
+    ///   the callback function to call, or a NIL pointer. The callback function should take two
     ///   arguments: the function object of which the value has changed, and an YMeasure object describing
     ///   the new advertised value.
     /// @noreturn
@@ -202,7 +202,7 @@ type
     /// </summary>
     /// <returns>
     ///   a pointer to a <c>YQt</c> object, corresponding to
-    ///   a quaternion component currently online, or a <c>null</c> pointer
+    ///   a quaternion component currently online, or a <c>NIL</c> pointer
     ///   if there are no more quaternion components to enumerate.
     /// </returns>
     ///-
@@ -272,7 +272,7 @@ type
   /// </summary>
   /// <returns>
   ///   a pointer to a <c>YQt</c> object, corresponding to
-  ///   the first quaternion component currently online, or a <c>null</c> pointer
+  ///   the first quaternion component currently online, or a <c>NIL</c> pointer
   ///   if there are none.
   /// </returns>
   ///-
@@ -498,13 +498,13 @@ type
     /// <para>
     ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
     ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-    ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+    ///   one of these two functions periodically. To unregister a callback, pass a NIL pointer as argument.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="callback">
-    ///   the callback function to call, or a null pointer. The callback function should take two
+    ///   the callback function to call, or a NIL pointer. The callback function should take two
     ///   arguments: the function object of which the value has changed, and the character string describing
     ///   the new advertised value.
     /// @noreturn
@@ -520,13 +520,13 @@ type
     /// <para>
     ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
     ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-    ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+    ///   one of these two functions periodically. To unregister a callback, pass a NIL pointer as argument.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="callback">
-    ///   the callback function to call, or a null pointer. The callback function should take two
+    ///   the callback function to call, or a NIL pointer. The callback function should take two
     ///   arguments: the function object of which the value has changed, and an YMeasure object describing
     ///   the new advertised value.
     /// @noreturn
@@ -687,13 +687,13 @@ type
     ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
     ///   This provides control over the time when the callback is triggered.
     ///   For good responsiveness, remember to call one of these two functions periodically.
-    ///   To unregister a callback, pass a null pointer as argument.
+    ///   To unregister a callback, pass a NIL pointer as argument.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="callback">
-    ///   the callback function to invoke, or a null pointer.
+    ///   the callback function to invoke, or a NIL pointer.
     ///   The callback function should take five arguments:
     ///   the YGyro object of the turning device, and the floating
     ///   point values of the four components w, x, y and z
@@ -712,13 +712,13 @@ type
     ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
     ///   This provides control over the time when the callback is triggered.
     ///   For good responsiveness, remember to call one of these two functions periodically.
-    ///   To unregister a callback, pass a null pointer as argument.
+    ///   To unregister a callback, pass a NIL pointer as argument.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="callback">
-    ///   the callback function to invoke, or a null pointer.
+    ///   the callback function to invoke, or a NIL pointer.
     ///   The callback function should take four arguments:
     ///   the YGyro object of the turning device, and the floating
     ///   point values of the three angles roll, pitch and heading
@@ -739,7 +739,7 @@ type
     /// </summary>
     /// <returns>
     ///   a pointer to a <c>YGyro</c> object, corresponding to
-    ///   a gyroscope currently online, or a <c>null</c> pointer
+    ///   a gyroscope currently online, or a <c>NIL</c> pointer
     ///   if there are no more gyroscopes to enumerate.
     /// </returns>
     ///-
@@ -810,7 +810,7 @@ type
   /// </summary>
   /// <returns>
   ///   a pointer to a <c>YGyro</c> object, corresponding to
-  ///   the first gyro currently online, or a <c>null</c> pointer
+  ///   the first gyro currently online, or a <c>NIL</c> pointer
   ///   if there are none.
   /// </returns>
   ///-

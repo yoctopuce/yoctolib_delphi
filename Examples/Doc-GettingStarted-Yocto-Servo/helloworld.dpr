@@ -56,5 +56,5 @@ begin
 
   if (servo.isOnline()) then servo.move(position,1500)
   else writeln('Module not connected (check identification and USB cable)');
-
+  yFreeAPI();
 end.

@@ -43,7 +43,7 @@ begin
   until (slave>0) and (slave<256);
 
   writeln('Please select a Coil No (>=1), Input Bit No (>=10001+),');
-  writeln('Register No (>=30001) or Input Register No (>=40001)');
+  writeln('Input Register No (>=30001) or Register No (>=40001)');
   writeln('No: ');
   repeat
   ReadLn(reg);
@@ -51,8 +51,8 @@ begin
 
   while (true)  do
    begin
-    if (reg>=40001) then res := serialPort.modbusReadInputRegisters(slave, reg-40001, 1)
-    else if (reg>=30001) then res := serialPort.modbusReadRegisters(slave, reg-30001, 1)
+    if (reg>=40001) then res := serialPort.modbusReadRegisters(slave, reg-40001, 1)
+    else if (reg>=30001) then res := serialPort.modbusReadInputRegisters(slave, reg-30001, 1)
     else if (reg>=10001) then res := serialPort.modbusReadInputBits(slave, reg-10001, 1)
     else res := serialPort.modbusReadBits(slave, reg-1, 1);
     val := res[0];
@@ -69,5 +69,6 @@ begin
                           else    serialPort.modbusWriteBit(slave, reg-1, val);
      end;
    end;
+  yFreeAPI();
 
 end.

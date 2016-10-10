@@ -77,5 +77,6 @@ begin
       Writeln('  (press Ctrl-C to exit)');
       ySleep(1000, errmsg);
    end;
-   Die('Module not connected');
+  yFreeAPI();
+  Die('Module not connected');
 end.

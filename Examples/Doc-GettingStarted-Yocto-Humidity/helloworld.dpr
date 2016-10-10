@@ -39,5 +39,6 @@ begin
        done := true;
      end;
   until done;
+  yFreeAPI();
 
 end.

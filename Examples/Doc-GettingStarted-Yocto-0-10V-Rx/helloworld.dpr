@@ -27,7 +27,7 @@ var
   errmsg,serial : string;
   unitSensor1,unitSensor2:string;
 begin
-  if (paramcount<1) then 
+  if (paramcount<1) then
     usage();
   // Setup the API to use local USB devices
   if yRegisterHub('usb', errmsg)<>YAPI_SUCCESS then
@@ -62,6 +62,6 @@ begin
       Writeln('   (press Ctrl-C to exit)');
       Sleep(1000);
      end;
-
+  yFreeAPI();
   Writeln('Module not connected (check identification and USB cable)');
 end.

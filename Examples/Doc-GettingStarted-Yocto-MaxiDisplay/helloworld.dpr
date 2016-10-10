@@ -86,7 +86,7 @@ begin
   // and animate the layer
   Writeln('Use Ctrl-C to stop');
   x:=0; y:=0; vx:=1; vy:=1;
-  while (true) do
+  while (disp.isOnline()) do
    begin
     x:=x+vx;y:=y+vy;
     if (x<0) or (x>w-(h div 4)) then vx:=-vx;
@@ -94,5 +94,6 @@ begin
     l1.setLayerPosition(x,y,0);
     ysleep(5,errmsg);
    end;
+  yFreeAPI();
 
 end.

@@ -75,7 +75,7 @@ begin
        // if motor is in error state, reset it.
        if ( motor.get_motorStatus>=Y_MOTORSTATUS_LOVOLT) then motor.resetStatus();
        motor.drivingForceMove(power,2000);  // ramp up to power in 2 seconds
-       while true do
+       while motor.isOnline() do
         begin
           // display motor status
           Write('Status=',motor.get_advertisedValue(),'  ');
@@ -85,5 +85,6 @@ begin
           Ysleep(1000,errmsg); // wait for one second
         end;
   end else writeln('Module not connected (check identification and USB cable)');
+  yFreeAPI();
 
 end.

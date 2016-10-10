@@ -32,7 +32,7 @@ var
 
 begin
    if (paramcount<1) then usage();
-   
+
   // Setup the API to use local USB devices
   if yRegisterHub('usb', errmsg)<>YAPI_SUCCESS then
   begin
@@ -89,5 +89,5 @@ begin
        done := true;
      end;
   until done;
-
+  yFreeAPI();
 end.

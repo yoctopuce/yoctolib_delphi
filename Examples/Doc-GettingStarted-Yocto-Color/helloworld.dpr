@@ -85,5 +85,6 @@ begin
       'b' : setcolor(led1,led2,$0000FF);
     end;
   until c='x';
+  yFreeAPI();
 
 end.

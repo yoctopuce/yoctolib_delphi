@@ -59,6 +59,7 @@ begin
       Writeln('   (press Ctrl-C to exit)');
       Sleep(1000);
      end;
+  yFreeAPI();
 
   Writeln('Module not connected (check identification and USB cable)');
 end.

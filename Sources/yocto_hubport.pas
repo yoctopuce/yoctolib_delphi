@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_hubport.pas 23240 2016-02-23 14:10:10Z seb $
+ * $Id: yocto_hubport.pas 25275 2016-08-24 13:42:24Z mvuilleu $
  *
  * Implements yFindHubPort(), the high-level API for HubPort functions
  *
@@ -227,13 +227,13 @@ type
     /// <para>
     ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
     ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-    ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
+    ///   one of these two functions periodically. To unregister a callback, pass a NIL pointer as argument.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="callback">
-    ///   the callback function to call, or a null pointer. The callback function should take two
+    ///   the callback function to call, or a NIL pointer. The callback function should take two
     ///   arguments: the function object of which the value has changed, and the character string describing
     ///   the new advertised value.
     /// @noreturn
@@ -252,7 +252,7 @@ type
     /// </summary>
     /// <returns>
     ///   a pointer to a <c>YHubPort</c> object, corresponding to
-    ///   a Yocto-hub port currently online, or a <c>null</c> pointer
+    ///   a Yocto-hub port currently online, or a <c>NIL</c> pointer
     ///   if there are no more Yocto-hub ports to enumerate.
     /// </returns>
     ///-
@@ -323,7 +323,7 @@ type
   /// </summary>
   /// <returns>
   ///   a pointer to a <c>YHubPort</c> object, corresponding to
-  ///   the first Yocto-hub port currently online, or a <c>null</c> pointer
+  ///   the first Yocto-hub port currently online, or a <c>NIL</c> pointer
   ///   if there are none.
   /// </returns>
   ///-

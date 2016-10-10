@@ -11,7 +11,7 @@ var
   module  : TYModule;
   errmsg  : string;
   newname : string;
-  
+
 begin
   // Setup the API to use local USB devices
   if yRegisterHub('usb', errmsg)<>YAPI_SUCCESS then
@@ -37,6 +37,6 @@ begin
    end;
   module.set_logicalName(newname);
   module.saveToFlash();
-  
+  yFreeAPI();
   Writeln('logical name is now : '+module.get_logicalName());
 end.

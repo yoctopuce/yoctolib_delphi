@@ -61,10 +61,10 @@ begin
   while  ch1.isOnline() and  ch2.isOnline() do
     begin
        Write('Channel 1: '+FloatToStr(ch1.get_currentValue())+unitSensor1);
-       Write('Channel 2: '+FloatToStr(ch2.get_currentValue())+unitSensor2);
+       Write('  Channel 2: '+FloatToStr(ch2.get_currentValue())+unitSensor2);
        Writeln('   (press Ctrl-C to exit)');
        Sleep(1000);
      end;
-
+  yFreeAPI();
   Writeln('Module not connected (check identification and USB cable)');
 end.

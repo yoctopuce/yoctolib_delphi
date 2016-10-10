@@ -12,9 +12,9 @@ procedure usage();
   begin
     execname := ExtractFileName(paramstr(0));
     WriteLn('Usage:');
-    WriteLn(execname + ' <serial_number> <channel> [ A | B ]');
-    WriteLn(execname + ' <logical_name> <channel>  [ A | B ]');
-    WriteLn(execname + ' any <channel> [ A | B ]');
+    WriteLn(execname + ' <serial_number> <channel> < A | B >');
+    WriteLn(execname + ' <logical_name> <channel>  < A | B >');
+    WriteLn(execname + ' any <channel> < A | B >');
     WriteLn('Example:');
     WriteLn(execname + ' any 2 B');
     sleep(2500);
@@ -66,5 +66,6 @@ begin
                         else relay.set_output(Y_OUTPUT_OFF);
     end
    else writeln('Module not connected (check identification and USB cable)');
+  yFreeAPI();
 
 end.

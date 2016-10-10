@@ -76,5 +76,5 @@ begin
       Writeln('  (press Ctrl-C to exit)');
       ySleep(1000, errmsg);
    until (false);
-
+  yFreeAPI();
 end.

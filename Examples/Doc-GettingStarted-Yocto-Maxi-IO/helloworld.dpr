@@ -82,15 +82,16 @@ begin
   outputdata := 0;
   while (io.isOnline()) do
     begin
-     outputdata := (outputdata +1) mod 16; // cycle ouput 0..15
-     io.set_portState(outputdata); // We could have used set_bitState as well
-     ysleep(1000,errmsg);
      inputdata := io.get_portState(); // read port values
      line:='';  // display value as binary
      for i := 0 to 7 do
        if  (inputdata and (128 shr i))>0 then line:=line+'1' else line:=line+'0';
      Writeln('port value = ' + line);
+     outputdata := (outputdata +1) mod 16; // cycle ouput 0..15
+     io.set_portState(outputdata); // We could have used set_bitState as well
+     ysleep(1000,errmsg);
     end;
 
-    writeln('Device disconnected');
+  yFreeAPI();
+  writeln('Device disconnected');
 end.

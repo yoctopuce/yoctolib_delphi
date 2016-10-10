@@ -24,7 +24,7 @@ procedure refresh(module:Tymodule) ;
        Writeln(module.get_lastlogs());
        Writeln('');
        Writeln('r : refresh / b:beacon ON / space : beacon off');
-     end 
+     end
     else Writeln('Module not connected (check identification and USB cable)');
   end;
 
@@ -59,4 +59,5 @@ begin
      ' ': beacon(module,Y_BEACON_OFF);
     end;
   until  c = 'x';
+  yFreeAPI();
 end.

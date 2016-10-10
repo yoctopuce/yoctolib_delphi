@@ -59,5 +59,6 @@ begin
                         else relay.set_output(Y_OUTPUT_OFF);
     end
    else writeln('Module not connected (check identification and USB cable)');
+  yFreeAPI();
 
 end.

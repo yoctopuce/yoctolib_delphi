@@ -52,7 +52,7 @@ begin
    end
    else
    sensor:= yFindVoltage(target + '.voltage1');
-                                          
+
    m := nil;
    sensorDC := nil;
    sensorAC := nil;
@@ -72,5 +72,6 @@ begin
       Writeln('  (press Ctrl-C to exit)');
       ySleep(1000, errmsg);
    until (false);
+  yFreeAPI();
 
 end.

@@ -59,7 +59,7 @@ begin
   pwmoutput1 := YFindPwmOutput(target + '.pwmOutput1');
   pwmoutput2 := YFindPwmOutput(target + '.pwmOutput2');
 
-  if (pwmoutput1.isOnline()) then 
+  if (pwmoutput1.isOnline()) then
     begin
       // output 1 : immediate change
       pwmoutput1.set_frequency(frequency);
@@ -71,5 +71,6 @@ begin
       pwmoutput2.dutyCycleMove(dutyCycle,3000);
     end
   else writeln('Module not connected (check identification and USB cable)');
+  yFreeAPI();
 
 end.

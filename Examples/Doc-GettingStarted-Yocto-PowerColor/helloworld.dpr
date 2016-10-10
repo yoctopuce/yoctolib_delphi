@@ -55,4 +55,5 @@ begin
   // change color
   color :=StrToInt('$' + paramstr(2)) ;
   led1.rgbMove(color,1000); // smooth change.
+  yFreeAPI();
 end.
