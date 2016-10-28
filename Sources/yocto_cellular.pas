@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_cellular.pas 25609 2016-10-19 12:37:17Z seb $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -1976,7 +1976,7 @@ implementation
       gsmMsg : string;
     begin
       gsmMsg := self.get_message;
-      if not(not((Copy(gsmMsg, 0 + 1, 13) = 'Enter SIM PUK'))) then
+      if not((Copy(gsmMsg, 0 + 1, 13) = 'Enter SIM PUK')) then
         begin
           self._throw(YAPI_INVALID_ARGUMENT, 'PUK not expected at this time');
           result:=YAPI_INVALID_ARGUMENT;

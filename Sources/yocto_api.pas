@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_api.pas 25651 2016-10-20 13:36:46Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -115,7 +115,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '25534';
+  YOCTO_API_BUILD_NO        = '25748';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -11917,7 +11917,10 @@ var
         end;
       if self._caltyp <> 0 then
         begin
-          val := self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref);
+          if (addr(self._calhdl) <> nil) then
+            begin
+              val := self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref);
+            end;
         end;
       result := val;
       exit;
@@ -11946,7 +11949,10 @@ var
         end;
       if self._caltyp <> 0 then
         begin
-          val := self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref);
+          if (addr(self._calhdl) <> nil) then
+            begin
+              val := self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref);
+            end;
         end;
       result := val;
       exit;
