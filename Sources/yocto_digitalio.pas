@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_digitalio.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_digitalio.pas 25871 2016-11-15 14:32:56Z seb $
  *
  * Implements yFindDigitalIO(), the high-level API for DigitalIO functions
  *
@@ -250,7 +250,8 @@ type
 
     ////
     /// <summary>
-    ///   Changes the polarity of all the bits of the port: 0 makes a bit an input, 1 makes it an output.
+    ///   Changes the polarity of all the bits of the port: For each bit set to 0, the matching I/O works the regular,
+    ///   intuitive way; for each bit set to 1, the I/O works in reverse mode.
     /// <para>
     ///   Remember to call the <c>saveToFlash()</c> method  to make sure the setting will be kept after a reboot.
     /// </para>
@@ -258,8 +259,9 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer corresponding to the polarity of all the bits of the port: 0 makes a bit an input, 1
-    ///   makes it an output
+    ///   an integer corresponding to the polarity of all the bits of the port: For each bit set to 0, the
+    ///   matching I/O works the regular,
+    ///   intuitive way; for each bit set to 1, the I/O works in reverse mode
     /// </param>
     /// <para>
     /// </para>
@@ -1012,7 +1014,8 @@ implementation
 
   ////
   /// <summary>
-  ///   Changes the polarity of all the bits of the port: 0 makes a bit an input, 1 makes it an output.
+  ///   Changes the polarity of all the bits of the port: For each bit set to 0, the matching I/O works the regular,
+  ///   intuitive way; for each bit set to 1, the I/O works in reverse mode.
   /// <para>
   ///   Remember to call the saveToFlash() method  to make sure the setting will be kept after a reboot.
   /// </para>
@@ -1020,8 +1023,9 @@ implementation
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   an integer corresponding to the polarity of all the bits of the port: 0 makes a bit an input, 1
-  ///   makes it an output
+  ///   an integer corresponding to the polarity of all the bits of the port: For each bit set to 0, the
+  ///   matching I/O works the regular,
+  ///   intuitive way; for each bit set to 1, the I/O works in reverse mode
   /// </param>
   /// <para>
   /// </para>

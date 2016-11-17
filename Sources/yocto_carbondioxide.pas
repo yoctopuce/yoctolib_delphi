@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_carbondioxide.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_carbondioxide.pas 25831 2016-11-08 11:12:15Z seb $
  *
  * Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
@@ -260,6 +260,8 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
+    function triggerBaselineCalibration():LongInt; overload; virtual;
+
     function triggetBaselineCalibration():LongInt; overload; virtual;
 
     ////
@@ -286,6 +288,8 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
+    function triggerZeroCalibration():LongInt; overload; virtual;
+
     function triggetZeroCalibration():LongInt; overload; virtual;
 
 
@@ -695,9 +699,16 @@ implementation
   ///   On failure, throws an exception or returns a negative error code.
   /// </para>
   ///-
-  function TYCarbonDioxide.triggetBaselineCalibration():LongInt;
+  function TYCarbonDioxide.triggerBaselineCalibration():LongInt;
     begin
       result := self.set_command('BC');
+      exit;
+    end;
+
+
+  function TYCarbonDioxide.triggetBaselineCalibration():LongInt;
+    begin
+      result := self.triggerBaselineCalibration;
       exit;
     end;
 
@@ -726,9 +737,16 @@ implementation
   ///   On failure, throws an exception or returns a negative error code.
   /// </para>
   ///-
-  function TYCarbonDioxide.triggetZeroCalibration():LongInt;
+  function TYCarbonDioxide.triggerZeroCalibration():LongInt;
     begin
       result := self.set_command('ZC');
+      exit;
+    end;
+
+
+  function TYCarbonDioxide.triggetZeroCalibration():LongInt;
+    begin
+      result := self.triggerZeroCalibration;
       exit;
     end;
 
