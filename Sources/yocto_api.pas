@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 25651 2016-10-20 13:36:46Z seb $
+ * $Id: yocto_api.pas 26132 2016-12-01 17:02:38Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -115,7 +115,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '25913';
+  YOCTO_API_BUILD_NO        = '26144';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -12743,8 +12743,9 @@ var
               inc(measures_pos);
             end;
           tim := tim + itv;
+          tim := round(tim * 1000) / 1000.0;
         end;
-      SetLength(self._measures, measures_pos);
+      SetLength(self._measures, measures_pos);;
       result := self.get_progress;
       exit;
     end;
