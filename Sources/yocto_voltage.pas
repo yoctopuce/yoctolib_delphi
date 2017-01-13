@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_voltage.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_voltage.pas 26183 2016-12-15 00:14:02Z mvuilleu $
  *
  * Implements yFindVoltage(), the high-level API for Voltage functions
  *
@@ -47,6 +47,9 @@ uses
 
 //--- (YVoltage definitions)
 
+const Y_ENABLED_FALSE = 0;
+const Y_ENABLED_TRUE = 1;
+const Y_ENABLED_INVALID = -1;
 
 
 //--- (end of YVoltage definitions)
@@ -84,6 +87,7 @@ type
     _calibrationParam         : string;
     _resolution               : double;
     _sensorState              : LongInt;
+    _enabled                  : Integer;
     _valueCallbackVoltage     : TYVoltageValueCallback;
     _timedReportCallbackVoltage : TYVoltageTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
@@ -94,6 +98,10 @@ type
   public
     //--- (YVoltage accessors declaration)
     constructor Create(func:string);
+
+    function get_enabled():Integer;
+
+    function set_enabled(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -280,6 +288,7 @@ implementation
       inherited Create(func);
       _className := 'Voltage';
       //--- (YVoltage accessors initialization)
+      _enabled := Y_ENABLED_INVALID;
       _valueCallbackVoltage := nil;
       _timedReportCallbackVoltage := nil;
       //--- (end of YVoltage accessors initialization)
@@ -293,9 +302,38 @@ implementation
       sub : PJSONRECORD;
       i,l        : integer;
     begin
+      if (member^.name = 'enabled') then
+        begin
+          _enabled := member^.ivalue;
+         result := 1;
+         exit;
+         end;
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
+
+  function TYVoltage.get_enabled():Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_ENABLED_INVALID;
+              exit;
+            end;
+        end;
+      result := self._enabled;
+      exit;
+    end;
+
+
+  function TYVoltage.set_enabled(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      if(newval>0) then rest_val := '1' else rest_val := '0';
+      result := _setAttr('enabled',rest_val);
+    end;
 
   ////
   /// <summary>

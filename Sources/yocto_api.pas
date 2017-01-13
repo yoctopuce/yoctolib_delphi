@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 26132 2016-12-01 17:02:38Z seb $
+ * $Id: yocto_api.pas 26329 2017-01-11 14:04:39Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -115,7 +115,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '26144';
+  YOCTO_API_BUILD_NO        = '26380';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -827,6 +827,27 @@ type
     /// </para>
     ///-
     function unmuteValueCallbacks():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the current value of a single function attribute, as a text string, as quickly as
+    ///   possible but without using the cached value.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="attrName">
+    ///   le nom de l'attribut désiré
+    /// </param>
+    /// <returns>
+    ///   une chaîne de caractères représentant la valeur actuelle de l'attribut.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty string.
+    /// </para>
+    ///-
+    function loadAttribute(attrName: string):string; overload; virtual;
 
     function _parserHelper():LongInt; overload; virtual;
 
@@ -6470,6 +6491,37 @@ const
   function TYFunction.unmuteValueCallbacks():LongInt;
     begin
       result := self.set_advertisedValue('');
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the current value of a single function attribute, as a text string, as quickly as
+  ///   possible but without using the cached value.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="attrName">
+  ///   le nom de l'attribut désiré
+  /// </param>
+  /// <returns>
+  ///   une chaîne de caractères représentant la valeur actuelle de l'attribut.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns an empty string.
+  /// </para>
+  ///-
+  function TYFunction.loadAttribute(attrName: string):string;
+    var
+      url : string;
+      attrVal : TByteArray;
+    begin
+      url := 'api/'+ self.get_functionId+'/'+attrName;
+      attrVal := self._download(url);
+      result := _ByteToString(attrVal);
       exit;
     end;
 

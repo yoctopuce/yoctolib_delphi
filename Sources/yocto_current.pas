@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_current.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_current.pas 26183 2016-12-15 00:14:02Z mvuilleu $
  *
  * Implements yFindCurrent(), the high-level API for Current functions
  *
@@ -47,6 +47,9 @@ uses
 
 //--- (YCurrent definitions)
 
+const Y_ENABLED_FALSE = 0;
+const Y_ENABLED_TRUE = 1;
+const Y_ENABLED_INVALID = -1;
 
 
 //--- (end of YCurrent definitions)
@@ -84,6 +87,7 @@ type
     _calibrationParam         : string;
     _resolution               : double;
     _sensorState              : LongInt;
+    _enabled                  : Integer;
     _valueCallbackCurrent     : TYCurrentValueCallback;
     _timedReportCallbackCurrent : TYCurrentTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
@@ -94,6 +98,10 @@ type
   public
     //--- (YCurrent accessors declaration)
     constructor Create(func:string);
+
+    function get_enabled():Integer;
+
+    function set_enabled(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -280,6 +288,7 @@ implementation
       inherited Create(func);
       _className := 'Current';
       //--- (YCurrent accessors initialization)
+      _enabled := Y_ENABLED_INVALID;
       _valueCallbackCurrent := nil;
       _timedReportCallbackCurrent := nil;
       //--- (end of YCurrent accessors initialization)
@@ -293,9 +302,38 @@ implementation
       sub : PJSONRECORD;
       i,l        : integer;
     begin
+      if (member^.name = 'enabled') then
+        begin
+          _enabled := member^.ivalue;
+         result := 1;
+         exit;
+         end;
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
+
+  function TYCurrent.get_enabled():Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_ENABLED_INVALID;
+              exit;
+            end;
+        end;
+      result := self._enabled;
+      exit;
+    end;
+
+
+  function TYCurrent.set_enabled(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      if(newval>0) then rest_val := '1' else rest_val := '0';
+      result := _setAttr('enabled',rest_val);
+    end;
 
   ////
   /// <summary>

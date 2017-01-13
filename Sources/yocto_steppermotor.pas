@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: pic24config.php 25964 2016-11-21 15:30:59Z mvuilleu $
+ * $Id: yocto_steppermotor.pas 26253 2017-01-03 17:41:07Z seb $
  *
  * Implements yFindStepperMotor(), the high-level API for StepperMotor functions
  *
@@ -66,11 +66,12 @@ const Y_STEPPING_MICROSTEP4 = 2;
 const Y_STEPPING_HALFSTEP = 3;
 const Y_STEPPING_FULLSTEP = 4;
 const Y_STEPPING_INVALID = -1;
-const Y_USTEPMAXSPEED_INVALID         = YAPI_INVALID_DOUBLE;
 const Y_OVERCURRENT_INVALID           = YAPI_INVALID_UINT;
 const Y_TCURRSTOP_INVALID             = YAPI_INVALID_UINT;
 const Y_TCURRRUN_INVALID              = YAPI_INVALID_UINT;
 const Y_ALERTMODE_INVALID             = YAPI_INVALID_STRING;
+const Y_AUXMODE_INVALID               = YAPI_INVALID_STRING;
+const Y_AUXSIGNAL_INVALID             = YAPI_INVALID_INT;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 
@@ -105,11 +106,12 @@ type
     _maxAccel                 : double;
     _maxSpeed                 : double;
     _stepping                 : Integer;
-    _ustepMaxSpeed            : double;
     _overcurrent              : LongInt;
     _tCurrStop                : LongInt;
     _tCurrRun                 : LongInt;
     _alertMode                : string;
+    _auxMode                  : string;
+    _auxSignal                : LongInt;
     _command                  : string;
     _valueCallbackStepperMotor : TYStepperMotorValueCallback;
     // Function-specific method for reading JSON output and caching result
@@ -384,47 +386,6 @@ type
 
     ////
     /// <summary>
-    ///   Changes the maximal motor speed for micro-stepping, measured in steps per second.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="newval">
-    ///   a floating point number corresponding to the maximal motor speed for micro-stepping, measured in
-    ///   steps per second
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_ustepMaxSpeed(newval:double):integer;
-
-    ////
-    /// <summary>
-    ///   Returns the maximal motor speed for micro-stepping, measured in steps per second.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   a floating point number corresponding to the maximal motor speed for micro-stepping, measured in
-    ///   steps per second
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>Y_USTEPMAXSPEED_INVALID</c>.
-    /// </para>
-    ///-
-    function get_ustepMaxSpeed():double;
-
-    ////
-    /// <summary>
     ///   Returns the overcurrent alert and emergency stop threshold, measured in mA.
     /// <para>
     /// </para>
@@ -543,6 +504,50 @@ type
     function get_alertMode():string;
 
     function set_alertMode(newval:string):integer;
+
+    function get_auxMode():string;
+
+    function set_auxMode(newval:string):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the current value of the signal generated on the auxiliary output.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the current value of the signal generated on the auxiliary output
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_AUXSIGNAL_INVALID</c>.
+    /// </para>
+    ///-
+    function get_auxSignal():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the value of the signal generated on the auxiliary output.
+    /// <para>
+    ///   Acceptable values depend on the auxiliary output signal type configured.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the value of the signal generated on the auxiliary output
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_auxSignal(newval:LongInt):integer;
 
     function get_command():string;
 
@@ -685,13 +690,11 @@ type
 
     ////
     /// <summary>
-    ///   Starts the motor to reach a given absolute position.
+    ///   Starts the motor to reach a given relative position.
     /// <para>
     ///   The time needed to reach the requested
     ///   position will depend on the acceleration and max speed parameters configured for
     ///   the motor.
-    /// </para>
-    /// <para>
     /// </para>
     /// </summary>
     /// <param name="relPos">
@@ -699,12 +702,26 @@ type
     /// </param>
     /// <returns>
     ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
     ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
+    /// </returns>
     ///-
     function moveRel(relPos: double):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Keep the motor in the same state for the specified amount of time, before processing next command.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="waitMs">
+    ///   wait time, specified in milliseconds.
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </returns>
+    ///-
+    function pause(waitMs: LongInt):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -865,11 +882,12 @@ implementation
       _maxAccel := Y_MAXACCEL_INVALID;
       _maxSpeed := Y_MAXSPEED_INVALID;
       _stepping := Y_STEPPING_INVALID;
-      _ustepMaxSpeed := Y_USTEPMAXSPEED_INVALID;
       _overcurrent := Y_OVERCURRENT_INVALID;
       _tCurrStop := Y_TCURRSTOP_INVALID;
       _tCurrRun := Y_TCURRRUN_INVALID;
       _alertMode := Y_ALERTMODE_INVALID;
+      _auxMode := Y_AUXMODE_INVALID;
+      _auxSignal := Y_AUXSIGNAL_INVALID;
       _command := Y_COMMAND_INVALID;
       _valueCallbackStepperMotor := nil;
       //--- (end of YStepperMotor accessors initialization)
@@ -931,12 +949,6 @@ implementation
          result := 1;
          exit;
          end;
-      if (member^.name = 'ustepMaxSpeed') then
-        begin
-          _ustepMaxSpeed := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
-         result := 1;
-         exit;
-         end;
       if (member^.name = 'overcurrent') then
         begin
           _overcurrent := integer(member^.ivalue);
@@ -958,6 +970,18 @@ implementation
       if (member^.name = 'alertMode') then
         begin
           _alertMode := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'auxMode') then
+        begin
+          _auxMode := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'auxSignal') then
+        begin
+          _auxSignal := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -1365,66 +1389,6 @@ implementation
 
   ////
   /// <summary>
-  ///   Changes the maximal motor speed for micro-stepping, measured in steps per second.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the maximal motor speed for micro-stepping, measured in
-  ///   steps per second
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYStepperMotor.set_ustepMaxSpeed(newval:double):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := inttostr(round(newval * 65536.0));
-      result := _setAttr('ustepMaxSpeed',rest_val);
-    end;
-
-  ////
-  /// <summary>
-  ///   Returns the maximal motor speed for micro-stepping, measured in steps per second.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the maximal motor speed for micro-stepping, measured in
-  ///   steps per second
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_USTEPMAXSPEED_INVALID.
-  /// </para>
-  ///-
-  function TYStepperMotor.get_ustepMaxSpeed():double;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
-            begin
-              result := Y_USTEPMAXSPEED_INVALID;
-              exit;
-            end;
-        end;
-      result := self._ustepMaxSpeed;
-      exit;
-    end;
-
-
-  ////
-  /// <summary>
   ///   Returns the overcurrent alert and emergency stop threshold, measured in mA.
   /// <para>
   /// </para>
@@ -1620,6 +1584,88 @@ implementation
       result := _setAttr('alertMode',rest_val);
     end;
 
+  function TYStepperMotor.get_auxMode():string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_AUXMODE_INVALID;
+              exit;
+            end;
+        end;
+      result := self._auxMode;
+      exit;
+    end;
+
+
+  function TYStepperMotor.set_auxMode(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('auxMode',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the current value of the signal generated on the auxiliary output.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the current value of the signal generated on the auxiliary output
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_AUXSIGNAL_INVALID.
+  /// </para>
+  ///-
+  function TYStepperMotor.get_auxSignal():LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_AUXSIGNAL_INVALID;
+              exit;
+            end;
+        end;
+      result := self._auxSignal;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the value of the signal generated on the auxiliary output.
+  /// <para>
+  ///   Acceptable values depend on the auxiliary output signal type configured.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   an integer corresponding to the value of the signal generated on the auxiliary output
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYStepperMotor.set_auxSignal(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('auxSignal',rest_val);
+    end;
+
   function TYStepperMotor.get_command():string;
     begin
       if self._cacheExpiration <= yGetTickCount then
@@ -1801,7 +1847,7 @@ implementation
   ///-
   function TYStepperMotor.findHomePosition(speed: double):LongInt;
     begin
-      result := self.sendCommand('H');
+      result := self.sendCommand('H'+inttostr(round(1000*speed)));
       exit;
     end;
 
@@ -1856,13 +1902,11 @@ implementation
 
   ////
   /// <summary>
-  ///   Starts the motor to reach a given absolute position.
+  ///   Starts the motor to reach a given relative position.
   /// <para>
   ///   The time needed to reach the requested
   ///   position will depend on the acceleration and max speed parameters configured for
   ///   the motor.
-  /// </para>
-  /// <para>
   /// </para>
   /// </summary>
   /// <param name="relPos">
@@ -1870,14 +1914,33 @@ implementation
   /// </param>
   /// <returns>
   ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
   ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
+  /// </returns>
   ///-
   function TYStepperMotor.moveRel(relPos: double):LongInt;
     begin
       result := self.sendCommand('m'+inttostr(round(16*relPos)));
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Keep the motor in the same state for the specified amount of time, before processing next command.
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="waitMs">
+  ///   wait time, specified in milliseconds.
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </returns>
+  ///-
+  function TYStepperMotor.pause(waitMs: LongInt):LongInt;
+    begin
+      result := self.sendCommand('_'+inttostr(waitMs));
       exit;
     end;
 
