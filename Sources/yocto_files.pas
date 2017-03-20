@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_files.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -495,6 +495,8 @@ implementation
   /// </para>
   ///-
   function TYFiles.get_filesCount():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -504,7 +506,8 @@ implementation
               exit;
             end;
         end;
-      result := self._filesCount;
+      res := self._filesCount;
+      result := res;
       exit;
     end;
 
@@ -525,6 +528,8 @@ implementation
   /// </para>
   ///-
   function TYFiles.get_freeSpace():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -534,7 +539,8 @@ implementation
               exit;
             end;
         end;
-      result := self._freeSpace;
+      res := self._freeSpace;
+      result := res;
       exit;
     end;
 

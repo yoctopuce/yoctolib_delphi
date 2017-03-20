@@ -5,7 +5,6 @@ uses
   yocto_api,
   yocto_digitalIO;
 
-
 procedure usage();
   var
     execname,errmsg:string;
@@ -77,7 +76,6 @@ begin
   Writeln('Channels 0..3 are configured as inputs and channels 4..7');
   Writeln('are configred as ouputs, you can connect some inputs to');
   Writeln('ouputs and see what happens');
-
 
   outputdata := 0;
   while (io.isOnline()) do

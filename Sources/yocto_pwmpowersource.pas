@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwmpowersource.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_pwmpowersource.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
  *
@@ -340,6 +340,8 @@ implementation
   /// </para>
   ///-
   function TYPwmPowerSource.get_powerMode():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -349,7 +351,8 @@ implementation
               exit;
             end;
         end;
-      result := self._powerMode;
+      res := self._powerMode;
+      result := res;
       exit;
     end;
 

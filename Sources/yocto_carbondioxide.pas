@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_carbondioxide.pas 25831 2016-11-08 11:12:15Z seb $
+ * $Id: yocto_carbondioxide.pas 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
@@ -65,7 +65,7 @@ type
   /// <para>
   ///   The Yoctopuce class YCarbonDioxide allows you to read and configure Yoctopuce CO2
   ///   sensors. It inherits from YSensor class the core functions to read measurements,
-  ///   register callback functions, access to the autonomous datalogger.
+  ///   to register callback functions,  to access the autonomous datalogger.
   ///   This class adds the ability to perform manual calibration if reuired.
   /// </para>
   /// </summary>
@@ -438,6 +438,8 @@ implementation
   /// </para>
   ///-
   function TYCarbonDioxide.get_abcPeriod():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -447,7 +449,8 @@ implementation
               exit;
             end;
         end;
-      result := self._abcPeriod;
+      res := self._abcPeriod;
+      result := res;
       exit;
     end;
 
@@ -486,6 +489,8 @@ implementation
     end;
 
   function TYCarbonDioxide.get_command():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -495,7 +500,8 @@ implementation
               exit;
             end;
         end;
-      result := self._command;
+      res := self._command;
+      result := res;
       exit;
     end;
 

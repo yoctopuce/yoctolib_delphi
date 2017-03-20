@@ -6,7 +6,6 @@ uses
   yocto_api,
   yocto_genericsensor;
 
-
 Procedure  Usage();
   var
    exe : string;
@@ -19,7 +18,6 @@ Procedure  Usage();
     sleep(3000);
     halt;
   End;
-
 
 var
   sensor,ch1,ch2 : TYGenericSensor;

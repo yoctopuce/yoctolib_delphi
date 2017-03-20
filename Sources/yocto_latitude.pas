@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_latitude.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_latitude.pas 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * Implements yFindLatitude(), the high-level API for Latitude functions
  *
@@ -63,7 +63,7 @@ type
   /// <para>
   ///   The Yoctopuce class YLatitude allows you to read the latitude from Yoctopuce
   ///   geolocalization sensors. It inherits from the YSensor class the core functions to
-  ///   read measurements, register callback functions, access the autonomous
+  ///   read measurements, to register callback functions, to access the autonomous
   ///   datalogger.
   /// </para>
   /// </summary>

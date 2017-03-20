@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 26329 2017-01-11 14:04:39Z mvuilleu $
+ * $Id: yocto_api.pas 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -115,7 +115,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '26380';
+  YOCTO_API_BUILD_NO        = '26849';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -793,7 +793,7 @@ type
 
     ////
     /// <summary>
-    ///   Disable the propagation of every new advertised value to the parent hub.
+    ///   Disables the propagation of every new advertised value to the parent hub.
     /// <para>
     ///   You can use this function to save bandwidth and CPU on computers with limited
     ///   resources, or to prevent unwanted invocations of the HTTP callback.
@@ -812,7 +812,7 @@ type
 
     ////
     /// <summary>
-    ///   Re-enable the propagation of every new advertised value to the parent hub.
+    ///   Re-enables the propagation of every new advertised value to the parent hub.
     /// <para>
     ///   This function reverts the effect of a previous call to <c>muteValueCallbacks()</c>.
     ///   Remember to call the <c>saveToFlash()</c> method of the module if the
@@ -838,10 +838,10 @@ type
     /// </para>
     /// </summary>
     /// <param name="attrName">
-    ///   le nom de l'attribut désiré
+    ///   the name of the requested attribute
     /// </param>
     /// <returns>
-    ///   une chaîne de caractères représentant la valeur actuelle de l'attribut.
+    ///   a string with the value of the the attribute
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns an empty string.
@@ -6242,6 +6242,8 @@ const
   /// </para>
   ///-
   function TYFunction.get_logicalName():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -6251,7 +6253,8 @@ const
               exit;
             end;
         end;
-      result := self._logicalName;
+      res := self._logicalName;
+      result := res;
       exit;
     end;
 
@@ -6310,6 +6313,8 @@ const
   /// </para>
   ///-
   function TYFunction.get_advertisedValue():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -6319,7 +6324,8 @@ const
               exit;
             end;
         end;
-      result := self._advertisedValue;
+      res := self._advertisedValue;
+      result := res;
       exit;
     end;
 
@@ -6450,7 +6456,7 @@ const
 
   ////
   /// <summary>
-  ///   Disable the propagation of every new advertised value to the parent hub.
+  ///   Disables the propagation of every new advertised value to the parent hub.
   /// <para>
   ///   You can use this function to save bandwidth and CPU on computers with limited
   ///   resources, or to prevent unwanted invocations of the HTTP callback.
@@ -6474,7 +6480,7 @@ const
 
   ////
   /// <summary>
-  ///   Re-enable the propagation of every new advertised value to the parent hub.
+  ///   Re-enables the propagation of every new advertised value to the parent hub.
   /// <para>
   ///   This function reverts the effect of a previous call to <c>muteValueCallbacks()</c>.
   ///   Remember to call the <c>saveToFlash()</c> method of the module if the
@@ -6505,10 +6511,10 @@ const
   /// </para>
   /// </summary>
   /// <param name="attrName">
-  ///   le nom de l'attribut désiré
+  ///   the name of the requested attribute
   /// </param>
   /// <returns>
-  ///   une chaîne de caractères représentant la valeur actuelle de l'attribut.
+  ///   a string with the value of the the attribute
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns an empty string.
@@ -7565,6 +7571,8 @@ var
   /// </para>
   ///-
   function TYModule.get_productName():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration = 0 then
         begin
@@ -7574,7 +7582,8 @@ var
               exit;
             end;
         end;
-      result := self._productName;
+      res := self._productName;
+      result := res;
       exit;
     end;
 
@@ -7595,6 +7604,8 @@ var
   /// </para>
   ///-
   function TYModule.get_serialNumber():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration = 0 then
         begin
@@ -7604,7 +7615,8 @@ var
               exit;
             end;
         end;
-      result := self._serialNumber;
+      res := self._serialNumber;
+      result := res;
       exit;
     end;
 
@@ -7625,6 +7637,8 @@ var
   /// </para>
   ///-
   function TYModule.get_productId():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration = 0 then
         begin
@@ -7634,7 +7648,8 @@ var
               exit;
             end;
         end;
-      result := self._productId;
+      res := self._productId;
+      result := res;
       exit;
     end;
 
@@ -7655,6 +7670,8 @@ var
   /// </para>
   ///-
   function TYModule.get_productRelease():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -7664,7 +7681,8 @@ var
               exit;
             end;
         end;
-      result := self._productRelease;
+      res := self._productRelease;
+      result := res;
       exit;
     end;
 
@@ -7685,6 +7703,8 @@ var
   /// </para>
   ///-
   function TYModule.get_firmwareRelease():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -7694,7 +7714,8 @@ var
               exit;
             end;
         end;
-      result := self._firmwareRelease;
+      res := self._firmwareRelease;
+      result := res;
       exit;
     end;
 
@@ -7716,6 +7737,8 @@ var
   /// </para>
   ///-
   function TYModule.get_persistentSettings():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -7725,7 +7748,8 @@ var
               exit;
             end;
         end;
-      result := self._persistentSettings;
+      res := self._persistentSettings;
+      result := res;
       exit;
     end;
 
@@ -7754,6 +7778,8 @@ var
   /// </para>
   ///-
   function TYModule.get_luminosity():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -7763,7 +7789,8 @@ var
               exit;
             end;
         end;
-      result := self._luminosity;
+      res := self._luminosity;
+      result := res;
       exit;
     end;
 
@@ -7816,6 +7843,8 @@ var
   /// </para>
   ///-
   function TYModule.get_beacon():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -7825,7 +7854,8 @@ var
               exit;
             end;
         end;
-      result := self._beacon;
+      res := self._beacon;
+      result := res;
       exit;
     end;
 
@@ -7874,6 +7904,8 @@ var
   /// </para>
   ///-
   function TYModule.get_upTime():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -7883,7 +7915,8 @@ var
               exit;
             end;
         end;
-      result := self._upTime;
+      res := self._upTime;
+      result := res;
       exit;
     end;
 
@@ -7904,6 +7937,8 @@ var
   /// </para>
   ///-
   function TYModule.get_usbCurrent():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -7913,7 +7948,8 @@ var
               exit;
             end;
         end;
-      result := self._usbCurrent;
+      res := self._usbCurrent;
+      result := res;
       exit;
     end;
 
@@ -7936,6 +7972,8 @@ var
   /// </para>
   ///-
   function TYModule.get_rebootCountdown():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -7945,7 +7983,8 @@ var
               exit;
             end;
         end;
-      result := self._rebootCountdown;
+      res := self._rebootCountdown;
+      result := res;
       exit;
     end;
 
@@ -7975,6 +8014,8 @@ var
   /// </para>
   ///-
   function TYModule.get_userVar():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -7984,7 +8025,8 @@ var
               exit;
             end;
         end;
-      result := self._userVar;
+      res := self._userVar;
+      result := res;
       exit;
     end;
 
@@ -9873,6 +9915,8 @@ var
   /// </para>
   ///-
   function TYSensor.get_unit():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -9882,7 +9926,8 @@ var
               exit;
             end;
         end;
-      result := self._unit;
+      res := self._unit;
+      result := res;
       exit;
     end;
 
@@ -9921,7 +9966,8 @@ var
           res := self._currentValue;
         end;
       res := res * self._iresol;
-      result := round(res) / self._iresol;
+      res := round(res) / self._iresol;
+      result := res;
       exit;
     end;
 
@@ -9982,7 +10028,8 @@ var
             end;
         end;
       res := self._lowestValue * self._iresol;
-      result := round(res) / self._iresol;
+      res := round(res) / self._iresol;
+      result := res;
       exit;
     end;
 
@@ -10043,7 +10090,8 @@ var
             end;
         end;
       res := self._highestValue * self._iresol;
-      result := round(res) / self._iresol;
+      res := round(res) / self._iresol;
+      result := res;
       exit;
     end;
 
@@ -10065,6 +10113,8 @@ var
   /// </para>
   ///-
   function TYSensor.get_currentRawValue():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -10074,7 +10124,8 @@ var
               exit;
             end;
         end;
-      result := self._currentRawValue;
+      res := self._currentRawValue;
+      result := res;
       exit;
     end;
 
@@ -10097,6 +10148,8 @@ var
   /// </para>
   ///-
   function TYSensor.get_logFrequency():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -10106,7 +10159,8 @@ var
               exit;
             end;
         end;
-      result := self._logFrequency;
+      res := self._logFrequency;
+      result := res;
       exit;
     end;
 
@@ -10161,6 +10215,8 @@ var
   /// </para>
   ///-
   function TYSensor.get_reportFrequency():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -10170,7 +10226,8 @@ var
               exit;
             end;
         end;
-      result := self._reportFrequency;
+      res := self._reportFrequency;
+      result := res;
       exit;
     end;
 
@@ -10208,6 +10265,8 @@ var
     end;
 
   function TYSensor.get_calibrationParam():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -10217,7 +10276,8 @@ var
               exit;
             end;
         end;
-      result := self._calibrationParam;
+      res := self._calibrationParam;
+      result := res;
       exit;
     end;
 
@@ -10278,6 +10338,8 @@ var
   /// </para>
   ///-
   function TYSensor.get_resolution():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -10287,7 +10349,8 @@ var
               exit;
             end;
         end;
-      result := self._resolution;
+      res := self._resolution;
+      result := res;
       exit;
     end;
 
@@ -10310,6 +10373,8 @@ var
   /// </para>
   ///-
   function TYSensor.get_sensorState():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -10319,7 +10384,8 @@ var
               exit;
             end;
         end;
-      result := self._sensorState;
+      res := self._sensorState;
+      result := res;
       exit;
     end;
 

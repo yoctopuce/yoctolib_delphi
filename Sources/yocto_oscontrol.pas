@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_oscontrol.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_oscontrol.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindOsControl(), the high-level API for OsControl functions
  *
@@ -329,6 +329,8 @@ implementation
   /// </para>
   ///-
   function TYOsControl.get_shutdownCountdown():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -338,7 +340,8 @@ implementation
               exit;
             end;
         end;
-      result := self._shutdownCountdown;
+      res := self._shutdownCountdown;
+      result := res;
       exit;
     end;
 

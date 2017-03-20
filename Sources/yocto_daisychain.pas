@@ -1,8 +1,8 @@
 {*********************************************************************
  *
- * $Id: yocto_led.pas 26668 2017-02-28 13:36:03Z seb $
+ * $Id: yocto_daisychain.pas 26668 2017-02-28 13:36:03Z seb $
  *
- * Implements yFindLed(), the high-level API for Led functions
+ * Implements yFindDaisyChain(), the high-level API for DaisyChain functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
@@ -38,93 +38,129 @@
  *********************************************************************}
 
 
-unit yocto_led;
+unit yocto_daisychain;
 
 interface
 
 uses
   sysutils, classes, windows, yocto_api, yjson;
 
-//--- (YLed definitions)
+//--- (YDaisyChain definitions)
 
-const Y_POWER_OFF = 0;
-const Y_POWER_ON = 1;
-const Y_POWER_INVALID = -1;
-const Y_LUMINOSITY_INVALID            = YAPI_INVALID_UINT;
-const Y_BLINKING_STILL = 0;
-const Y_BLINKING_RELAX = 1;
-const Y_BLINKING_AWARE = 2;
-const Y_BLINKING_RUN = 3;
-const Y_BLINKING_CALL = 4;
-const Y_BLINKING_PANIC = 5;
-const Y_BLINKING_INVALID = -1;
+const Y_DAISYSTATE_READY = 0;
+const Y_DAISYSTATE_IS_CHILD = 1;
+const Y_DAISYSTATE_FIRMWARE_MISMATCH = 2;
+const Y_DAISYSTATE_CHILD_MISSING = 3;
+const Y_DAISYSTATE_CHILD_LOST = 4;
+const Y_DAISYSTATE_INVALID = -1;
+const Y_CHILDCOUNT_INVALID            = YAPI_INVALID_UINT;
+const Y_REQUIREDCHILDCOUNT_INVALID    = YAPI_INVALID_UINT;
 
 
-//--- (end of YLed definitions)
+//--- (end of YDaisyChain definitions)
 
 type
-  TYLed = class;
-  //--- (YLed class start)
-  TYLedValueCallback = procedure(func: TYLed; value:string);
-  TYLedTimedReportCallback = procedure(func: TYLed; value:TYMeasure);
+  TYDaisyChain = class;
+  //--- (YDaisyChain class start)
+  TYDaisyChainValueCallback = procedure(func: TYDaisyChain; value:string);
+  TYDaisyChainTimedReportCallback = procedure(func: TYDaisyChain; value:TYMeasure);
 
   ////
   /// <summary>
-  ///   TYLed Class: Led function interface
+  ///   TYDaisyChain Class: DaisyChain function interface
   /// <para>
-  ///   The Yoctopuce application programming interface
-  ///   allows you not only to drive the intensity of the LED, but also to
-  ///   have it blink at various preset frequencies.
+  ///   The YDaisyChain interface can be used to verify that devices that
+  ///   are daisy-chained directly from device to device, without a hub,
+  ///   are detected properly.
   /// </para>
   /// </summary>
   ///-
-  TYLed=class(TYFunction)
-  //--- (end of YLed class start)
+  TYDaisyChain=class(TYFunction)
+  //--- (end of YDaisyChain class start)
   protected
-  //--- (YLed declaration)
+  //--- (YDaisyChain declaration)
     // Attributes (function value cache)
     _logicalName              : string;
     _advertisedValue          : string;
-    _power                    : Integer;
-    _luminosity               : LongInt;
-    _blinking                 : Integer;
-    _valueCallbackLed         : TYLedValueCallback;
+    _daisyState               : Integer;
+    _childCount               : LongInt;
+    _requiredChildCount       : LongInt;
+    _valueCallbackDaisyChain  : TYDaisyChainValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
 
-    //--- (end of YLed declaration)
+    //--- (end of YDaisyChain declaration)
 
   public
-    //--- (YLed accessors declaration)
+    //--- (YDaisyChain accessors declaration)
     constructor Create(func:string);
 
     ////
     /// <summary>
-    ///   Returns the current LED state.
+    ///   Returns the state of the daisy-link between modules.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_POWER_OFF</c> or <c>Y_POWER_ON</c>, according to the current LED state
+    ///   a value among <c>Y_DAISYSTATE_READY</c>, <c>Y_DAISYSTATE_IS_CHILD</c>,
+    ///   <c>Y_DAISYSTATE_FIRMWARE_MISMATCH</c>, <c>Y_DAISYSTATE_CHILD_MISSING</c> and
+    ///   <c>Y_DAISYSTATE_CHILD_LOST</c> corresponding to the state of the daisy-link between modules
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_POWER_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>Y_DAISYSTATE_INVALID</c>.
     /// </para>
     ///-
-    function get_power():Integer;
+    function get_daisyState():Integer;
 
     ////
     /// <summary>
-    ///   Changes the state of the LED.
+    ///   Returns the number of child nodes currently detected.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the number of child nodes currently detected
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_CHILDCOUNT_INVALID</c>.
+    /// </para>
+    ///-
+    function get_childCount():LongInt;
+
+    ////
+    /// <summary>
+    ///   Returns the number of child nodes expected in normal conditions.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the number of child nodes expected in normal conditions
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_REQUIREDCHILDCOUNT_INVALID</c>.
+    /// </para>
+    ///-
+    function get_requiredChildCount():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the number of child nodes expected in normal conditions.
+    /// <para>
+    ///   If the value is zero, no check is performed. If it is non-zero, the number
+    ///   child nodes is checked on startup and the status will change to error if
+    ///   the count does not match.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_POWER_OFF</c> or <c>Y_POWER_ON</c>, according to the state of the LED
+    ///   an integer corresponding to the number of child nodes expected in normal conditions
     /// </param>
     /// <para>
     /// </para>
@@ -135,89 +171,7 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function set_power(newval:Integer):integer;
-
-    ////
-    /// <summary>
-    ///   Returns the current LED intensity (in per cent).
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   an integer corresponding to the current LED intensity (in per cent)
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>Y_LUMINOSITY_INVALID</c>.
-    /// </para>
-    ///-
-    function get_luminosity():LongInt;
-
-    ////
-    /// <summary>
-    ///   Changes the current LED intensity (in per cent).
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="newval">
-    ///   an integer corresponding to the current LED intensity (in per cent)
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_luminosity(newval:LongInt):integer;
-
-    ////
-    /// <summary>
-    ///   Returns the current LED signaling mode.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   a value among <c>Y_BLINKING_STILL</c>, <c>Y_BLINKING_RELAX</c>, <c>Y_BLINKING_AWARE</c>,
-    ///   <c>Y_BLINKING_RUN</c>, <c>Y_BLINKING_CALL</c> and <c>Y_BLINKING_PANIC</c> corresponding to the
-    ///   current LED signaling mode
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>Y_BLINKING_INVALID</c>.
-    /// </para>
-    ///-
-    function get_blinking():Integer;
-
-    ////
-    /// <summary>
-    ///   Changes the current LED signaling mode.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="newval">
-    ///   a value among <c>Y_BLINKING_STILL</c>, <c>Y_BLINKING_RELAX</c>, <c>Y_BLINKING_AWARE</c>,
-    ///   <c>Y_BLINKING_RUN</c>, <c>Y_BLINKING_CALL</c> and <c>Y_BLINKING_PANIC</c> corresponding to the
-    ///   current LED signaling mode
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_blinking(newval:Integer):integer;
+    function set_requiredChildCount(newval:LongInt):integer;
 
     ////
     /// <summary>
@@ -247,7 +201,7 @@ type
     /// <para>
     ///   This function does not require that $THEFUNCTION$ is online at the time
     ///   it is invoked. The returned object is nevertheless valid.
-    ///   Use the method <c>YLed.isOnline()</c> to test if $THEFUNCTION$ is
+    ///   Use the method <c>YDaisyChain.isOnline()</c> to test if $THEFUNCTION$ is
     ///   indeed online at a given time. In case of ambiguity when looking for
     ///   $AFUNCTION$ by logical name, no error is notified: the first instance
     ///   found is returned. The search is performed first by hardware name,
@@ -258,10 +212,10 @@ type
     ///   a string that uniquely characterizes $THEFUNCTION$
     /// </param>
     /// <returns>
-    ///   a <c>YLed</c> object allowing you to drive $THEFUNCTION$.
+    ///   a <c>YDaisyChain</c> object allowing you to drive $THEFUNCTION$.
     /// </returns>
     ///-
-    class function FindLed(func: string):TYLed;
+    class function FindDaisyChain(func: string):TYDaisyChain;
 
     ////
     /// <summary>
@@ -281,24 +235,24 @@ type
     /// @noreturn
     /// </param>
     ///-
-    function registerValueCallback(callback: TYLedValueCallback):LongInt; overload;
+    function registerValueCallback(callback: TYDaisyChainValueCallback):LongInt; overload;
 
     function _invokeValueCallback(value: string):LongInt; override;
 
 
     ////
     /// <summary>
-    ///   Continues the enumeration of LEDs started using <c>yFirstLed()</c>.
+    ///   Continues the enumeration of module chains started using <c>yFirstDaisyChain()</c>.
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a pointer to a <c>YLed</c> object, corresponding to
-    ///   a LED currently online, or a <c>NIL</c> pointer
-    ///   if there are no more LEDs to enumerate.
+    ///   a pointer to a <c>YDaisyChain</c> object, corresponding to
+    ///   a module chain currently online, or a <c>NIL</c> pointer
+    ///   if there are no more module chains to enumerate.
     /// </returns>
     ///-
-    function nextLed():TYLed;
+    function nextDaisyChain():TYDaisyChain;
     ////
     /// <summary>
     ///   c
@@ -307,14 +261,14 @@ type
     /// </para>
     /// </summary>
     ///-
-    class function FirstLed():TYLed;
-  //--- (end of YLed accessors declaration)
+    class function FirstDaisyChain():TYDaisyChain;
+  //--- (end of YDaisyChain accessors declaration)
   end;
 
-//--- (Led functions declaration)
+//--- (DaisyChain functions declaration)
   ////
   /// <summary>
-  ///   Retrieves a LED for a given identifier.
+  ///   Retrieves a module chain for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
   /// </para>
@@ -338,80 +292,80 @@ type
   /// <para>
   /// </para>
   /// <para>
-  ///   This function does not require that the LED is online at the time
+  ///   This function does not require that the module chain is online at the time
   ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YLed.isOnline()</c> to test if the LED is
+  ///   Use the method <c>YDaisyChain.isOnline()</c> to test if the module chain is
   ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   a LED by logical name, no error is notified: the first instance
+  ///   a module chain by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the LED
+  ///   a string that uniquely characterizes the module chain
   /// </param>
   /// <returns>
-  ///   a <c>YLed</c> object allowing you to drive the LED.
+  ///   a <c>YDaisyChain</c> object allowing you to drive the module chain.
   /// </returns>
   ///-
-  function yFindLed(func:string):TYLed;
+  function yFindDaisyChain(func:string):TYDaisyChain;
   ////
   /// <summary>
-  ///   Starts the enumeration of LEDs currently accessible.
+  ///   Starts the enumeration of module chains currently accessible.
   /// <para>
-  ///   Use the method <c>YLed.nextLed()</c> to iterate on
-  ///   next LEDs.
+  ///   Use the method <c>YDaisyChain.nextDaisyChain()</c> to iterate on
+  ///   next module chains.
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a pointer to a <c>YLed</c> object, corresponding to
-  ///   the first LED currently online, or a <c>NIL</c> pointer
+  ///   a pointer to a <c>YDaisyChain</c> object, corresponding to
+  ///   the first module chain currently online, or a <c>NIL</c> pointer
   ///   if there are none.
   /// </returns>
   ///-
-  function yFirstLed():TYLed;
+  function yFirstDaisyChain():TYDaisyChain;
 
-//--- (end of Led functions declaration)
+//--- (end of DaisyChain functions declaration)
 
 implementation
-//--- (YLed dlldef)
-//--- (end of YLed dlldef)
+//--- (YDaisyChain dlldef)
+//--- (end of YDaisyChain dlldef)
 
-  constructor TYLed.Create(func:string);
+  constructor TYDaisyChain.Create(func:string);
     begin
       inherited Create(func);
-      _className := 'Led';
-      //--- (YLed accessors initialization)
-      _power := Y_POWER_INVALID;
-      _luminosity := Y_LUMINOSITY_INVALID;
-      _blinking := Y_BLINKING_INVALID;
-      _valueCallbackLed := nil;
-      //--- (end of YLed accessors initialization)
+      _className := 'DaisyChain';
+      //--- (YDaisyChain accessors initialization)
+      _daisyState := Y_DAISYSTATE_INVALID;
+      _childCount := Y_CHILDCOUNT_INVALID;
+      _requiredChildCount := Y_REQUIREDCHILDCOUNT_INVALID;
+      _valueCallbackDaisyChain := nil;
+      //--- (end of YDaisyChain accessors initialization)
     end;
 
 
-//--- (YLed implementation)
+//--- (YDaisyChain implementation)
 {$HINTS OFF}
-  function TYLed._parseAttr(member:PJSONRECORD):integer;
+  function TYDaisyChain._parseAttr(member:PJSONRECORD):integer;
     var
       sub : PJSONRECORD;
       i,l        : integer;
     begin
-      if (member^.name = 'power') then
+      if (member^.name = 'daisyState') then
         begin
-          _power := member^.ivalue;
+          _daisyState := integer(member^.ivalue);
          result := 1;
          exit;
          end;
-      if (member^.name = 'luminosity') then
+      if (member^.name = 'childCount') then
         begin
-          _luminosity := integer(member^.ivalue);
+          _childCount := integer(member^.ivalue);
          result := 1;
          exit;
          end;
-      if (member^.name = 'blinking') then
+      if (member^.name = 'requiredChildCount') then
         begin
-          _blinking := integer(member^.ivalue);
+          _requiredChildCount := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -421,20 +375,22 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the current LED state.
+  ///   Returns the state of the daisy-link between modules.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   either Y_POWER_OFF or Y_POWER_ON, according to the current LED state
+  ///   a value among Y_DAISYSTATE_READY, Y_DAISYSTATE_IS_CHILD, Y_DAISYSTATE_FIRMWARE_MISMATCH,
+  ///   Y_DAISYSTATE_CHILD_MISSING and Y_DAISYSTATE_CHILD_LOST corresponding to the state of the daisy-link
+  ///   between modules
   /// </returns>
   /// <para>
-  ///   On failure, throws an exception or returns Y_POWER_INVALID.
+  ///   On failure, throws an exception or returns Y_DAISYSTATE_INVALID.
   /// </para>
   ///-
-  function TYLed.get_power():Integer;
+  function TYDaisyChain.get_daisyState():Integer;
     var
       res : Integer;
     begin
@@ -442,11 +398,11 @@ implementation
         begin
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
-              result := Y_POWER_INVALID;
+              result := Y_DAISYSTATE_INVALID;
               exit;
             end;
         end;
-      res := self._power;
+      res := self._daisyState;
       result := res;
       exit;
     end;
@@ -454,48 +410,20 @@ implementation
 
   ////
   /// <summary>
-  ///   Changes the state of the LED.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_POWER_OFF or Y_POWER_ON, according to the state of the LED
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYLed.set_power(newval:Integer):integer;
-    var
-      rest_val: string;
-    begin
-      if(newval>0) then rest_val := '1' else rest_val := '0';
-      result := _setAttr('power',rest_val);
-    end;
-
-  ////
-  /// <summary>
-  ///   Returns the current LED intensity (in per cent).
+  ///   Returns the number of child nodes currently detected.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   an integer corresponding to the current LED intensity (in per cent)
+  ///   an integer corresponding to the number of child nodes currently detected
   /// </returns>
   /// <para>
-  ///   On failure, throws an exception or returns Y_LUMINOSITY_INVALID.
+  ///   On failure, throws an exception or returns Y_CHILDCOUNT_INVALID.
   /// </para>
   ///-
-  function TYLed.get_luminosity():LongInt;
+  function TYDaisyChain.get_childCount():LongInt;
     var
       res : LongInt;
     begin
@@ -503,11 +431,11 @@ implementation
         begin
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
-              result := Y_LUMINOSITY_INVALID;
+              result := Y_CHILDCOUNT_INVALID;
               exit;
             end;
         end;
-      res := self._luminosity;
+      res := self._childCount;
       result := res;
       exit;
     end;
@@ -515,61 +443,32 @@ implementation
 
   ////
   /// <summary>
-  ///   Changes the current LED intensity (in per cent).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the current LED intensity (in per cent)
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYLed.set_luminosity(newval:LongInt):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := inttostr(newval);
-      result := _setAttr('luminosity',rest_val);
-    end;
-
-  ////
-  /// <summary>
-  ///   Returns the current LED signaling mode.
+  ///   Returns the number of child nodes expected in normal conditions.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a value among Y_BLINKING_STILL, Y_BLINKING_RELAX, Y_BLINKING_AWARE, Y_BLINKING_RUN, Y_BLINKING_CALL
-  ///   and Y_BLINKING_PANIC corresponding to the current LED signaling mode
+  ///   an integer corresponding to the number of child nodes expected in normal conditions
   /// </returns>
   /// <para>
-  ///   On failure, throws an exception or returns Y_BLINKING_INVALID.
+  ///   On failure, throws an exception or returns Y_REQUIREDCHILDCOUNT_INVALID.
   /// </para>
   ///-
-  function TYLed.get_blinking():Integer;
+  function TYDaisyChain.get_requiredChildCount():LongInt;
     var
-      res : Integer;
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
-              result := Y_BLINKING_INVALID;
+              result := Y_REQUIREDCHILDCOUNT_INVALID;
               exit;
             end;
         end;
-      res := self._blinking;
+      res := self._requiredChildCount;
       result := res;
       exit;
     end;
@@ -577,15 +476,17 @@ implementation
 
   ////
   /// <summary>
-  ///   Changes the current LED signaling mode.
+  ///   Changes the number of child nodes expected in normal conditions.
   /// <para>
+  ///   If the value is zero, no check is performed. If it is non-zero, the number
+  ///   child nodes is checked on startup and the status will change to error if
+  ///   the count does not match.
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   a value among Y_BLINKING_STILL, Y_BLINKING_RELAX, Y_BLINKING_AWARE, Y_BLINKING_RUN, Y_BLINKING_CALL
-  ///   and Y_BLINKING_PANIC corresponding to the current LED signaling mode
+  ///   an integer corresponding to the number of child nodes expected in normal conditions
   /// </param>
   /// <para>
   /// </para>
@@ -596,12 +497,12 @@ implementation
   ///   On failure, throws an exception or returns a negative error code.
   /// </para>
   ///-
-  function TYLed.set_blinking(newval:Integer):integer;
+  function TYDaisyChain.set_requiredChildCount(newval:LongInt):integer;
     var
       rest_val: string;
     begin
       rest_val := inttostr(newval);
-      result := _setAttr('blinking',rest_val);
+      result := _setAttr('requiredChildCount',rest_val);
     end;
 
   ////
@@ -632,7 +533,7 @@ implementation
   /// <para>
   ///   This function does not require that $THEFUNCTION$ is online at the time
   ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YLed.isOnline()</c> to test if $THEFUNCTION$ is
+  ///   Use the method <c>YDaisyChain.isOnline()</c> to test if $THEFUNCTION$ is
   ///   indeed online at a given time. In case of ambiguity when looking for
   ///   $AFUNCTION$ by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
@@ -643,18 +544,18 @@ implementation
   ///   a string that uniquely characterizes $THEFUNCTION$
   /// </param>
   /// <returns>
-  ///   a <c>YLed</c> object allowing you to drive $THEFUNCTION$.
+  ///   a <c>YDaisyChain</c> object allowing you to drive $THEFUNCTION$.
   /// </returns>
   ///-
-  class function TYLed.FindLed(func: string):TYLed;
+  class function TYDaisyChain.FindDaisyChain(func: string):TYDaisyChain;
     var
-      obj : TYLed;
+      obj : TYDaisyChain;
     begin
-      obj := TYLed(TYFunction._FindFromCache('Led', func));
+      obj := TYDaisyChain(TYFunction._FindFromCache('DaisyChain', func));
       if obj = nil then
         begin
-          obj :=  TYLed.create(func);
-          TYFunction._AddToCache('Led',  func, obj);
+          obj :=  TYDaisyChain.create(func);
+          TYFunction._AddToCache('DaisyChain',  func, obj);
         end;
       result := obj;
       exit;
@@ -679,7 +580,7 @@ implementation
   /// @noreturn
   /// </param>
   ///-
-  function TYLed.registerValueCallback(callback: TYLedValueCallback):LongInt;
+  function TYDaisyChain.registerValueCallback(callback: TYDaisyChainValueCallback):LongInt;
     var
       val : string;
     begin
@@ -691,7 +592,7 @@ implementation
         begin
           TYFunction._UpdateValueCallbackList(self, false);
         end;
-      self._valueCallbackLed := callback;
+      self._valueCallbackDaisyChain := callback;
       // Immediately invoke value callback with current value
       if (addr(callback) <> nil) and self.isOnline then
         begin
@@ -706,11 +607,11 @@ implementation
     end;
 
 
-  function TYLed._invokeValueCallback(value: string):LongInt;
+  function TYDaisyChain._invokeValueCallback(value: string):LongInt;
     begin
-      if (addr(self._valueCallbackLed) <> nil) then
+      if (addr(self._valueCallbackDaisyChain) <> nil) then
         begin
-          self._valueCallbackLed(self, value);
+          self._valueCallbackDaisyChain(self, value);
         end
       else
         begin
@@ -721,31 +622,31 @@ implementation
     end;
 
 
-  function TYLed.nextLed(): TYLed;
+  function TYDaisyChain.nextDaisyChain(): TYDaisyChain;
     var
       hwid: string;
     begin
       if YISERR(_nextFunction(hwid)) then
         begin
-          nextLed := nil;
+          nextDaisyChain := nil;
           exit;
         end;
       if hwid = '' then
         begin
-          nextLed := nil;
+          nextDaisyChain := nil;
           exit;
         end;
-      nextLed := TYLed.FindLed(hwid);
+      nextDaisyChain := TYDaisyChain.FindDaisyChain(hwid);
     end;
 
-  class function TYLed.FirstLed(): TYLed;
+  class function TYDaisyChain.FirstDaisyChain(): TYDaisyChain;
     var
       v_fundescr      : YFUN_DESCR;
       dev             : YDEV_DESCR;
       neededsize, err : integer;
       serial, funcId, funcName, funcVal, errmsg : string;
     begin
-      err := yapiGetFunctionsByClass('Led', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
+      err := yapiGetFunctionsByClass('DaisyChain', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
       if (YISERR(err) or (neededsize = 0)) then
         begin
           result := nil;
@@ -756,35 +657,35 @@ implementation
           result := nil;
           exit;
         end;
-     result := TYLed.FindLed(serial+'.'+funcId);
+     result := TYDaisyChain.FindDaisyChain(serial+'.'+funcId);
     end;
 
-//--- (end of YLed implementation)
+//--- (end of YDaisyChain implementation)
 
-//--- (Led functions)
+//--- (DaisyChain functions)
 
-  function yFindLed(func:string): TYLed;
+  function yFindDaisyChain(func:string): TYDaisyChain;
     begin
-      result := TYLed.FindLed(func);
+      result := TYDaisyChain.FindDaisyChain(func);
     end;
 
-  function yFirstLed(): TYLed;
+  function yFirstDaisyChain(): TYDaisyChain;
     begin
-      result := TYLed.FirstLed();
+      result := TYDaisyChain.FirstDaisyChain();
     end;
 
-  procedure _LedCleanup();
+  procedure _DaisyChainCleanup();
     begin
     end;
 
-//--- (end of Led functions)
+//--- (end of DaisyChain functions)
 
 initialization
-  //--- (Led initialization)
-  //--- (end of Led initialization)
+  //--- (DaisyChain initialization)
+  //--- (end of DaisyChain initialization)
 
 finalization
-  //--- (Led cleanup)
-  _LedCleanup();
-  //--- (end of Led cleanup)
+  //--- (DaisyChain cleanup)
+  _DaisyChainCleanup();
+  //--- (end of DaisyChain cleanup)
 end.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwminput.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_pwminput.pas 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * Implements yFindPwmInput(), the high-level API for PwmInput functions
  *
@@ -74,7 +74,7 @@ type
   /// <para>
   ///   The Yoctopuce class YPwmInput allows you to read and configure Yoctopuce PWM
   ///   sensors. It inherits from YSensor class the core functions to read measurements,
-  ///   register callback functions, access to the autonomous datalogger.
+  ///   to register callback functions, to access the autonomous datalogger.
   ///   This class adds the ability to configure the signal parameter used to transmit
   ///   information: the duty cycle, the frequency or the pulse width.
   /// </para>
@@ -550,6 +550,8 @@ implementation
   /// </para>
   ///-
   function TYPwmInput.get_dutyCycle():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -559,7 +561,8 @@ implementation
               exit;
             end;
         end;
-      result := self._dutyCycle;
+      res := self._dutyCycle;
+      result := res;
       exit;
     end;
 
@@ -580,6 +583,8 @@ implementation
   /// </para>
   ///-
   function TYPwmInput.get_pulseDuration():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -589,7 +594,8 @@ implementation
               exit;
             end;
         end;
-      result := self._pulseDuration;
+      res := self._pulseDuration;
+      result := res;
       exit;
     end;
 
@@ -610,6 +616,8 @@ implementation
   /// </para>
   ///-
   function TYPwmInput.get_frequency():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -619,7 +627,8 @@ implementation
               exit;
             end;
         end;
-      result := self._frequency;
+      res := self._frequency;
+      result := res;
       exit;
     end;
 
@@ -640,6 +649,8 @@ implementation
   /// </para>
   ///-
   function TYPwmInput.get_period():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -649,7 +660,8 @@ implementation
               exit;
             end;
         end;
-      result := self._period;
+      res := self._period;
+      result := res;
       exit;
     end;
 
@@ -673,6 +685,8 @@ implementation
   /// </para>
   ///-
   function TYPwmInput.get_pulseCounter():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -682,7 +696,8 @@ implementation
               exit;
             end;
         end;
-      result := self._pulseCounter;
+      res := self._pulseCounter;
+      result := res;
       exit;
     end;
 
@@ -711,6 +726,8 @@ implementation
   /// </para>
   ///-
   function TYPwmInput.get_pulseTimer():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -720,7 +737,8 @@ implementation
               exit;
             end;
         end;
-      result := self._pulseTimer;
+      res := self._pulseTimer;
+      result := res;
       exit;
     end;
 
@@ -744,6 +762,8 @@ implementation
   /// </para>
   ///-
   function TYPwmInput.get_pwmReportMode():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -753,7 +773,8 @@ implementation
               exit;
             end;
         end;
-      result := self._pwmReportMode;
+      res := self._pwmReportMode;
+      result := res;
       exit;
     end;
 

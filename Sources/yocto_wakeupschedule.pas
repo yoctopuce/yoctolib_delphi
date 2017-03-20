@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wakeupschedule.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_wakeupschedule.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
@@ -620,6 +620,8 @@ implementation
   /// </para>
   ///-
   function TYWakeUpSchedule.get_minutesA():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -629,7 +631,8 @@ implementation
               exit;
             end;
         end;
-      result := self._minutesA;
+      res := self._minutesA;
+      result := res;
       exit;
     end;
 
@@ -678,6 +681,8 @@ implementation
   /// </para>
   ///-
   function TYWakeUpSchedule.get_minutesB():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -687,7 +692,8 @@ implementation
               exit;
             end;
         end;
-      result := self._minutesB;
+      res := self._minutesB;
+      result := res;
       exit;
     end;
 
@@ -736,6 +742,8 @@ implementation
   /// </para>
   ///-
   function TYWakeUpSchedule.get_hours():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -745,7 +753,8 @@ implementation
               exit;
             end;
         end;
-      result := self._hours;
+      res := self._hours;
+      result := res;
       exit;
     end;
 
@@ -794,6 +803,8 @@ implementation
   /// </para>
   ///-
   function TYWakeUpSchedule.get_weekDays():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -803,7 +814,8 @@ implementation
               exit;
             end;
         end;
-      result := self._weekDays;
+      res := self._weekDays;
+      result := res;
       exit;
     end;
 
@@ -852,6 +864,8 @@ implementation
   /// </para>
   ///-
   function TYWakeUpSchedule.get_monthDays():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -861,7 +875,8 @@ implementation
               exit;
             end;
         end;
-      result := self._monthDays;
+      res := self._monthDays;
+      result := res;
       exit;
     end;
 
@@ -910,6 +925,8 @@ implementation
   /// </para>
   ///-
   function TYWakeUpSchedule.get_months():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -919,7 +936,8 @@ implementation
               exit;
             end;
         end;
-      result := self._months;
+      res := self._months;
+      result := res;
       exit;
     end;
 
@@ -968,6 +986,8 @@ implementation
   /// </para>
   ///-
   function TYWakeUpSchedule.get_nextOccurence():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -977,7 +997,8 @@ implementation
               exit;
             end;
         end;
-      result := self._nextOccurence;
+      res := self._nextOccurence;
+      result := res;
       exit;
     end;
 

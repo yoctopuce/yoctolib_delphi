@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_spiport.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_spiport.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -1248,6 +1248,8 @@ implementation
   /// </para>
   ///-
   function TYSpiPort.get_rxCount():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1257,7 +1259,8 @@ implementation
               exit;
             end;
         end;
-      result := self._rxCount;
+      res := self._rxCount;
+      result := res;
       exit;
     end;
 
@@ -1278,6 +1281,8 @@ implementation
   /// </para>
   ///-
   function TYSpiPort.get_txCount():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1287,7 +1292,8 @@ implementation
               exit;
             end;
         end;
-      result := self._txCount;
+      res := self._txCount;
+      result := res;
       exit;
     end;
 
@@ -1308,6 +1314,8 @@ implementation
   /// </para>
   ///-
   function TYSpiPort.get_errCount():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1317,7 +1325,8 @@ implementation
               exit;
             end;
         end;
-      result := self._errCount;
+      res := self._errCount;
+      result := res;
       exit;
     end;
 
@@ -1338,6 +1347,8 @@ implementation
   /// </para>
   ///-
   function TYSpiPort.get_rxMsgCount():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1347,7 +1358,8 @@ implementation
               exit;
             end;
         end;
-      result := self._rxMsgCount;
+      res := self._rxMsgCount;
+      result := res;
       exit;
     end;
 
@@ -1368,6 +1380,8 @@ implementation
   /// </para>
   ///-
   function TYSpiPort.get_txMsgCount():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1377,7 +1391,8 @@ implementation
               exit;
             end;
         end;
-      result := self._txMsgCount;
+      res := self._txMsgCount;
+      result := res;
       exit;
     end;
 
@@ -1398,6 +1413,8 @@ implementation
   /// </para>
   ///-
   function TYSpiPort.get_lastMsg():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1407,7 +1424,8 @@ implementation
               exit;
             end;
         end;
-      result := self._lastMsg;
+      res := self._lastMsg;
+      result := res;
       exit;
     end;
 
@@ -1428,6 +1446,8 @@ implementation
   /// </para>
   ///-
   function TYSpiPort.get_currentJob():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1437,7 +1457,8 @@ implementation
               exit;
             end;
         end;
-      result := self._currentJob;
+      res := self._currentJob;
+      result := res;
       exit;
     end;
 
@@ -1488,6 +1509,8 @@ implementation
   /// </para>
   ///-
   function TYSpiPort.get_startupJob():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1497,7 +1520,8 @@ implementation
               exit;
             end;
         end;
-      result := self._startupJob;
+      res := self._startupJob;
+      result := res;
       exit;
     end;
 
@@ -1533,6 +1557,8 @@ implementation
     end;
 
   function TYSpiPort.get_command():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1542,7 +1568,8 @@ implementation
               exit;
             end;
         end;
-      result := self._command;
+      res := self._command;
+      result := res;
       exit;
     end;
 
@@ -1573,6 +1600,8 @@ implementation
   /// </para>
   ///-
   function TYSpiPort.get_voltageLevel():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1582,7 +1611,8 @@ implementation
               exit;
             end;
         end;
-      result := self._voltageLevel;
+      res := self._voltageLevel;
+      result := res;
       exit;
     end;
 
@@ -1642,6 +1672,8 @@ implementation
   /// </para>
   ///-
   function TYSpiPort.get_protocol():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1651,7 +1683,8 @@ implementation
               exit;
             end;
         end;
-      result := self._protocol;
+      res := self._protocol;
+      result := res;
       exit;
     end;
 
@@ -1710,6 +1743,8 @@ implementation
   /// </para>
   ///-
   function TYSpiPort.get_spiMode():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1719,7 +1754,8 @@ implementation
               exit;
             end;
         end;
-      result := self._spiMode;
+      res := self._spiMode;
+      result := res;
       exit;
     end;
 
@@ -1772,6 +1808,8 @@ implementation
   /// </para>
   ///-
   function TYSpiPort.get_ssPolarity():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1781,7 +1819,8 @@ implementation
               exit;
             end;
         end;
-      result := self._ssPolarity;
+      res := self._ssPolarity;
+      result := res;
       exit;
     end;
 
@@ -1831,6 +1870,8 @@ implementation
   /// </para>
   ///-
   function TYSpiPort.get_shitftSampling():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1840,7 +1881,8 @@ implementation
               exit;
             end;
         end;
-      result := self._shitftSampling;
+      res := self._shitftSampling;
+      result := res;
       exit;
     end;
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_network.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_network.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindNetwork(), the high-level API for Network functions
  *
@@ -87,6 +87,7 @@ const Y_CALLBACKENCODING_MQTT = 9;
 const Y_CALLBACKENCODING_INVALID = -1;
 const Y_CALLBACKCREDENTIALS_INVALID   = YAPI_INVALID_STRING;
 const Y_CALLBACKINITIALDELAY_INVALID  = YAPI_INVALID_UINT;
+const Y_CALLBACKSCHEDULE_INVALID      = YAPI_INVALID_STRING;
 const Y_CALLBACKMINDELAY_INVALID      = YAPI_INVALID_UINT;
 const Y_CALLBACKMAXDELAY_INVALID      = YAPI_INVALID_UINT;
 const Y_POECURRENT_INVALID            = YAPI_INVALID_UINT;
@@ -136,6 +137,7 @@ type
     _callbackEncoding         : Integer;
     _callbackCredentials      : string;
     _callbackInitialDelay     : LongInt;
+    _callbackSchedule         : string;
     _callbackMinDelay         : LongInt;
     _callbackMaxDelay         : LongInt;
     _poeCurrent               : LongInt;
@@ -253,6 +255,35 @@ type
     ///-
     function get_router():string;
 
+    ////
+    /// <summary>
+    ///   Returns the IP configuration of the network interface.
+    /// <para>
+    /// </para>
+    /// <para>
+    ///   If the network interface is setup to use a static IP address, the string starts with "STATIC:" and
+    ///   is followed by three
+    ///   parameters, separated by "/". The first is the device IP address, followed by the subnet mask
+    ///   length, and finally the
+    ///   router IP address (default gateway). For instance: "STATIC:192.168.1.14/16/192.168.1.1"
+    /// </para>
+    /// <para>
+    ///   If the network interface is configured to receive its IP from a DHCP server, the string start with
+    ///   "DHCP:" and is followed by
+    ///   three parameters separated by "/". The first is the fallback IP address, then the fallback subnet
+    ///   mask length and finally the
+    ///   fallback router IP address. These three parameters are used when no DHCP reply is received.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the IP configuration of the network interface
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_IPCONFIG_INVALID</c>.
+    /// </para>
+    ///-
     function get_ipConfig():string;
 
     function set_ipConfig(newval:string):integer;
@@ -901,14 +932,53 @@ type
 
     ////
     /// <summary>
-    ///   Returns the minimum waiting time between two callback notifications, in seconds.
+    ///   Returns the HTTP callback schedule strategy, as a text string.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the minimum waiting time between two callback notifications, in seconds
+    ///   a string corresponding to the HTTP callback schedule strategy, as a text string
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_CALLBACKSCHEDULE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_callbackSchedule():string;
+
+    ////
+    /// <summary>
+    ///   Changes the HTTP callback schedule strategy, as a text string.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a string corresponding to the HTTP callback schedule strategy, as a text string
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_callbackSchedule(newval:string):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the minimum waiting time between two HTTP callbacks, in seconds.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the minimum waiting time between two HTTP callbacks, in seconds
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_CALLBACKMINDELAY_INVALID</c>.
@@ -918,14 +988,14 @@ type
 
     ////
     /// <summary>
-    ///   Changes the minimum waiting time between two callback notifications, in seconds.
+    ///   Changes the minimum waiting time between two HTTP callbacks, in seconds.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer corresponding to the minimum waiting time between two callback notifications, in seconds
+    ///   an integer corresponding to the minimum waiting time between two HTTP callbacks, in seconds
     /// </param>
     /// <para>
     /// </para>
@@ -940,14 +1010,14 @@ type
 
     ////
     /// <summary>
-    ///   Returns the maximum waiting time between two callback notifications, in seconds.
+    ///   Returns the waiting time between two HTTP callbacks when there is nothing new.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the maximum waiting time between two callback notifications, in seconds
+    ///   an integer corresponding to the waiting time between two HTTP callbacks when there is nothing new
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_CALLBACKMAXDELAY_INVALID</c>.
@@ -957,14 +1027,14 @@ type
 
     ////
     /// <summary>
-    ///   Changes the maximum waiting time between two callback notifications, in seconds.
+    ///   Changes the waiting time between two HTTP callbacks when there is nothing new.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer corresponding to the maximum waiting time between two callback notifications, in seconds
+    ///   an integer corresponding to the waiting time between two HTTP callbacks when there is nothing new
     /// </param>
     /// <para>
     /// </para>
@@ -1272,6 +1342,7 @@ implementation
       _callbackEncoding := Y_CALLBACKENCODING_INVALID;
       _callbackCredentials := Y_CALLBACKCREDENTIALS_INVALID;
       _callbackInitialDelay := Y_CALLBACKINITIALDELAY_INVALID;
+      _callbackSchedule := Y_CALLBACKSCHEDULE_INVALID;
       _callbackMinDelay := Y_CALLBACKMINDELAY_INVALID;
       _callbackMaxDelay := Y_CALLBACKMAXDELAY_INVALID;
       _poeCurrent := Y_POECURRENT_INVALID;
@@ -1407,6 +1478,12 @@ implementation
          result := 1;
          exit;
          end;
+      if (member^.name = 'callbackSchedule') then
+        begin
+          _callbackSchedule := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
       if (member^.name = 'callbackMinDelay') then
         begin
           _callbackMinDelay := integer(member^.ivalue);
@@ -1459,6 +1536,8 @@ implementation
   /// </para>
   ///-
   function TYNetwork.get_readiness():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1468,7 +1547,8 @@ implementation
               exit;
             end;
         end;
-      result := self._readiness;
+      res := self._readiness;
+      result := res;
       exit;
     end;
 
@@ -1491,6 +1571,8 @@ implementation
   /// </para>
   ///-
   function TYNetwork.get_macAddress():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration = 0 then
         begin
@@ -1500,7 +1582,8 @@ implementation
               exit;
             end;
         end;
-      result := self._macAddress;
+      res := self._macAddress;
+      result := res;
       exit;
     end;
 
@@ -1523,6 +1606,8 @@ implementation
   /// </para>
   ///-
   function TYNetwork.get_ipAddress():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1532,7 +1617,8 @@ implementation
               exit;
             end;
         end;
-      result := self._ipAddress;
+      res := self._ipAddress;
+      result := res;
       exit;
     end;
 
@@ -1553,6 +1639,8 @@ implementation
   /// </para>
   ///-
   function TYNetwork.get_subnetMask():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1562,7 +1650,8 @@ implementation
               exit;
             end;
         end;
-      result := self._subnetMask;
+      res := self._subnetMask;
+      result := res;
       exit;
     end;
 
@@ -1583,6 +1672,8 @@ implementation
   /// </para>
   ///-
   function TYNetwork.get_router():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1592,12 +1683,44 @@ implementation
               exit;
             end;
         end;
-      result := self._router;
+      res := self._router;
+      result := res;
       exit;
     end;
 
 
+  ////
+  /// <summary>
+  ///   Returns the IP configuration of the network interface.
+  /// <para>
+  /// </para>
+  /// <para>
+  ///   If the network interface is setup to use a static IP address, the string starts with "STATIC:" and
+  ///   is followed by three
+  ///   parameters, separated by "/". The first is the device IP address, followed by the subnet mask
+  ///   length, and finally the
+  ///   router IP address (default gateway). For instance: "STATIC:192.168.1.14/16/192.168.1.1"
+  /// </para>
+  /// <para>
+  ///   If the network interface is configured to receive its IP from a DHCP server, the string start with
+  ///   "DHCP:" and is followed by
+  ///   three parameters separated by "/". The first is the fallback IP address, then the fallback subnet
+  ///   mask length and finally the
+  ///   fallback router IP address. These three parameters are used when no DHCP reply is received.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a string corresponding to the IP configuration of the network interface
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_IPCONFIG_INVALID.
+  /// </para>
+  ///-
   function TYNetwork.get_ipConfig():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1607,7 +1730,8 @@ implementation
               exit;
             end;
         end;
-      result := self._ipConfig;
+      res := self._ipConfig;
+      result := res;
       exit;
     end;
 
@@ -1636,6 +1760,8 @@ implementation
   /// </para>
   ///-
   function TYNetwork.get_primaryDNS():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1645,7 +1771,8 @@ implementation
               exit;
             end;
         end;
-      result := self._primaryDNS;
+      res := self._primaryDNS;
+      result := res;
       exit;
     end;
 
@@ -1696,6 +1823,8 @@ implementation
   /// </para>
   ///-
   function TYNetwork.get_secondaryDNS():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1705,7 +1834,8 @@ implementation
               exit;
             end;
         end;
-      result := self._secondaryDNS;
+      res := self._secondaryDNS;
+      result := res;
       exit;
     end;
 
@@ -1756,6 +1886,8 @@ implementation
   /// </para>
   ///-
   function TYNetwork.get_ntpServer():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1765,7 +1897,8 @@ implementation
               exit;
             end;
         end;
-      result := self._ntpServer;
+      res := self._ntpServer;
+      result := res;
       exit;
     end;
 
@@ -1817,6 +1950,8 @@ implementation
   /// </para>
   ///-
   function TYNetwork.get_userPassword():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1826,7 +1961,8 @@ implementation
               exit;
             end;
         end;
-      result := self._userPassword;
+      res := self._userPassword;
+      result := res;
       exit;
     end;
 
@@ -1882,6 +2018,8 @@ implementation
   /// </para>
   ///-
   function TYNetwork.get_adminPassword():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1891,7 +2029,8 @@ implementation
               exit;
             end;
         end;
-      result := self._adminPassword;
+      res := self._adminPassword;
+      result := res;
       exit;
     end;
 
@@ -1945,6 +2084,8 @@ implementation
   /// </para>
   ///-
   function TYNetwork.get_httpPort():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1954,7 +2095,8 @@ implementation
               exit;
             end;
         end;
-      result := self._httpPort;
+      res := self._httpPort;
+      result := res;
       exit;
     end;
 
@@ -2006,6 +2148,8 @@ implementation
   /// </para>
   ///-
   function TYNetwork.get_defaultPage():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -2015,7 +2159,8 @@ implementation
               exit;
             end;
         end;
-      result := self._defaultPage;
+      res := self._defaultPage;
+      result := res;
       exit;
     end;
 
@@ -2070,6 +2215,8 @@ implementation
   /// </para>
   ///-
   function TYNetwork.get_discoverable():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -2079,7 +2226,8 @@ implementation
               exit;
             end;
         end;
-      result := self._discoverable;
+      res := self._discoverable;
+      result := res;
       exit;
     end;
 
@@ -2135,6 +2283,8 @@ implementation
   /// </para>
   ///-
   function TYNetwork.get_wwwWatchdogDelay():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -2144,7 +2294,8 @@ implementation
               exit;
             end;
         end;
-      result := self._wwwWatchdogDelay;
+      res := self._wwwWatchdogDelay;
+      result := res;
       exit;
     end;
 
@@ -2198,6 +2349,8 @@ implementation
   /// </para>
   ///-
   function TYNetwork.get_callbackUrl():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -2207,7 +2360,8 @@ implementation
               exit;
             end;
         end;
-      result := self._callbackUrl;
+      res := self._callbackUrl;
+      result := res;
       exit;
     end;
 
@@ -2259,6 +2413,8 @@ implementation
   /// </para>
   ///-
   function TYNetwork.get_callbackMethod():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -2268,7 +2424,8 @@ implementation
               exit;
             end;
         end;
-      result := self._callbackMethod;
+      res := self._callbackMethod;
+      result := res;
       exit;
     end;
 
@@ -2321,6 +2478,8 @@ implementation
   /// </para>
   ///-
   function TYNetwork.get_callbackEncoding():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -2330,7 +2489,8 @@ implementation
               exit;
             end;
         end;
-      result := self._callbackEncoding;
+      res := self._callbackEncoding;
+      result := res;
       exit;
     end;
 
@@ -2384,6 +2544,8 @@ implementation
   /// </para>
   ///-
   function TYNetwork.get_callbackCredentials():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -2393,7 +2555,8 @@ implementation
               exit;
             end;
         end;
-      result := self._callbackCredentials;
+      res := self._callbackCredentials;
+      result := res;
       exit;
     end;
 
@@ -2486,6 +2649,8 @@ implementation
   /// </para>
   ///-
   function TYNetwork.get_callbackInitialDelay():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -2495,7 +2660,8 @@ implementation
               exit;
             end;
         end;
-      result := self._callbackInitialDelay;
+      res := self._callbackInitialDelay;
+      result := res;
       exit;
     end;
 
@@ -2530,20 +2696,83 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the minimum waiting time between two callback notifications, in seconds.
+  ///   Returns the HTTP callback schedule strategy, as a text string.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   an integer corresponding to the minimum waiting time between two callback notifications, in seconds
+  ///   a string corresponding to the HTTP callback schedule strategy, as a text string
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_CALLBACKSCHEDULE_INVALID.
+  /// </para>
+  ///-
+  function TYNetwork.get_callbackSchedule():string;
+    var
+      res : string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_CALLBACKSCHEDULE_INVALID;
+              exit;
+            end;
+        end;
+      res := self._callbackSchedule;
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the HTTP callback schedule strategy, as a text string.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a string corresponding to the HTTP callback schedule strategy, as a text string
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYNetwork.set_callbackSchedule(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('callbackSchedule',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the minimum waiting time between two HTTP callbacks, in seconds.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the minimum waiting time between two HTTP callbacks, in seconds
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_CALLBACKMINDELAY_INVALID.
   /// </para>
   ///-
   function TYNetwork.get_callbackMinDelay():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -2553,21 +2782,22 @@ implementation
               exit;
             end;
         end;
-      result := self._callbackMinDelay;
+      res := self._callbackMinDelay;
+      result := res;
       exit;
     end;
 
 
   ////
   /// <summary>
-  ///   Changes the minimum waiting time between two callback notifications, in seconds.
+  ///   Changes the minimum waiting time between two HTTP callbacks, in seconds.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   an integer corresponding to the minimum waiting time between two callback notifications, in seconds
+  ///   an integer corresponding to the minimum waiting time between two HTTP callbacks, in seconds
   /// </param>
   /// <para>
   /// </para>
@@ -2588,20 +2818,22 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the maximum waiting time between two callback notifications, in seconds.
+  ///   Returns the waiting time between two HTTP callbacks when there is nothing new.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   an integer corresponding to the maximum waiting time between two callback notifications, in seconds
+  ///   an integer corresponding to the waiting time between two HTTP callbacks when there is nothing new
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_CALLBACKMAXDELAY_INVALID.
   /// </para>
   ///-
   function TYNetwork.get_callbackMaxDelay():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -2611,21 +2843,22 @@ implementation
               exit;
             end;
         end;
-      result := self._callbackMaxDelay;
+      res := self._callbackMaxDelay;
+      result := res;
       exit;
     end;
 
 
   ////
   /// <summary>
-  ///   Changes the maximum waiting time between two callback notifications, in seconds.
+  ///   Changes the waiting time between two HTTP callbacks when there is nothing new.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   an integer corresponding to the maximum waiting time between two callback notifications, in seconds
+  ///   an integer corresponding to the waiting time between two HTTP callbacks when there is nothing new
   /// </param>
   /// <para>
   /// </para>
@@ -2662,6 +2895,8 @@ implementation
   /// </para>
   ///-
   function TYNetwork.get_poeCurrent():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -2671,7 +2906,8 @@ implementation
               exit;
             end;
         end;
-      result := self._poeCurrent;
+      res := self._poeCurrent;
+      result := res;
       exit;
     end;
 

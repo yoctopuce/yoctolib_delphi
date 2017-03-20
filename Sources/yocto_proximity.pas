@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: pic24config.php 26169 2016-12-12 01:36:34Z mvuilleu $
+ * $Id: pic24config.php 26780 2017-03-16 14:02:09Z mvuilleu $
  *
  * Implements yFindProximity(), the high-level API for Proximity functions
  *
@@ -47,6 +47,7 @@ uses
 
 //--- (YProximity definitions)
 
+const Y_SIGNALVALUE_INVALID           = YAPI_INVALID_DOUBLE;
 const Y_DETECTIONTHRESHOLD_INVALID    = YAPI_INVALID_UINT;
 const Y_ISPRESENT_FALSE = 0;
 const Y_ISPRESENT_TRUE = 1;
@@ -55,6 +56,10 @@ const Y_LASTTIMEAPPROACHED_INVALID    = YAPI_INVALID_LONG;
 const Y_LASTTIMEREMOVED_INVALID       = YAPI_INVALID_LONG;
 const Y_PULSECOUNTER_INVALID          = YAPI_INVALID_LONG;
 const Y_PULSETIMER_INVALID            = YAPI_INVALID_LONG;
+const Y_PROXIMITYREPORTMODE_NUMERIC = 0;
+const Y_PROXIMITYREPORTMODE_PRESENCE = 1;
+const Y_PROXIMITYREPORTMODE_PULSECOUNT = 2;
+const Y_PROXIMITYREPORTMODE_INVALID = -1;
 
 
 //--- (end of YProximity definitions)
@@ -70,8 +75,8 @@ type
   ///   TYProximity Class: Proximity function interface
   /// <para>
   ///   The Yoctopuce class YProximity allows you to use and configure Yoctopuce proximity
-  ///   sensors. It inherits from YSensor class the core functions to read measurements,
-  ///   register callback functions, access to the autonomous datalogger.
+  ///   sensors. It inherits from the YSensor class the core functions to read measurements,
+  ///   to register callback functions, to access the autonomous datalogger.
   ///   This class adds the ability to easily perform a one-point linear calibration
   ///   to compensate the effect of a glass or filter placed in front of the sensor.
   /// </para>
@@ -94,12 +99,14 @@ type
     _calibrationParam         : string;
     _resolution               : double;
     _sensorState              : LongInt;
+    _signalValue              : double;
     _detectionThreshold       : LongInt;
     _isPresent                : Integer;
     _lastTimeApproached       : int64;
     _lastTimeRemoved          : int64;
     _pulseCounter             : int64;
     _pulseTimer               : int64;
+    _proximityReportMode      : Integer;
     _valueCallbackProximity   : TYProximityValueCallback;
     _timedReportCallbackProximity : TYProximityTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
@@ -110,6 +117,23 @@ type
   public
     //--- (YProximity accessors declaration)
     constructor Create(func:string);
+
+    ////
+    /// <summary>
+    ///   Returns the current value of signal measured by the proximity sensor.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a floating point number corresponding to the current value of signal measured by the proximity sensor
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_SIGNALVALUE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_signalValue():double;
 
     ////
     /// <summary>
@@ -237,20 +261,64 @@ type
 
     ////
     /// <summary>
-    ///   Returns the timer of the pulses counter (ms).
+    ///   Returns the timer of the pulse counter (ms).
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the timer of the pulses counter (ms)
+    ///   an integer corresponding to the timer of the pulse counter (ms)
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_PULSETIMER_INVALID</c>.
     /// </para>
     ///-
     function get_pulseTimer():int64;
+
+    ////
+    /// <summary>
+    ///   Returns the parameter (sensor value, presence or pulse count) returned by the get_currentValue function and callbacks.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a value among <c>Y_PROXIMITYREPORTMODE_NUMERIC</c>, <c>Y_PROXIMITYREPORTMODE_PRESENCE</c> and
+    ///   <c>Y_PROXIMITYREPORTMODE_PULSECOUNT</c> corresponding to the parameter (sensor value, presence or
+    ///   pulse count) returned by the get_currentValue function and callbacks
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_PROXIMITYREPORTMODE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_proximityReportMode():Integer;
+
+    ////
+    /// <summary>
+    ///   Modifies the  parameter  type (sensor value, presence or pulse count) returned by the get_currentValue function and callbacks.
+    /// <para>
+    ///   The edge count value is limited to the 6 lowest digits. For values greater than one million, use
+    ///   get_pulseCounter().
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a value among <c>Y_PROXIMITYREPORTMODE_NUMERIC</c>, <c>Y_PROXIMITYREPORTMODE_PRESENCE</c> and
+    ///   <c>Y_PROXIMITYREPORTMODE_PULSECOUNT</c>
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_proximityReportMode(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -342,7 +410,7 @@ type
 
     ////
     /// <summary>
-    ///   Returns the pulse counter value as well as its timer.
+    ///   Resets the pulse counter value as well as its timer.
     /// <para>
     /// </para>
     /// </summary>
@@ -452,12 +520,14 @@ implementation
       inherited Create(func);
       _className := 'Proximity';
       //--- (YProximity accessors initialization)
+      _signalValue := Y_SIGNALVALUE_INVALID;
       _detectionThreshold := Y_DETECTIONTHRESHOLD_INVALID;
       _isPresent := Y_ISPRESENT_INVALID;
       _lastTimeApproached := Y_LASTTIMEAPPROACHED_INVALID;
       _lastTimeRemoved := Y_LASTTIMEREMOVED_INVALID;
       _pulseCounter := Y_PULSECOUNTER_INVALID;
       _pulseTimer := Y_PULSETIMER_INVALID;
+      _proximityReportMode := Y_PROXIMITYREPORTMODE_INVALID;
       _valueCallbackProximity := nil;
       _timedReportCallbackProximity := nil;
       //--- (end of YProximity accessors initialization)
@@ -471,6 +541,12 @@ implementation
       sub : PJSONRECORD;
       i,l        : integer;
     begin
+      if (member^.name = 'signalValue') then
+        begin
+          _signalValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+         result := 1;
+         exit;
+         end;
       if (member^.name = 'detectionThreshold') then
         begin
           _detectionThreshold := integer(member^.ivalue);
@@ -507,9 +583,48 @@ implementation
          result := 1;
          exit;
          end;
+      if (member^.name = 'proximityReportMode') then
+        begin
+          _proximityReportMode := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
+
+  ////
+  /// <summary>
+  ///   Returns the current value of signal measured by the proximity sensor.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a floating point number corresponding to the current value of signal measured by the proximity sensor
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_SIGNALVALUE_INVALID.
+  /// </para>
+  ///-
+  function TYProximity.get_signalValue():double;
+    var
+      res : double;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_SIGNALVALUE_INVALID;
+              exit;
+            end;
+        end;
+      res := round(self._signalValue * 1000) / 1000;
+      result := res;
+      exit;
+    end;
+
 
   ////
   /// <summary>
@@ -530,6 +645,8 @@ implementation
   /// </para>
   ///-
   function TYProximity.get_detectionThreshold():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -539,7 +656,8 @@ implementation
               exit;
             end;
         end;
-      result := self._detectionThreshold;
+      res := self._detectionThreshold;
+      result := res;
       exit;
     end;
 
@@ -592,6 +710,8 @@ implementation
   /// </para>
   ///-
   function TYProximity.get_isPresent():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -601,7 +721,8 @@ implementation
               exit;
             end;
         end;
-      result := self._isPresent;
+      res := self._isPresent;
+      result := res;
       exit;
     end;
 
@@ -624,6 +745,8 @@ implementation
   /// </para>
   ///-
   function TYProximity.get_lastTimeApproached():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -633,7 +756,8 @@ implementation
               exit;
             end;
         end;
-      result := self._lastTimeApproached;
+      res := self._lastTimeApproached;
+      result := res;
       exit;
     end;
 
@@ -656,6 +780,8 @@ implementation
   /// </para>
   ///-
   function TYProximity.get_lastTimeRemoved():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -665,7 +791,8 @@ implementation
               exit;
             end;
         end;
-      result := self._lastTimeRemoved;
+      res := self._lastTimeRemoved;
+      result := res;
       exit;
     end;
 
@@ -689,6 +816,8 @@ implementation
   /// </para>
   ///-
   function TYProximity.get_pulseCounter():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -698,7 +827,8 @@ implementation
               exit;
             end;
         end;
-      result := self._pulseCounter;
+      res := self._pulseCounter;
+      result := res;
       exit;
     end;
 
@@ -713,20 +843,22 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the timer of the pulses counter (ms).
+  ///   Returns the timer of the pulse counter (ms).
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   an integer corresponding to the timer of the pulses counter (ms)
+  ///   an integer corresponding to the timer of the pulse counter (ms)
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_PULSETIMER_INVALID.
   /// </para>
   ///-
   function TYProximity.get_pulseTimer():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -736,10 +868,76 @@ implementation
               exit;
             end;
         end;
-      result := self._pulseTimer;
+      res := self._pulseTimer;
+      result := res;
       exit;
     end;
 
+
+  ////
+  /// <summary>
+  ///   Returns the parameter (sensor value, presence or pulse count) returned by the get_currentValue function and callbacks.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a value among Y_PROXIMITYREPORTMODE_NUMERIC, Y_PROXIMITYREPORTMODE_PRESENCE and
+  ///   Y_PROXIMITYREPORTMODE_PULSECOUNT corresponding to the parameter (sensor value, presence or pulse
+  ///   count) returned by the get_currentValue function and callbacks
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_PROXIMITYREPORTMODE_INVALID.
+  /// </para>
+  ///-
+  function TYProximity.get_proximityReportMode():Integer;
+    var
+      res : Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_PROXIMITYREPORTMODE_INVALID;
+              exit;
+            end;
+        end;
+      res := self._proximityReportMode;
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Modifies the  parameter  type (sensor value, presence or pulse count) returned by the get_currentValue function and callbacks.
+  /// <para>
+  ///   The edge count value is limited to the 6 lowest digits. For values greater than one million, use
+  ///   get_pulseCounter().
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a value among Y_PROXIMITYREPORTMODE_NUMERIC, Y_PROXIMITYREPORTMODE_PRESENCE and Y_PROXIMITYREPORTMODE_PULSECOUNT
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYProximity.set_proximityReportMode(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('proximityReportMode',rest_val);
+    end;
 
   ////
   /// <summary>
@@ -912,7 +1110,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the pulse counter value as well as its timer.
+  ///   Resets the pulse counter value as well as its timer.
   /// <para>
   /// </para>
   /// </summary>

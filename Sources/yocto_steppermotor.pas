@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_steppermotor.pas 26253 2017-01-03 17:41:07Z seb $
+ * $Id: yocto_steppermotor.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindStepperMotor(), the high-level API for StepperMotor functions
  *
@@ -1012,6 +1012,8 @@ implementation
   /// </para>
   ///-
   function TYStepperMotor.get_motorState():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1021,7 +1023,8 @@ implementation
               exit;
             end;
         end;
-      result := self._motorState;
+      res := self._motorState;
+      result := res;
       exit;
     end;
 
@@ -1042,6 +1045,8 @@ implementation
   /// </para>
   ///-
   function TYStepperMotor.get_diags():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1051,7 +1056,8 @@ implementation
               exit;
             end;
         end;
-      result := self._diags;
+      res := self._diags;
+      result := res;
       exit;
     end;
 
@@ -1106,6 +1112,8 @@ implementation
   /// </para>
   ///-
   function TYStepperMotor.get_stepPos():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1115,7 +1123,8 @@ implementation
               exit;
             end;
         end;
-      result := self._stepPos;
+      res := self._stepPos;
+      result := res;
       exit;
     end;
 
@@ -1137,6 +1146,8 @@ implementation
   /// </para>
   ///-
   function TYStepperMotor.get_speed():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1146,7 +1157,8 @@ implementation
               exit;
             end;
         end;
-      result := self._speed;
+      res := self._speed;
+      result := res;
       exit;
     end;
 
@@ -1197,6 +1209,8 @@ implementation
   /// </para>
   ///-
   function TYStepperMotor.get_pullinSpeed():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1206,7 +1220,8 @@ implementation
               exit;
             end;
         end;
-      result := self._pullinSpeed;
+      res := self._pullinSpeed;
+      result := res;
       exit;
     end;
 
@@ -1255,6 +1270,8 @@ implementation
   /// </para>
   ///-
   function TYStepperMotor.get_maxAccel():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1264,7 +1281,8 @@ implementation
               exit;
             end;
         end;
-      result := self._maxAccel;
+      res := self._maxAccel;
+      result := res;
       exit;
     end;
 
@@ -1313,6 +1331,8 @@ implementation
   /// </para>
   ///-
   function TYStepperMotor.get_maxSpeed():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1322,7 +1342,8 @@ implementation
               exit;
             end;
         end;
-      result := self._maxSpeed;
+      res := self._maxSpeed;
+      result := res;
       exit;
     end;
 
@@ -1344,6 +1365,8 @@ implementation
   /// </para>
   ///-
   function TYStepperMotor.get_stepping():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1353,7 +1376,8 @@ implementation
               exit;
             end;
         end;
-      result := self._stepping;
+      res := self._stepping;
+      result := res;
       exit;
     end;
 
@@ -1403,6 +1427,8 @@ implementation
   /// </para>
   ///-
   function TYStepperMotor.get_overcurrent():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1412,7 +1438,8 @@ implementation
               exit;
             end;
         end;
-      result := self._overcurrent;
+      res := self._overcurrent;
+      result := res;
       exit;
     end;
 
@@ -1461,6 +1488,8 @@ implementation
   /// </para>
   ///-
   function TYStepperMotor.get_tCurrStop():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1470,7 +1499,8 @@ implementation
               exit;
             end;
         end;
-      result := self._tCurrStop;
+      res := self._tCurrStop;
+      result := res;
       exit;
     end;
 
@@ -1519,6 +1549,8 @@ implementation
   /// </para>
   ///-
   function TYStepperMotor.get_tCurrRun():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1528,7 +1560,8 @@ implementation
               exit;
             end;
         end;
-      result := self._tCurrRun;
+      res := self._tCurrRun;
+      result := res;
       exit;
     end;
 
@@ -1562,6 +1595,8 @@ implementation
     end;
 
   function TYStepperMotor.get_alertMode():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1571,7 +1606,8 @@ implementation
               exit;
             end;
         end;
-      result := self._alertMode;
+      res := self._alertMode;
+      result := res;
       exit;
     end;
 
@@ -1585,6 +1621,8 @@ implementation
     end;
 
   function TYStepperMotor.get_auxMode():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1594,7 +1632,8 @@ implementation
               exit;
             end;
         end;
-      result := self._auxMode;
+      res := self._auxMode;
+      result := res;
       exit;
     end;
 
@@ -1623,6 +1662,8 @@ implementation
   /// </para>
   ///-
   function TYStepperMotor.get_auxSignal():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1632,7 +1673,8 @@ implementation
               exit;
             end;
         end;
-      result := self._auxSignal;
+      res := self._auxSignal;
+      result := res;
       exit;
     end;
 
@@ -1667,6 +1709,8 @@ implementation
     end;
 
   function TYStepperMotor.get_command():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1676,7 +1720,8 @@ implementation
               exit;
             end;
         end;
-      result := self._command;
+      res := self._command;
+      result := res;
       exit;
     end;
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_relay.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_relay.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindRelay(), the high-level API for Relay functions
  *
@@ -690,6 +690,8 @@ implementation
   /// </para>
   ///-
   function TYRelay.get_state():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -699,7 +701,8 @@ implementation
               exit;
             end;
         end;
-      result := self._state;
+      res := self._state;
+      result := res;
       exit;
     end;
 
@@ -751,6 +754,8 @@ implementation
   /// </para>
   ///-
   function TYRelay.get_stateAtPowerOn():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -760,7 +765,8 @@ implementation
               exit;
             end;
         end;
-      result := self._stateAtPowerOn;
+      res := self._stateAtPowerOn;
+      result := res;
       exit;
     end;
 
@@ -813,6 +819,8 @@ implementation
   /// </para>
   ///-
   function TYRelay.get_maxTimeOnStateA():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -822,7 +830,8 @@ implementation
               exit;
             end;
         end;
-      result := self._maxTimeOnStateA;
+      res := self._maxTimeOnStateA;
+      result := res;
       exit;
     end;
 
@@ -873,6 +882,8 @@ implementation
   /// </para>
   ///-
   function TYRelay.get_maxTimeOnStateB():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -882,7 +893,8 @@ implementation
               exit;
             end;
         end;
-      result := self._maxTimeOnStateB;
+      res := self._maxTimeOnStateB;
+      result := res;
       exit;
     end;
 
@@ -933,6 +945,8 @@ implementation
   /// </para>
   ///-
   function TYRelay.get_output():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -942,7 +956,8 @@ implementation
               exit;
             end;
         end;
-      result := self._output;
+      res := self._output;
+      result := res;
       exit;
     end;
 
@@ -995,6 +1010,8 @@ implementation
   /// </para>
   ///-
   function TYRelay.get_pulseTimer():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1004,7 +1021,8 @@ implementation
               exit;
             end;
         end;
-      result := self._pulseTimer;
+      res := self._pulseTimer;
+      result := res;
       exit;
     end;
 
@@ -1047,6 +1065,8 @@ implementation
     end;
 
   function TYRelay.get_delayedPulseTimer():TYRelayDelayedPulse;
+    var
+      res : TYRelayDelayedPulse;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1056,7 +1076,8 @@ implementation
               exit;
             end;
         end;
-      result := self._delayedPulseTimer;
+      res := self._delayedPulseTimer;
+      result := res;
       exit;
     end;
 
@@ -1118,6 +1139,8 @@ implementation
   /// </para>
   ///-
   function TYRelay.get_countdown():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1127,7 +1150,8 @@ implementation
               exit;
             end;
         end;
-      result := self._countdown;
+      res := self._countdown;
+      result := res;
       exit;
     end;
 

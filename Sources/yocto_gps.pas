@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_gps.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_gps.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindGps(), the high-level API for Gps functions
  *
@@ -668,6 +668,8 @@ implementation
   /// </para>
   ///-
   function TYGps.get_isFixed():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -677,7 +679,8 @@ implementation
               exit;
             end;
         end;
-      result := self._isFixed;
+      res := self._isFixed;
+      result := res;
       exit;
     end;
 
@@ -698,6 +701,8 @@ implementation
   /// </para>
   ///-
   function TYGps.get_satCount():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -707,7 +712,8 @@ implementation
               exit;
             end;
         end;
-      result := self._satCount;
+      res := self._satCount;
+      result := res;
       exit;
     end;
 
@@ -729,6 +735,8 @@ implementation
   /// </para>
   ///-
   function TYGps.get_coordSystem():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -738,7 +746,8 @@ implementation
               exit;
             end;
         end;
-      result := self._coordSystem;
+      res := self._coordSystem;
+      result := res;
       exit;
     end;
 
@@ -788,6 +797,8 @@ implementation
   /// </para>
   ///-
   function TYGps.get_latitude():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -797,7 +808,8 @@ implementation
               exit;
             end;
         end;
-      result := self._latitude;
+      res := self._latitude;
+      result := res;
       exit;
     end;
 
@@ -818,6 +830,8 @@ implementation
   /// </para>
   ///-
   function TYGps.get_longitude():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -827,7 +841,8 @@ implementation
               exit;
             end;
         end;
-      result := self._longitude;
+      res := self._longitude;
+      result := res;
       exit;
     end;
 
@@ -850,6 +865,8 @@ implementation
   /// </para>
   ///-
   function TYGps.get_dilution():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -859,7 +876,8 @@ implementation
               exit;
             end;
         end;
-      result := self._dilution;
+      res := self._dilution;
+      result := res;
       exit;
     end;
 
@@ -882,6 +900,8 @@ implementation
   /// </para>
   ///-
   function TYGps.get_altitude():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -891,7 +911,8 @@ implementation
               exit;
             end;
         end;
-      result := self._altitude;
+      res := self._altitude;
+      result := res;
       exit;
     end;
 
@@ -912,6 +933,8 @@ implementation
   /// </para>
   ///-
   function TYGps.get_groundSpeed():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -921,7 +944,8 @@ implementation
               exit;
             end;
         end;
-      result := self._groundSpeed;
+      res := self._groundSpeed;
+      result := res;
       exit;
     end;
 
@@ -944,6 +968,8 @@ implementation
   /// </para>
   ///-
   function TYGps.get_direction():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -953,7 +979,8 @@ implementation
               exit;
             end;
         end;
-      result := self._direction;
+      res := self._direction;
+      result := res;
       exit;
     end;
 
@@ -976,6 +1003,8 @@ implementation
   /// </para>
   ///-
   function TYGps.get_unixTime():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -985,7 +1014,8 @@ implementation
               exit;
             end;
         end;
-      result := self._unixTime;
+      res := self._unixTime;
+      result := res;
       exit;
     end;
 
@@ -1006,6 +1036,8 @@ implementation
   /// </para>
   ///-
   function TYGps.get_dateTime():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1015,7 +1047,8 @@ implementation
               exit;
             end;
         end;
-      result := self._dateTime;
+      res := self._dateTime;
+      result := res;
       exit;
     end;
 
@@ -1036,6 +1069,8 @@ implementation
   /// </para>
   ///-
   function TYGps.get_utcOffset():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1045,7 +1080,8 @@ implementation
               exit;
             end;
         end;
-      result := self._utcOffset;
+      res := self._utcOffset;
+      result := res;
       exit;
     end;
 
@@ -1081,6 +1117,8 @@ implementation
     end;
 
   function TYGps.get_command():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1090,7 +1128,8 @@ implementation
               exit;
             end;
         end;
-      result := self._command;
+      res := self._command;
+      result := res;
       exit;
     end;
 

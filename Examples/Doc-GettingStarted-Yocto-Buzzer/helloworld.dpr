@@ -7,7 +7,6 @@ uses
   yocto_anbutton,
   yocto_led;
 
-
 Procedure  Usage();
   var
    exe : string;

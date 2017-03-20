@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_buzzer.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_buzzer.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindBuzzer(), the high-level API for Buzzer functions
  *
@@ -668,6 +668,8 @@ implementation
   /// </para>
   ///-
   function TYBuzzer.get_frequency():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -677,7 +679,8 @@ implementation
               exit;
             end;
         end;
-      result := self._frequency;
+      res := self._frequency;
+      result := res;
       exit;
     end;
 
@@ -698,6 +701,8 @@ implementation
   /// </para>
   ///-
   function TYBuzzer.get_volume():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -707,7 +712,8 @@ implementation
               exit;
             end;
         end;
-      result := self._volume;
+      res := self._volume;
+      result := res;
       exit;
     end;
 
@@ -756,6 +762,8 @@ implementation
   /// </para>
   ///-
   function TYBuzzer.get_playSeqSize():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -765,7 +773,8 @@ implementation
               exit;
             end;
         end;
-      result := self._playSeqSize;
+      res := self._playSeqSize;
+      result := res;
       exit;
     end;
 
@@ -786,6 +795,8 @@ implementation
   /// </para>
   ///-
   function TYBuzzer.get_playSeqMaxSize():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration = 0 then
         begin
@@ -795,7 +806,8 @@ implementation
               exit;
             end;
         end;
-      result := self._playSeqMaxSize;
+      res := self._playSeqMaxSize;
+      result := res;
       exit;
     end;
 
@@ -820,6 +832,8 @@ implementation
   /// </para>
   ///-
   function TYBuzzer.get_playSeqSignature():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -829,12 +843,15 @@ implementation
               exit;
             end;
         end;
-      result := self._playSeqSignature;
+      res := self._playSeqSignature;
+      result := res;
       exit;
     end;
 
 
   function TYBuzzer.get_command():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -844,7 +861,8 @@ implementation
               exit;
             end;
         end;
-      result := self._command;
+      res := self._command;
+      result := res;
       exit;
     end;
 

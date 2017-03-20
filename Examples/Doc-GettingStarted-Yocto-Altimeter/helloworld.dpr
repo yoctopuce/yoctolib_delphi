@@ -8,7 +8,6 @@ uses
   yocto_temperature,
   yocto_pressure;
 
-
 Procedure  Usage();
   var
    exe : string;
@@ -20,7 +19,6 @@ Procedure  Usage();
     WriteLn(exe+' any');
     halt;
   End;
-
 
 var
   asensor       : TYAltitude;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_currentloopoutput.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_currentloopoutput.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
  *
@@ -477,6 +477,8 @@ implementation
   /// </para>
   ///-
   function TYCurrentLoopOutput.get_current():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -486,12 +488,15 @@ implementation
               exit;
             end;
         end;
-      result := self._current;
+      res := self._current;
+      result := res;
       exit;
     end;
 
 
   function TYCurrentLoopOutput.get_currentTransition():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -501,7 +506,8 @@ implementation
               exit;
             end;
         end;
-      result := self._currentTransition;
+      res := self._currentTransition;
+      result := res;
       exit;
     end;
 
@@ -560,6 +566,8 @@ implementation
   /// </para>
   ///-
   function TYCurrentLoopOutput.get_currentAtStartUp():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -569,7 +577,8 @@ implementation
               exit;
             end;
         end;
-      result := self._currentAtStartUp;
+      res := self._currentAtStartUp;
+      result := res;
       exit;
     end;
 
@@ -593,6 +602,8 @@ implementation
   /// </para>
   ///-
   function TYCurrentLoopOutput.get_loopPower():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -602,7 +613,8 @@ implementation
               exit;
             end;
         end;
-      result := self._loopPower;
+      res := self._loopPower;
+      result := res;
       exit;
     end;
 

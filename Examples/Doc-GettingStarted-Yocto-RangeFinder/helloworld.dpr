@@ -4,8 +4,9 @@ uses
   SysUtils,
   Windows,
   yocto_api,
-  yocto_proximity,
-  yocto_lightSensor;
+  yocto_rangeFinder,
+  yocto_lightSensor,
+  yocto_temperature;
 
 Procedure  Usage();
   var
@@ -20,9 +21,10 @@ Procedure  Usage();
   End;
 
 var
-  p : TYProximity;
-  ir,al : TYlightSensor;
-  m: TYModule;
+  rf : TYRangeFinder;
+  ir : TYLightSensor;
+  tmp : TYTemperature;
+  m : TYModule;
   errmsg,target : string;
   done   : boolean;
 
@@ -42,30 +44,28 @@ begin
   if target='any' then
     begin
       // search for the first available light sensor
-      p := yFirstProximity();
-      if p=nil then
+      rf := yFirstRangeFinder();
+      if rf = nil then
          begin
            writeln('No module connected (check USB cable)');
            halt;
          end;
-      m:=p.get_module();
-      target:=m.get_serialNumber();
+      m := rf.get_module();
+      target := m.get_serialNumber();
     end
    else // or use the one specified on command line
-   p:= YFindProximity(target+'.proximity1');
+   rf := YFindRangeFinder(target+'.rangeFinder1');
+   ir := YFindLightSensor(target+'.lightSensor1');
+   tmp := YFindTemperature(target+'.temperature1');
 
-   al:=YFindLightSensor(target+'.lightSensor1');
-   ir:=YFindLightSensor(target+'.lightSensor2');
-
-   // lets poll the sensor
+  // lets poll the sensor
   done := false;
   repeat
-    if (p.isOnline()) then
+    if (rf.isOnline()) then
      begin
-       Write('Proximity: '+FloatToStr(p.get_currentValue()));
-       Write(' Ambiant: '+FloatToStr(al.get_currentValue()));
-       Write(' IR:  '+FloatToStr(ir.get_currentValue()));
-
+       Writeln('Distance    : '+FloatToStr(rf.get_currentValue()));
+       Writeln('Ambiant IR  : '+FloatToStr(ir.get_currentValue()));
+       Writeln('Temperature : '+FloatToStr(tmp.get_currentValue()));
        Writeln('   (press Ctrl-C to exit)');
        YSleep(1000,errmsg);
      end

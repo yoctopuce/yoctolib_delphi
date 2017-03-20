@@ -6,7 +6,6 @@ uses
   yocto_api,
   yocto_voc;
 
-
 Procedure  Usage();
   var
    exe : string;
@@ -18,7 +17,6 @@ Procedure  Usage();
     WriteLn(exe+' any');
     halt;
   End;
-
 
 var
   sensor : TYVoc;

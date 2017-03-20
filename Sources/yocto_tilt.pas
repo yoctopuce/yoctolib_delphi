@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_tilt.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_tilt.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindTilt(), the high-level API for Tilt functions
  *
@@ -383,6 +383,8 @@ implementation
   /// </para>
   ///-
   function TYTilt.get_bandwidth():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -392,7 +394,8 @@ implementation
               exit;
             end;
         end;
-      result := self._bandwidth;
+      res := self._bandwidth;
+      result := res;
       exit;
     end;
 
@@ -428,6 +431,8 @@ implementation
     end;
 
   function TYTilt.get_axis():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -437,7 +442,8 @@ implementation
               exit;
             end;
         end;
-      result := self._axis;
+      res := self._axis;
+      result := res;
       exit;
     end;
 

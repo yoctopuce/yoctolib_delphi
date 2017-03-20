@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_motor.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_motor.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindMotor(), the high-level API for Motor functions
  *
@@ -807,6 +807,8 @@ implementation
   /// </para>
   ///-
   function TYMotor.get_motorStatus():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -816,7 +818,8 @@ implementation
               exit;
             end;
         end;
-      result := self._motorStatus;
+      res := self._motorStatus;
+      result := res;
       exit;
     end;
 
@@ -878,6 +881,8 @@ implementation
   /// </para>
   ///-
   function TYMotor.get_drivingForce():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -887,7 +892,8 @@ implementation
               exit;
             end;
         end;
-      result := self._drivingForce;
+      res := self._drivingForce;
+      result := res;
       exit;
     end;
 
@@ -939,6 +945,8 @@ implementation
   /// </para>
   ///-
   function TYMotor.get_brakingForce():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -948,7 +956,8 @@ implementation
               exit;
             end;
         end;
-      result := self._brakingForce;
+      res := self._brakingForce;
+      result := res;
       exit;
     end;
 
@@ -1009,6 +1018,8 @@ implementation
   /// </para>
   ///-
   function TYMotor.get_cutOffVoltage():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1018,7 +1029,8 @@ implementation
               exit;
             end;
         end;
-      result := self._cutOffVoltage;
+      res := self._cutOffVoltage;
+      result := res;
       exit;
     end;
 
@@ -1042,6 +1054,8 @@ implementation
   /// </para>
   ///-
   function TYMotor.get_overCurrentLimit():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1051,7 +1065,8 @@ implementation
               exit;
             end;
         end;
-      result := self._overCurrentLimit;
+      res := self._overCurrentLimit;
+      result := res;
       exit;
     end;
 
@@ -1137,6 +1152,8 @@ implementation
   /// </para>
   ///-
   function TYMotor.get_frequency():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1146,7 +1163,8 @@ implementation
               exit;
             end;
         end;
-      result := self._frequency;
+      res := self._frequency;
+      result := res;
       exit;
     end;
 
@@ -1169,6 +1187,8 @@ implementation
   /// </para>
   ///-
   function TYMotor.get_starterTime():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1178,7 +1198,8 @@ implementation
               exit;
             end;
         end;
-      result := self._starterTime;
+      res := self._starterTime;
+      result := res;
       exit;
     end;
 
@@ -1234,6 +1255,8 @@ implementation
   /// </para>
   ///-
   function TYMotor.get_failSafeTimeout():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1243,7 +1266,8 @@ implementation
               exit;
             end;
         end;
-      result := self._failSafeTimeout;
+      res := self._failSafeTimeout;
+      result := res;
       exit;
     end;
 
@@ -1282,6 +1306,8 @@ implementation
     end;
 
   function TYMotor.get_command():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1291,7 +1317,8 @@ implementation
               exit;
             end;
         end;
-      result := self._command;
+      res := self._command;
+      result := res;
       exit;
     end;
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_realtimeclock.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_realtimeclock.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
@@ -433,6 +433,8 @@ implementation
   /// </para>
   ///-
   function TYRealTimeClock.get_unixTime():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -442,7 +444,8 @@ implementation
               exit;
             end;
         end;
-      result := self._unixTime;
+      res := self._unixTime;
+      result := res;
       exit;
     end;
 
@@ -492,6 +495,8 @@ implementation
   /// </para>
   ///-
   function TYRealTimeClock.get_dateTime():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -501,7 +506,8 @@ implementation
               exit;
             end;
         end;
-      result := self._dateTime;
+      res := self._dateTime;
+      result := res;
       exit;
     end;
 
@@ -522,6 +528,8 @@ implementation
   /// </para>
   ///-
   function TYRealTimeClock.get_utcOffset():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -531,7 +539,8 @@ implementation
               exit;
             end;
         end;
-      result := self._utcOffset;
+      res := self._utcOffset;
+      result := res;
       exit;
     end;
 
@@ -581,6 +590,8 @@ implementation
   /// </para>
   ///-
   function TYRealTimeClock.get_timeSet():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -590,7 +601,8 @@ implementation
               exit;
             end;
         end;
-      result := self._timeSet;
+      res := self._timeSet;
+      result := res;
       exit;
     end;
 

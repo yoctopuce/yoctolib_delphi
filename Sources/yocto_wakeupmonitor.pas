@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_wakeupmonitor.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -589,6 +589,8 @@ implementation
   /// </para>
   ///-
   function TYWakeUpMonitor.get_powerDuration():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -598,7 +600,8 @@ implementation
               exit;
             end;
         end;
-      result := self._powerDuration;
+      res := self._powerDuration;
+      result := res;
       exit;
     end;
 
@@ -647,6 +650,8 @@ implementation
   /// </para>
   ///-
   function TYWakeUpMonitor.get_sleepCountdown():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -656,7 +661,8 @@ implementation
               exit;
             end;
         end;
-      result := self._sleepCountdown;
+      res := self._sleepCountdown;
+      result := res;
       exit;
     end;
 
@@ -705,6 +711,8 @@ implementation
   /// </para>
   ///-
   function TYWakeUpMonitor.get_nextWakeUp():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -714,7 +722,8 @@ implementation
               exit;
             end;
         end;
-      result := self._nextWakeUp;
+      res := self._nextWakeUp;
+      result := res;
       exit;
     end;
 
@@ -765,6 +774,8 @@ implementation
   /// </para>
   ///-
   function TYWakeUpMonitor.get_wakeUpReason():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -774,7 +785,8 @@ implementation
               exit;
             end;
         end;
-      result := self._wakeUpReason;
+      res := self._wakeUpReason;
+      result := res;
       exit;
     end;
 
@@ -795,6 +807,8 @@ implementation
   /// </para>
   ///-
   function TYWakeUpMonitor.get_wakeUpState():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -804,7 +818,8 @@ implementation
               exit;
             end;
         end;
-      result := self._wakeUpState;
+      res := self._wakeUpState;
+      result := res;
       exit;
     end;
 
@@ -818,6 +833,8 @@ implementation
     end;
 
   function TYWakeUpMonitor.get_rtcTime():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -827,7 +844,8 @@ implementation
               exit;
             end;
         end;
-      result := self._rtcTime;
+      res := self._rtcTime;
+      result := res;
       exit;
     end;
 

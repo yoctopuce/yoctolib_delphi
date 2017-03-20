@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_poweroutput.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_poweroutput.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindPowerOutput(), the high-level API for PowerOutput functions
  *
@@ -340,6 +340,8 @@ implementation
   /// </para>
   ///-
   function TYPowerOutput.get_voltage():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -349,7 +351,8 @@ implementation
               exit;
             end;
         end;
-      result := self._voltage;
+      res := self._voltage;
+      result := res;
       exit;
     end;
 

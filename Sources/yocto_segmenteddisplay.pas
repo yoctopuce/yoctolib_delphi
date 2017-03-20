@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_segmenteddisplay.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_segmenteddisplay.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindSegmentedDisplay(), the high-level API for SegmentedDisplay functions
  *
@@ -342,6 +342,8 @@ implementation
   /// </para>
   ///-
   function TYSegmentedDisplay.get_displayedText():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -351,7 +353,8 @@ implementation
               exit;
             end;
         end;
-      result := self._displayedText;
+      res := self._displayedText;
+      result := res;
       exit;
     end;
 
@@ -385,6 +388,8 @@ implementation
     end;
 
   function TYSegmentedDisplay.get_displayMode():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -394,7 +399,8 @@ implementation
               exit;
             end;
         end;
-      result := self._displayMode;
+      res := self._displayMode;
+      result := res;
       exit;
     end;
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwmoutput.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_pwmoutput.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindPwmOutput(), the high-level API for PwmOutput functions
  *
@@ -686,6 +686,8 @@ implementation
   /// </para>
   ///-
   function TYPwmOutput.get_enabled():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -695,7 +697,8 @@ implementation
               exit;
             end;
         end;
-      result := self._enabled;
+      res := self._enabled;
+      result := res;
       exit;
     end;
 
@@ -774,6 +777,8 @@ implementation
   /// </para>
   ///-
   function TYPwmOutput.get_frequency():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -783,7 +788,8 @@ implementation
               exit;
             end;
         end;
-      result := self._frequency;
+      res := self._frequency;
+      result := res;
       exit;
     end;
 
@@ -832,6 +838,8 @@ implementation
   /// </para>
   ///-
   function TYPwmOutput.get_period():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -841,7 +849,8 @@ implementation
               exit;
             end;
         end;
-      result := self._period;
+      res := self._period;
+      result := res;
       exit;
     end;
 
@@ -890,6 +899,8 @@ implementation
   /// </para>
   ///-
   function TYPwmOutput.get_dutyCycle():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -899,7 +910,8 @@ implementation
               exit;
             end;
         end;
-      result := self._dutyCycle;
+      res := self._dutyCycle;
+      result := res;
       exit;
     end;
 
@@ -949,6 +961,8 @@ implementation
   /// </para>
   ///-
   function TYPwmOutput.get_pulseDuration():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -958,12 +972,15 @@ implementation
               exit;
             end;
         end;
-      result := self._pulseDuration;
+      res := self._pulseDuration;
+      result := res;
       exit;
     end;
 
 
   function TYPwmOutput.get_pwmTransition():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -973,7 +990,8 @@ implementation
               exit;
             end;
         end;
-      result := self._pwmTransition;
+      res := self._pwmTransition;
+      result := res;
       exit;
     end;
 
@@ -1002,6 +1020,8 @@ implementation
   /// </para>
   ///-
   function TYPwmOutput.get_enabledAtPowerOn():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1011,7 +1031,8 @@ implementation
               exit;
             end;
         end;
-      result := self._enabledAtPowerOn;
+      res := self._enabledAtPowerOn;
+      result := res;
       exit;
     end;
 
@@ -1093,6 +1114,8 @@ implementation
   /// </para>
   ///-
   function TYPwmOutput.get_dutyCycleAtPowerOn():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1102,7 +1125,8 @@ implementation
               exit;
             end;
         end;
-      result := self._dutyCycleAtPowerOn;
+      res := self._dutyCycleAtPowerOn;
+      result := res;
       exit;
     end;
 

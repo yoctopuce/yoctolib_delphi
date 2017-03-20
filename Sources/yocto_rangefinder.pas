@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_rangefinder.pas 26329 2017-01-11 14:04:39Z mvuilleu $
+ * $Id: yocto_rangefinder.pas 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * Implements yFindRangeFinder(), the high-level API for RangeFinder functions
  *
@@ -52,6 +52,8 @@ const Y_RANGEFINDERMODE_LONG_RANGE = 1;
 const Y_RANGEFINDERMODE_HIGH_ACCURACY = 2;
 const Y_RANGEFINDERMODE_HIGH_SPEED = 3;
 const Y_RANGEFINDERMODE_INVALID = -1;
+const Y_HARDWARECALIBRATION_INVALID   = YAPI_INVALID_STRING;
+const Y_CURRENTTEMPERATURE_INVALID    = YAPI_INVALID_DOUBLE;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 
@@ -67,9 +69,9 @@ type
   /// <summary>
   ///   TYRangeFinder Class: RangeFinder function interface
   /// <para>
-  ///   The Yoctopuce class YRangeFinder allows you to use and configure Yoctopuce range finders
-  ///   sensors. It inherits from YSensor class the core functions to read measurements,
-  ///   register callback functions, access to the autonomous datalogger.
+  ///   The Yoctopuce class YRangeFinder allows you to use and configure Yoctopuce range finder
+  ///   sensors. It inherits from the YSensor class the core functions to read measurements,
+  ///   register callback functions, access the autonomous datalogger.
   ///   This class adds the ability to easily perform a one-point linear calibration
   ///   to compensate the effect of a glass or filter placed in front of the sensor.
   /// </para>
@@ -93,6 +95,8 @@ type
     _resolution               : double;
     _sensorState              : LongInt;
     _rangeFinderMode          : Integer;
+    _hardwareCalibration      : string;
+    _currentTemperature       : double;
     _command                  : string;
     _valueCallbackRangeFinder : TYRangeFinderValueCallback;
     _timedReportCallbackRangeFinder : TYRangeFinderTimedReportCallback;
@@ -107,10 +111,10 @@ type
 
     ////
     /// <summary>
-    ///   Changes the measuring unit for the measured temperature.
+    ///   Changes the measuring unit for the measured range.
     /// <para>
     ///   That unit is a string.
-    ///   String value can be <c>"</c> or <c>mm</c>. Any other value will be ignored.
+    ///   String value can be <c>"</c> or <c>mm</c>. Any other value is ignored.
     ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
     ///   WARNING: if a specific calibration is defined for the rangeFinder function, a
     ///   unit system change will probably break it.
@@ -119,7 +123,7 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a string corresponding to the measuring unit for the measured temperature
+    ///   a string corresponding to the measuring unit for the measured range
     /// </param>
     /// <para>
     /// </para>
@@ -134,10 +138,10 @@ type
 
     ////
     /// <summary>
-    ///   Returns the rangefinder running mode.
+    ///   Returns the range finder running mode.
     /// <para>
     ///   The rangefinder running mode
-    ///   allows to put priority on precision, speed or maximum range.
+    ///   allows you to put priority on precision, speed or maximum range.
     /// </para>
     /// <para>
     /// </para>
@@ -145,7 +149,7 @@ type
     /// <returns>
     ///   a value among <c>Y_RANGEFINDERMODE_DEFAULT</c>, <c>Y_RANGEFINDERMODE_LONG_RANGE</c>,
     ///   <c>Y_RANGEFINDERMODE_HIGH_ACCURACY</c> and <c>Y_RANGEFINDERMODE_HIGH_SPEED</c> corresponding to the
-    ///   rangefinder running mode
+    ///   range finder running mode
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_RANGEFINDERMODE_INVALID</c>.
@@ -155,7 +159,7 @@ type
 
     ////
     /// <summary>
-    ///   Changes the rangefinder running mode, allowing to put priority on
+    ///   Changes the rangefinder running mode, allowing you to put priority on
     ///   precision, speed or maximum range.
     /// <para>
     /// </para>
@@ -165,7 +169,7 @@ type
     /// <param name="newval">
     ///   a value among <c>Y_RANGEFINDERMODE_DEFAULT</c>, <c>Y_RANGEFINDERMODE_LONG_RANGE</c>,
     ///   <c>Y_RANGEFINDERMODE_HIGH_ACCURACY</c> and <c>Y_RANGEFINDERMODE_HIGH_SPEED</c> corresponding to the
-    ///   rangefinder running mode, allowing to put priority on
+    ///   rangefinder running mode, allowing you to put priority on
     ///   precision, speed or maximum range
     /// </param>
     /// <para>
@@ -178,6 +182,27 @@ type
     /// </para>
     ///-
     function set_rangeFinderMode(newval:Integer):integer;
+
+    function get_hardwareCalibration():string;
+
+    function set_hardwareCalibration(newval:string):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the current sensor temperature, as a floating point number.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a floating point number corresponding to the current sensor temperature, as a floating point number
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_CURRENTTEMPERATURE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_currentTemperature():double;
 
     function get_command():string;
 
@@ -273,12 +298,27 @@ type
 
     ////
     /// <summary>
+    ///   Returns the temperature at the time when the latest calibration was performed.
+    /// <para>
+    ///   This function can be used to determine if a new calibration for ambient temperature
+    ///   is required.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a temperature, as a floating point number.
+    ///   On failure, throws an exception or return YAPI_INVALID_DOUBLE.
+    /// </returns>
+    ///-
+    function get_hardwareCalibrationTemperature():double; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Triggers a sensor calibration according to the current ambient temperature.
     /// <para>
     ///   That
     ///   calibration process needs no physical interaction with the sensor. It is performed
     ///   automatically at device startup, but it is recommended to start it again when the
-    ///   temperature delta since last calibration exceeds 8°C.
+    ///   temperature delta since the latest calibration exceeds 8°C.
     /// </para>
     /// </summary>
     /// <returns>
@@ -286,7 +326,78 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
-    function triggerTempCalibration():LongInt; overload; virtual;
+    function triggerTemperatureCalibration():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Triggers the photon detector hardware calibration.
+    /// <para>
+    ///   This function is part of the calibration procedure to compensate for the the effect
+    ///   of a cover glass. Make sure to read the chapter about hardware calibration for details
+    ///   on the calibration procedure for proper results.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </returns>
+    ///-
+    function triggerSpadCalibration():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Triggers the hardware offset calibration of the distance sensor.
+    /// <para>
+    ///   This function is part of the calibration procedure to compensate for the the effect
+    ///   of a cover glass. Make sure to read the chapter about hardware calibration for details
+    ///   on the calibration procedure for proper results.
+    /// </para>
+    /// </summary>
+    /// <param name="targetDist">
+    ///   true distance of the calibration target, in mm or inches, depending
+    ///   on the unit selected in the device
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </returns>
+    ///-
+    function triggerOffsetCalibration(targetDist: double):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Triggers the hardware cross-talk calibration of the distance sensor.
+    /// <para>
+    ///   This function is part of the calibration procedure to compensate for the the effect
+    ///   of a cover glass. Make sure to read the chapter about hardware calibration for details
+    ///   on the calibration procedure for proper results.
+    /// </para>
+    /// </summary>
+    /// <param name="targetDist">
+    ///   true distance of the calibration target, in mm or inches, depending
+    ///   on the unit selected in the device
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </returns>
+    ///-
+    function triggerXTalkCalibration(targetDist: double):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Cancels the effect of previous hardware calibration procedures to compensate
+    ///   for cover glass, and restores factory settings.
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </returns>
+    ///-
+    function cancelCoverGlassCalibrations():LongInt; overload; virtual;
 
 
     ////
@@ -386,6 +497,8 @@ implementation
       _className := 'RangeFinder';
       //--- (YRangeFinder accessors initialization)
       _rangeFinderMode := Y_RANGEFINDERMODE_INVALID;
+      _hardwareCalibration := Y_HARDWARECALIBRATION_INVALID;
+      _currentTemperature := Y_CURRENTTEMPERATURE_INVALID;
       _command := Y_COMMAND_INVALID;
       _valueCallbackRangeFinder := nil;
       _timedReportCallbackRangeFinder := nil;
@@ -406,6 +519,18 @@ implementation
          result := 1;
          exit;
          end;
+      if (member^.name = 'hardwareCalibration') then
+        begin
+          _hardwareCalibration := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'currentTemperature') then
+        begin
+          _currentTemperature := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+         result := 1;
+         exit;
+         end;
       if (member^.name = 'command') then
         begin
           _command := string(member^.svalue);
@@ -418,10 +543,10 @@ implementation
 
   ////
   /// <summary>
-  ///   Changes the measuring unit for the measured temperature.
+  ///   Changes the measuring unit for the measured range.
   /// <para>
   ///   That unit is a string.
-  ///   String value can be " or mm. Any other value will be ignored.
+  ///   String value can be " or mm. Any other value is ignored.
   ///   Remember to call the saveToFlash() method of the module if the modification must be kept.
   ///   WARNING: if a specific calibration is defined for the rangeFinder function, a
   ///   unit system change will probably break it.
@@ -430,7 +555,7 @@ implementation
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   a string corresponding to the measuring unit for the measured temperature
+  ///   a string corresponding to the measuring unit for the measured range
   /// </param>
   /// <para>
   /// </para>
@@ -451,23 +576,25 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the rangefinder running mode.
+  ///   Returns the range finder running mode.
   /// <para>
   ///   The rangefinder running mode
-  ///   allows to put priority on precision, speed or maximum range.
+  ///   allows you to put priority on precision, speed or maximum range.
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
   ///   a value among Y_RANGEFINDERMODE_DEFAULT, Y_RANGEFINDERMODE_LONG_RANGE,
-  ///   Y_RANGEFINDERMODE_HIGH_ACCURACY and Y_RANGEFINDERMODE_HIGH_SPEED corresponding to the rangefinder running mode
+  ///   Y_RANGEFINDERMODE_HIGH_ACCURACY and Y_RANGEFINDERMODE_HIGH_SPEED corresponding to the range finder running mode
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_RANGEFINDERMODE_INVALID.
   /// </para>
   ///-
   function TYRangeFinder.get_rangeFinderMode():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -477,14 +604,15 @@ implementation
               exit;
             end;
         end;
-      result := self._rangeFinderMode;
+      res := self._rangeFinderMode;
+      result := res;
       exit;
     end;
 
 
   ////
   /// <summary>
-  ///   Changes the rangefinder running mode, allowing to put priority on
+  ///   Changes the rangefinder running mode, allowing you to put priority on
   ///   precision, speed or maximum range.
   /// <para>
   /// </para>
@@ -494,7 +622,7 @@ implementation
   /// <param name="newval">
   ///   a value among Y_RANGEFINDERMODE_DEFAULT, Y_RANGEFINDERMODE_LONG_RANGE,
   ///   Y_RANGEFINDERMODE_HIGH_ACCURACY and Y_RANGEFINDERMODE_HIGH_SPEED corresponding to the rangefinder
-  ///   running mode, allowing to put priority on
+  ///   running mode, allowing you to put priority on
   ///   precision, speed or maximum range
   /// </param>
   /// <para>
@@ -514,7 +642,68 @@ implementation
       result := _setAttr('rangeFinderMode',rest_val);
     end;
 
+  function TYRangeFinder.get_hardwareCalibration():string;
+    var
+      res : string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_HARDWARECALIBRATION_INVALID;
+              exit;
+            end;
+        end;
+      res := self._hardwareCalibration;
+      result := res;
+      exit;
+    end;
+
+
+  function TYRangeFinder.set_hardwareCalibration(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('hardwareCalibration',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the current sensor temperature, as a floating point number.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a floating point number corresponding to the current sensor temperature, as a floating point number
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_CURRENTTEMPERATURE_INVALID.
+  /// </para>
+  ///-
+  function TYRangeFinder.get_currentTemperature():double;
+    var
+      res : double;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_CURRENTTEMPERATURE_INVALID;
+              exit;
+            end;
+        end;
+      res := self._currentTemperature;
+      result := res;
+      exit;
+    end;
+
+
   function TYRangeFinder.get_command():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -524,7 +713,8 @@ implementation
               exit;
             end;
         end;
-      result := self._command;
+      res := self._command;
+      result := res;
       exit;
     end;
 
@@ -708,12 +898,40 @@ implementation
 
   ////
   /// <summary>
+  ///   Returns the temperature at the time when the latest calibration was performed.
+  /// <para>
+  ///   This function can be used to determine if a new calibration for ambient temperature
+  ///   is required.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a temperature, as a floating point number.
+  ///   On failure, throws an exception or return YAPI_INVALID_DOUBLE.
+  /// </returns>
+  ///-
+  function TYRangeFinder.get_hardwareCalibrationTemperature():double;
+    var
+      hwcal : string;
+    begin
+      hwcal := self.get_hardwareCalibration;
+      if not((Copy(hwcal, 0 + 1, 1) = '@')) then
+        begin
+          result := YAPI_INVALID_DOUBLE;
+          exit;
+        end;
+      result := _atoi(Copy(hwcal, 1 + 1, Length(hwcal)));
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
   ///   Triggers a sensor calibration according to the current ambient temperature.
   /// <para>
   ///   That
   ///   calibration process needs no physical interaction with the sensor. It is performed
   ///   automatically at device startup, but it is recommended to start it again when the
-  ///   temperature delta since last calibration exceeds 8°C.
+  ///   temperature delta since the latest calibration exceeds 8°C.
   /// </para>
   /// </summary>
   /// <returns>
@@ -721,9 +939,120 @@ implementation
   ///   On failure, throws an exception or returns a negative error code.
   /// </returns>
   ///-
-  function TYRangeFinder.triggerTempCalibration():LongInt;
+  function TYRangeFinder.triggerTemperatureCalibration():LongInt;
     begin
       result := self.set_command('T');
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Triggers the photon detector hardware calibration.
+  /// <para>
+  ///   This function is part of the calibration procedure to compensate for the the effect
+  ///   of a cover glass. Make sure to read the chapter about hardware calibration for details
+  ///   on the calibration procedure for proper results.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </returns>
+  ///-
+  function TYRangeFinder.triggerSpadCalibration():LongInt;
+    begin
+      result := self.set_command('S');
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Triggers the hardware offset calibration of the distance sensor.
+  /// <para>
+  ///   This function is part of the calibration procedure to compensate for the the effect
+  ///   of a cover glass. Make sure to read the chapter about hardware calibration for details
+  ///   on the calibration procedure for proper results.
+  /// </para>
+  /// </summary>
+  /// <param name="targetDist">
+  ///   true distance of the calibration target, in mm or inches, depending
+  ///   on the unit selected in the device
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </returns>
+  ///-
+  function TYRangeFinder.triggerOffsetCalibration(targetDist: double):LongInt;
+    var
+      distmm : LongInt;
+    begin
+      if (self.get_unit = '"') then
+        begin
+          distmm := round(targetDist * 25.4);
+        end
+      else
+        begin
+          distmm := round(targetDist);
+        end;
+      result := self.set_command('O'+inttostr(distmm));
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Triggers the hardware cross-talk calibration of the distance sensor.
+  /// <para>
+  ///   This function is part of the calibration procedure to compensate for the the effect
+  ///   of a cover glass. Make sure to read the chapter about hardware calibration for details
+  ///   on the calibration procedure for proper results.
+  /// </para>
+  /// </summary>
+  /// <param name="targetDist">
+  ///   true distance of the calibration target, in mm or inches, depending
+  ///   on the unit selected in the device
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </returns>
+  ///-
+  function TYRangeFinder.triggerXTalkCalibration(targetDist: double):LongInt;
+    var
+      distmm : LongInt;
+    begin
+      if (self.get_unit = '"') then
+        begin
+          distmm := round(targetDist * 25.4);
+        end
+      else
+        begin
+          distmm := round(targetDist);
+        end;
+      result := self.set_command('X'+inttostr(distmm));
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Cancels the effect of previous hardware calibration procedures to compensate
+  ///   for cover glass, and restores factory settings.
+  /// <para>
+  ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </returns>
+  ///-
+  function TYRangeFinder.cancelCoverGlassCalibrations():LongInt;
+    begin
+      result := self.set_hardwareCalibration('');
       exit;
     end;
 

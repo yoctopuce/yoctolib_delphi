@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_audioin.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_audioin.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindAudioIn(), the high-level API for AudioIn functions
  *
@@ -459,6 +459,8 @@ implementation
   /// </para>
   ///-
   function TYAudioIn.get_volume():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -468,7 +470,8 @@ implementation
               exit;
             end;
         end;
-      result := self._volume;
+      res := self._volume;
+      result := res;
       exit;
     end;
 
@@ -517,6 +520,8 @@ implementation
   /// </para>
   ///-
   function TYAudioIn.get_mute():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -526,7 +531,8 @@ implementation
               exit;
             end;
         end;
-      result := self._mute;
+      res := self._mute;
+      result := res;
       exit;
     end;
 
@@ -581,6 +587,8 @@ implementation
   /// </para>
   ///-
   function TYAudioIn.get_volumeRange():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -590,7 +598,8 @@ implementation
               exit;
             end;
         end;
-      result := self._volumeRange;
+      res := self._volumeRange;
+      result := res;
       exit;
     end;
 
@@ -611,6 +620,8 @@ implementation
   /// </para>
   ///-
   function TYAudioIn.get_signal():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -620,7 +631,8 @@ implementation
               exit;
             end;
         end;
-      result := self._signal;
+      res := self._signal;
+      result := res;
       exit;
     end;
 
@@ -641,6 +653,8 @@ implementation
   /// </para>
   ///-
   function TYAudioIn.get_noSignalFor():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -650,7 +664,8 @@ implementation
               exit;
             end;
         end;
-      result := self._noSignalFor;
+      res := self._noSignalFor;
+      result := res;
       exit;
     end;
 

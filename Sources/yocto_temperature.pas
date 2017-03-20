@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_temperature.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_temperature.pas 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * Implements yFindTemperature(), the high-level API for Temperature functions
  *
@@ -80,8 +80,8 @@ type
   ///   TYTemperature Class: Temperature function interface
   /// <para>
   ///   The Yoctopuce class YTemperature allows you to read and configure Yoctopuce temperature
-  ///   sensors. It inherits from YSensor class the core functions to read measurements,
-  ///   register callback functions, access to the autonomous datalogger.
+  ///   sensors. It inherits from YSensor class the core functions to read measurements, to
+  ///   register callback functions, to access the autonomous datalogger.
   ///   This class adds the ability to configure some specific parameters for some
   ///   sensors (connection type, temperature mapping table).
   /// </para>
@@ -330,7 +330,7 @@ type
 
     ////
     /// <summary>
-    ///   Configure NTC thermistor parameters in order to properly compute the temperature from
+    ///   Configures NTC thermistor parameters in order to properly compute the temperature from
     ///   the measured resistance.
     /// <para>
     ///   For increased precision, you can enter a complete mapping
@@ -614,6 +614,8 @@ implementation
   /// </para>
   ///-
   function TYTemperature.get_sensorType():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -623,7 +625,8 @@ implementation
               exit;
             end;
         end;
-      result := self._sensorType;
+      res := self._sensorType;
+      result := res;
       exit;
     end;
 
@@ -680,6 +683,8 @@ implementation
   /// </para>
   ///-
   function TYTemperature.get_signalValue():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -689,7 +694,8 @@ implementation
               exit;
             end;
         end;
-      result := round(self._signalValue * 1000) / 1000;
+      res := round(self._signalValue * 1000) / 1000;
+      result := res;
       exit;
     end;
 
@@ -710,6 +716,8 @@ implementation
   /// </para>
   ///-
   function TYTemperature.get_signalUnit():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration = 0 then
         begin
@@ -719,12 +727,15 @@ implementation
               exit;
             end;
         end;
-      result := self._signalUnit;
+      res := self._signalUnit;
+      result := res;
       exit;
     end;
 
 
   function TYTemperature.get_command():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -734,7 +745,8 @@ implementation
               exit;
             end;
         end;
-      result := self._command;
+      res := self._command;
+      result := res;
       exit;
     end;
 
@@ -918,7 +930,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Configure NTC thermistor parameters in order to properly compute the temperature from
+  ///   Configures NTC thermistor parameters in order to properly compute the temperature from
   ///   the measured resistance.
   /// <para>
   ///   For increased precision, you can enter a complete mapping

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_dualpower.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_dualpower.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindDualPower(), the high-level API for DualPower functions
  *
@@ -395,6 +395,8 @@ implementation
   /// </para>
   ///-
   function TYDualPower.get_powerState():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -404,7 +406,8 @@ implementation
               exit;
             end;
         end;
-      result := self._powerState;
+      res := self._powerState;
+      result := res;
       exit;
     end;
 
@@ -426,6 +429,8 @@ implementation
   /// </para>
   ///-
   function TYDualPower.get_powerControl():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -435,7 +440,8 @@ implementation
               exit;
             end;
         end;
-      result := self._powerControl;
+      res := self._powerControl;
+      result := res;
       exit;
     end;
 
@@ -485,6 +491,8 @@ implementation
   /// </para>
   ///-
   function TYDualPower.get_extVoltage():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -494,7 +502,8 @@ implementation
               exit;
             end;
         end;
-      result := self._extVoltage;
+      res := self._extVoltage;
+      result := res;
       exit;
     end;
 

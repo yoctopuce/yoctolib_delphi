@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_quadraturedecoder.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_quadraturedecoder.pas 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * Implements yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
  *
@@ -67,7 +67,7 @@ type
   /// <para>
   ///   The class YQuadratureDecoder allows you to decode a two-wire signal produced by a
   ///   quadrature encoder. It inherits from YSensor class the core functions to read measurements,
-  ///   register callback functions, access to the autonomous datalogger.
+  ///   to register callback functions, to access the autonomous datalogger.
   /// </para>
   /// </summary>
   ///-
@@ -443,6 +443,8 @@ implementation
   /// </para>
   ///-
   function TYQuadratureDecoder.get_speed():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -452,7 +454,8 @@ implementation
               exit;
             end;
         end;
-      result := self._speed;
+      res := self._speed;
+      result := res;
       exit;
     end;
 
@@ -473,6 +476,8 @@ implementation
   /// </para>
   ///-
   function TYQuadratureDecoder.get_decoding():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -482,7 +487,8 @@ implementation
               exit;
             end;
         end;
-      result := self._decoding;
+      res := self._decoding;
+      result := res;
       exit;
     end;
 

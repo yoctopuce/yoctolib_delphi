@@ -8,7 +8,6 @@ uses
   yocto_temperature,
   yocto_pressure;
 
-
 Procedure  Usage();
   var
    exe : string;
@@ -21,7 +20,6 @@ Procedure  Usage();
     sleep(2500);
     halt;
   End;
-
 
 var
   hsensor       : TYHumidity;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_anbutton.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_anbutton.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindAnButton(), the high-level API for AnButton functions
  *
@@ -702,6 +702,8 @@ implementation
   /// </para>
   ///-
   function TYAnButton.get_calibratedValue():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -711,7 +713,8 @@ implementation
               exit;
             end;
         end;
-      result := self._calibratedValue;
+      res := self._calibratedValue;
+      result := res;
       exit;
     end;
 
@@ -732,6 +735,8 @@ implementation
   /// </para>
   ///-
   function TYAnButton.get_rawValue():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -741,7 +746,8 @@ implementation
               exit;
             end;
         end;
-      result := self._rawValue;
+      res := self._rawValue;
+      result := res;
       exit;
     end;
 
@@ -762,6 +768,8 @@ implementation
   /// </para>
   ///-
   function TYAnButton.get_analogCalibration():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -771,7 +779,8 @@ implementation
               exit;
             end;
         end;
-      result := self._analogCalibration;
+      res := self._analogCalibration;
+      result := res;
       exit;
     end;
 
@@ -822,6 +831,8 @@ implementation
   /// </para>
   ///-
   function TYAnButton.get_calibrationMax():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -831,7 +842,8 @@ implementation
               exit;
             end;
         end;
-      result := self._calibrationMax;
+      res := self._calibrationMax;
+      result := res;
       exit;
     end;
 
@@ -885,6 +897,8 @@ implementation
   /// </para>
   ///-
   function TYAnButton.get_calibrationMin():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -894,7 +908,8 @@ implementation
               exit;
             end;
         end;
-      result := self._calibrationMin;
+      res := self._calibrationMin;
+      result := res;
       exit;
     end;
 
@@ -948,6 +963,8 @@ implementation
   /// </para>
   ///-
   function TYAnButton.get_sensitivity():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -957,7 +974,8 @@ implementation
               exit;
             end;
         end;
-      result := self._sensitivity;
+      res := self._sensitivity;
+      result := res;
       exit;
     end;
 
@@ -1012,6 +1030,8 @@ implementation
   /// </para>
   ///-
   function TYAnButton.get_isPressed():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1021,7 +1041,8 @@ implementation
               exit;
             end;
         end;
-      result := self._isPressed;
+      res := self._isPressed;
+      result := res;
       exit;
     end;
 
@@ -1044,6 +1065,8 @@ implementation
   /// </para>
   ///-
   function TYAnButton.get_lastTimePressed():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1053,7 +1076,8 @@ implementation
               exit;
             end;
         end;
-      result := self._lastTimePressed;
+      res := self._lastTimePressed;
+      result := res;
       exit;
     end;
 
@@ -1076,6 +1100,8 @@ implementation
   /// </para>
   ///-
   function TYAnButton.get_lastTimeReleased():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1085,7 +1111,8 @@ implementation
               exit;
             end;
         end;
-      result := self._lastTimeReleased;
+      res := self._lastTimeReleased;
+      result := res;
       exit;
     end;
 
@@ -1109,6 +1136,8 @@ implementation
   /// </para>
   ///-
   function TYAnButton.get_pulseCounter():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1118,7 +1147,8 @@ implementation
               exit;
             end;
         end;
-      result := self._pulseCounter;
+      res := self._pulseCounter;
+      result := res;
       exit;
     end;
 
@@ -1147,6 +1177,8 @@ implementation
   /// </para>
   ///-
   function TYAnButton.get_pulseTimer():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1156,7 +1188,8 @@ implementation
               exit;
             end;
         end;
-      result := self._pulseTimer;
+      res := self._pulseTimer;
+      result := res;
       exit;
     end;
 

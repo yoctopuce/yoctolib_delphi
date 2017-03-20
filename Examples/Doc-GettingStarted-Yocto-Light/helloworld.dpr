@@ -34,7 +34,6 @@ begin
     exit;
   end;
 
-
   if paramstr(1)='any' then
     begin
       // search for the first available light sensor

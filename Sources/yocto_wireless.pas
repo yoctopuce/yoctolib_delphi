@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_wireless.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -580,6 +580,8 @@ implementation
   /// </para>
   ///-
   function TYWireless.get_linkQuality():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -589,7 +591,8 @@ implementation
               exit;
             end;
         end;
-      result := self._linkQuality;
+      res := self._linkQuality;
+      result := res;
       exit;
     end;
 
@@ -610,6 +613,8 @@ implementation
   /// </para>
   ///-
   function TYWireless.get_ssid():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -619,7 +624,8 @@ implementation
               exit;
             end;
         end;
-      result := self._ssid;
+      res := self._ssid;
+      result := res;
       exit;
     end;
 
@@ -640,6 +646,8 @@ implementation
   /// </para>
   ///-
   function TYWireless.get_channel():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -649,7 +657,8 @@ implementation
               exit;
             end;
         end;
-      result := self._channel;
+      res := self._channel;
+      result := res;
       exit;
     end;
 
@@ -671,6 +680,8 @@ implementation
   /// </para>
   ///-
   function TYWireless.get_security():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -680,7 +691,8 @@ implementation
               exit;
             end;
         end;
-      result := self._security;
+      res := self._security;
+      result := res;
       exit;
     end;
 
@@ -701,6 +713,8 @@ implementation
   /// </para>
   ///-
   function TYWireless.get_message():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -710,12 +724,15 @@ implementation
               exit;
             end;
         end;
-      result := self._message;
+      res := self._message;
+      result := res;
       exit;
     end;
 
 
   function TYWireless.get_wlanConfig():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -725,7 +742,8 @@ implementation
               exit;
             end;
         end;
-      result := self._wlanConfig;
+      res := self._wlanConfig;
+      result := res;
       exit;
     end;
 

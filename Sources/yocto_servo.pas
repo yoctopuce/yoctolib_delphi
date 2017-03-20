@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_servo.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_servo.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindServo(), the high-level API for Servo functions
  *
@@ -652,6 +652,8 @@ implementation
   /// </para>
   ///-
   function TYServo.get_position():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -661,7 +663,8 @@ implementation
               exit;
             end;
         end;
-      result := self._position;
+      res := self._position;
+      result := res;
       exit;
     end;
 
@@ -710,6 +713,8 @@ implementation
   /// </para>
   ///-
   function TYServo.get_enabled():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -719,7 +724,8 @@ implementation
               exit;
             end;
         end;
-      result := self._enabled;
+      res := self._enabled;
+      result := res;
       exit;
     end;
 
@@ -768,6 +774,8 @@ implementation
   /// </para>
   ///-
   function TYServo.get_range():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -777,7 +785,8 @@ implementation
               exit;
             end;
         end;
-      result := self._range;
+      res := self._range;
+      result := res;
       exit;
     end;
 
@@ -832,6 +841,8 @@ implementation
   /// </para>
   ///-
   function TYServo.get_neutral():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -841,7 +852,8 @@ implementation
               exit;
             end;
         end;
-      result := self._neutral;
+      res := self._neutral;
+      result := res;
       exit;
     end;
 
@@ -880,6 +892,8 @@ implementation
     end;
 
   function TYServo.get_move():TYServoMove;
+    var
+      res : TYServoMove;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -889,7 +903,8 @@ implementation
               exit;
             end;
         end;
-      result := self._move;
+      res := self._move;
+      result := res;
       exit;
     end;
 
@@ -949,6 +964,8 @@ implementation
   /// </para>
   ///-
   function TYServo.get_positionAtPowerOn():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -958,7 +975,8 @@ implementation
               exit;
             end;
         end;
-      result := self._positionAtPowerOn;
+      res := self._positionAtPowerOn;
+      result := res;
       exit;
     end;
 
@@ -1010,6 +1028,8 @@ implementation
   /// </para>
   ///-
   function TYServo.get_enabledAtPowerOn():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1019,7 +1039,8 @@ implementation
               exit;
             end;
         end;
-      result := self._enabledAtPowerOn;
+      res := self._enabledAtPowerOn;
+      result := res;
       exit;
     end;
 

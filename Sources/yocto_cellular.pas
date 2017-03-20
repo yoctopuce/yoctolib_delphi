@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 25609 2016-10-19 12:37:17Z seb $
+ * $Id: yocto_cellular.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -1096,6 +1096,8 @@ implementation
   /// </para>
   ///-
   function TYCellular.get_linkQuality():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1105,7 +1107,8 @@ implementation
               exit;
             end;
         end;
-      result := self._linkQuality;
+      res := self._linkQuality;
+      result := res;
       exit;
     end;
 
@@ -1126,6 +1129,8 @@ implementation
   /// </para>
   ///-
   function TYCellular.get_cellOperator():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1135,7 +1140,8 @@ implementation
               exit;
             end;
         end;
-      result := self._cellOperator;
+      res := self._cellOperator;
+      result := res;
       exit;
     end;
 
@@ -1156,6 +1162,8 @@ implementation
   /// </para>
   ///-
   function TYCellular.get_cellIdentifier():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1165,7 +1173,8 @@ implementation
               exit;
             end;
         end;
-      result := self._cellIdentifier;
+      res := self._cellIdentifier;
+      result := res;
       exit;
     end;
 
@@ -1187,6 +1196,8 @@ implementation
   /// </para>
   ///-
   function TYCellular.get_cellType():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1196,7 +1207,8 @@ implementation
               exit;
             end;
         end;
-      result := self._cellType;
+      res := self._cellType;
+      result := res;
       exit;
     end;
 
@@ -1221,6 +1233,8 @@ implementation
   /// </para>
   ///-
   function TYCellular.get_imsi():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1230,7 +1244,8 @@ implementation
               exit;
             end;
         end;
-      result := self._imsi;
+      res := self._imsi;
+      result := res;
       exit;
     end;
 
@@ -1251,6 +1266,8 @@ implementation
   /// </para>
   ///-
   function TYCellular.get_message():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1260,7 +1277,8 @@ implementation
               exit;
             end;
         end;
-      result := self._message;
+      res := self._message;
+      result := res;
       exit;
     end;
 
@@ -1285,6 +1303,8 @@ implementation
   /// </para>
   ///-
   function TYCellular.get_pin():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1294,7 +1314,8 @@ implementation
               exit;
             end;
         end;
-      result := self._pin;
+      res := self._pin;
+      result := res;
       exit;
     end;
 
@@ -1358,6 +1379,8 @@ implementation
   /// </para>
   ///-
   function TYCellular.get_lockedOperator():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1367,7 +1390,8 @@ implementation
               exit;
             end;
         end;
-      result := self._lockedOperator;
+      res := self._lockedOperator;
+      result := res;
       exit;
     end;
 
@@ -1420,6 +1444,8 @@ implementation
   /// </para>
   ///-
   function TYCellular.get_airplaneMode():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1429,7 +1455,8 @@ implementation
               exit;
             end;
         end;
-      result := self._airplaneMode;
+      res := self._airplaneMode;
+      result := res;
       exit;
     end;
 
@@ -1481,6 +1508,8 @@ implementation
   /// </para>
   ///-
   function TYCellular.get_enableData():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1490,7 +1519,8 @@ implementation
               exit;
             end;
         end;
-      result := self._enableData;
+      res := self._enableData;
+      result := res;
       exit;
     end;
 
@@ -1547,6 +1577,8 @@ implementation
   /// </para>
   ///-
   function TYCellular.get_apn():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1556,7 +1588,8 @@ implementation
               exit;
             end;
         end;
-      result := self._apn;
+      res := self._apn;
+      result := res;
       exit;
     end;
 
@@ -1609,6 +1642,8 @@ implementation
   /// </para>
   ///-
   function TYCellular.get_apnSecret():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1618,7 +1653,8 @@ implementation
               exit;
             end;
         end;
-      result := self._apnSecret;
+      res := self._apnSecret;
+      result := res;
       exit;
     end;
 
@@ -1647,6 +1683,8 @@ implementation
   /// </para>
   ///-
   function TYCellular.get_pingInterval():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1656,7 +1694,8 @@ implementation
               exit;
             end;
         end;
-      result := self._pingInterval;
+      res := self._pingInterval;
+      result := res;
       exit;
     end;
 
@@ -1705,6 +1744,8 @@ implementation
   /// </para>
   ///-
   function TYCellular.get_dataSent():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1714,7 +1755,8 @@ implementation
               exit;
             end;
         end;
-      result := self._dataSent;
+      res := self._dataSent;
+      result := res;
       exit;
     end;
 
@@ -1763,6 +1805,8 @@ implementation
   /// </para>
   ///-
   function TYCellular.get_dataReceived():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1772,7 +1816,8 @@ implementation
               exit;
             end;
         end;
-      result := self._dataReceived;
+      res := self._dataReceived;
+      result := res;
       exit;
     end;
 
@@ -1806,6 +1851,8 @@ implementation
     end;
 
   function TYCellular.get_command():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1815,7 +1862,8 @@ implementation
               exit;
             end;
         end;
-      result := self._command;
+      res := self._command;
+      result := res;
       exit;
     end;
 

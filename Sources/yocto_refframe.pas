@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_refframe.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_refframe.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -669,6 +669,8 @@ implementation
 {$HINTS ON}
 
   function TYRefFrame.get_mountPos():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -678,7 +680,8 @@ implementation
               exit;
             end;
         end;
-      result := self._mountPos;
+      res := self._mountPos;
+      result := res;
       exit;
     end;
 
@@ -755,6 +758,8 @@ implementation
   /// </para>
   ///-
   function TYRefFrame.get_bearing():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -764,12 +769,15 @@ implementation
               exit;
             end;
         end;
-      result := self._bearing;
+      res := self._bearing;
+      result := res;
       exit;
     end;
 
 
   function TYRefFrame.get_calibrationParam():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -779,7 +787,8 @@ implementation
               exit;
             end;
         end;
-      result := self._calibrationParam;
+      res := self._calibrationParam;
+      result := res;
       exit;
     end;
 

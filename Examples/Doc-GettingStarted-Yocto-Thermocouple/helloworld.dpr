@@ -6,7 +6,6 @@ uses
   yocto_api,
   yocto_temperature;
 
-
 Procedure  Usage();
   var
    exe : string;
@@ -18,7 +17,6 @@ Procedure  Usage();
     WriteLn(exe+' any');
     halt;
   End;
-
 
 var
   sensor,ch1,ch2 : TYTemperature;
@@ -53,7 +51,6 @@ begin
   serial:=module.get_serialNumber();
   ch1:=YFindTemperature(serial+'.temperature1');
   ch2:=YFindTemperature(serial+'.temperature2');
-
 
   done:= false;
   repeat

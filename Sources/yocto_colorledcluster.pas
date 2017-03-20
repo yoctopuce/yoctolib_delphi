@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_colorledcluster.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_colorledcluster.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -1223,6 +1223,8 @@ implementation
   /// </para>
   ///-
   function TYColorLedCluster.get_activeLedCount():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1232,7 +1234,8 @@ implementation
               exit;
             end;
         end;
-      result := self._activeLedCount;
+      res := self._activeLedCount;
+      result := res;
       exit;
     end;
 
@@ -1281,6 +1284,8 @@ implementation
   /// </para>
   ///-
   function TYColorLedCluster.get_maxLedCount():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration = 0 then
         begin
@@ -1290,7 +1295,8 @@ implementation
               exit;
             end;
         end;
-      result := self._maxLedCount;
+      res := self._maxLedCount;
+      result := res;
       exit;
     end;
 
@@ -1311,6 +1317,8 @@ implementation
   /// </para>
   ///-
   function TYColorLedCluster.get_blinkSeqMaxCount():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration = 0 then
         begin
@@ -1320,7 +1328,8 @@ implementation
               exit;
             end;
         end;
-      result := self._blinkSeqMaxCount;
+      res := self._blinkSeqMaxCount;
+      result := res;
       exit;
     end;
 
@@ -1341,6 +1350,8 @@ implementation
   /// </para>
   ///-
   function TYColorLedCluster.get_blinkSeqMaxSize():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration = 0 then
         begin
@@ -1350,12 +1361,15 @@ implementation
               exit;
             end;
         end;
-      result := self._blinkSeqMaxSize;
+      res := self._blinkSeqMaxSize;
+      result := res;
       exit;
     end;
 
 
   function TYColorLedCluster.get_command():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1365,7 +1379,8 @@ implementation
               exit;
             end;
         end;
-      result := self._command;
+      res := self._command;
+      result := res;
       exit;
     end;
 

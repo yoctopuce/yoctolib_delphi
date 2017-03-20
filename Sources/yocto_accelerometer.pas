@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_accelerometer.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_accelerometer.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindAccelerometer(), the high-level API for Accelerometer functions
  *
@@ -462,6 +462,8 @@ implementation
   /// </para>
   ///-
   function TYAccelerometer.get_bandwidth():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -471,7 +473,8 @@ implementation
               exit;
             end;
         end;
-      result := self._bandwidth;
+      res := self._bandwidth;
+      result := res;
       exit;
     end;
 
@@ -522,6 +525,8 @@ implementation
   /// </para>
   ///-
   function TYAccelerometer.get_xValue():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -531,7 +536,8 @@ implementation
               exit;
             end;
         end;
-      result := self._xValue;
+      res := self._xValue;
+      result := res;
       exit;
     end;
 
@@ -552,6 +558,8 @@ implementation
   /// </para>
   ///-
   function TYAccelerometer.get_yValue():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -561,7 +569,8 @@ implementation
               exit;
             end;
         end;
-      result := self._yValue;
+      res := self._yValue;
+      result := res;
       exit;
     end;
 
@@ -582,6 +591,8 @@ implementation
   /// </para>
   ///-
   function TYAccelerometer.get_zValue():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -591,12 +602,15 @@ implementation
               exit;
             end;
         end;
-      result := self._zValue;
+      res := self._zValue;
+      result := res;
       exit;
     end;
 
 
   function TYAccelerometer.get_gravityCancellation():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -606,7 +620,8 @@ implementation
               exit;
             end;
         end;
-      result := self._gravityCancellation;
+      res := self._gravityCancellation;
+      result := res;
       exit;
     end;
 

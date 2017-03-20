@@ -5,7 +5,6 @@ uses
   yocto_api,
   yocto_colorled;
 
-
 Procedure  Usage();
   var
    exe : string;
@@ -17,7 +16,6 @@ Procedure  Usage();
     WriteLn(exe+' any');
     halt;
   End;
-
 
 procedure setcolor(led1,led2:TYColorLed; color:integer);
   begin

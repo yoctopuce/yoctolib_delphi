@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_magnetometer.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_magnetometer.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindMagnetometer(), the high-level API for Magnetometer functions
  *
@@ -447,6 +447,8 @@ implementation
   /// </para>
   ///-
   function TYMagnetometer.get_bandwidth():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -456,7 +458,8 @@ implementation
               exit;
             end;
         end;
-      result := self._bandwidth;
+      res := self._bandwidth;
+      result := res;
       exit;
     end;
 
@@ -507,6 +510,8 @@ implementation
   /// </para>
   ///-
   function TYMagnetometer.get_xValue():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -516,7 +521,8 @@ implementation
               exit;
             end;
         end;
-      result := self._xValue;
+      res := self._xValue;
+      result := res;
       exit;
     end;
 
@@ -537,6 +543,8 @@ implementation
   /// </para>
   ///-
   function TYMagnetometer.get_yValue():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -546,7 +554,8 @@ implementation
               exit;
             end;
         end;
-      result := self._yValue;
+      res := self._yValue;
+      result := res;
       exit;
     end;
 
@@ -567,6 +576,8 @@ implementation
   /// </para>
   ///-
   function TYMagnetometer.get_zValue():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -576,7 +587,8 @@ implementation
               exit;
             end;
         end;
-      result := self._zValue;
+      res := self._zValue;
+      result := res;
       exit;
     end;
 

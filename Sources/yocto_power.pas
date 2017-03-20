@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_power.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_power.pas 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * Implements yFindPower(), the high-level API for Power functions
  *
@@ -66,7 +66,7 @@ type
   /// <para>
   ///   The Yoctopuce class YPower allows you to read and configure Yoctopuce power
   ///   sensors. It inherits from YSensor class the core functions to read measurements,
-  ///   register callback functions, access to the autonomous datalogger.
+  ///   to register callback functions, to access the autonomous datalogger.
   ///   This class adds the ability to access the energy counter and the power factor.
   /// </para>
   /// </summary>
@@ -415,6 +415,8 @@ implementation
   /// </para>
   ///-
   function TYPower.get_cosPhi():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -424,7 +426,8 @@ implementation
               exit;
             end;
         end;
-      result := self._cosPhi;
+      res := self._cosPhi;
+      result := res;
       exit;
     end;
 
@@ -455,6 +458,8 @@ implementation
   /// </para>
   ///-
   function TYPower.get_meter():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -464,7 +469,8 @@ implementation
               exit;
             end;
         end;
-      result := self._meter;
+      res := self._meter;
+      result := res;
       exit;
     end;
 
@@ -485,6 +491,8 @@ implementation
   /// </para>
   ///-
   function TYPower.get_meterTimer():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -494,7 +502,8 @@ implementation
               exit;
             end;
         end;
-      result := self._meterTimer;
+      res := self._meterTimer;
+      result := res;
       exit;
     end;
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_display.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -1636,6 +1636,8 @@ destructor TYDisplay.destroy();
   /// </para>
   ///-
   function TYDisplay.get_enabled():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1645,7 +1647,8 @@ destructor TYDisplay.destroy();
               exit;
             end;
         end;
-      result := self._enabled;
+      res := self._enabled;
+      result := res;
       exit;
     end;
 
@@ -1694,6 +1697,8 @@ destructor TYDisplay.destroy();
   /// </para>
   ///-
   function TYDisplay.get_startupSeq():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1703,7 +1708,8 @@ destructor TYDisplay.destroy();
               exit;
             end;
         end;
-      result := self._startupSeq;
+      res := self._startupSeq;
+      result := res;
       exit;
     end;
 
@@ -1754,6 +1760,8 @@ destructor TYDisplay.destroy();
   /// </para>
   ///-
   function TYDisplay.get_brightness():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1763,7 +1771,8 @@ destructor TYDisplay.destroy();
               exit;
             end;
         end;
-      result := self._brightness;
+      res := self._brightness;
+      result := res;
       exit;
     end;
 
@@ -1816,6 +1825,8 @@ destructor TYDisplay.destroy();
   /// </para>
   ///-
   function TYDisplay.get_orientation():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1825,7 +1836,8 @@ destructor TYDisplay.destroy();
               exit;
             end;
         end;
-      result := self._orientation;
+      res := self._orientation;
+      result := res;
       exit;
     end;
 
@@ -1877,6 +1889,8 @@ destructor TYDisplay.destroy();
   /// </para>
   ///-
   function TYDisplay.get_displayWidth():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1886,7 +1900,8 @@ destructor TYDisplay.destroy();
               exit;
             end;
         end;
-      result := self._displayWidth;
+      res := self._displayWidth;
+      result := res;
       exit;
     end;
 
@@ -1907,6 +1922,8 @@ destructor TYDisplay.destroy();
   /// </para>
   ///-
   function TYDisplay.get_displayHeight():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1916,7 +1933,8 @@ destructor TYDisplay.destroy();
               exit;
             end;
         end;
-      result := self._displayHeight;
+      res := self._displayHeight;
+      result := res;
       exit;
     end;
 
@@ -1938,6 +1956,8 @@ destructor TYDisplay.destroy();
   /// </para>
   ///-
   function TYDisplay.get_displayType():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration = 0 then
         begin
@@ -1947,7 +1967,8 @@ destructor TYDisplay.destroy();
               exit;
             end;
         end;
-      result := self._displayType;
+      res := self._displayType;
+      result := res;
       exit;
     end;
 
@@ -1968,6 +1989,8 @@ destructor TYDisplay.destroy();
   /// </para>
   ///-
   function TYDisplay.get_layerWidth():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration = 0 then
         begin
@@ -1977,7 +2000,8 @@ destructor TYDisplay.destroy();
               exit;
             end;
         end;
-      result := self._layerWidth;
+      res := self._layerWidth;
+      result := res;
       exit;
     end;
 
@@ -1998,6 +2022,8 @@ destructor TYDisplay.destroy();
   /// </para>
   ///-
   function TYDisplay.get_layerHeight():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration = 0 then
         begin
@@ -2007,7 +2033,8 @@ destructor TYDisplay.destroy();
               exit;
             end;
         end;
-      result := self._layerHeight;
+      res := self._layerHeight;
+      result := res;
       exit;
     end;
 
@@ -2028,6 +2055,8 @@ destructor TYDisplay.destroy();
   /// </para>
   ///-
   function TYDisplay.get_layerCount():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration = 0 then
         begin
@@ -2037,12 +2066,15 @@ destructor TYDisplay.destroy();
               exit;
             end;
         end;
-      result := self._layerCount;
+      res := self._layerCount;
+      result := res;
       exit;
     end;
 
 
   function TYDisplay.get_command():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -2052,7 +2084,8 @@ destructor TYDisplay.destroy();
               exit;
             end;
         end;
-      result := self._command;
+      res := self._command;
+      result := res;
       exit;
     end;
 

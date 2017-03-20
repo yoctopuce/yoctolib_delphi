@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_messagebox.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *
@@ -741,6 +741,8 @@ implementation
   /// </para>
   ///-
   function TYMessageBox.get_slotsInUse():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -750,7 +752,8 @@ implementation
               exit;
             end;
         end;
-      result := self._slotsInUse;
+      res := self._slotsInUse;
+      result := res;
       exit;
     end;
 
@@ -771,6 +774,8 @@ implementation
   /// </para>
   ///-
   function TYMessageBox.get_slotsCount():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -780,12 +785,15 @@ implementation
               exit;
             end;
         end;
-      result := self._slotsCount;
+      res := self._slotsCount;
+      result := res;
       exit;
     end;
 
 
   function TYMessageBox.get_slotsBitmap():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -795,7 +803,8 @@ implementation
               exit;
             end;
         end;
-      result := self._slotsBitmap;
+      res := self._slotsBitmap;
+      result := res;
       exit;
     end;
 
@@ -816,6 +825,8 @@ implementation
   /// </para>
   ///-
   function TYMessageBox.get_pduSent():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -825,7 +836,8 @@ implementation
               exit;
             end;
         end;
-      result := self._pduSent;
+      res := self._pduSent;
+      result := res;
       exit;
     end;
 
@@ -874,6 +886,8 @@ implementation
   /// </para>
   ///-
   function TYMessageBox.get_pduReceived():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -883,7 +897,8 @@ implementation
               exit;
             end;
         end;
-      result := self._pduReceived;
+      res := self._pduReceived;
+      result := res;
       exit;
     end;
 
@@ -917,6 +932,8 @@ implementation
     end;
 
   function TYMessageBox.get_command():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -926,7 +943,8 @@ implementation
               exit;
             end;
         end;
-      result := self._command;
+      res := self._command;
+      result := res;
       exit;
     end;
 

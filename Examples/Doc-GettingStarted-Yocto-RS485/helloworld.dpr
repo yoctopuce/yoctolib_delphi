@@ -36,7 +36,6 @@ begin
          end;
      end;
 
-
   writeln('Please enter the MODBUS slave address (1...255)');
   repeat
    ReadLn(slave);

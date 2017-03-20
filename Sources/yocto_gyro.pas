@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_gyro.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_gyro.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindGyro(), the high-level API for Gyro functions
  *
@@ -1161,6 +1161,8 @@ constructor TYQt.Create(func:string);
   /// </para>
   ///-
   function TYGyro.get_bandwidth():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1170,7 +1172,8 @@ constructor TYQt.Create(func:string);
               exit;
             end;
         end;
-      result := self._bandwidth;
+      res := self._bandwidth;
+      result := res;
       exit;
     end;
 
@@ -1222,6 +1225,8 @@ constructor TYQt.Create(func:string);
   /// </para>
   ///-
   function TYGyro.get_xValue():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1231,7 +1236,8 @@ constructor TYQt.Create(func:string);
               exit;
             end;
         end;
-      result := self._xValue;
+      res := self._xValue;
+      result := res;
       exit;
     end;
 
@@ -1253,6 +1259,8 @@ constructor TYQt.Create(func:string);
   /// </para>
   ///-
   function TYGyro.get_yValue():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1262,7 +1270,8 @@ constructor TYQt.Create(func:string);
               exit;
             end;
         end;
-      result := self._yValue;
+      res := self._yValue;
+      result := res;
       exit;
     end;
 
@@ -1284,6 +1293,8 @@ constructor TYQt.Create(func:string);
   /// </para>
   ///-
   function TYGyro.get_zValue():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1293,7 +1304,8 @@ constructor TYQt.Create(func:string);
               exit;
             end;
         end;
-      result := self._zValue;
+      res := self._zValue;
+      result := res;
       exit;
     end;
 

@@ -5,7 +5,6 @@ uses
   yocto_api,
   yocto_relay;
 
-
 Procedure  Usage();
   var
    exe : string;
@@ -20,7 +19,6 @@ Procedure  Usage();
     WriteLn(exe+' any B');
   halt;
   End;
-
 
 procedure setRelayState(relay:TYRelay; state:boolean);
   begin
@@ -47,7 +45,6 @@ begin
     Write('RegisterHub error: '+errmsg);
     exit;
   end;
-
 
   if paramstr(1)='any' then
     begin

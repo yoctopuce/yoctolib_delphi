@@ -6,7 +6,6 @@ uses
   yocto_api,
   yocto_display;
 
-
 Procedure  Usage();
   var
    exe : string;
@@ -27,9 +26,7 @@ var
   w,h       : integer;
   x,y,vx,vy :integer;
 
-
 begin
-
 
   if (paramcount<1) then usage();
 

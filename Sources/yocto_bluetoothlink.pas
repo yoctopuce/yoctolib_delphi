@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_bluetoothlink.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_bluetoothlink.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindBluetoothLink(), the high-level API for BluetoothLink functions
  *
@@ -690,6 +690,8 @@ implementation
   /// </para>
   ///-
   function TYBluetoothLink.get_ownAddress():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -699,7 +701,8 @@ implementation
               exit;
             end;
         end;
-      result := self._ownAddress;
+      res := self._ownAddress;
+      result := res;
       exit;
     end;
 
@@ -724,6 +727,8 @@ implementation
   /// </para>
   ///-
   function TYBluetoothLink.get_pairingPin():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -733,7 +738,8 @@ implementation
               exit;
             end;
         end;
-      result := self._pairingPin;
+      res := self._pairingPin;
+      result := res;
       exit;
     end;
 
@@ -784,6 +790,8 @@ implementation
   /// </para>
   ///-
   function TYBluetoothLink.get_remoteAddress():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -793,7 +801,8 @@ implementation
               exit;
             end;
         end;
-      result := self._remoteAddress;
+      res := self._remoteAddress;
+      result := res;
       exit;
     end;
 
@@ -842,6 +851,8 @@ implementation
   /// </para>
   ///-
   function TYBluetoothLink.get_remoteName():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -851,7 +862,8 @@ implementation
               exit;
             end;
         end;
-      result := self._remoteName;
+      res := self._remoteName;
+      result := res;
       exit;
     end;
 
@@ -872,6 +884,8 @@ implementation
   /// </para>
   ///-
   function TYBluetoothLink.get_mute():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -881,7 +895,8 @@ implementation
               exit;
             end;
         end;
-      result := self._mute;
+      res := self._mute;
+      result := res;
       exit;
     end;
 
@@ -932,6 +947,8 @@ implementation
   /// </para>
   ///-
   function TYBluetoothLink.get_preAmplifier():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -941,7 +958,8 @@ implementation
               exit;
             end;
         end;
-      result := self._preAmplifier;
+      res := self._preAmplifier;
+      result := res;
       exit;
     end;
 
@@ -990,6 +1008,8 @@ implementation
   /// </para>
   ///-
   function TYBluetoothLink.get_volume():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -999,7 +1019,8 @@ implementation
               exit;
             end;
         end;
-      result := self._volume;
+      res := self._volume;
+      result := res;
       exit;
     end;
 
@@ -1049,6 +1070,8 @@ implementation
   /// </para>
   ///-
   function TYBluetoothLink.get_linkState():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1058,7 +1081,8 @@ implementation
               exit;
             end;
         end;
-      result := self._linkState;
+      res := self._linkState;
+      result := res;
       exit;
     end;
 
@@ -1080,6 +1104,8 @@ implementation
   /// </para>
   ///-
   function TYBluetoothLink.get_linkQuality():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1089,12 +1115,15 @@ implementation
               exit;
             end;
         end;
-      result := self._linkQuality;
+      res := self._linkQuality;
+      result := res;
       exit;
     end;
 
 
   function TYBluetoothLink.get_command():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1104,7 +1133,8 @@ implementation
               exit;
             end;
         end;
-      result := self._command;
+      res := self._command;
+      result := res;
       exit;
     end;
 

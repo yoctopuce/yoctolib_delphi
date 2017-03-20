@@ -30,7 +30,6 @@ var
   pwm2   : TYPWMInput;
   m      : TyModule;
 
-
 begin
 
   if (paramcount<1)  then usage();

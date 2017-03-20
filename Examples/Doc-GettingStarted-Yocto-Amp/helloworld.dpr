@@ -34,7 +34,6 @@ var
   sensorAC : TYCurrent;
   m        : TyModule;
 
-
 begin
 
   if (paramcount<1)  then usage();

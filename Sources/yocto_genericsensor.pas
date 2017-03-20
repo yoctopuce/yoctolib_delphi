@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_genericsensor.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_genericsensor.pas 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * Implements yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -73,7 +73,7 @@ type
   /// <para>
   ///   The YGenericSensor class allows you to read and configure Yoctopuce signal
   ///   transducers. It inherits from YSensor class the core functions to read measurements,
-  ///   register callback functions, access to the autonomous datalogger.
+  ///   to register callback functions, to access the autonomous datalogger.
   ///   This class adds the ability to configure the automatic conversion between the
   ///   measured signal and the corresponding engineering unit.
   /// </para>
@@ -192,6 +192,7 @@ type
     /// <summary>
     ///   Changes the electric signal range used by the sensor.
     /// <para>
+    ///   Default value is "-999999.999...999999.999".
     /// </para>
     /// <para>
     /// </para>
@@ -232,7 +233,7 @@ type
     ///   Changes the physical value range measured by the sensor.
     /// <para>
     ///   As a side effect, the range modification may
-    ///   automatically modify the display resolution.
+    ///   automatically modify the display resolution. Default value is "-999999.999...999999.999".
     /// </para>
     /// <para>
     /// </para>
@@ -655,6 +656,8 @@ implementation
   /// </para>
   ///-
   function TYGenericSensor.get_signalValue():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -664,7 +667,8 @@ implementation
               exit;
             end;
         end;
-      result := round(self._signalValue * 1000) / 1000;
+      res := round(self._signalValue * 1000) / 1000;
+      result := res;
       exit;
     end;
 
@@ -685,6 +689,8 @@ implementation
   /// </para>
   ///-
   function TYGenericSensor.get_signalUnit():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration = 0 then
         begin
@@ -694,7 +700,8 @@ implementation
               exit;
             end;
         end;
-      result := self._signalUnit;
+      res := self._signalUnit;
+      result := res;
       exit;
     end;
 
@@ -715,6 +722,8 @@ implementation
   /// </para>
   ///-
   function TYGenericSensor.get_signalRange():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -724,7 +733,8 @@ implementation
               exit;
             end;
         end;
-      result := self._signalRange;
+      res := self._signalRange;
+      result := res;
       exit;
     end;
 
@@ -733,6 +743,7 @@ implementation
   /// <summary>
   ///   Changes the electric signal range used by the sensor.
   /// <para>
+  ///   Default value is "-999999.999...999999.999".
   /// </para>
   /// <para>
   /// </para>
@@ -773,6 +784,8 @@ implementation
   /// </para>
   ///-
   function TYGenericSensor.get_valueRange():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -782,7 +795,8 @@ implementation
               exit;
             end;
         end;
-      result := self._valueRange;
+      res := self._valueRange;
+      result := res;
       exit;
     end;
 
@@ -792,7 +806,7 @@ implementation
   ///   Changes the physical value range measured by the sensor.
   /// <para>
   ///   As a side effect, the range modification may
-  ///   automatically modify the display resolution.
+  ///   automatically modify the display resolution. Default value is "-999999.999...999999.999".
   /// </para>
   /// <para>
   /// </para>
@@ -865,6 +879,8 @@ implementation
   /// </para>
   ///-
   function TYGenericSensor.get_signalBias():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -874,7 +890,8 @@ implementation
               exit;
             end;
         end;
-      result := self._signalBias;
+      res := self._signalBias;
+      result := res;
       exit;
     end;
 
@@ -902,6 +919,8 @@ implementation
   /// </para>
   ///-
   function TYGenericSensor.get_signalSampling():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -911,7 +930,8 @@ implementation
               exit;
             end;
         end;
-      result := self._signalSampling;
+      res := self._signalSampling;
+      result := res;
       exit;
     end;
 

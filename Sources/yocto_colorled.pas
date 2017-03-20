@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_colorled.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_colorled.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindColorLed(), the high-level API for ColorLed functions
  *
@@ -721,6 +721,8 @@ implementation
   /// </para>
   ///-
   function TYColorLed.get_rgbColor():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -730,7 +732,8 @@ implementation
               exit;
             end;
         end;
-      result := self._rgbColor;
+      res := self._rgbColor;
+      result := res;
       exit;
     end;
 
@@ -780,6 +783,8 @@ implementation
   /// </para>
   ///-
   function TYColorLed.get_hslColor():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -789,7 +794,8 @@ implementation
               exit;
             end;
         end;
-      result := self._hslColor;
+      res := self._hslColor;
+      result := res;
       exit;
     end;
 
@@ -824,6 +830,8 @@ implementation
     end;
 
   function TYColorLed.get_rgbMove():TYColorLedMove;
+    var
+      res : TYColorLedMove;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -833,7 +841,8 @@ implementation
               exit;
             end;
         end;
-      result := self._rgbMove;
+      res := self._rgbMove;
+      result := res;
       exit;
     end;
 
@@ -878,6 +887,8 @@ implementation
     end;
 
   function TYColorLed.get_hslMove():TYColorLedMove;
+    var
+      res : TYColorLedMove;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -887,7 +898,8 @@ implementation
               exit;
             end;
         end;
-      result := self._hslMove;
+      res := self._hslMove;
+      result := res;
       exit;
     end;
 
@@ -947,6 +959,8 @@ implementation
   /// </para>
   ///-
   function TYColorLed.get_rgbColorAtPowerOn():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -956,7 +970,8 @@ implementation
               exit;
             end;
         end;
-      result := self._rgbColorAtPowerOn;
+      res := self._rgbColorAtPowerOn;
+      result := res;
       exit;
     end;
 
@@ -1005,6 +1020,8 @@ implementation
   /// </para>
   ///-
   function TYColorLed.get_blinkSeqSize():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1014,7 +1031,8 @@ implementation
               exit;
             end;
         end;
-      result := self._blinkSeqSize;
+      res := self._blinkSeqSize;
+      result := res;
       exit;
     end;
 
@@ -1035,6 +1053,8 @@ implementation
   /// </para>
   ///-
   function TYColorLed.get_blinkSeqMaxSize():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration = 0 then
         begin
@@ -1044,7 +1064,8 @@ implementation
               exit;
             end;
         end;
-      result := self._blinkSeqMaxSize;
+      res := self._blinkSeqMaxSize;
+      result := res;
       exit;
     end;
 
@@ -1069,6 +1090,8 @@ implementation
   /// </para>
   ///-
   function TYColorLed.get_blinkSeqSignature():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1078,12 +1101,15 @@ implementation
               exit;
             end;
         end;
-      result := self._blinkSeqSignature;
+      res := self._blinkSeqSignature;
+      result := res;
       exit;
     end;
 
 
   function TYColorLed.get_command():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1093,7 +1119,8 @@ implementation
               exit;
             end;
         end;
-      result := self._command;
+      res := self._command;
+      result := res;
       exit;
     end;
 

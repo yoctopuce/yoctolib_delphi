@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_voltage.pas 26183 2016-12-15 00:14:02Z mvuilleu $
+ * $Id: yocto_voltage.pas 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * Implements yFindVoltage(), the high-level API for Voltage functions
  *
@@ -66,7 +66,7 @@ type
   /// <para>
   ///   The Yoctopuce class YVoltage allows you to read and configure Yoctopuce voltage
   ///   sensors. It inherits from YSensor class the core functions to read measurements,
-  ///   register callback functions, access to the autonomous datalogger.
+  ///   to register callback functions, to access the autonomous datalogger.
   /// </para>
   /// </summary>
   ///-
@@ -313,6 +313,8 @@ implementation
 {$HINTS ON}
 
   function TYVoltage.get_enabled():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -322,7 +324,8 @@ implementation
               exit;
             end;
         end;
-      result := self._enabled;
+      res := self._enabled;
+      result := res;
       exit;
     end;
 

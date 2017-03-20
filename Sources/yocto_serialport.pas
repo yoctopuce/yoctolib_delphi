@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_serialport.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -1451,6 +1451,8 @@ implementation
   /// </para>
   ///-
   function TYSerialPort.get_rxCount():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1460,7 +1462,8 @@ implementation
               exit;
             end;
         end;
-      result := self._rxCount;
+      res := self._rxCount;
+      result := res;
       exit;
     end;
 
@@ -1481,6 +1484,8 @@ implementation
   /// </para>
   ///-
   function TYSerialPort.get_txCount():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1490,7 +1495,8 @@ implementation
               exit;
             end;
         end;
-      result := self._txCount;
+      res := self._txCount;
+      result := res;
       exit;
     end;
 
@@ -1511,6 +1517,8 @@ implementation
   /// </para>
   ///-
   function TYSerialPort.get_errCount():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1520,7 +1528,8 @@ implementation
               exit;
             end;
         end;
-      result := self._errCount;
+      res := self._errCount;
+      result := res;
       exit;
     end;
 
@@ -1541,6 +1550,8 @@ implementation
   /// </para>
   ///-
   function TYSerialPort.get_rxMsgCount():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1550,7 +1561,8 @@ implementation
               exit;
             end;
         end;
-      result := self._rxMsgCount;
+      res := self._rxMsgCount;
+      result := res;
       exit;
     end;
 
@@ -1571,6 +1583,8 @@ implementation
   /// </para>
   ///-
   function TYSerialPort.get_txMsgCount():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1580,7 +1594,8 @@ implementation
               exit;
             end;
         end;
-      result := self._txMsgCount;
+      res := self._txMsgCount;
+      result := res;
       exit;
     end;
 
@@ -1601,6 +1616,8 @@ implementation
   /// </para>
   ///-
   function TYSerialPort.get_lastMsg():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1610,7 +1627,8 @@ implementation
               exit;
             end;
         end;
-      result := self._lastMsg;
+      res := self._lastMsg;
+      result := res;
       exit;
     end;
 
@@ -1631,6 +1649,8 @@ implementation
   /// </para>
   ///-
   function TYSerialPort.get_currentJob():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1640,7 +1660,8 @@ implementation
               exit;
             end;
         end;
-      result := self._currentJob;
+      res := self._currentJob;
+      result := res;
       exit;
     end;
 
@@ -1691,6 +1712,8 @@ implementation
   /// </para>
   ///-
   function TYSerialPort.get_startupJob():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1700,7 +1723,8 @@ implementation
               exit;
             end;
         end;
-      result := self._startupJob;
+      res := self._startupJob;
+      result := res;
       exit;
     end;
 
@@ -1736,6 +1760,8 @@ implementation
     end;
 
   function TYSerialPort.get_command():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1745,7 +1771,8 @@ implementation
               exit;
             end;
         end;
-      result := self._command;
+      res := self._command;
+      result := res;
       exit;
     end;
 
@@ -1776,6 +1803,8 @@ implementation
   /// </para>
   ///-
   function TYSerialPort.get_voltageLevel():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1785,7 +1814,8 @@ implementation
               exit;
             end;
         end;
-      result := self._voltageLevel;
+      res := self._voltageLevel;
+      result := res;
       exit;
     end;
 
@@ -1847,6 +1877,8 @@ implementation
   /// </para>
   ///-
   function TYSerialPort.get_protocol():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1856,7 +1888,8 @@ implementation
               exit;
             end;
         end;
-      result := self._protocol;
+      res := self._protocol;
+      result := res;
       exit;
     end;
 
@@ -1920,6 +1953,8 @@ implementation
   /// </para>
   ///-
   function TYSerialPort.get_serialMode():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1929,7 +1964,8 @@ implementation
               exit;
             end;
         end;
-      result := self._serialMode;
+      res := self._serialMode;
+      result := res;
       exit;
     end;
 

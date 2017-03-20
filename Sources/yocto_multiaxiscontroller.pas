@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_multiaxiscontroller.pas 26266 2017-01-04 14:31:46Z seb $
+ * $Id: yocto_multiaxiscontroller.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
  *
@@ -496,6 +496,8 @@ implementation
   /// </para>
   ///-
   function TYMultiAxisController.get_nAxis():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -505,7 +507,8 @@ implementation
               exit;
             end;
         end;
-      result := self._nAxis;
+      res := self._nAxis;
+      result := res;
       exit;
     end;
 
@@ -555,6 +558,8 @@ implementation
   /// </para>
   ///-
   function TYMultiAxisController.get_globalState():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -564,12 +569,15 @@ implementation
               exit;
             end;
         end;
-      result := self._globalState;
+      res := self._globalState;
+      result := res;
       exit;
     end;
 
 
   function TYMultiAxisController.get_command():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -579,7 +587,8 @@ implementation
               exit;
             end;
         end;
-      result := self._command;
+      res := self._command;
+      result := res;
       exit;
     end;
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_datalogger.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_datalogger.pas 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * Implements yFindDataLogger(), the high-level API for DataLogger functions
  *
@@ -348,14 +348,15 @@ type
 
     ////
     /// <summary>
-    ///   Return true if the data logger is synchronised with the localization beacon.
+    ///   Returns true if the data logger is synchronised with the localization beacon.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_BEACONDRIVEN_OFF</c> or <c>Y_BEACONDRIVEN_ON</c>
+    ///   either <c>Y_BEACONDRIVEN_OFF</c> or <c>Y_BEACONDRIVEN_ON</c>, according to true if the data logger
+    ///   is synchronised with the localization beacon
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_BEACONDRIVEN_INVALID</c>.
@@ -787,6 +788,8 @@ const
   /// </para>
   ///-
   function TYDataLogger.get_currentRunIndex():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -796,7 +799,8 @@ const
               exit;
             end;
         end;
-      result := self._currentRunIndex;
+      res := self._currentRunIndex;
+      result := res;
       exit;
     end;
 
@@ -817,6 +821,8 @@ const
   /// </para>
   ///-
   function TYDataLogger.get_timeUTC():int64;
+    var
+      res : int64;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -826,7 +832,8 @@ const
               exit;
             end;
         end;
-      result := self._timeUTC;
+      res := self._timeUTC;
+      result := res;
       exit;
     end;
 
@@ -876,6 +883,8 @@ const
   /// </para>
   ///-
   function TYDataLogger.get_recording():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -885,7 +894,8 @@ const
               exit;
             end;
         end;
-      result := self._recording;
+      res := self._recording;
+      result := res;
       exit;
     end;
 
@@ -936,6 +946,8 @@ const
   /// </para>
   ///-
   function TYDataLogger.get_autoStart():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -945,7 +957,8 @@ const
               exit;
             end;
         end;
-      result := self._autoStart;
+      res := self._autoStart;
+      result := res;
       exit;
     end;
 
@@ -983,20 +996,23 @@ const
 
   ////
   /// <summary>
-  ///   Return true if the data logger is synchronised with the localization beacon.
+  ///   Returns true if the data logger is synchronised with the localization beacon.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   either Y_BEACONDRIVEN_OFF or Y_BEACONDRIVEN_ON
+  ///   either Y_BEACONDRIVEN_OFF or Y_BEACONDRIVEN_ON, according to true if the data logger is
+  ///   synchronised with the localization beacon
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_BEACONDRIVEN_INVALID.
   /// </para>
   ///-
   function TYDataLogger.get_beaconDriven():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1006,7 +1022,8 @@ const
               exit;
             end;
         end;
-      result := self._beaconDriven;
+      res := self._beaconDriven;
+      result := res;
       exit;
     end;
 
@@ -1042,6 +1059,8 @@ const
     end;
 
   function TYDataLogger.get_clearHistory():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1051,7 +1070,8 @@ const
               exit;
             end;
         end;
-      result := self._clearHistory;
+      res := self._clearHistory;
+      result := res;
       exit;
     end;
 

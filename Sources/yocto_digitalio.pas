@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_digitalio.pas 25871 2016-11-15 14:32:56Z seb $
+ * $Id: yocto_digitalio.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindDigitalIO(), the high-level API for DigitalIO functions
  *
@@ -812,6 +812,8 @@ implementation
   /// </para>
   ///-
   function TYDigitalIO.get_portState():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -821,7 +823,8 @@ implementation
               exit;
             end;
         end;
-      result := self._portState;
+      res := self._portState;
+      result := res;
       exit;
     end;
 
@@ -873,6 +876,8 @@ implementation
   /// </para>
   ///-
   function TYDigitalIO.get_portDirection():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -882,7 +887,8 @@ implementation
               exit;
             end;
         end;
-      result := self._portDirection;
+      res := self._portDirection;
+      result := res;
       exit;
     end;
 
@@ -935,6 +941,8 @@ implementation
   /// </para>
   ///-
   function TYDigitalIO.get_portOpenDrain():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -944,7 +952,8 @@ implementation
               exit;
             end;
         end;
-      result := self._portOpenDrain;
+      res := self._portOpenDrain;
+      result := res;
       exit;
     end;
 
@@ -998,6 +1007,8 @@ implementation
   /// </para>
   ///-
   function TYDigitalIO.get_portPolarity():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1007,7 +1018,8 @@ implementation
               exit;
             end;
         end;
-      result := self._portPolarity;
+      res := self._portPolarity;
+      result := res;
       exit;
     end;
 
@@ -1060,6 +1072,8 @@ implementation
   /// </para>
   ///-
   function TYDigitalIO.get_portSize():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1069,7 +1083,8 @@ implementation
               exit;
             end;
         end;
-      result := self._portSize;
+      res := self._portSize;
+      result := res;
       exit;
     end;
 
@@ -1091,6 +1106,8 @@ implementation
   /// </para>
   ///-
   function TYDigitalIO.get_outputVoltage():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1100,7 +1117,8 @@ implementation
               exit;
             end;
         end;
-      result := self._outputVoltage;
+      res := self._outputVoltage;
+      result := res;
       exit;
     end;
 
@@ -1136,6 +1154,8 @@ implementation
     end;
 
   function TYDigitalIO.get_command():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -1145,7 +1165,8 @@ implementation
               exit;
             end;
         end;
-      result := self._command;
+      res := self._command;
+      result := res;
       exit;
     end;
 

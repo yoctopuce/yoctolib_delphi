@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_hubport.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_hubport.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindHubPort(), the high-level API for HubPort functions
  *
@@ -393,6 +393,8 @@ implementation
   /// </para>
   ///-
   function TYHubPort.get_enabled():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -402,7 +404,8 @@ implementation
               exit;
             end;
         end;
-      result := self._enabled;
+      res := self._enabled;
+      result := res;
       exit;
     end;
 
@@ -454,6 +457,8 @@ implementation
   /// </para>
   ///-
   function TYHubPort.get_portState():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -463,7 +468,8 @@ implementation
               exit;
             end;
         end;
-      result := self._portState;
+      res := self._portState;
+      result := res;
       exit;
     end;
 
@@ -486,6 +492,8 @@ implementation
   /// </para>
   ///-
   function TYHubPort.get_baudRate():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -495,7 +503,8 @@ implementation
               exit;
             end;
         end;
-      result := self._baudRate;
+      res := self._baudRate;
+      result := res;
       exit;
     end;
 

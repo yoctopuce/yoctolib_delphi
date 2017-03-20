@@ -30,7 +30,6 @@ var
   sensorAC : TYVoltage;
   m        : TyModule;
 
-
 begin
 
   if (paramcount<1)  then usage();

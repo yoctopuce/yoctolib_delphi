@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_compass.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_compass.pas 26668 2017-02-28 13:36:03Z seb $
  *
  * Implements yFindCompass(), the high-level API for Compass functions
  *
@@ -409,6 +409,8 @@ implementation
   /// </para>
   ///-
   function TYCompass.get_bandwidth():LongInt;
+    var
+      res : LongInt;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -418,7 +420,8 @@ implementation
               exit;
             end;
         end;
-      result := self._bandwidth;
+      res := self._bandwidth;
+      result := res;
       exit;
     end;
 
@@ -454,6 +457,8 @@ implementation
     end;
 
   function TYCompass.get_axis():Integer;
+    var
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -463,7 +468,8 @@ implementation
               exit;
             end;
         end;
-      result := self._axis;
+      res := self._axis;
+      result := res;
       exit;
     end;
 
@@ -484,6 +490,8 @@ implementation
   /// </para>
   ///-
   function TYCompass.get_magneticHeading():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -493,7 +501,8 @@ implementation
               exit;
             end;
         end;
-      result := self._magneticHeading;
+      res := self._magneticHeading;
+      result := res;
       exit;
     end;
 

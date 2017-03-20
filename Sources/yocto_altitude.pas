@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_altitude.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_altitude.pas 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * Implements yFindAltitude(), the high-level API for Altitude functions
  *
@@ -65,7 +65,7 @@ type
   /// <para>
   ///   The Yoctopuce class YAltitude allows you to read and configure Yoctopuce altitude
   ///   sensors. It inherits from the YSensor class the core functions to read measurements,
-  ///   register callback functions, access to the autonomous datalogger.
+  ///   to register callback functions, to access the autonomous datalogger.
   ///   This class adds the ability to configure the barometric pressure adjusted to
   ///   sea level (QNH) for barometric sensors.
   /// </para>
@@ -486,6 +486,8 @@ implementation
   /// </para>
   ///-
   function TYAltitude.get_qnh():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -495,7 +497,8 @@ implementation
               exit;
             end;
         end;
-      result := self._qnh;
+      res := self._qnh;
+      result := res;
       exit;
     end;
 
@@ -519,6 +522,8 @@ implementation
   /// </para>
   ///-
   function TYAltitude.get_technology():string;
+    var
+      res : string;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -528,7 +533,8 @@ implementation
               exit;
             end;
         end;
-      result := self._technology;
+      res := self._technology;
+      result := res;
       exit;
     end;
 

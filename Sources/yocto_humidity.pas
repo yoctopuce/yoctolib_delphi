@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_humidity.pas 25275 2016-08-24 13:42:24Z mvuilleu $
+ * $Id: yocto_humidity.pas 26826 2017-03-17 11:20:57Z mvuilleu $
  *
  * Implements yFindHumidity(), the high-level API for Humidity functions
  *
@@ -65,7 +65,7 @@ type
   /// <para>
   ///   The Yoctopuce class YHumidity allows you to read and configure Yoctopuce humidity
   ///   sensors. It inherits from YSensor class the core functions to read measurements,
-  ///   register callback functions, access to the autonomous datalogger.
+  ///   to register callback functions, to access the autonomous datalogger.
   /// </para>
   /// </summary>
   ///-
@@ -431,6 +431,8 @@ implementation
   /// </para>
   ///-
   function TYHumidity.get_relHum():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -440,7 +442,8 @@ implementation
               exit;
             end;
         end;
-      result := self._relHum;
+      res := self._relHum;
+      result := res;
       exit;
     end;
 
@@ -461,6 +464,8 @@ implementation
   /// </para>
   ///-
   function TYHumidity.get_absHum():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
@@ -470,7 +475,8 @@ implementation
               exit;
             end;
         end;
-      result := self._absHum;
+      res := self._absHum;
+      result := res;
       exit;
     end;
 
