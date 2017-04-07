@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_gyro.pas 26668 2017-02-28 13:36:03Z seb $
+ * $Id: yocto_gyro.pas 27085 2017-04-06 20:50:12Z seb $
  *
  * Implements yFindGyro(), the high-level API for Gyro functions
  *
@@ -1555,6 +1555,7 @@ constructor TYQt.Create(func:string);
           delta := self._y * self._w - self._x * self._z;
           if delta > 0.499 * norm then
             begin
+              // singularity at north pole
               self._pitch := 90.0;
               self._head  := round(2.0 * 1800.0/PI * ArcTan2(self._x,-self._w)) / 10.0;
             end
@@ -1562,6 +1563,7 @@ constructor TYQt.Create(func:string);
             begin
               if delta < -0.499 * norm then
                 begin
+                  // singularity at south pole
                   self._pitch := -90.0;
                   self._head  := round(-2.0 * 1800.0/PI * ArcTan2(self._x,-self._w)) / 10.0;
                 end

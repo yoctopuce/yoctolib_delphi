@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 26668 2017-02-28 13:36:03Z seb $
+ * $Id: yocto_messagebox.pas 27113 2017-04-06 22:20:20Z seb $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *
@@ -1099,7 +1099,7 @@ implementation
     begin
       SetLength(arrPdu, 0);
       
-      // may throw an exception
+      
       binPdu := self._download('sms.json?pos='+inttostr(slot)+'&len=1');
       arrPdu := self._json_get_array(binPdu);
       hexPdu := self._decode_json_string(arrPdu[0]);
@@ -1231,6 +1231,7 @@ implementation
       i := 0;
       while i < 4 do
         begin
+          // mark escape sequences
           self._iso2gsm[91+i] := 27;
           self._iso2gsm[123+i] := 27;
           i := i + 1;
@@ -1542,6 +1543,7 @@ implementation
             end;
           if gsm7 = 0 then
             begin
+              // cannot use standard GSM encoding
               setlength(res,0);
               result := res;
               exit;
@@ -1646,7 +1648,7 @@ implementation
     begin
       SetLength(signatures, 0);
       
-      // may throw an exception
+      
       bitmapStr := self.get_slotsBitmap;
       if (bitmapStr = self._prevBitmapStr) then
         begin
@@ -2143,11 +2145,13 @@ implementation
     begin
       if self._alphab = 0 then
         begin
+          // using GSM standard 7-bit alphabet
           result := self._mbox.gsm2str(self._udata);
           exit;
         end;
       if self._alphab = 2 then
         begin
+          // using UCS-2 alphabet
           isosize := ((length(self._udata)) shr 1);
           setlength(isolatin,isosize);
           i := 0;
@@ -2176,11 +2180,13 @@ implementation
     begin
       if self._alphab = 0 then
         begin
+          // using GSM standard 7-bit alphabet
           result := self._mbox.gsm2unicode(self._udata);
           exit;
         end;
       if self._alphab = 2 then
         begin
+          // using UCS-2 alphabet
           unisize := ((length(self._udata)) shr 1);
           res_pos := 0;
           SetLength(res, unisize);
@@ -2195,6 +2201,7 @@ implementation
         end
       else
         begin
+          // return straight 8-bit values
           unisize := length(self._udata);
           res_pos := 0;
           SetLength(res, unisize);
@@ -2459,10 +2466,12 @@ implementation
       
       if self._alphab = 0 then
         begin
+          // Try to append using GSM 7-bit alphabet
           newdata := self._mbox.str2gsm(val);
           newdatalen := length(newdata);
           if newdatalen = 0 then
             begin
+              // 7-bit not possible, switch to unicode
               self.convertToUnicode;
               newdata := _StrToByte(val);
               newdatalen := length(newdata);
@@ -2476,6 +2485,7 @@ implementation
       udatalen := length(self._udata);
       if self._alphab = 2 then
         begin
+          // Append in unicode directly
           setlength(udata,udatalen + 2*newdatalen);
           i := 0;
           while i < udatalen do
@@ -2493,6 +2503,7 @@ implementation
         end
       else
         begin
+          // Append binary buffers
           setlength(udata,udatalen+newdatalen);
           i := 0;
           while i < udatalen do
@@ -2759,6 +2770,7 @@ implementation
       addrType := ((addr[ofs]) and 112);
       if addrType = 80 then
         begin
+          // alphanumeric number
           siz := (4*siz div 7);
           setlength(gsm7,siz);
           rpos := 1;
@@ -2788,6 +2800,7 @@ implementation
         end
       else
         begin
+          // standard phone number
           if addrType = 16 then
             begin
               res := '+';
@@ -2800,6 +2813,7 @@ implementation
               res := ''+ res+''+inttohex( ((byt) and 15),1)+''+inttohex(((byt) shr 4),1);
               i := i + 1;
             end;
+          // remove padding digit if needed
           if ((addr[ofs+siz]) shr 4) = 15 then
             begin
               res := Copy(res,  0 + 1, Length(res)-1);
@@ -2863,6 +2877,7 @@ implementation
         end;
       if (Copy(exp, 4 + 1, 1) = '-') or (Copy(exp, 4 + 1, 1) = '/') then
         begin
+          // ignore century
           exp := Copy(exp,  2 + 1, explen-2);
           explen := Length(exp);
         end;
@@ -2894,6 +2909,7 @@ implementation
         end;
       if i+2 < explen then
         begin
+          // convert for timezone in cleartext ISO format +/-nn:nn
           v1 := expasc[i-3];
           v2 := expasc[i];
           if ((v1 = 43) or(v1 = 45)) and(v2 = 58) then
@@ -3064,6 +3080,7 @@ implementation
       // 1. Encode UDL
       if self._alphab = 0 then
         begin
+          // 7-bit encoding
           if udhsize > 0 then
             begin
               udhlen := ((8 + 8*udhsize + 6) div 7);
@@ -3073,6 +3090,7 @@ implementation
         end
       else
         begin
+          // 8-bit encoding
           res[0] := udsize;
         end;
       // 2. Encode UDHL and UDL
@@ -3092,6 +3110,7 @@ implementation
       // 3. Encode UD
       if self._alphab = 0 then
         begin
+          // 7-bit encoding
           i := 0;
           while i < udlen do
             begin
@@ -3117,6 +3136,7 @@ implementation
         end
       else
         begin
+          // 8-bit encoding
           i := 0;
           while i < udlen do
             begin
@@ -3161,7 +3181,9 @@ implementation
           partno := partno + 1;
           setlength(newudh,5+udhsize);
           newudh[0] := 0;
+          // IEI: concatenated message
           newudh[1] := 3;
+          // IEDL: 3 bytes
           newudh[2] := self._mref;
           newudh[3] := self._npdu;
           newudh[4] := partno;
@@ -3220,6 +3242,7 @@ implementation
       SetLength(self._parts, 0);
       if self.udataSize > 140 then
         begin
+          // multiple PDU are needed
           setlength(self._pdu,0);
           result := self.generateParts;
           exit;
@@ -3328,6 +3351,7 @@ implementation
             begin
               if (iei = 0) and(ielen = 3) then
                 begin
+                  // concatenated SMS, 8-bit ref
                   sig := ''+ self._orig+'-'+ self._dest+'-'+inttohex(
                   self._mref,02)+'-'+inttohex(self._udh[i],02);
                   self._aggSig := sig;
@@ -3336,6 +3360,7 @@ implementation
                 end;
               if (iei = 8) and(ielen = 4) then
                 begin
+                  // concatenated SMS, 16-bit ref
                   sig := ''+ self._orig+'-'+ self._dest+'-'+inttohex(
                   self._mref,02)+'-'+inttohex( self._udh[i],02)+''+inttohex(self._udh[i+1],02);
                   self._aggSig := sig;
@@ -3435,6 +3460,7 @@ implementation
             end;
           if self._alphab = 0 then
             begin
+              // 7-bit encoding
               udhlen := ((8 + 8*udhsize + 6) div 7);
               nbits := 7*udhlen - 8 - 8*udhsize;
               if nbits > 0 then
@@ -3447,6 +3473,7 @@ implementation
             end
           else
             begin
+              // byte encoding
               udhlen := 1+udhsize;
             end;
           udlen := udlen - udhlen;
@@ -3459,6 +3486,7 @@ implementation
       setlength(self._udata,udlen);
       if self._alphab = 0 then
         begin
+          // 7-bit encoding
           i := 0;
           while i < udlen do
             begin
@@ -3481,6 +3509,7 @@ implementation
         end
       else
         begin
+          // 8-bit encoding
           i := 0;
           while i < udlen do
             begin

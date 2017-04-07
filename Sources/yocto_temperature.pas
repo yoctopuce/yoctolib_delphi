@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_temperature.pas 26826 2017-03-17 11:20:57Z mvuilleu $
+ * $Id: yocto_temperature.pas 27113 2017-04-06 22:20:20Z seb $
  *
  * Implements yFindTemperature(), the high-level API for Temperature functions
  *
@@ -1037,7 +1037,7 @@ implementation
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
-      // may throw an exception
+      
       res := self.set_command('Z');
       if not(res=YAPI_SUCCESS) then
         begin
@@ -1130,7 +1130,7 @@ implementation
       SetLength(paramlist, 0);
       SetLength(tempValues, 0);
       SetLength(resValues, 0);
-      // may throw an exception
+      
       id := self.get_functionId;
       id := Copy(id,  11 + 1, Length(id) - 11);
       bin_json := self._download('extra.json?page='+id);

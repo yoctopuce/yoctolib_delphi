@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 26826 2017-03-17 11:20:57Z mvuilleu $
+ * $Id: yocto_api.pas 27113 2017-04-06 22:20:20Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -115,7 +115,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '26849';
+  YOCTO_API_BUILD_NO        = '27127';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -8420,7 +8420,7 @@ var
     begin
       SetLength(filelist, 0);
       SetLength(templist, 0);
-      // may throw an exception
+      
       settings := self._download('api.json');
       if length(settings) = 0 then
         begin
@@ -8492,7 +8492,7 @@ var
     begin
       SetLength(values, 0);
       url := 'api/' + funcId + '.json?command=Z';
-      // may throw an exception
+      
       self._download(url);
       // add records in growing resistance value
       values := self._json_get_array(_StrToByte(jsonExtra));
@@ -8675,7 +8675,7 @@ var
       res_pos : LongInt;
     begin
       SetLength(res, 0);
-      // may throw an exception
+      
       count := self.functionCount;
       i := 0;
       res_pos := length(res);
@@ -8873,11 +8873,13 @@ var
       paramOffset := funOffset;
       if funVer < 3 then
         begin
+          // Read the effective device scale if available
           if funVer = 2 then
             begin
               words := _decodeWords(currentFuncValue);
               if (words[0] = 1366) and(words[1] = 12500) then
                 begin
+                  // Yocto-3D RefFrame used a special encoding
                   funScale := 1;
                   funOffset := 0;
                 end
@@ -8902,11 +8904,13 @@ var
       calibType := 0;
       if paramVer < 3 then
         begin
+          // Handle old 16 bit parameters formats
           if paramVer = 2 then
             begin
               words := _decodeWords(param);
               if (words[0] = 1366) and(words[1] = 12500) then
                 begin
+                  // Yocto-3D RefFrame used a special encoding
                   paramScale := 1;
                   paramOffset := 0;
                 end
@@ -8997,10 +9001,12 @@ var
             begin
               if paramScale > 0 then
                 begin
+                  // scalar decoding
                   calibData[ i] := (calibData[i] - paramOffset) / paramScale;
                 end
               else
                 begin
+                  // floating-point decoding
                   calibData[ i] := _decimalToDouble(round(calibData[i]));
                 end;
               i := i + 1;
@@ -9008,6 +9014,7 @@ var
         end
       else
         begin
+          // Handle latest 32bit parameter format
           iCalib := _decodeFloats(param);
           calibType := round(iCalib[0] / 1000.0);
           if calibType >= 30 then
@@ -9027,6 +9034,7 @@ var
         end;
       if funVer >= 3 then
         begin
+          // Encode parameters in new format
           if length(calibData) = 0 then
             begin
               param := '0,';
@@ -9055,6 +9063,7 @@ var
         begin
           if funVer >= 1 then
             begin
+              // Encode parameters for older devices
               nPoints := (length(calibData) div 2);
               param := IntToStr(nPoints);
               i := 0;
@@ -9074,6 +9083,7 @@ var
             end
           else
             begin
+              // Initial V0 encoding used for old Yocto-Light
               if length(calibData) = 4 then
                 begin
                   param := _yapiFloatToStr(round(1000 * (calibData[3] - calibData[1]) / calibData[2] - calibData[0]));
@@ -9172,6 +9182,7 @@ var
       for i_i:=0 to length(old_dslist)-1 do
         begin
           each_str := self._json_get_string(_StrToByte(old_dslist[i_i]));
+          // split json path and attr
           leng := Length(each_str);
           eqpos := (pos('=', each_str) - 1);
           if (eqpos < 0) or(leng = 0) then
@@ -9193,7 +9204,7 @@ var
       SetLength(old_jpath, jpath_pos);;
       SetLength(old_jpath_len, len_pos);;
       SetLength(old_val_arr, arr_pos);;
-      // may throw an exception
+      
       actualSettings := self._download('api.json');
       actualSettings := self._flattenJsonStruct(actualSettings);
       new_dslist := self._json_get_array(actualSettings);
@@ -9205,7 +9216,9 @@ var
       SetLength(new_val_arr, arr_pos+length(new_dslist));;
       for i_i:=0 to length(new_dslist)-1 do
         begin
+          // remove quotes
           each_str := self._json_get_string(_StrToByte(new_dslist[i_i]));
+          // split json path and attr
           leng := Length(each_str);
           eqpos := (pos('=', each_str) - 1);
           if (eqpos < 0) or(leng = 0) then
@@ -9609,7 +9622,7 @@ var
       errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
       smallbuff_buffer[0]:=#0;smallbuff:=@smallbuff_buffer;
       SetLength(subdevices, 0);
-      // may throw an exception
+      
       serial := self.get_serialNumber;
       fullsize := 0;
       yapi_res := _yapiGetSubdevices(pansichar(ansistring(serial)), smallbuff, 1024, fullsize, errmsg);
@@ -9672,7 +9685,7 @@ var
     begin
       errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
       hubserial_buffer[0]:=#0;hubserial:=@hubserial_buffer;
-      // may throw an exception
+      
       serial := self.get_serialNumber;
       // retrieve device object
       pathsize := 0;
@@ -9711,7 +9724,7 @@ var
     begin
       errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
       path_buffer[0]:=#0;path:=@path_buffer;
-      // may throw an exception
+      
       serial := self.get_serialNumber;
       // retrieve device object
       pathsize := 0;
@@ -10545,12 +10558,14 @@ var
         end;
       if (pos(',', self._calibrationParam) - 1) >= 0 then
         begin
+          // Plain text format
           iCalib := _decodeFloats(self._calibrationParam);
           self._caltyp := (iCalib[0] div 1000);
           if self._caltyp > 0 then
             begin
               if self._caltyp < YOCTO_CALIB_TYPE_OFS then
                 begin
+                  // Unknown calibration type: calibrated value will be provided by the device
                   self._caltyp := -1;
                   result := 0;
                   exit;
@@ -10558,11 +10573,13 @@ var
               self._calhdl := _getCalibrationHandler(self._caltyp);
               if not((addr(self._calhdl) <> nil)) then
                 begin
+                  // Unknown calibration type: calibrated value will be provided by the device
                   self._caltyp := -1;
                   result := 0;
                   exit;
                 end;
             end;
+          // New 32bit text format
           self._isScal := true;
           self._isScal32 := true;
           self._offset := 0;
@@ -10600,13 +10617,16 @@ var
         end
       else
         begin
+          // Recorder-encoded format, including encoding
           iCalib := _decodeWords(self._calibrationParam);
+          // In case of unknown format, calibrated value will be provided by the device
           if length(iCalib) < 2 then
             begin
               self._caltyp := -1;
               result := 0;
               exit;
             end;
+          // Save variable format (scale for scalar, or decimal exponent)
           self._isScal := (iCalib[1] > 0);
           if self._isScal then
             begin
@@ -10630,6 +10650,7 @@ var
                   position := position - 1;
                 end;
             end;
+          // Shortcut when there is no calibration parameter
           if length(iCalib) = 2 then
             begin
               self._caltyp := 0;
@@ -10638,6 +10659,7 @@ var
             end;
           self._caltyp := iCalib[2];
           self._calhdl := _getCalibrationHandler(self._caltyp);
+          // parse calibration points
           if self._caltyp <= 10 then
             begin
               maxpos := self._caltyp;
@@ -10927,9 +10949,11 @@ var
   function TYSensor.calibrateFromPoints(rawValues: TDoubleArray; refValues: TDoubleArray):LongInt;
     var
       rest_val : string;
+      res : LongInt;
     begin
       rest_val := self._encodeCalibrationPoints(rawValues, refValues);
-      result := self._setAttr('calibrationParam', rest_val);
+      res := self._setAttr('calibrationParam', rest_val);
+      result := res;
       exit;
     end;
 
@@ -10983,9 +11007,9 @@ var
           exit;
         end;
       rawValues_pos := 0;
-      SetLength(rawValues, length(self._calraw));;
+      SetLength(rawValues, length(self._calraw));
       refValues_pos := 0;
-      SetLength(refValues, length(self._calref));;
+      SetLength(refValues, length(self._calref));
       for i_i:=0 to length(self._calraw)-1 do
         begin
           rawValues[rawValues_pos] := self._calraw[i_i];
@@ -11041,6 +11065,7 @@ var
         end;
       if self._isScal32 then
         begin
+          // 32-bit fixed-point encoding
           res := ''+inttostr(YOCTO_CALIB_TYPE_OFS);
           idx := 0;
           while idx < npt do
@@ -11053,6 +11078,7 @@ var
         begin
           if self._isScal then
             begin
+              // 16-bit fixed-point encoding
               res := ''+inttostr(npt);
               idx := 0;
               while idx < npt do
@@ -11065,6 +11091,7 @@ var
             end
           else
             begin
+              // 16-bit floating-point decimal encoding
               res := ''+inttostr(10 + npt);
               idx := 0;
               while idx < npt do
@@ -11133,8 +11160,10 @@ var
         end;
       if report[0] = 2 then
         begin
+          // 32bit timed report format
           if length(report) <= 5 then
             begin
+              // sub-second report, 1-4 bytes
               poww := 1;
               avgRaw := 0;
               byteVal := 0;
@@ -11163,6 +11192,7 @@ var
             end
           else
             begin
+              // averaged report: avg,avg-min,max-avg
               sublen := 1 + ((report[1]) and 3);
               poww := 1;
               avgRaw := 0;
@@ -11220,8 +11250,10 @@ var
         end
       else
         begin
+          // 16bit timed report format
           if report[0] = 0 then
             begin
+              // sub-second report, 1-4 bytes
               poww := 1;
               avgRaw := 0;
               byteVal := 0;
@@ -11250,6 +11282,7 @@ var
             end
           else
             begin
+              // averaged report 2+4+2 bytes
               minRaw := report[1] + $0100 * report[2];
               maxRaw := report[3] + $0100 * report[4];
               avgRaw := report[5] + $0100 * report[6] + $010000 * report[7];
@@ -11921,7 +11954,7 @@ var
           result := YAPI_SUCCESS;
           exit;
         end;
-      // may throw an exception
+      
       udat := _decodeWords(self._parent._json_get_string(sdata));
       values_pos := 0;
       SetLength(self._values, length(udat));;

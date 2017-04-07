@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 26668 2017-02-28 13:36:03Z seb $
+ * $Id: yocto_serialport.pas 27113 2017-04-06 22:20:20Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -2149,7 +2149,7 @@ implementation
       self._rxptr := 0;
       self._rxbuffptr := 0;
       setlength(self._rxbuff,0);
-      // may throw an exception
+      
       result := self.sendCommand('Z');
       exit;
     end;
@@ -2205,6 +2205,7 @@ implementation
       bufflen := length(buff);
       if bufflen < 100 then
         begin
+          // if string is pure text, we can send it as a simple command (faster)
           ch := $020;
           idx := 0;
           while (idx < bufflen) and(ch <> 0) do
@@ -2287,7 +2288,7 @@ implementation
           buff[idx] := hexb;
           idx := idx + 1;
         end;
-      // may throw an exception
+      
       res := self._upload('txdata', buff);
       result := res;
       exit;
@@ -2333,7 +2334,7 @@ implementation
           buff[idx] := hexb;
           idx := idx + 1;
         end;
-      // may throw an exception
+      
       res := self._upload('txdata', buff);
       result := res;
       exit;
@@ -2367,6 +2368,7 @@ implementation
       bufflen := length(buff)-2;
       if bufflen < 100 then
         begin
+          // if string is pure text, we can send it as a simple command (faster)
           ch := $020;
           idx := 0;
           while (idx < bufflen) and(ch <> 0) do
@@ -2458,7 +2460,7 @@ implementation
       // still mixed, need to process character by character
       self._rxptr := currpos;
       
-      // may throw an exception
+      
       buff := self._download('rxdata.bin?pos='+inttostr(self._rxptr)+'&len=1');
       bufflen := length(buff) - 1;
       endpos := 0;
@@ -2511,7 +2513,7 @@ implementation
         begin
           nChars := 65535;
         end;
-      // may throw an exception
+      
       buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
       bufflen := length(buff) - 1;
       endpos := 0;
@@ -2560,7 +2562,7 @@ implementation
         begin
           nChars := 65535;
         end;
-      // may throw an exception
+      
       buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
       bufflen := length(buff) - 1;
       endpos := 0;
@@ -2617,7 +2619,7 @@ implementation
         begin
           nChars := 65535;
         end;
-      // may throw an exception
+      
       buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
       bufflen := length(buff) - 1;
       endpos := 0;
@@ -2676,7 +2678,7 @@ implementation
         begin
           nBytes := 65535;
         end;
-      // may throw an exception
+      
       buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nBytes));
       bufflen := length(buff) - 1;
       endpos := 0;
@@ -2734,7 +2736,7 @@ implementation
       res : string;
     begin
       SetLength(msgarr, 0);
-      // may throw an exception
+      
       url := 'rxmsg.json?pos='+inttostr(self._rxptr)+'&len=1&maxw=1';
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
@@ -2802,7 +2804,7 @@ implementation
     begin
       SetLength(msgarr, 0);
       SetLength(res, 0);
-      // may throw an exception
+      
       url := 'rxmsg.json?pos='+inttostr( self._rxptr)+'&maxw='+inttostr( maxWait)+'&pat='+pattern;
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
@@ -2930,7 +2932,7 @@ implementation
       res : string;
     begin
       SetLength(msgarr, 0);
-      // may throw an exception
+      
       url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=!'+query;
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
@@ -3146,7 +3148,7 @@ implementation
           cmd := ''+ cmd+''+inttohex(((pduBytes[i]) and ($0ff)),02);
           i := i + 1;
         end;
-      // may throw an exception
+      
       url := 'rxmsg.json?cmd=:'+ cmd+'&pat=:'+pat;
       msgs := self._download(url);
       reps := self._json_get_array(msgs);
@@ -3253,7 +3255,7 @@ implementation
       pdu[pdu_pos] := ((nBits) and ($0ff));
       inc(pdu_pos);
       SetLength(pdu, pdu_pos);;
-      // may throw an exception
+      
       reply := self.queryMODBUS(slaveNo, pdu);
       if length(reply) = 0 then
         begin
@@ -3349,7 +3351,7 @@ implementation
       pdu[pdu_pos] := ((nBits) and ($0ff));
       inc(pdu_pos);
       SetLength(pdu, pdu_pos);;
-      // may throw an exception
+      
       reply := self.queryMODBUS(slaveNo, pdu);
       if length(reply) = 0 then
         begin
@@ -3444,7 +3446,7 @@ implementation
       pdu[pdu_pos] := ((nWords) and ($0ff));
       inc(pdu_pos);
       SetLength(pdu, pdu_pos);;
-      // may throw an exception
+      
       reply := self.queryMODBUS(slaveNo, pdu);
       if length(reply) = 0 then
         begin
@@ -3523,7 +3525,7 @@ implementation
       pdu[pdu_pos] := ((nWords) and ($0ff));
       inc(pdu_pos);
       SetLength(pdu, pdu_pos);;
-      // may throw an exception
+      
       reply := self.queryMODBUS(slaveNo, pdu);
       if length(reply) = 0 then
         begin
@@ -3603,7 +3605,7 @@ implementation
       pdu[pdu_pos] := $000;
       inc(pdu_pos);
       SetLength(pdu, pdu_pos);;
-      // may throw an exception
+      
       reply := self.queryMODBUS(slaveNo, pdu);
       if length(reply) = 0 then
         begin
@@ -3701,7 +3703,7 @@ implementation
           inc(pdu_pos);
         end;
       SetLength(pdu, pdu_pos);;
-      // may throw an exception
+      
       reply := self.queryMODBUS(slaveNo, pdu);
       if length(reply) = 0 then
         begin
@@ -3764,7 +3766,7 @@ implementation
       pdu[pdu_pos] := ((value) and ($0ff));
       inc(pdu_pos);
       SetLength(pdu, pdu_pos);;
-      // may throw an exception
+      
       reply := self.queryMODBUS(slaveNo, pdu);
       if length(reply) = 0 then
         begin
@@ -3844,7 +3846,7 @@ implementation
           regpos := regpos + 1;
         end;
       SetLength(pdu, pdu_pos);;
-      // may throw an exception
+      
       reply := self.queryMODBUS(slaveNo, pdu);
       if length(reply) = 0 then
         begin
@@ -3941,7 +3943,7 @@ implementation
           regpos := regpos + 1;
         end;
       SetLength(pdu, pdu_pos);;
-      // may throw an exception
+      
       reply := self.queryMODBUS(slaveNo, pdu);
       if length(reply) = 0 then
         begin

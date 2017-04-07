@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 26668 2017-02-28 13:36:03Z seb $
+ * $Id: yocto_files.pas 27113 2017-04-06 22:20:20Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -667,7 +667,7 @@ implementation
       url : string;
     begin
       url := 'files.json?a='+command;
-      // may throw an exception
+      
       result := self._download(url);
       exit;
     end;

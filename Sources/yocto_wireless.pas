@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 26668 2017-02-28 13:36:03Z seb $
+ * $Id: yocto_wireless.pas 27113 2017-04-06 22:20:20Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -1003,7 +1003,7 @@ implementation
       i_i : LongInt;
     begin
       SetLength(wlanlist, 0);
-      // may throw an exception
+      
       json := self._download('wlan.json?by=name');
       wlanlist := self._json_get_array(json);
       res_pos := 0;

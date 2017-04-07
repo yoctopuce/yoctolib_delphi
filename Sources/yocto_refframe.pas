@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_refframe.pas 26668 2017-02-28 13:36:03Z seb $
+ * $Id: yocto_refframe.pas 27113 2017-04-06 22:20:20Z seb $
  *
  * Implements yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -1377,6 +1377,7 @@ implementation
       // Discard measures that are not in the proper orientation
       if self._calibStageProgress = 0 then
         begin
+          // New stage, check that this orientation is not yet done
           idx := 0;
           err := 0;
           while idx + 1 < self._calibStage do
@@ -1398,6 +1399,7 @@ implementation
         end
       else
         begin
+          // Make sure device is not turned before stage is completed
           if orient <> self._calibOrient[self._calibStage-1] then
             begin
               self._calibStageHint := 'Not yet done, please move back to the previous face';
@@ -1553,7 +1555,7 @@ implementation
               exit;
             end;
         end;
-      // may throw an exception
+      
       calibParam := self._download('api/refFrame/calibrationParam.txt');
       iCalib := _decodeFloats(_ByteToString(calibParam));
       cal3 := (iCalib[1] div 1000);
@@ -1825,7 +1827,7 @@ implementation
           result := YAPI_SUCCESS;
           exit;
         end;
-      // may throw an exception
+      
       self._calibStage := 0;
       result := self.set_calibrationParam(self._calibSavedParams);
       exit;

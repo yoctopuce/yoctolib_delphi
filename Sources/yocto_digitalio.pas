@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_digitalio.pas 26668 2017-02-28 13:36:03Z seb $
+ * $Id: yocto_digitalio.pas 26949 2017-03-28 15:36:15Z mvuilleu $
  *
  * Implements yFindDigitalIO(), the high-level API for DigitalIO functions
  *
@@ -51,6 +51,7 @@ const Y_PORTSTATE_INVALID             = YAPI_INVALID_UINT;
 const Y_PORTDIRECTION_INVALID         = YAPI_INVALID_UINT;
 const Y_PORTOPENDRAIN_INVALID         = YAPI_INVALID_UINT;
 const Y_PORTPOLARITY_INVALID          = YAPI_INVALID_UINT;
+const Y_PORTDIAGS_INVALID             = YAPI_INVALID_UINT;
 const Y_PORTSIZE_INVALID              = YAPI_INVALID_UINT;
 const Y_OUTPUTVOLTAGE_USB_5V = 0;
 const Y_OUTPUTVOLTAGE_USB_3V = 1;
@@ -89,6 +90,7 @@ type
     _portDirection            : LongInt;
     _portOpenDrain            : LongInt;
     _portPolarity             : LongInt;
+    _portDiags                : LongInt;
     _portSize                 : LongInt;
     _outputVoltage            : Integer;
     _command                  : string;
@@ -273,6 +275,26 @@ type
     /// </para>
     ///-
     function set_portPolarity(newval:LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the port state diagnostics (Yocto-IO and Yocto-MaxiIO-V2 only).
+    /// <para>
+    ///   Bit 0 indicates a shortcut on
+    ///   output 0, etc. Bit 8 indicates a power failure, and bit 9 signals overheating (overcurrent).
+    ///   During normal use, all diagnostic bits should stay clear.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the port state diagnostics (Yocto-IO and Yocto-MaxiIO-V2 only)
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_PORTDIAGS_INVALID</c>.
+    /// </para>
+    ///-
+    function get_portDiags():LongInt;
 
     ////
     /// <summary>
@@ -735,6 +757,7 @@ implementation
       _portDirection := Y_PORTDIRECTION_INVALID;
       _portOpenDrain := Y_PORTOPENDRAIN_INVALID;
       _portPolarity := Y_PORTPOLARITY_INVALID;
+      _portDiags := Y_PORTDIAGS_INVALID;
       _portSize := Y_PORTSIZE_INVALID;
       _outputVoltage := Y_OUTPUTVOLTAGE_INVALID;
       _command := Y_COMMAND_INVALID;
@@ -771,6 +794,12 @@ implementation
       if (member^.name = 'portPolarity') then
         begin
           _portPolarity := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'portDiags') then
+        begin
+          _portDiags := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -1055,6 +1084,42 @@ implementation
       rest_val := inttostr(newval);
       result := _setAttr('portPolarity',rest_val);
     end;
+
+  ////
+  /// <summary>
+  ///   Returns the port state diagnostics (Yocto-IO and Yocto-MaxiIO-V2 only).
+  /// <para>
+  ///   Bit 0 indicates a shortcut on
+  ///   output 0, etc. Bit 8 indicates a power failure, and bit 9 signals overheating (overcurrent).
+  ///   During normal use, all diagnostic bits should stay clear.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the port state diagnostics (Yocto-IO and Yocto-MaxiIO-V2 only)
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_PORTDIAGS_INVALID.
+  /// </para>
+  ///-
+  function TYDigitalIO.get_portDiags():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_PORTDIAGS_INVALID;
+              exit;
+            end;
+        end;
+      res := self._portDiags;
+      result := res;
+      exit;
+    end;
+
 
   ////
   /// <summary>

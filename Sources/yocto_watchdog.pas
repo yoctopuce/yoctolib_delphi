@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_watchdog.pas 26668 2017-02-28 13:36:03Z seb $
+ * $Id: yocto_watchdog.pas 27118 2017-04-06 22:38:36Z seb $
  *
  * Implements yFindWatchdog(), the high-level API for Watchdog functions
  *

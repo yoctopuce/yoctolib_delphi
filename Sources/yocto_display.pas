@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 26668 2017-02-28 13:36:03Z seb $
+ * $Id: yocto_display.pas 27085 2017-04-06 20:50:12Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -889,7 +889,7 @@ public
     /// </para>
     /// </summary>
     /// <param name="mode">
-    ///   <t>true</t> to enable antialiasing, <t>false</t> to
+    ///   <c>true</c> to enable antialiasing, <c>false</c> to
     ///   disable it.
     /// </param>
     /// <returns>
@@ -2318,7 +2318,7 @@ destructor TYDisplay.destroy();
       self.flushLayers;
       self._recording := false;
       self._upload(sequenceName, _StrToByte(self._sequence));
-      //We need to use YPRINTF("") for Objective-C 
+      //We need to use YPRINTF("") for Objective-C
       self._sequence := '';
       result := YAPI_SUCCESS;
       exit;
@@ -2832,7 +2832,7 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
   /// </para>
   /// </summary>
   /// <param name="mode">
-  ///   <t>true</t> to enable antialiasing, <t>false</t> to
+  ///   <c>true</c> to enable antialiasing, <c>false</c> to
   ///   disable it.
   /// </param>
   /// <returns>

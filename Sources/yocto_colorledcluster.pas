@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_colorledcluster.pas 26668 2017-02-28 13:36:03Z seb $
+ * $Id: yocto_colorledcluster.pas 27113 2017-04-06 22:20:20Z seb $
  *
  * Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -2163,7 +2163,7 @@ implementation
           buff[3*idx+2] := ((rgb) and 255);
           idx := idx + 1;
         end;
-      // may throw an exception
+      
       res := self._upload('rgb:0:'+inttostr(ledIndex), buff);
       result := res;
       exit;
@@ -2211,7 +2211,7 @@ implementation
           buff[3*idx+2] := ((rgb) and 255);
           idx := idx + 1;
         end;
-      // may throw an exception
+      
       res := self._upload('rgb:'+inttostr(delay), buff);
       result := res;
       exit;
@@ -2286,7 +2286,7 @@ implementation
           buff[3*idx+2] := ((hsl) and 255);
           idx := idx + 1;
         end;
-      // may throw an exception
+      
       res := self._upload('hsl:0:'+inttostr(ledIndex), buff);
       result := res;
       exit;
@@ -2334,7 +2334,7 @@ implementation
           buff[3*idx+2] := ((hsl) and 255);
           idx := idx + 1;
         end;
-      // may throw an exception
+      
       res := self._upload('hsl:'+inttostr(delay), buff);
       result := res;
       exit;

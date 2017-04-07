@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_buzzer.pas 26668 2017-02-28 13:36:03Z seb $
+ * $Id: yocto_buzzer.pas 27085 2017-04-06 20:50:12Z seb $
  *
  * Implements yFindBuzzer(), the high-level API for Buzzer functions
  *
@@ -365,11 +365,33 @@ type
 
     ////
     /// <summary>
+    ///   Adds notes to the playing sequence.
+    /// <para>
+    ///   Notes are provided as text words, separated by
+    ///   spaces. The pitch is specified using the usual letter from A to G. The duration is
+    ///   specified as the divisor of a whole note: 4 for a fourth, 8 for an eight note, etc.
+    ///   Some modifiers are supported: <c>#</c> and <c>b</c> to alter a note pitch,
+    ///   <c>'</c> and <c>,</c> to move to the upper/lower octave, <c>.</c> to enlarge
+    ///   the note duration.
+    /// </para>
+    /// </summary>
+    /// <param name="notes">
+    ///   notes to be played, as a text string.
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </returns>
+    ///-
+    function addNotesToPlaySeq(notes: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Starts the preprogrammed playing sequence.
     /// <para>
     ///   The sequence
     ///   runs in loop until it is stopped by stopPlaySeq or an explicit
-    ///   change.
+    ///   change. To play the sequence only once, use <c>oncePlaySeq()</c>.
     /// </para>
     /// </summary>
     /// <returns>
@@ -404,6 +426,19 @@ type
     /// </returns>
     ///-
     function resetPlaySeq():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Starts the preprogrammed playing sequence and run it once only.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </returns>
+    ///-
+    function oncePlaySeq():LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -467,6 +502,28 @@ type
     /// </para>
     ///-
     function volumeMove(volume: LongInt; duration: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Immediately play a note sequence.
+    /// <para>
+    ///   Notes are provided as text words, separated by
+    ///   spaces. The pitch is specified using the usual letter from A to G. The duration is
+    ///   specified as the divisor of a whole note: 4 for a fourth, 8 for an eight note, etc.
+    ///   Some modifiers are supported: <c>#</c> and <c>b</c> to alter a note pitch,
+    ///   <c>'</c> and <c>,</c> to move to the upper/lower octave, <c>.</c> to enlarge
+    ///   the note duration.
+    /// </para>
+    /// </summary>
+    /// <param name="notes">
+    ///   notes to be played, as a text string.
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </returns>
+    ///-
+    function playNotes(notes: string):LongInt; overload; virtual;
 
 
     ////
@@ -1077,11 +1134,230 @@ implementation
 
   ////
   /// <summary>
+  ///   Adds notes to the playing sequence.
+  /// <para>
+  ///   Notes are provided as text words, separated by
+  ///   spaces. The pitch is specified using the usual letter from A to G. The duration is
+  ///   specified as the divisor of a whole note: 4 for a fourth, 8 for an eight note, etc.
+  ///   Some modifiers are supported: <c>#</c> and <c>b</c> to alter a note pitch,
+  ///   <c>'</c> and <c>,</c> to move to the upper/lower octave, <c>.</c> to enlarge
+  ///   the note duration.
+  /// </para>
+  /// </summary>
+  /// <param name="notes">
+  ///   notes to be played, as a text string.
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </returns>
+  ///-
+  function TYBuzzer.addNotesToPlaySeq(notes: string):LongInt;
+    var
+      tempo : LongInt;
+      prevPitch : LongInt;
+      prevDuration : LongInt;
+      prevFreq : LongInt;
+      note : LongInt;
+      num : LongInt;
+      typ : LongInt;
+      ascNotes : TByteArray;
+      notesLen : LongInt;
+      i : LongInt;
+      ch : LongInt;
+      dNote : LongInt;
+      pitch : LongInt;
+      freq : LongInt;
+      ms : LongInt;
+      ms16 : LongInt;
+      rest : LongInt;
+    begin
+      tempo := 100;
+      prevPitch := 3;
+      prevDuration := 4;
+      prevFreq := 110;
+      note := -99;
+      num := 0;
+      typ := 3;
+      ascNotes := _StrToByte(notes);
+      notesLen := length(ascNotes);
+      i := 0;
+      while i < notesLen do
+        begin
+          ch := ascNotes[i];
+          // A (note))
+          if ch = 65 then
+            begin
+              note := 0;
+            end;
+          // B (note)
+          if ch = 66 then
+            begin
+              note := 2;
+            end;
+          // C (note)
+          if ch = 67 then
+            begin
+              note := 3;
+            end;
+          // D (note)
+          if ch = 68 then
+            begin
+              note := 5;
+            end;
+          // E (note)
+          if ch = 69 then
+            begin
+              note := 7;
+            end;
+          // F (note)
+          if ch = 70 then
+            begin
+              note := 8;
+            end;
+          // G (note)
+          if ch = 71 then
+            begin
+              note := 10;
+            end;
+          // '#' (sharp modifier)
+          if ch = 35 then
+            begin
+              note := note + 1;
+            end;
+          // 'b' (flat modifier)
+          if ch = 98 then
+            begin
+              note := note - 1;
+            end;
+          // ' (octave up)
+          if ch = 39 then
+            begin
+              prevPitch := prevPitch + 12;
+            end;
+          // , (octave down)
+          if ch = 44 then
+            begin
+              prevPitch := prevPitch - 12;
+            end;
+          // R (rest)
+          if ch = 82 then
+            begin
+              typ := 0;
+            end;
+          // ! (staccato modifier)
+          if ch = 33 then
+            begin
+              typ := 1;
+            end;
+          // ^ (short modifier)
+          if ch = 94 then
+            begin
+              typ := 2;
+            end;
+          // _ (legato modifier)
+          if ch = 95 then
+            begin
+              typ := 4;
+            end;
+          // - (glissando modifier)
+          if ch = 45 then
+            begin
+              typ := 5;
+            end;
+          // % (tempo change)
+          if (ch = 37) and(num > 0) then
+            begin
+              tempo := num;
+              num := 0;
+            end;
+          if (ch >= 48) and(ch <= 57) then
+            begin
+              // 0-9 (number)
+              num := (num * 10) + (ch - 48);
+            end;
+          if ch = 46 then
+            begin
+              // . (duration modifier)
+              num := (num * 2 div 3);
+            end;
+          if ((ch = 32) or(i+1 = notesLen)) and((note > -99) or(typ <> 3)) then
+            begin
+              if num = 0 then
+                begin
+                  num := prevDuration;
+                end
+              else
+                begin
+                  prevDuration := num;
+                end;
+              ms := round(320000.0 / (tempo * num));
+              if typ = 0 then
+                begin
+                  self.addPulseToPlaySeq(0, ms);
+                end
+              else
+                begin
+                  dNote := note - (((prevPitch) Mod (12)));
+                  if dNote > 6 then
+                    begin
+                      dNote := dNote - 12;
+                    end;
+                  if dNote <= -6 then
+                    begin
+                      dNote := dNote + 12;
+                    end;
+                  pitch := prevPitch + dNote;
+                  freq := round(440 * Exp(pitch * 0.05776226504666));
+                  ms16 := ((ms) shr 4);
+                  rest := 0;
+                  if typ = 3 then
+                    begin
+                      rest := 2 * ms16;
+                    end;
+                  if typ = 2 then
+                    begin
+                      rest := 8 * ms16;
+                    end;
+                  if typ = 1 then
+                    begin
+                      rest := 12 * ms16;
+                    end;
+                  if typ = 5 then
+                    begin
+                      self.addPulseToPlaySeq(prevFreq, ms16);
+                      self.addFreqMoveToPlaySeq(freq, 8 * ms16);
+                      self.addPulseToPlaySeq(freq, ms - 9 * ms16);
+                    end
+                  else
+                    begin
+                      self.addPulseToPlaySeq(freq, ms - rest);
+                      if rest > 0 then
+                        begin
+                          self.addPulseToPlaySeq(0, rest);
+                        end;
+                    end;
+                  prevFreq := freq;
+                  prevPitch := pitch;
+                end;
+              note := -99;
+              num := 0;
+              typ := 3;
+            end;
+          i := i + 1;
+        end;
+      result := YAPI_SUCCESS;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
   ///   Starts the preprogrammed playing sequence.
   /// <para>
   ///   The sequence
   ///   runs in loop until it is stopped by stopPlaySeq or an explicit
-  ///   change.
+  ///   change. To play the sequence only once, use <c>oncePlaySeq()</c>.
   /// </para>
   /// </summary>
   /// <returns>
@@ -1128,6 +1404,24 @@ implementation
   function TYBuzzer.resetPlaySeq():LongInt;
     begin
       result := self.sendCommand('Z');
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Starts the preprogrammed playing sequence and run it once only.
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </returns>
+  ///-
+  function TYBuzzer.oncePlaySeq():LongInt;
+    begin
+      result := self.sendCommand('s');
       exit;
     end;
 
@@ -1206,6 +1500,35 @@ implementation
   function TYBuzzer.volumeMove(volume: LongInt; duration: LongInt):LongInt;
     begin
       result := self.set_command('V'+inttostr(volume)+','+inttostr(duration));
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Immediately play a note sequence.
+  /// <para>
+  ///   Notes are provided as text words, separated by
+  ///   spaces. The pitch is specified using the usual letter from A to G. The duration is
+  ///   specified as the divisor of a whole note: 4 for a fourth, 8 for an eight note, etc.
+  ///   Some modifiers are supported: <c>#</c> and <c>b</c> to alter a note pitch,
+  ///   <c>'</c> and <c>,</c> to move to the upper/lower octave, <c>.</c> to enlarge
+  ///   the note duration.
+  /// </para>
+  /// </summary>
+  /// <param name="notes">
+  ///   notes to be played, as a text string.
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </returns>
+  ///-
+  function TYBuzzer.playNotes(notes: string):LongInt;
+    begin
+      self.resetPlaySeq;
+      self.addNotesToPlaySeq(notes);
+      result := self.oncePlaySeq;
       exit;
     end;
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 26668 2017-02-28 13:36:03Z seb $
+ * $Id: yocto_cellular.pas 27113 2017-04-06 22:20:20Z seb $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -2171,6 +2171,7 @@ implementation
             end;
           if buff[idx] = 64 then
             begin
+              // continuation detected
               suffixlen := bufflen - idx;
               cmd := 'at.txt?cmd='+Copy(buffstr,  buffstrlen - suffixlen + 1, suffixlen);
               buffstr := Copy(buffstr,  0 + 1, buffstrlen - suffixlen);
@@ -2178,6 +2179,7 @@ implementation
             end
           else
             begin
+              // request complete
               waitMore := 0;
             end;
           res := ''+ res+''+buffstr;
@@ -2210,7 +2212,7 @@ implementation
       res_pos : LongInt;
     begin
       SetLength(res, 0);
-      // may throw an exception
+      
       cops := self._AT('+COPS=?');
       slen := Length(cops);
       res_pos := 0;
@@ -2275,7 +2277,7 @@ implementation
       i_i : LongInt;
     begin
       SetLength(recs, 0);
-      // may throw an exception
+      
       moni := self._AT('+CCED=0;#MONI=7;#MONI');
       mccs := Copy(moni, 7 + 1, 3);
       if (Copy(mccs, 0 + 1, 1) = '0') then

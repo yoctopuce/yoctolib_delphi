@@ -1,8 +1,8 @@
 {*********************************************************************
  *
- * $Id: yocto_currentloopoutput.pas 27113 2017-04-06 22:20:20Z seb $
+ * $Id: yocto_bridgecontrol.pas 27017 2017-03-31 14:47:59Z seb $
  *
- * Implements yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
+ * Implements yFindBridgeControl(), the high-level API for BridgeControl functions
  *
  * - - - - - - - - - License information: - - - - - - - - - 
  *
@@ -38,75 +38,93 @@
  *********************************************************************}
 
 
-unit yocto_currentloopoutput;
+unit yocto_bridgecontrol;
 
 interface
 
 uses
   sysutils, classes, windows, yocto_api, yjson;
 
-//--- (YCurrentLoopOutput definitions)
+//--- (YBridgeControl definitions)
 
-const Y_CURRENT_INVALID               = YAPI_INVALID_DOUBLE;
-const Y_CURRENTTRANSITION_INVALID     = YAPI_INVALID_STRING;
-const Y_CURRENTATSTARTUP_INVALID      = YAPI_INVALID_DOUBLE;
-const Y_LOOPPOWER_NOPWR = 0;
-const Y_LOOPPOWER_LOWPWR = 1;
-const Y_LOOPPOWER_POWEROK = 2;
-const Y_LOOPPOWER_INVALID = -1;
+const Y_EXCITATIONMODE_INTERNAL_AC = 0;
+const Y_EXCITATIONMODE_INTERNAL_DC = 1;
+const Y_EXCITATIONMODE_EXTERNAL_DC = 2;
+const Y_EXCITATIONMODE_INVALID = -1;
+const Y_BRIDGELATENCY_INVALID         = YAPI_INVALID_UINT;
+const Y_ADVALUE_INVALID               = YAPI_INVALID_INT;
+const Y_ADGAIN_INVALID                = YAPI_INVALID_UINT;
 
 
-//--- (end of YCurrentLoopOutput definitions)
+//--- (end of YBridgeControl definitions)
 
 type
-  TYCurrentLoopOutput = class;
-  //--- (YCurrentLoopOutput class start)
-  TYCurrentLoopOutputValueCallback = procedure(func: TYCurrentLoopOutput; value:string);
-  TYCurrentLoopOutputTimedReportCallback = procedure(func: TYCurrentLoopOutput; value:TYMeasure);
+  TYBridgeControl = class;
+  //--- (YBridgeControl class start)
+  TYBridgeControlValueCallback = procedure(func: TYBridgeControl; value:string);
+  TYBridgeControlTimedReportCallback = procedure(func: TYBridgeControl; value:TYMeasure);
 
   ////
   /// <summary>
-  ///   TYCurrentLoopOutput Class: CurrentLoopOutput function interface
+  ///   TYBridgeControl Class: BridgeControl function interface
   /// <para>
-  ///   The Yoctopuce application programming interface allows you to change the value of the 4-20mA
-  ///   output as well as to know the current loop state.
+  ///   The Yoctopuce class YBridgeControl allows you to control bridge excitation parameters
+  ///   and measure parameters for a Wheatstone bridge sensor. To read the measurements, it
+  ///   is best to use the GenericSensor calss, which will compute the measured value
+  ///   in the optimal way.
   /// </para>
   /// </summary>
   ///-
-  TYCurrentLoopOutput=class(TYFunction)
-  //--- (end of YCurrentLoopOutput class start)
+  TYBridgeControl=class(TYFunction)
+  //--- (end of YBridgeControl class start)
   protected
-  //--- (YCurrentLoopOutput declaration)
+  //--- (YBridgeControl declaration)
     // Attributes (function value cache)
     _logicalName              : string;
     _advertisedValue          : string;
-    _current                  : double;
-    _currentTransition        : string;
-    _currentAtStartUp         : double;
-    _loopPower                : Integer;
-    _valueCallbackCurrentLoopOutput : TYCurrentLoopOutputValueCallback;
+    _excitationMode           : Integer;
+    _bridgeLatency            : LongInt;
+    _adValue                  : LongInt;
+    _adGain                   : LongInt;
+    _valueCallbackBridgeControl : TYBridgeControlValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
 
-    //--- (end of YCurrentLoopOutput declaration)
+    //--- (end of YBridgeControl declaration)
 
   public
-    //--- (YCurrentLoopOutput accessors declaration)
+    //--- (YBridgeControl accessors declaration)
     constructor Create(func:string);
 
     ////
     /// <summary>
-    ///   Changes the current loop, the valid range is from 3 to 21mA.
+    ///   Returns the current Wheatstone bridge excitation method.
     /// <para>
-    ///   If the loop is
-    ///   not propely powered, the  target current is not reached and
-    ///   loopPower is set to LOWPWR.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a value among <c>Y_EXCITATIONMODE_INTERNAL_AC</c>, <c>Y_EXCITATIONMODE_INTERNAL_DC</c> and
+    ///   <c>Y_EXCITATIONMODE_EXTERNAL_DC</c> corresponding to the current Wheatstone bridge excitation method
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_EXCITATIONMODE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_excitationMode():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the current Wheatstone bridge excitation method.
+    /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a floating point number corresponding to the current loop, the valid range is from 3 to 21mA
+    ///   a value among <c>Y_EXCITATIONMODE_INTERNAL_AC</c>, <c>Y_EXCITATIONMODE_INTERNAL_DC</c> and
+    ///   <c>Y_EXCITATIONMODE_EXTERNAL_DC</c> corresponding to the current Wheatstone bridge excitation method
     /// </param>
     /// <para>
     /// </para>
@@ -117,41 +135,35 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function set_current(newval:double):integer;
+    function set_excitationMode(newval:Integer):integer;
 
     ////
     /// <summary>
-    ///   Returns the loop current set point in mA.
+    ///   Returns the current Wheatstone bridge excitation method.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a floating point number corresponding to the loop current set point in mA
+    ///   an integer corresponding to the current Wheatstone bridge excitation method
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CURRENT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>Y_BRIDGELATENCY_INVALID</c>.
     /// </para>
     ///-
-    function get_current():double;
-
-    function get_currentTransition():string;
-
-    function set_currentTransition(newval:string):integer;
+    function get_bridgeLatency():LongInt;
 
     ////
     /// <summary>
-    ///   Changes the loop current at device start up.
+    ///   Changes the current Wheatstone bridge excitation method.
     /// <para>
-    ///   Remember to call the matching
-    ///   module <c>saveToFlash()</c> method, otherwise this call has no effect.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a floating point number corresponding to the loop current at device start up
+    ///   an integer corresponding to the current Wheatstone bridge excitation method
     /// </param>
     /// <para>
     /// </para>
@@ -162,45 +174,45 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function set_currentAtStartUp(newval:double):integer;
+    function set_bridgeLatency(newval:LongInt):integer;
 
     ////
     /// <summary>
-    ///   Returns the current in the loop at device startup, in mA.
+    ///   Returns the raw value returned by the ratiometric A/D converter
+    ///   during last read.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a floating point number corresponding to the current in the loop at device startup, in mA
+    ///   an integer corresponding to the raw value returned by the ratiometric A/D converter
+    ///   during last read
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CURRENTATSTARTUP_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>Y_ADVALUE_INVALID</c>.
     /// </para>
     ///-
-    function get_currentAtStartUp():double;
+    function get_adValue():LongInt;
 
     ////
     /// <summary>
-    ///   Returns the loop powerstate.
+    ///   Returns the current ratiometric A/D converter gain.
     /// <para>
-    ///   POWEROK: the loop
-    ///   is powered. NOPWR: the loop in not powered. LOWPWR: the loop is not
-    ///   powered enough to maintain the current required (insufficient voltage).
+    ///   The gain is automatically
+    ///   configured according to the signalRange set in the corresponding genericSensor.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_LOOPPOWER_NOPWR</c>, <c>Y_LOOPPOWER_LOWPWR</c> and <c>Y_LOOPPOWER_POWEROK</c>
-    ///   corresponding to the loop powerstate
+    ///   an integer corresponding to the current ratiometric A/D converter gain
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_LOOPPOWER_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>Y_ADGAIN_INVALID</c>.
     /// </para>
     ///-
-    function get_loopPower():Integer;
+    function get_adGain():LongInt;
 
     ////
     /// <summary>
@@ -230,7 +242,7 @@ type
     /// <para>
     ///   This function does not require that $THEFUNCTION$ is online at the time
     ///   it is invoked. The returned object is nevertheless valid.
-    ///   Use the method <c>YCurrentLoopOutput.isOnline()</c> to test if $THEFUNCTION$ is
+    ///   Use the method <c>YBridgeControl.isOnline()</c> to test if $THEFUNCTION$ is
     ///   indeed online at a given time. In case of ambiguity when looking for
     ///   $AFUNCTION$ by logical name, no error is notified: the first instance
     ///   found is returned. The search is performed first by hardware name,
@@ -241,10 +253,10 @@ type
     ///   a string that uniquely characterizes $THEFUNCTION$
     /// </param>
     /// <returns>
-    ///   a <c>YCurrentLoopOutput</c> object allowing you to drive $THEFUNCTION$.
+    ///   a <c>YBridgeControl</c> object allowing you to drive $THEFUNCTION$.
     /// </returns>
     ///-
-    class function FindCurrentLoopOutput(func: string):TYCurrentLoopOutput;
+    class function FindBridgeControl(func: string):TYBridgeControl;
 
     ////
     /// <summary>
@@ -264,45 +276,24 @@ type
     /// @noreturn
     /// </param>
     ///-
-    function registerValueCallback(callback: TYCurrentLoopOutputValueCallback):LongInt; overload;
+    function registerValueCallback(callback: TYBridgeControlValueCallback):LongInt; overload;
 
     function _invokeValueCallback(value: string):LongInt; override;
 
-    ////
-    /// <summary>
-    ///   Performs a smooth transistion of current flowing in the loop.
-    /// <para>
-    ///   Any current explicit
-    ///   change cancels any ongoing transition process.
-    /// </para>
-    /// </summary>
-    /// <param name="mA_target">
-    ///   new current value at the end of the transition
-    ///   (floating-point number, representing the transition duration in mA)
-    /// </param>
-    /// <param name="ms_duration">
-    ///   total duration of the transition, in milliseconds
-    /// </param>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-    /// </returns>
-    ///-
-    function currentMove(mA_target: double; ms_duration: LongInt):LongInt; overload; virtual;
-
 
     ////
     /// <summary>
-    ///   Continues the enumeration of 4-20mA outputs started using <c>yFirstCurrentLoopOutput()</c>.
+    ///   Continues the enumeration of Wheatstone bridge controllers started using <c>yFirstBridgeControl()</c>.
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a pointer to a <c>YCurrentLoopOutput</c> object, corresponding to
-    ///   a 4-20mA output currently online, or a <c>NIL</c> pointer
-    ///   if there are no more 4-20mA outputs to enumerate.
+    ///   a pointer to a <c>YBridgeControl</c> object, corresponding to
+    ///   a Wheatstone bridge controller currently online, or a <c>NIL</c> pointer
+    ///   if there are no more Wheatstone bridge controllers to enumerate.
     /// </returns>
     ///-
-    function nextCurrentLoopOutput():TYCurrentLoopOutput;
+    function nextBridgeControl():TYBridgeControl;
     ////
     /// <summary>
     ///   c
@@ -311,14 +302,14 @@ type
     /// </para>
     /// </summary>
     ///-
-    class function FirstCurrentLoopOutput():TYCurrentLoopOutput;
-  //--- (end of YCurrentLoopOutput accessors declaration)
+    class function FirstBridgeControl():TYBridgeControl;
+  //--- (end of YBridgeControl accessors declaration)
   end;
 
-//--- (CurrentLoopOutput functions declaration)
+//--- (BridgeControl functions declaration)
   ////
   /// <summary>
-  ///   Retrieves a 4-20mA output for a given identifier.
+  ///   Retrieves a Wheatstone bridge controller for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
   /// </para>
@@ -342,87 +333,87 @@ type
   /// <para>
   /// </para>
   /// <para>
-  ///   This function does not require that the 4-20mA output is online at the time
+  ///   This function does not require that the Wheatstone bridge controller is online at the time
   ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YCurrentLoopOutput.isOnline()</c> to test if the 4-20mA output is
+  ///   Use the method <c>YBridgeControl.isOnline()</c> to test if the Wheatstone bridge controller is
   ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   a 4-20mA output by logical name, no error is notified: the first instance
+  ///   a Wheatstone bridge controller by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the 4-20mA output
+  ///   a string that uniquely characterizes the Wheatstone bridge controller
   /// </param>
   /// <returns>
-  ///   a <c>YCurrentLoopOutput</c> object allowing you to drive the 4-20mA output.
+  ///   a <c>YBridgeControl</c> object allowing you to drive the Wheatstone bridge controller.
   /// </returns>
   ///-
-  function yFindCurrentLoopOutput(func:string):TYCurrentLoopOutput;
+  function yFindBridgeControl(func:string):TYBridgeControl;
   ////
   /// <summary>
-  ///   Starts the enumeration of 4-20mA outputs currently accessible.
+  ///   Starts the enumeration of Wheatstone bridge controllers currently accessible.
   /// <para>
-  ///   Use the method <c>YCurrentLoopOutput.nextCurrentLoopOutput()</c> to iterate on
-  ///   next 4-20mA outputs.
+  ///   Use the method <c>YBridgeControl.nextBridgeControl()</c> to iterate on
+  ///   next Wheatstone bridge controllers.
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a pointer to a <c>YCurrentLoopOutput</c> object, corresponding to
-  ///   the first 4-20mA output currently online, or a <c>NIL</c> pointer
+  ///   a pointer to a <c>YBridgeControl</c> object, corresponding to
+  ///   the first Wheatstone bridge controller currently online, or a <c>NIL</c> pointer
   ///   if there are none.
   /// </returns>
   ///-
-  function yFirstCurrentLoopOutput():TYCurrentLoopOutput;
+  function yFirstBridgeControl():TYBridgeControl;
 
-//--- (end of CurrentLoopOutput functions declaration)
+//--- (end of BridgeControl functions declaration)
 
 implementation
-//--- (YCurrentLoopOutput dlldef)
-//--- (end of YCurrentLoopOutput dlldef)
+//--- (YBridgeControl dlldef)
+//--- (end of YBridgeControl dlldef)
 
-  constructor TYCurrentLoopOutput.Create(func:string);
+  constructor TYBridgeControl.Create(func:string);
     begin
       inherited Create(func);
-      _className := 'CurrentLoopOutput';
-      //--- (YCurrentLoopOutput accessors initialization)
-      _current := Y_CURRENT_INVALID;
-      _currentTransition := Y_CURRENTTRANSITION_INVALID;
-      _currentAtStartUp := Y_CURRENTATSTARTUP_INVALID;
-      _loopPower := Y_LOOPPOWER_INVALID;
-      _valueCallbackCurrentLoopOutput := nil;
-      //--- (end of YCurrentLoopOutput accessors initialization)
+      _className := 'BridgeControl';
+      //--- (YBridgeControl accessors initialization)
+      _excitationMode := Y_EXCITATIONMODE_INVALID;
+      _bridgeLatency := Y_BRIDGELATENCY_INVALID;
+      _adValue := Y_ADVALUE_INVALID;
+      _adGain := Y_ADGAIN_INVALID;
+      _valueCallbackBridgeControl := nil;
+      //--- (end of YBridgeControl accessors initialization)
     end;
 
 
-//--- (YCurrentLoopOutput implementation)
+//--- (YBridgeControl implementation)
 {$HINTS OFF}
-  function TYCurrentLoopOutput._parseAttr(member:PJSONRECORD):integer;
+  function TYBridgeControl._parseAttr(member:PJSONRECORD):integer;
     var
       sub : PJSONRECORD;
       i,l        : integer;
     begin
-      if (member^.name = 'current') then
+      if (member^.name = 'excitationMode') then
         begin
-          _current := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _excitationMode := integer(member^.ivalue);
          result := 1;
          exit;
          end;
-      if (member^.name = 'currentTransition') then
+      if (member^.name = 'bridgeLatency') then
         begin
-          _currentTransition := string(member^.svalue);
+          _bridgeLatency := integer(member^.ivalue);
          result := 1;
          exit;
          end;
-      if (member^.name = 'currentAtStartUp') then
+      if (member^.name = 'adValue') then
         begin
-          _currentAtStartUp := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _adValue := integer(member^.ivalue);
          result := 1;
          exit;
          end;
-      if (member^.name = 'loopPower') then
+      if (member^.name = 'adGain') then
         begin
-          _loopPower := integer(member^.ivalue);
+          _adGain := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -432,176 +423,21 @@ implementation
 
   ////
   /// <summary>
-  ///   Changes the current loop, the valid range is from 3 to 21mA.
-  /// <para>
-  ///   If the loop is
-  ///   not propely powered, the  target current is not reached and
-  ///   loopPower is set to LOWPWR.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the current loop, the valid range is from 3 to 21mA
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYCurrentLoopOutput.set_current(newval:double):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := inttostr(round(newval * 65536.0));
-      result := _setAttr('current',rest_val);
-    end;
-
-  ////
-  /// <summary>
-  ///   Returns the loop current set point in mA.
+  ///   Returns the current Wheatstone bridge excitation method.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a floating point number corresponding to the loop current set point in mA
+  ///   a value among Y_EXCITATIONMODE_INTERNAL_AC, Y_EXCITATIONMODE_INTERNAL_DC and
+  ///   Y_EXCITATIONMODE_EXTERNAL_DC corresponding to the current Wheatstone bridge excitation method
   /// </returns>
   /// <para>
-  ///   On failure, throws an exception or returns Y_CURRENT_INVALID.
+  ///   On failure, throws an exception or returns Y_EXCITATIONMODE_INVALID.
   /// </para>
   ///-
-  function TYCurrentLoopOutput.get_current():double;
-    var
-      res : double;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
-            begin
-              result := Y_CURRENT_INVALID;
-              exit;
-            end;
-        end;
-      res := self._current;
-      result := res;
-      exit;
-    end;
-
-
-  function TYCurrentLoopOutput.get_currentTransition():string;
-    var
-      res : string;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
-            begin
-              result := Y_CURRENTTRANSITION_INVALID;
-              exit;
-            end;
-        end;
-      res := self._currentTransition;
-      result := res;
-      exit;
-    end;
-
-
-  function TYCurrentLoopOutput.set_currentTransition(newval:string):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := newval;
-      result := _setAttr('currentTransition',rest_val);
-    end;
-
-  ////
-  /// <summary>
-  ///   Changes the loop current at device start up.
-  /// <para>
-  ///   Remember to call the matching
-  ///   module saveToFlash() method, otherwise this call has no effect.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the loop current at device start up
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYCurrentLoopOutput.set_currentAtStartUp(newval:double):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := inttostr(round(newval * 65536.0));
-      result := _setAttr('currentAtStartUp',rest_val);
-    end;
-
-  ////
-  /// <summary>
-  ///   Returns the current in the loop at device startup, in mA.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the current in the loop at device startup, in mA
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CURRENTATSTARTUP_INVALID.
-  /// </para>
-  ///-
-  function TYCurrentLoopOutput.get_currentAtStartUp():double;
-    var
-      res : double;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
-            begin
-              result := Y_CURRENTATSTARTUP_INVALID;
-              exit;
-            end;
-        end;
-      res := self._currentAtStartUp;
-      result := res;
-      exit;
-    end;
-
-
-  ////
-  /// <summary>
-  ///   Returns the loop powerstate.
-  /// <para>
-  ///   POWEROK: the loop
-  ///   is powered. NOPWR: the loop in not powered. LOWPWR: the loop is not
-  ///   powered enough to maintain the current required (insufficient voltage).
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_LOOPPOWER_NOPWR, Y_LOOPPOWER_LOWPWR and Y_LOOPPOWER_POWEROK corresponding to the loop powerstate
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LOOPPOWER_INVALID.
-  /// </para>
-  ///-
-  function TYCurrentLoopOutput.get_loopPower():Integer;
+  function TYBridgeControl.get_excitationMode():Integer;
     var
       res : Integer;
     begin
@@ -609,11 +445,171 @@ implementation
         begin
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
-              result := Y_LOOPPOWER_INVALID;
+              result := Y_EXCITATIONMODE_INVALID;
               exit;
             end;
         end;
-      res := self._loopPower;
+      res := self._excitationMode;
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the current Wheatstone bridge excitation method.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a value among Y_EXCITATIONMODE_INTERNAL_AC, Y_EXCITATIONMODE_INTERNAL_DC and
+  ///   Y_EXCITATIONMODE_EXTERNAL_DC corresponding to the current Wheatstone bridge excitation method
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYBridgeControl.set_excitationMode(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('excitationMode',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the current Wheatstone bridge excitation method.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the current Wheatstone bridge excitation method
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_BRIDGELATENCY_INVALID.
+  /// </para>
+  ///-
+  function TYBridgeControl.get_bridgeLatency():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_BRIDGELATENCY_INVALID;
+              exit;
+            end;
+        end;
+      res := self._bridgeLatency;
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the current Wheatstone bridge excitation method.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   an integer corresponding to the current Wheatstone bridge excitation method
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYBridgeControl.set_bridgeLatency(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('bridgeLatency',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the raw value returned by the ratiometric A/D converter
+  ///   during last read.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the raw value returned by the ratiometric A/D converter
+  ///   during last read
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_ADVALUE_INVALID.
+  /// </para>
+  ///-
+  function TYBridgeControl.get_adValue():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_ADVALUE_INVALID;
+              exit;
+            end;
+        end;
+      res := self._adValue;
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the current ratiometric A/D converter gain.
+  /// <para>
+  ///   The gain is automatically
+  ///   configured according to the signalRange set in the corresponding genericSensor.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the current ratiometric A/D converter gain
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_ADGAIN_INVALID.
+  /// </para>
+  ///-
+  function TYBridgeControl.get_adGain():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_ADGAIN_INVALID;
+              exit;
+            end;
+        end;
+      res := self._adGain;
       result := res;
       exit;
     end;
@@ -647,7 +643,7 @@ implementation
   /// <para>
   ///   This function does not require that $THEFUNCTION$ is online at the time
   ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YCurrentLoopOutput.isOnline()</c> to test if $THEFUNCTION$ is
+  ///   Use the method <c>YBridgeControl.isOnline()</c> to test if $THEFUNCTION$ is
   ///   indeed online at a given time. In case of ambiguity when looking for
   ///   $AFUNCTION$ by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
@@ -658,18 +654,18 @@ implementation
   ///   a string that uniquely characterizes $THEFUNCTION$
   /// </param>
   /// <returns>
-  ///   a <c>YCurrentLoopOutput</c> object allowing you to drive $THEFUNCTION$.
+  ///   a <c>YBridgeControl</c> object allowing you to drive $THEFUNCTION$.
   /// </returns>
   ///-
-  class function TYCurrentLoopOutput.FindCurrentLoopOutput(func: string):TYCurrentLoopOutput;
+  class function TYBridgeControl.FindBridgeControl(func: string):TYBridgeControl;
     var
-      obj : TYCurrentLoopOutput;
+      obj : TYBridgeControl;
     begin
-      obj := TYCurrentLoopOutput(TYFunction._FindFromCache('CurrentLoopOutput', func));
+      obj := TYBridgeControl(TYFunction._FindFromCache('BridgeControl', func));
       if obj = nil then
         begin
-          obj :=  TYCurrentLoopOutput.create(func);
-          TYFunction._AddToCache('CurrentLoopOutput',  func, obj);
+          obj :=  TYBridgeControl.create(func);
+          TYFunction._AddToCache('BridgeControl',  func, obj);
         end;
       result := obj;
       exit;
@@ -694,7 +690,7 @@ implementation
   /// @noreturn
   /// </param>
   ///-
-  function TYCurrentLoopOutput.registerValueCallback(callback: TYCurrentLoopOutputValueCallback):LongInt;
+  function TYBridgeControl.registerValueCallback(callback: TYBridgeControlValueCallback):LongInt;
     var
       val : string;
     begin
@@ -706,7 +702,7 @@ implementation
         begin
           TYFunction._UpdateValueCallbackList(self, false);
         end;
-      self._valueCallbackCurrentLoopOutput := callback;
+      self._valueCallbackBridgeControl := callback;
       // Immediately invoke value callback with current value
       if (addr(callback) <> nil) and self.isOnline then
         begin
@@ -721,11 +717,11 @@ implementation
     end;
 
 
-  function TYCurrentLoopOutput._invokeValueCallback(value: string):LongInt;
+  function TYBridgeControl._invokeValueCallback(value: string):LongInt;
     begin
-      if (addr(self._valueCallbackCurrentLoopOutput) <> nil) then
+      if (addr(self._valueCallbackBridgeControl) <> nil) then
         begin
-          self._valueCallbackCurrentLoopOutput(self, value);
+          self._valueCallbackBridgeControl(self, value);
         end
       else
         begin
@@ -736,69 +732,31 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Performs a smooth transistion of current flowing in the loop.
-  /// <para>
-  ///   Any current explicit
-  ///   change cancels any ongoing transition process.
-  /// </para>
-  /// </summary>
-  /// <param name="mA_target">
-  ///   new current value at the end of the transition
-  ///   (floating-point number, representing the transition duration in mA)
-  /// </param>
-  /// <param name="ms_duration">
-  ///   total duration of the transition, in milliseconds
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  ///-
-  function TYCurrentLoopOutput.currentMove(mA_target: double; ms_duration: LongInt):LongInt;
-    var
-      newval : string;
-    begin
-      if mA_target < 3.0 then
-        begin
-          mA_target  := 3.0;
-        end;
-      if mA_target > 21.0 then
-        begin
-          mA_target := 21.0;
-        end;
-      newval := ''+inttostr( round(mA_target*1000))+':'+inttostr(ms_duration);
-      
-      result := self.set_currentTransition(newval);
-      exit;
-    end;
-
-
-  function TYCurrentLoopOutput.nextCurrentLoopOutput(): TYCurrentLoopOutput;
+  function TYBridgeControl.nextBridgeControl(): TYBridgeControl;
     var
       hwid: string;
     begin
       if YISERR(_nextFunction(hwid)) then
         begin
-          nextCurrentLoopOutput := nil;
+          nextBridgeControl := nil;
           exit;
         end;
       if hwid = '' then
         begin
-          nextCurrentLoopOutput := nil;
+          nextBridgeControl := nil;
           exit;
         end;
-      nextCurrentLoopOutput := TYCurrentLoopOutput.FindCurrentLoopOutput(hwid);
+      nextBridgeControl := TYBridgeControl.FindBridgeControl(hwid);
     end;
 
-  class function TYCurrentLoopOutput.FirstCurrentLoopOutput(): TYCurrentLoopOutput;
+  class function TYBridgeControl.FirstBridgeControl(): TYBridgeControl;
     var
       v_fundescr      : YFUN_DESCR;
       dev             : YDEV_DESCR;
       neededsize, err : integer;
       serial, funcId, funcName, funcVal, errmsg : string;
     begin
-      err := yapiGetFunctionsByClass('CurrentLoopOutput', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
+      err := yapiGetFunctionsByClass('BridgeControl', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
       if (YISERR(err) or (neededsize = 0)) then
         begin
           result := nil;
@@ -809,35 +767,35 @@ implementation
           result := nil;
           exit;
         end;
-     result := TYCurrentLoopOutput.FindCurrentLoopOutput(serial+'.'+funcId);
+     result := TYBridgeControl.FindBridgeControl(serial+'.'+funcId);
     end;
 
-//--- (end of YCurrentLoopOutput implementation)
+//--- (end of YBridgeControl implementation)
 
-//--- (CurrentLoopOutput functions)
+//--- (BridgeControl functions)
 
-  function yFindCurrentLoopOutput(func:string): TYCurrentLoopOutput;
+  function yFindBridgeControl(func:string): TYBridgeControl;
     begin
-      result := TYCurrentLoopOutput.FindCurrentLoopOutput(func);
+      result := TYBridgeControl.FindBridgeControl(func);
     end;
 
-  function yFirstCurrentLoopOutput(): TYCurrentLoopOutput;
+  function yFirstBridgeControl(): TYBridgeControl;
     begin
-      result := TYCurrentLoopOutput.FirstCurrentLoopOutput();
+      result := TYBridgeControl.FirstBridgeControl();
     end;
 
-  procedure _CurrentLoopOutputCleanup();
+  procedure _BridgeControlCleanup();
     begin
     end;
 
-//--- (end of CurrentLoopOutput functions)
+//--- (end of BridgeControl functions)
 
 initialization
-  //--- (CurrentLoopOutput initialization)
-  //--- (end of CurrentLoopOutput initialization)
+  //--- (BridgeControl initialization)
+  //--- (end of BridgeControl initialization)
 
 finalization
-  //--- (CurrentLoopOutput cleanup)
-  _CurrentLoopOutputCleanup();
-  //--- (end of CurrentLoopOutput cleanup)
+  //--- (BridgeControl cleanup)
+  _BridgeControlCleanup();
+  //--- (end of BridgeControl cleanup)
 end.
