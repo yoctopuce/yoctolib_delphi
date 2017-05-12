@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_multiaxiscontroller.pas 26668 2017-02-28 13:36:03Z seb $
+ * $Id: yocto_multiaxiscontroller.pas 27159 2017-04-07 21:21:06Z mvuilleu $
  *
  * Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
  *
@@ -766,7 +766,7 @@ implementation
       ndim := length(speed);
       cmd := 'H'+inttostr(round(1000*speed[0]));
       i := 1;
-      while i + 1 < ndim do
+      while i < ndim do
         begin
           cmd := ''+ cmd+','+inttostr(round(1000*speed[i]));
           i := i + 1;
@@ -802,7 +802,7 @@ implementation
       ndim := length(absPos);
       cmd := 'M'+inttostr(round(16*absPos[0]));
       i := 1;
-      while i + 1 < ndim do
+      while i < ndim do
         begin
           cmd := ''+ cmd+','+inttostr(round(16*absPos[i]));
           i := i + 1;
@@ -838,7 +838,7 @@ implementation
       ndim := length(relPos);
       cmd := 'm'+inttostr(round(16*relPos[0]));
       i := 1;
-      while i + 1 < ndim do
+      while i < ndim do
         begin
           cmd := ''+ cmd+','+inttostr(round(16*relPos[i]));
           i := i + 1;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_currentloopoutput.pas 27113 2017-04-06 22:20:20Z seb $
+ * $Id: yocto_currentloopoutput.pas 27276 2017-04-25 15:40:55Z seb $
  *
  * Implements yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
  *
@@ -768,7 +768,7 @@ implementation
           mA_target := 21.0;
         end;
       newval := ''+inttostr( round(mA_target*1000))+':'+inttostr(ms_duration);
-      
+
       result := self.set_currentTransition(newval);
       exit;
     end;

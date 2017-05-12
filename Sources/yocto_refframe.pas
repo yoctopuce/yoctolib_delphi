@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_refframe.pas 27113 2017-04-06 22:20:20Z seb $
+ * $Id: yocto_refframe.pas 27276 2017-04-25 15:40:55Z seb $
  *
  * Implements yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -1555,7 +1555,7 @@ implementation
               exit;
             end;
         end;
-      
+
       calibParam := self._download('api/refFrame/calibrationParam.txt');
       iCalib := _decodeFloats(_ByteToString(calibParam));
       cal3 := (iCalib[1] div 1000);
@@ -1827,7 +1827,7 @@ implementation
           result := YAPI_SUCCESS;
           exit;
         end;
-      
+
       self._calibStage := 0;
       result := self.set_calibrationParam(self._calibSavedParams);
       exit;

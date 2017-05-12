@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 27113 2017-04-06 22:20:20Z seb $
+ * $Id: yocto_messagebox.pas 27419 2017-05-11 10:00:18Z seb $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *
@@ -1098,8 +1098,7 @@ implementation
       sms : TYSms;
     begin
       SetLength(arrPdu, 0);
-      
-      
+
       binPdu := self._download('sms.json?pos='+inttostr(slot)+'&len=1');
       arrPdu := self._json_get_array(binPdu);
       hexPdu := self._decode_json_string(arrPdu[0]);
@@ -1238,7 +1237,6 @@ implementation
         end;
       // Done
       self._gsm2unicodeReady := true;
-      
       result := YAPI_SUCCESS;
       exit;
     end;
@@ -1647,8 +1645,7 @@ implementation
       newAgg_pos : LongInt;
     begin
       SetLength(signatures, 0);
-      
-      
+
       bitmapStr := self.get_slotsBitmap;
       if (bitmapStr = self._prevBitmapStr) then
         begin
@@ -1794,7 +1791,6 @@ implementation
         end;
       SetLength(newMsg, newMsg_pos);;
       self._messages := newMsg;
-      
       result := YAPI_SUCCESS;
       exit;
     end;
@@ -1959,7 +1955,6 @@ implementation
   function TYMessageBox.get_messages():TYSmsArray;
     begin
       self.checkNewMessages;
-      
       result := self._messages;
       exit;
     end;
@@ -2163,7 +2158,6 @@ implementation
           result := _ByteToString(isolatin);
           exit;
         end;
-      
       // default: convert 8 bit to string as-is
       result := _ByteToString(self._udata);
       exit;
@@ -2444,7 +2438,6 @@ implementation
       self._alphab := 2;
       setlength(self._udata,0);
       self.addUnicodeData(ucs2);
-      
       result := YAPI_SUCCESS;
       exit;
     end;
@@ -2463,7 +2456,6 @@ implementation
           result := YAPI_SUCCESS;
           exit;
         end;
-      
       if self._alphab = 0 then
         begin
           // Try to append using GSM 7-bit alphabet
@@ -2519,7 +2511,6 @@ implementation
               i := i + 1;
             end;
         end;
-      
       result := self.set_userData(udata);
       exit;
     end;
@@ -2579,7 +2570,6 @@ implementation
           udatalen := udatalen + 2;
           i := i + 1;
         end;
-      
       result := self.set_userData(udata);
       exit;
     end;
@@ -2613,7 +2603,6 @@ implementation
           result := YAPI_INVALID_ARGUMENT;
           exit;
         end;
-      
       sorted_pos := 0;
       SetLength(sorted, self._npdu);;
       partno := 0;
@@ -3392,7 +3381,6 @@ implementation
     begin
       self._pdu := pdu;
       self._npdu := 1;
-      
       // parse meta-data
       self._smsc := self.decodeAddress(pdu,  1, 2*(pdu[0]-1));
       rpos := 1+pdu[0];
@@ -3440,7 +3428,6 @@ implementation
       self._mclass := ((dcs) and (16+3));
       self._stamp := self.decodeTimeStamp(pdu,  rpos, tslen);
       rpos := rpos + tslen;
-      
       // parse user data (including udh)
       nbits := 0;
       carry := 0;
@@ -3519,7 +3506,6 @@ implementation
             end;
         end;
       self.parseUserDataHeader;
-      
       result := YAPI_SUCCESS;
       exit;
     end;

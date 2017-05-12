@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_datalogger.pas 27113 2017-04-06 22:20:20Z seb $
+ * $Id: yocto_datalogger.pas 27276 2017-04-25 15:40:55Z seb $
  *
  * Implements yFindDataLogger(), the high-level API for DataLogger functions
  *
@@ -1259,7 +1259,7 @@ const
       i_i : LongInt;
     begin
       SetLength(dslist, 0);
-      
+
       dslist := self._json_get_array(json);
       res_pos := 0;
       SetLength(res, length(dslist));;

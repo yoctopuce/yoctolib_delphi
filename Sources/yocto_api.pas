@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 27113 2017-04-06 22:20:20Z seb $
+ * $Id: yocto_api.pas 27276 2017-04-25 15:40:55Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -115,7 +115,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '27127';
+  YOCTO_API_BUILD_NO        = '27439';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -967,7 +967,7 @@ type
     ///   the index of the function for which the information is desired, starting at 0 for the first function.
     /// </param>
     /// <returns>
-    ///   a the type of the function
+    ///   a string corresponding to the type of the function
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns an empty string.
@@ -979,13 +979,14 @@ type
     /// <summary>
     ///   Retrieves the base type of the <i>n</i>th function on the module.
     /// <para>
+    ///   For instance, the base type of all measuring functions is "Sensor".
     /// </para>
     /// </summary>
     /// <param name="functionIndex">
     ///   the index of the function for which the information is desired, starting at 0 for the first function.
     /// </param>
     /// <returns>
-    ///   a the base type of the function
+    ///   a string corresponding to the base type of the function
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns an empty string.
@@ -8420,7 +8421,7 @@ var
     begin
       SetLength(filelist, 0);
       SetLength(templist, 0);
-      
+
       settings := self._download('api.json');
       if length(settings) = 0 then
         begin
@@ -8492,7 +8493,7 @@ var
     begin
       SetLength(values, 0);
       url := 'api/' + funcId + '.json?command=Z';
-      
+
       self._download(url);
       // add records in growing resistance value
       values := self._json_get_array(_StrToByte(jsonExtra));
@@ -8675,7 +8676,7 @@ var
       res_pos : LongInt;
     begin
       SetLength(res, 0);
-      
+
       count := self.functionCount;
       i := 0;
       res_pos := length(res);
@@ -9204,7 +9205,7 @@ var
       SetLength(old_jpath, jpath_pos);;
       SetLength(old_jpath_len, len_pos);;
       SetLength(old_val_arr, arr_pos);;
-      
+
       actualSettings := self._download('api.json');
       actualSettings := self._flattenJsonStruct(actualSettings);
       new_dslist := self._json_get_array(actualSettings);
@@ -9622,7 +9623,7 @@ var
       errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
       smallbuff_buffer[0]:=#0;smallbuff:=@smallbuff_buffer;
       SetLength(subdevices, 0);
-      
+
       serial := self.get_serialNumber;
       fullsize := 0;
       yapi_res := _yapiGetSubdevices(pansichar(ansistring(serial)), smallbuff, 1024, fullsize, errmsg);
@@ -9685,7 +9686,7 @@ var
     begin
       errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
       hubserial_buffer[0]:=#0;hubserial:=@hubserial_buffer;
-      
+
       serial := self.get_serialNumber;
       // retrieve device object
       pathsize := 0;
@@ -9724,7 +9725,7 @@ var
     begin
       errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
       path_buffer[0]:=#0;path:=@path_buffer;
-      
+
       serial := self.get_serialNumber;
       // retrieve device object
       pathsize := 0;
@@ -11954,7 +11955,7 @@ var
           result := YAPI_SUCCESS;
           exit;
         end;
-      
+
       udat := _decodeWords(self._parent._json_get_string(sdata));
       values_pos := 0;
       SetLength(self._values, length(udat));;

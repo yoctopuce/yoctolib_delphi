@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 27113 2017-04-06 22:20:20Z seb $
+ * $Id: yocto_wireless.pas 27437 2017-05-12 13:13:55Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -58,6 +58,11 @@ const Y_SECURITY_WPA2 = 4;
 const Y_SECURITY_INVALID = -1;
 const Y_MESSAGE_INVALID               = YAPI_INVALID_STRING;
 const Y_WLANCONFIG_INVALID            = YAPI_INVALID_STRING;
+const Y_WLANSTATE_DOWN = 0;
+const Y_WLANSTATE_SCANNING = 1;
+const Y_WLANSTATE_CONNECTED = 2;
+const Y_WLANSTATE_REJECTED = 3;
+const Y_WLANSTATE_INVALID = -1;
 
 
 //--- (end of generated code: YWireless definitions)
@@ -135,6 +140,7 @@ TYWLANRECORDARRAY = array of TYWlanRecord;
     _security                 : Integer;
     _message                  : string;
     _wlanConfig               : string;
+    _wlanState                : Integer;
     _valueCallbackWireless    : TYWirelessValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
@@ -238,6 +244,37 @@ public
 
     ////
     /// <summary>
+    ///   Returns the current state of the wireless interface.
+    /// <para>
+    ///   The state <c>Y_WLANSTATE_DOWN</c> means that the network interface is
+    ///   not connected to a network. The state <c>Y_WLANSTATE_SCANNING</c> means that the network interface
+    ///   is scanning available
+    ///   frequencies. During this stage, the device is not reachable, and the network settings are not yet
+    ///   applied. The state
+    ///   <c>Y_WLANSTATE_CONNECTED</c> means that the network settings have been successfully applied ant
+    ///   that the device is reachable
+    ///   from the wireless network. If the device is configured to use ad-hoc or Soft AP mode, it means that
+    ///   the wireless network
+    ///   is up and that other devices can join the network. The state <c>Y_WLANSTATE_REJECTED</c> means that
+    ///   the network interface has
+    ///   not been able to join the requested network. The description of the error can be obtain with the
+    ///   <c>get_message()</c> method.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a value among <c>Y_WLANSTATE_DOWN</c>, <c>Y_WLANSTATE_SCANNING</c>, <c>Y_WLANSTATE_CONNECTED</c>
+    ///   and <c>Y_WLANSTATE_REJECTED</c> corresponding to the current state of the wireless interface
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_WLANSTATE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_wlanState():Integer;
+
+    ////
+    /// <summary>
     ///   Retrieves $AFUNCTION$ for a given identifier.
     /// <para>
     ///   The identifier can be specified using several formats:
@@ -301,6 +338,23 @@ public
     function registerValueCallback(callback: TYWirelessValueCallback):LongInt; overload;
 
     function _invokeValueCallback(value: string):LongInt; override;
+
+    ////
+    /// <summary>
+    ///   Triggers a scan of the wireless frequency and builds the list of available networks.
+    /// <para>
+    ///   The scan forces a disconnection from the current network. At then end of the process, the
+    ///   the network interface attempts to reconnect to the previous network. During the scan, the <c>wlanState</c>
+    ///   switches to <c>Y_WLANSTATE_DOWN</c>, then to <c>Y_WLANSTATE_SCANNING</c>. When the scan is completed,
+    ///   <c>get_wlanState()</c> returns either <c>Y_WLANSTATE_DOWN</c> or <c>Y_WLANSTATE_SCANNING</c>. At this
+    ///   point, the list of detected network can be retrieved with the <c>get_detectedWlans()</c> method.
+    /// </para>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    /// </summary>
+    ///-
+    function startWlanScan():LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -394,8 +448,8 @@ public
     ///   Returns a list of YWlanRecord objects that describe detected Wireless networks.
     /// <para>
     ///   This list is not updated when the module is already connected to an acces point (infrastructure mode).
-    ///   To force an update of this list, <c>adhocNetwork()</c> must be called to disconnect
-    ///   the module from the current network. The returned list must be unallocated by the caller.
+    ///   To force an update of this list, <c>startWlanScan()</c> must be called.
+    ///   Note that an languages without garbage collections, the returned list must be freed by the caller.
     /// </para>
     /// <para>
     /// </para>
@@ -513,6 +567,7 @@ implementation
       _security := Y_SECURITY_INVALID;
       _message := Y_MESSAGE_INVALID;
       _wlanConfig := Y_WLANCONFIG_INVALID;
+      _wlanState := Y_WLANSTATE_INVALID;
       _valueCallbackWireless := nil;
       //--- (end of generated code: YWireless accessors initialization)
     end;
@@ -557,6 +612,12 @@ implementation
       if (member^.name = 'wlanConfig') then
         begin
           _wlanConfig := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'wlanState') then
+        begin
+          _wlanState := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -758,6 +819,53 @@ implementation
 
   ////
   /// <summary>
+  ///   Returns the current state of the wireless interface.
+  /// <para>
+  ///   The state Y_WLANSTATE_DOWN means that the network interface is
+  ///   not connected to a network. The state Y_WLANSTATE_SCANNING means that the network interface is
+  ///   scanning available
+  ///   frequencies. During this stage, the device is not reachable, and the network settings are not yet
+  ///   applied. The state
+  ///   Y_WLANSTATE_CONNECTED means that the network settings have been successfully applied ant that the
+  ///   device is reachable
+  ///   from the wireless network. If the device is configured to use ad-hoc or Soft AP mode, it means that
+  ///   the wireless network
+  ///   is up and that other devices can join the network. The state Y_WLANSTATE_REJECTED means that the
+  ///   network interface has
+  ///   not been able to join the requested network. The description of the error can be obtain with the
+  ///   get_message() method.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a value among Y_WLANSTATE_DOWN, Y_WLANSTATE_SCANNING, Y_WLANSTATE_CONNECTED and
+  ///   Y_WLANSTATE_REJECTED corresponding to the current state of the wireless interface
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_WLANSTATE_INVALID.
+  /// </para>
+  ///-
+  function TYWireless.get_wlanState():Integer;
+    var
+      res : Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_WLANSTATE_INVALID;
+              exit;
+            end;
+        end;
+      res := self._wlanState;
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
   ///   Retrieves $AFUNCTION$ for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
@@ -875,6 +983,32 @@ implementation
 
   ////
   /// <summary>
+  ///   Triggers a scan of the wireless frequency and builds the list of available networks.
+  /// <para>
+  ///   The scan forces a disconnection from the current network. At then end of the process, the
+  ///   the network interface attempts to reconnect to the previous network. During the scan, the <c>wlanState</c>
+  ///   switches to <c>Y_WLANSTATE_DOWN</c>, then to <c>Y_WLANSTATE_SCANNING</c>. When the scan is completed,
+  ///   <c>get_wlanState()</c> returns either <c>Y_WLANSTATE_DOWN</c> or <c>Y_WLANSTATE_SCANNING</c>. At this
+  ///   point, the list of detected network can be retrieved with the <c>get_detectedWlans()</c> method.
+  /// </para>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  /// </summary>
+  ///-
+  function TYWireless.startWlanScan():LongInt;
+    var
+      config : string;
+    begin
+      config := self.get_wlanConfig;
+      // a full scan is triggered when a config is applied
+      result := self.set_wlanConfig(config);
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
   ///   Changes the configuration of the wireless lan interface to connect to an existing
   ///   access point (infrastructure mode).
   /// <para>
@@ -980,8 +1114,8 @@ implementation
   ///   Returns a list of YWlanRecord objects that describe detected Wireless networks.
   /// <para>
   ///   This list is not updated when the module is already connected to an acces point (infrastructure mode).
-  ///   To force an update of this list, <c>adhocNetwork()</c> must be called to disconnect
-  ///   the module from the current network. The returned list must be unallocated by the caller.
+  ///   To force an update of this list, <c>startWlanScan()</c> must be called.
+  ///   Note that an languages without garbage collections, the returned list must be freed by the caller.
   /// </para>
   /// <para>
   /// </para>
@@ -1003,7 +1137,7 @@ implementation
       i_i : LongInt;
     begin
       SetLength(wlanlist, 0);
-      
+
       json := self._download('wlan.json?by=name');
       wlanlist := self._json_get_array(json);
       res_pos := 0;

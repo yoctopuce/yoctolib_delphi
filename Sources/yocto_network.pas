@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_network.pas 26668 2017-02-28 13:36:03Z seb $
+ * $Id: yocto_network.pas 27419 2017-05-11 10:00:18Z seb $
  *
  * Implements yFindNetwork(), the high-level API for Network functions
  *
@@ -1160,6 +1160,25 @@ type
     /// </para>
     ///-
     function useDHCP(fallbackIpAddr: string; fallbackSubnetMaskLen: LongInt; fallbackRouter: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Changes the configuration of the network interface to enable the use of an
+    ///   IP address received from a DHCP server.
+    /// <para>
+    ///   Until an address is received from a DHCP
+    ///   server, the module uses an IP of the network 169.254.0.0/16 (APIPA).
+    ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function useDHCPauto():LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -3059,6 +3078,30 @@ implementation
   function TYNetwork.useDHCP(fallbackIpAddr: string; fallbackSubnetMaskLen: LongInt; fallbackRouter: string):LongInt;
     begin
       result := self.set_ipConfig('DHCP:'+ fallbackIpAddr+'/'+inttostr( fallbackSubnetMaskLen)+'/'+fallbackRouter);
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the configuration of the network interface to enable the use of an
+  ///   IP address received from a DHCP server.
+  /// <para>
+  ///   Until an address is received from a DHCP
+  ///   server, the module uses an IP of the network 169.254.0.0/16 (APIPA).
+  ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYNetwork.useDHCPauto():LongInt;
+    begin
+      result := self.set_ipConfig('DHCP:');
       exit;
     end;
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 27113 2017-04-06 22:20:20Z seb $
+ * $Id: yocto_serialport.pas 27276 2017-04-25 15:40:55Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -2149,7 +2149,7 @@ implementation
       self._rxptr := 0;
       self._rxbuffptr := 0;
       setlength(self._rxbuff,0);
-      
+
       result := self.sendCommand('Z');
       exit;
     end;
@@ -2288,7 +2288,7 @@ implementation
           buff[idx] := hexb;
           idx := idx + 1;
         end;
-      
+
       res := self._upload('txdata', buff);
       result := res;
       exit;
@@ -2334,7 +2334,7 @@ implementation
           buff[idx] := hexb;
           idx := idx + 1;
         end;
-      
+
       res := self._upload('txdata', buff);
       result := res;
       exit;
@@ -2428,7 +2428,7 @@ implementation
           result := res;
           exit;
         end;
-      
+
       // try to preload more than one byte to speed-up byte-per-byte access
       currpos := self._rxptr;
       reqlen := 1024;
@@ -2459,8 +2459,8 @@ implementation
         end;
       // still mixed, need to process character by character
       self._rxptr := currpos;
-      
-      
+
+
       buff := self._download('rxdata.bin?pos='+inttostr(self._rxptr)+'&len=1');
       bufflen := length(buff) - 1;
       endpos := 0;
@@ -2513,7 +2513,7 @@ implementation
         begin
           nChars := 65535;
         end;
-      
+
       buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
       bufflen := length(buff) - 1;
       endpos := 0;
@@ -2562,7 +2562,7 @@ implementation
         begin
           nChars := 65535;
         end;
-      
+
       buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
       bufflen := length(buff) - 1;
       endpos := 0;
@@ -2619,7 +2619,7 @@ implementation
         begin
           nChars := 65535;
         end;
-      
+
       buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
       bufflen := length(buff) - 1;
       endpos := 0;
@@ -2678,7 +2678,7 @@ implementation
         begin
           nBytes := 65535;
         end;
-      
+
       buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nBytes));
       bufflen := length(buff) - 1;
       endpos := 0;
@@ -2736,7 +2736,7 @@ implementation
       res : string;
     begin
       SetLength(msgarr, 0);
-      
+
       url := 'rxmsg.json?pos='+inttostr(self._rxptr)+'&len=1&maxw=1';
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
@@ -2804,7 +2804,7 @@ implementation
     begin
       SetLength(msgarr, 0);
       SetLength(res, 0);
-      
+
       url := 'rxmsg.json?pos='+inttostr( self._rxptr)+'&maxw='+inttostr( maxWait)+'&pat='+pattern;
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
@@ -2932,7 +2932,7 @@ implementation
       res : string;
     begin
       SetLength(msgarr, 0);
-      
+
       url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=!'+query;
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
@@ -3148,7 +3148,7 @@ implementation
           cmd := ''+ cmd+''+inttohex(((pduBytes[i]) and ($0ff)),02);
           i := i + 1;
         end;
-      
+
       url := 'rxmsg.json?cmd=:'+ cmd+'&pat=:'+pat;
       msgs := self._download(url);
       reps := self._json_get_array(msgs);
@@ -3255,7 +3255,7 @@ implementation
       pdu[pdu_pos] := ((nBits) and ($0ff));
       inc(pdu_pos);
       SetLength(pdu, pdu_pos);;
-      
+
       reply := self.queryMODBUS(slaveNo, pdu);
       if length(reply) = 0 then
         begin
@@ -3351,7 +3351,7 @@ implementation
       pdu[pdu_pos] := ((nBits) and ($0ff));
       inc(pdu_pos);
       SetLength(pdu, pdu_pos);;
-      
+
       reply := self.queryMODBUS(slaveNo, pdu);
       if length(reply) = 0 then
         begin
@@ -3446,7 +3446,7 @@ implementation
       pdu[pdu_pos] := ((nWords) and ($0ff));
       inc(pdu_pos);
       SetLength(pdu, pdu_pos);;
-      
+
       reply := self.queryMODBUS(slaveNo, pdu);
       if length(reply) = 0 then
         begin
@@ -3525,7 +3525,7 @@ implementation
       pdu[pdu_pos] := ((nWords) and ($0ff));
       inc(pdu_pos);
       SetLength(pdu, pdu_pos);;
-      
+
       reply := self.queryMODBUS(slaveNo, pdu);
       if length(reply) = 0 then
         begin
@@ -3605,7 +3605,7 @@ implementation
       pdu[pdu_pos] := $000;
       inc(pdu_pos);
       SetLength(pdu, pdu_pos);;
-      
+
       reply := self.queryMODBUS(slaveNo, pdu);
       if length(reply) = 0 then
         begin
@@ -3703,7 +3703,7 @@ implementation
           inc(pdu_pos);
         end;
       SetLength(pdu, pdu_pos);;
-      
+
       reply := self.queryMODBUS(slaveNo, pdu);
       if length(reply) = 0 then
         begin
@@ -3766,7 +3766,7 @@ implementation
       pdu[pdu_pos] := ((value) and ($0ff));
       inc(pdu_pos);
       SetLength(pdu, pdu_pos);;
-      
+
       reply := self.queryMODBUS(slaveNo, pdu);
       if length(reply) = 0 then
         begin
@@ -3846,7 +3846,7 @@ implementation
           regpos := regpos + 1;
         end;
       SetLength(pdu, pdu_pos);;
-      
+
       reply := self.queryMODBUS(slaveNo, pdu);
       if length(reply) = 0 then
         begin
@@ -3943,7 +3943,7 @@ implementation
           regpos := regpos + 1;
         end;
       SetLength(pdu, pdu_pos);;
-      
+
       reply := self.queryMODBUS(slaveNo, pdu);
       if length(reply) = 0 then
         begin
