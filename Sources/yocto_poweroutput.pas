@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_poweroutput.pas 26668 2017-02-28 13:36:03Z seb $
+ * $Id: yocto_poweroutput.pas 27926 2017-06-27 13:25:52Z seb $
  *
  * Implements yFindPowerOutput(), the high-level API for PowerOutput functions
  *
@@ -90,8 +90,7 @@ type
 
     ////
     /// <summary>
-    ///   Returns the voltage on the power ouput featured by
-    ///   the module.
+    ///   Returns the voltage on the power output featured by the module.
     /// <para>
     /// </para>
     /// <para>
@@ -99,8 +98,7 @@ type
     /// </summary>
     /// <returns>
     ///   a value among <c>Y_VOLTAGE_OFF</c>, <c>Y_VOLTAGE_OUT3V3</c> and <c>Y_VOLTAGE_OUT5V</c>
-    ///   corresponding to the voltage on the power ouput featured by
-    ///   the module
+    ///   corresponding to the voltage on the power output featured by the module
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_VOLTAGE_INVALID</c>.
@@ -168,6 +166,13 @@ type
     ///   $AFUNCTION$ by logical name, no error is notified: the first instance
     ///   found is returned. The search is performed first by hardware name,
     ///   then by logical name.
+    /// </para>
+    /// <para>
+    ///   If a call to this object's is_online() method returns FALSE although
+    ///   you are certain that the matching device is plugged, make sure that you did
+    ///   call registerHub() at application initialization time.
+    /// </para>
+    /// <para>
     /// </para>
     /// </summary>
     /// <param name="func">
@@ -262,6 +267,13 @@ type
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
   /// </para>
+  /// <para>
+  ///   If a call to this object's is_online() method returns FALSE although
+  ///   you are certain that the matching device is plugged, make sure that you did
+  ///   call registerHub() at application initialization time.
+  /// </para>
+  /// <para>
+  /// </para>
   /// </summary>
   /// <param name="func">
   ///   a string that uniquely characterizes the power ouput control
@@ -323,8 +335,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the voltage on the power ouput featured by
-  ///   the module.
+  ///   Returns the voltage on the power output featured by the module.
   /// <para>
   /// </para>
   /// <para>
@@ -332,8 +343,7 @@ implementation
   /// </summary>
   /// <returns>
   ///   a value among Y_VOLTAGE_OFF, Y_VOLTAGE_OUT3V3 and Y_VOLTAGE_OUT5V corresponding to the voltage on
-  ///   the power ouput featured by
-  ///   the module
+  ///   the power output featured by the module
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_VOLTAGE_INVALID.
@@ -423,6 +433,13 @@ implementation
   ///   $AFUNCTION$ by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
+  /// </para>
+  /// <para>
+  ///   If a call to this object's is_online() method returns FALSE although
+  ///   you are certain that the matching device is plugged, make sure that you did
+  ///   call registerHub() at application initialization time.
+  /// </para>
+  /// <para>
   /// </para>
   /// </summary>
   /// <param name="func">

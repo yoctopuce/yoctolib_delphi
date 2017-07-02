@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_currentloopoutput.pas 27276 2017-04-25 15:40:55Z seb $
+ * $Id: yocto_currentloopoutput.pas 27926 2017-06-27 13:25:52Z seb $
  *
  * Implements yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
  *
@@ -236,6 +236,13 @@ type
     ///   found is returned. The search is performed first by hardware name,
     ///   then by logical name.
     /// </para>
+    /// <para>
+    ///   If a call to this object's is_online() method returns FALSE although
+    ///   you are certain that the matching device is plugged, make sure that you did
+    ///   call registerHub() at application initialization time.
+    /// </para>
+    /// <para>
+    /// </para>
     /// </summary>
     /// <param name="func">
     ///   a string that uniquely characterizes $THEFUNCTION$
@@ -278,7 +285,7 @@ type
     /// </summary>
     /// <param name="mA_target">
     ///   new current value at the end of the transition
-    ///   (floating-point number, representing the transition duration in mA)
+    ///   (floating-point number, representing the end current in mA)
     /// </param>
     /// <param name="ms_duration">
     ///   total duration of the transition, in milliseconds
@@ -349,6 +356,13 @@ type
   ///   a 4-20mA output by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
+  /// </para>
+  /// <para>
+  ///   If a call to this object's is_online() method returns FALSE although
+  ///   you are certain that the matching device is plugged, make sure that you did
+  ///   call registerHub() at application initialization time.
+  /// </para>
+  /// <para>
   /// </para>
   /// </summary>
   /// <param name="func">
@@ -653,6 +667,13 @@ implementation
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
   /// </para>
+  /// <para>
+  ///   If a call to this object's is_online() method returns FALSE although
+  ///   you are certain that the matching device is plugged, make sure that you did
+  ///   call registerHub() at application initialization time.
+  /// </para>
+  /// <para>
+  /// </para>
   /// </summary>
   /// <param name="func">
   ///   a string that uniquely characterizes $THEFUNCTION$
@@ -746,7 +767,7 @@ implementation
   /// </summary>
   /// <param name="mA_target">
   ///   new current value at the end of the transition
-  ///   (floating-point number, representing the transition duration in mA)
+  ///   (floating-point number, representing the end current in mA)
   /// </param>
   /// <param name="ms_duration">
   ///   total duration of the transition, in milliseconds

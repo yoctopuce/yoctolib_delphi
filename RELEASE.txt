@@ -1,2 +1,1 @@
-- Add YNetwork.useDHCPauto(), YWireless.startWlanScan() and YWireless.get_wlanState() methods
-- Fix some functions comments
+- Fix some functions documentation.

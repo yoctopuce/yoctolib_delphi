@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_network.pas 27419 2017-05-11 10:00:18Z seb $
+ * $Id: yocto_network.pas 27726 2017-06-02 13:18:52Z mvuilleu $
  *
  * Implements yFindNetwork(), the high-level API for Network functions
  *
@@ -84,6 +84,7 @@ const Y_CALLBACKENCODING_EMONCMS = 6;
 const Y_CALLBACKENCODING_AZURE = 7;
 const Y_CALLBACKENCODING_INFLUXDB = 8;
 const Y_CALLBACKENCODING_MQTT = 9;
+const Y_CALLBACKENCODING_YOCTO_API_JZON = 10;
 const Y_CALLBACKENCODING_INVALID = -1;
 const Y_CALLBACKCREDENTIALS_INVALID   = YAPI_INVALID_STRING;
 const Y_CALLBACKINITIALDELAY_INVALID  = YAPI_INVALID_UINT;
@@ -776,8 +777,9 @@ type
     ///   <c>Y_CALLBACKENCODING_JSON_ARRAY</c>, <c>Y_CALLBACKENCODING_CSV</c>,
     ///   <c>Y_CALLBACKENCODING_YOCTO_API</c>, <c>Y_CALLBACKENCODING_JSON_NUM</c>,
     ///   <c>Y_CALLBACKENCODING_EMONCMS</c>, <c>Y_CALLBACKENCODING_AZURE</c>,
-    ///   <c>Y_CALLBACKENCODING_INFLUXDB</c> and <c>Y_CALLBACKENCODING_MQTT</c> corresponding to the encoding
-    ///   standard to use for representing notification values
+    ///   <c>Y_CALLBACKENCODING_INFLUXDB</c>, <c>Y_CALLBACKENCODING_MQTT</c> and
+    ///   <c>Y_CALLBACKENCODING_YOCTO_API_JZON</c> corresponding to the encoding standard to use for
+    ///   representing notification values
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_CALLBACKENCODING_INVALID</c>.
@@ -798,8 +800,9 @@ type
     ///   <c>Y_CALLBACKENCODING_JSON_ARRAY</c>, <c>Y_CALLBACKENCODING_CSV</c>,
     ///   <c>Y_CALLBACKENCODING_YOCTO_API</c>, <c>Y_CALLBACKENCODING_JSON_NUM</c>,
     ///   <c>Y_CALLBACKENCODING_EMONCMS</c>, <c>Y_CALLBACKENCODING_AZURE</c>,
-    ///   <c>Y_CALLBACKENCODING_INFLUXDB</c> and <c>Y_CALLBACKENCODING_MQTT</c> corresponding to the encoding
-    ///   standard to use for representing notification values
+    ///   <c>Y_CALLBACKENCODING_INFLUXDB</c>, <c>Y_CALLBACKENCODING_MQTT</c> and
+    ///   <c>Y_CALLBACKENCODING_YOCTO_API_JZON</c> corresponding to the encoding standard to use for
+    ///   representing notification values
     /// </param>
     /// <para>
     /// </para>
@@ -1100,6 +1103,13 @@ type
     ///   found is returned. The search is performed first by hardware name,
     ///   then by logical name.
     /// </para>
+    /// <para>
+    ///   If a call to this object's is_online() method returns FALSE although
+    ///   you are certain that the matching device is plugged, make sure that you did
+    ///   call registerHub() at application initialization time.
+    /// </para>
+    /// <para>
+    /// </para>
     /// </summary>
     /// <param name="func">
     ///   a string that uniquely characterizes $THEFUNCTION$
@@ -1304,6 +1314,13 @@ type
   ///   a network interface by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
+  /// </para>
+  /// <para>
+  ///   If a call to this object's is_online() method returns FALSE although
+  ///   you are certain that the matching device is plugged, make sure that you did
+  ///   call registerHub() at application initialization time.
+  /// </para>
+  /// <para>
   /// </para>
   /// </summary>
   /// <param name="func">
@@ -2489,8 +2506,9 @@ implementation
   /// <returns>
   ///   a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON, Y_CALLBACKENCODING_JSON_ARRAY,
   ///   Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API, Y_CALLBACKENCODING_JSON_NUM,
-  ///   Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE, Y_CALLBACKENCODING_INFLUXDB and
-  ///   Y_CALLBACKENCODING_MQTT corresponding to the encoding standard to use for representing notification values
+  ///   Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE, Y_CALLBACKENCODING_INFLUXDB,
+  ///   Y_CALLBACKENCODING_MQTT and Y_CALLBACKENCODING_YOCTO_API_JZON corresponding to the encoding
+  ///   standard to use for representing notification values
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_CALLBACKENCODING_INVALID.
@@ -2525,8 +2543,9 @@ implementation
   /// <param name="newval">
   ///   a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON, Y_CALLBACKENCODING_JSON_ARRAY,
   ///   Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API, Y_CALLBACKENCODING_JSON_NUM,
-  ///   Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE, Y_CALLBACKENCODING_INFLUXDB and
-  ///   Y_CALLBACKENCODING_MQTT corresponding to the encoding standard to use for representing notification values
+  ///   Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE, Y_CALLBACKENCODING_INFLUXDB,
+  ///   Y_CALLBACKENCODING_MQTT and Y_CALLBACKENCODING_YOCTO_API_JZON corresponding to the encoding
+  ///   standard to use for representing notification values
   /// </param>
   /// <para>
   /// </para>
@@ -2964,6 +2983,13 @@ implementation
   ///   $AFUNCTION$ by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
+  /// </para>
+  /// <para>
+  ///   If a call to this object's is_online() method returns FALSE although
+  ///   you are certain that the matching device is plugged, make sure that you did
+  ///   call registerHub() at application initialization time.
+  /// </para>
+  /// <para>
   /// </para>
   /// </summary>
   /// <param name="func">

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_audioout.pas 26668 2017-02-28 13:36:03Z seb $
+ * $Id: yocto_audioout.pas 27705 2017-06-01 12:33:04Z seb $
  *
  * Implements yFindAudioOut(), the high-level API for AudioOut functions
  *
@@ -263,6 +263,13 @@ type
     ///   found is returned. The search is performed first by hardware name,
     ///   then by logical name.
     /// </para>
+    /// <para>
+    ///   If a call to this object's is_online() method returns FALSE although
+    ///   you are certain that the matching device is plugged, make sure that you did
+    ///   call registerHub() at application initialization time.
+    /// </para>
+    /// <para>
+    /// </para>
     /// </summary>
     /// <param name="func">
     ///   a string that uniquely characterizes $THEFUNCTION$
@@ -355,6 +362,13 @@ type
   ///   an audio output by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
+  /// </para>
+  /// <para>
+  ///   If a call to this object's is_online() method returns FALSE although
+  ///   you are certain that the matching device is plugged, make sure that you did
+  ///   call registerHub() at application initialization time.
+  /// </para>
+  /// <para>
   /// </para>
   /// </summary>
   /// <param name="func">
@@ -703,6 +717,13 @@ implementation
   ///   $AFUNCTION$ by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
+  /// </para>
+  /// <para>
+  ///   If a call to this object's is_online() method returns FALSE although
+  ///   you are certain that the matching device is plugged, make sure that you did
+  ///   call registerHub() at application initialization time.
+  /// </para>
+  /// <para>
   /// </para>
   /// </summary>
   /// <param name="func">
