@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_api.pas 28024 2017-07-10 08:50:02Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -115,7 +115,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '27961';
+  YOCTO_API_BUILD_NO        = '28028';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -3820,15 +3820,15 @@ type
   /// </para>
   /// </summary>
   /// <param name="hubDiscoveryCallback">
-  ///   a procedure taking two string parameter, or NIL
-  ///   to unregister a previously registered  callback.
+  ///   a procedure taking two string parameter, the serial
+  ///   number and the hub URL. Use <c>NIL</c> to unregister a previously registered  callback.
   /// </param>
   ///-
   procedure yRegisterHubDiscoveryCallback(hubDiscoveryCallback: YHubDiscoveryCallback);
 
   ////
   /// <summary>
-  ///   Force a hub discovery, if a callback as been registered with <c>yRegisterDeviceRemovalCallback</c> it
+  ///   Force a hub discovery, if a callback as been registered with <c>yRegisterHubDiscoveryCallback</c> it
   ///   will be called for each net work hub that will respond to the discovery.
   /// <para>
   /// </para>
@@ -13166,6 +13166,14 @@ var
       if self._progress < 0 then
         begin
           url := 'logger.json?id='+self._functionId;
+          if self._startTime <> 0 then
+            begin
+              url := ''+url+'&from='+inttostr(self._startTime);
+            end;
+          if self._endTime <> 0 then
+            begin
+              url := ''+url+'&to='+inttostr(self._endTime);
+            end;
         end
       else
         begin
