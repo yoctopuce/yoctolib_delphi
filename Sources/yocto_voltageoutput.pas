@@ -714,7 +714,7 @@ implementation
         begin
           V_target := 10.0;
         end;
-      newval := ''+inttostr( round(V_target*1000))+':'+inttostr(ms_duration);
+      newval := ''+inttostr( round(V_target*65536))+':'+inttostr(ms_duration);
 
       result := self.set_voltageTransition(newval);
       exit;
