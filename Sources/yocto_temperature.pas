@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_temperature.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_temperature.pas 28142 2017-07-25 20:24:23Z mvuilleu $
  *
  * Implements yFindTemperature(), the high-level API for Temperature functions
  *
@@ -61,6 +61,7 @@ const Y_SENSORTYPE_PT100_2WIRES = 10;
 const Y_SENSORTYPE_RES_OHM = 11;
 const Y_SENSORTYPE_RES_NTC = 12;
 const Y_SENSORTYPE_RES_LINEAR = 13;
+const Y_SENSORTYPE_RES_INTERNAL = 14;
 const Y_SENSORTYPE_INVALID = -1;
 const Y_SIGNALVALUE_INVALID           = YAPI_INVALID_DOUBLE;
 const Y_SIGNALUNIT_INVALID            = YAPI_INVALID_STRING;
@@ -163,7 +164,8 @@ type
     ///   <c>Y_SENSORTYPE_TYPE_J</c>, <c>Y_SENSORTYPE_TYPE_N</c>, <c>Y_SENSORTYPE_TYPE_R</c>,
     ///   <c>Y_SENSORTYPE_TYPE_S</c>, <c>Y_SENSORTYPE_TYPE_T</c>, <c>Y_SENSORTYPE_PT100_4WIRES</c>,
     ///   <c>Y_SENSORTYPE_PT100_3WIRES</c>, <c>Y_SENSORTYPE_PT100_2WIRES</c>, <c>Y_SENSORTYPE_RES_OHM</c>,
-    ///   <c>Y_SENSORTYPE_RES_NTC</c> and <c>Y_SENSORTYPE_RES_LINEAR</c> corresponding to the temperature sensor type
+    ///   <c>Y_SENSORTYPE_RES_NTC</c>, <c>Y_SENSORTYPE_RES_LINEAR</c> and <c>Y_SENSORTYPE_RES_INTERNAL</c>
+    ///   corresponding to the temperature sensor type
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_SENSORTYPE_INVALID</c>.
@@ -189,7 +191,7 @@ type
     ///   <c>Y_SENSORTYPE_TYPE_J</c>, <c>Y_SENSORTYPE_TYPE_N</c>, <c>Y_SENSORTYPE_TYPE_R</c>,
     ///   <c>Y_SENSORTYPE_TYPE_S</c>, <c>Y_SENSORTYPE_TYPE_T</c>, <c>Y_SENSORTYPE_PT100_4WIRES</c>,
     ///   <c>Y_SENSORTYPE_PT100_3WIRES</c>, <c>Y_SENSORTYPE_PT100_2WIRES</c>, <c>Y_SENSORTYPE_RES_OHM</c>,
-    ///   <c>Y_SENSORTYPE_RES_NTC</c> and <c>Y_SENSORTYPE_RES_LINEAR</c>
+    ///   <c>Y_SENSORTYPE_RES_NTC</c>, <c>Y_SENSORTYPE_RES_LINEAR</c> and <c>Y_SENSORTYPE_RES_INTERNAL</c>
     /// </param>
     /// <para>
     /// </para>
@@ -620,8 +622,8 @@ implementation
   ///   a value among Y_SENSORTYPE_DIGITAL, Y_SENSORTYPE_TYPE_K, Y_SENSORTYPE_TYPE_E, Y_SENSORTYPE_TYPE_J,
   ///   Y_SENSORTYPE_TYPE_N, Y_SENSORTYPE_TYPE_R, Y_SENSORTYPE_TYPE_S, Y_SENSORTYPE_TYPE_T,
   ///   Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES, Y_SENSORTYPE_PT100_2WIRES,
-  ///   Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC and Y_SENSORTYPE_RES_LINEAR corresponding to the
-  ///   temperature sensor type
+  ///   Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC, Y_SENSORTYPE_RES_LINEAR and Y_SENSORTYPE_RES_INTERNAL
+  ///   corresponding to the temperature sensor type
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_SENSORTYPE_INVALID.
@@ -662,7 +664,7 @@ implementation
   ///   a value among Y_SENSORTYPE_DIGITAL, Y_SENSORTYPE_TYPE_K, Y_SENSORTYPE_TYPE_E, Y_SENSORTYPE_TYPE_J,
   ///   Y_SENSORTYPE_TYPE_N, Y_SENSORTYPE_TYPE_R, Y_SENSORTYPE_TYPE_S, Y_SENSORTYPE_TYPE_T,
   ///   Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES, Y_SENSORTYPE_PT100_2WIRES,
-  ///   Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC and Y_SENSORTYPE_RES_LINEAR
+  ///   Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC, Y_SENSORTYPE_RES_LINEAR and Y_SENSORTYPE_RES_INTERNAL
   /// </param>
   /// <para>
   /// </para>

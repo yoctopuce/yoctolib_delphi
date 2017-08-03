@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_quadraturedecoder.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_quadraturedecoder.pas 28159 2017-07-27 09:37:52Z seb $
  *
  * Implements yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
  *
@@ -126,14 +126,14 @@ type
 
     ////
     /// <summary>
-    ///   Returns the PWM frequency in Hz.
+    ///   Returns the increments frequency, in Hz.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a floating point number corresponding to the PWM frequency in Hz
+    ///   a floating point number corresponding to the increments frequency, in Hz
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_SPEED_INVALID</c>.
@@ -443,14 +443,14 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the PWM frequency in Hz.
+  ///   Returns the increments frequency, in Hz.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a floating point number corresponding to the PWM frequency in Hz
+  ///   a floating point number corresponding to the increments frequency, in Hz
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_SPEED_INVALID.
