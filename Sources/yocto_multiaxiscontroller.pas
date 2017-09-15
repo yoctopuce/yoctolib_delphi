@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_multiaxiscontroller.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_multiaxiscontroller.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
  *
@@ -79,8 +79,6 @@ type
   protected
   //--- (YMultiAxisController declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _nAxis                    : LongInt;
     _globalState              : Integer;
     _command                  : string;

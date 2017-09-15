@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_network.pas 28015 2017-07-07 16:27:06Z mvuilleu $
+ * $Id: yocto_network.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindNetwork(), the high-level API for Network functions
  *
@@ -116,8 +116,6 @@ type
   protected
   //--- (YNetwork declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _readiness                : Integer;
     _macAddress               : string;
     _ipAddress                : string;

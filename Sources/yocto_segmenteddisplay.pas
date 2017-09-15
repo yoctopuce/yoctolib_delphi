@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_segmenteddisplay.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_segmenteddisplay.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindSegmentedDisplay(), the high-level API for SegmentedDisplay functions
  *
@@ -76,8 +76,6 @@ type
   protected
   //--- (YSegmentedDisplay declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _displayedText            : string;
     _displayMode              : Integer;
     _valueCallbackSegmentedDisplay : TYSegmentedDisplayValueCallback;

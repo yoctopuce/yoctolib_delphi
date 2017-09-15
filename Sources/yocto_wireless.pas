@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_wireless.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -132,8 +132,6 @@ TYWLANRECORDARRAY = array of TYWlanRecord;
 
 //--- (generated code: YWireless declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _linkQuality              : LongInt;
     _ssid                     : string;
     _channel                  : LongInt;

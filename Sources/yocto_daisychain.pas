@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_daisychain.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_daisychain.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindDaisyChain(), the high-level API for DaisyChain functions
  *
@@ -80,8 +80,6 @@ type
   protected
   //--- (YDaisyChain declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _daisyState               : Integer;
     _childCount               : LongInt;
     _requiredChildCount       : LongInt;

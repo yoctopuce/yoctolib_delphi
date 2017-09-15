@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_currentloopoutput.pas 28293 2017-08-03 09:01:57Z mvuilleu $
+ * $Id: yocto_currentloopoutput.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
  *
@@ -78,8 +78,6 @@ type
   protected
   //--- (YCurrentLoopOutput declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _current                  : double;
     _currentTransition        : string;
     _currentAtStartUp         : double;

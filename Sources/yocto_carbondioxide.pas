@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_carbondioxide.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_carbondioxide.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
@@ -75,18 +75,6 @@ type
   protected
   //--- (YCarbonDioxide declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
-    _unit                     : string;
-    _currentValue             : double;
-    _lowestValue              : double;
-    _highestValue             : double;
-    _currentRawValue          : double;
-    _logFrequency             : string;
-    _reportFrequency          : string;
-    _calibrationParam         : string;
-    _resolution               : double;
-    _sensorState              : LongInt;
     _abcPeriod                : LongInt;
     _command                  : string;
     _valueCallbackCarbonDioxide : TYCarbonDioxideValueCallback;
@@ -121,7 +109,7 @@ type
 
     ////
     /// <summary>
-    ///   Modifies Automatic Baseline Calibration period, in hours.
+    ///   Changes Automatic Baseline Calibration period, in hours.
     /// <para>
     ///   If you need
     ///   to disable automatic baseline calibration (for instance when using the
@@ -133,7 +121,7 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer
+    ///   an integer corresponding to Automatic Baseline Calibration period, in hours
     /// </param>
     /// <para>
     /// </para>
@@ -471,7 +459,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Modifies Automatic Baseline Calibration period, in hours.
+  ///   Changes Automatic Baseline Calibration period, in hours.
   /// <para>
   ///   If you need
   ///   to disable automatic baseline calibration (for instance when using the
@@ -483,7 +471,7 @@ implementation
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   an integer
+  ///   an integer corresponding to Automatic Baseline Calibration period, in hours
   /// </param>
   /// <para>
   /// </para>

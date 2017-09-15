@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_gps.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_gps.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindGps(), the high-level API for Gps functions
  *
@@ -92,8 +92,6 @@ type
   protected
   //--- (YGps declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _isFixed                  : Integer;
     _satCount                 : int64;
     _coordSystem              : Integer;

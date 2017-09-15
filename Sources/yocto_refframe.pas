@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_refframe.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_refframe.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -52,6 +52,12 @@ type  TYMOUNTORIENTATION = (Y_MOUNTORIENTATION_TWELVE,Y_MOUNTORIENTATION_THREE,Y
 const Y_MOUNTPOS_INVALID              = YAPI_INVALID_UINT;
 const Y_BEARING_INVALID               = YAPI_INVALID_DOUBLE;
 const Y_CALIBRATIONPARAM_INVALID      = YAPI_INVALID_STRING;
+const Y_FUSIONMODE_NDOF = 0;
+const Y_FUSIONMODE_NDOF_FMC_OFF = 1;
+const Y_FUSIONMODE_M4G = 2;
+const Y_FUSIONMODE_COMPASS = 3;
+const Y_FUSIONMODE_IMU = 4;
+const Y_FUSIONMODE_INVALID = -1;
 
 
 //--- (end of YRefFrame definitions)
@@ -79,11 +85,10 @@ type
   protected
   //--- (YRefFrame declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _mountPos                 : LongInt;
     _bearing                  : double;
     _calibrationParam         : string;
+    _fusionMode               : Integer;
     _valueCallbackRefFrame    : TYRefFrameValueCallback;
     _calibV2                  : boolean;
     _calibStage               : LongInt;
@@ -181,6 +186,10 @@ type
     function get_calibrationParam():string;
 
     function set_calibrationParam(newval:string):integer;
+
+    function get_fusionMode():Integer;
+
+    function set_fusionMode(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -636,6 +645,7 @@ implementation
       _mountPos := Y_MOUNTPOS_INVALID;
       _bearing := Y_BEARING_INVALID;
       _calibrationParam := Y_CALIBRATIONPARAM_INVALID;
+      _fusionMode := Y_FUSIONMODE_INVALID;
       _valueCallbackRefFrame := nil;
       _calibStage := 0;
       _calibStageProgress := 0;
@@ -675,6 +685,12 @@ implementation
       if (member^.name = 'calibrationParam') then
         begin
           _calibrationParam := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'fusionMode') then
+        begin
+          _fusionMode := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -813,6 +829,32 @@ implementation
     begin
       rest_val := newval;
       result := _setAttr('calibrationParam',rest_val);
+    end;
+
+  function TYRefFrame.get_fusionMode():Integer;
+    var
+      res : Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_FUSIONMODE_INVALID;
+              exit;
+            end;
+        end;
+      res := self._fusionMode;
+      result := res;
+      exit;
+    end;
+
+
+  function TYRefFrame.set_fusionMode(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('fusionMode',rest_val);
     end;
 
   ////

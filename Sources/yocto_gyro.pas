@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_gyro.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_gyro.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindGyro(), the high-level API for Gyro functions
  *
@@ -82,18 +82,6 @@ type
   protected
   //--- (generated code: YQt declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
-    _unit                     : string;
-    _currentValue             : double;
-    _lowestValue              : double;
-    _highestValue             : double;
-    _currentRawValue          : double;
-    _logFrequency             : string;
-    _reportFrequency          : string;
-    _calibrationParam         : string;
-    _resolution               : double;
-    _sensorState              : LongInt;
     _valueCallbackQt          : TYQtValueCallback;
     _timedReportCallbackQt    : TYQtTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
@@ -325,18 +313,6 @@ type
   protected
   //--- (generated code: YGyro declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
-    _unit                     : string;
-    _currentValue             : double;
-    _lowestValue              : double;
-    _highestValue             : double;
-    _currentRawValue          : double;
-    _logFrequency             : string;
-    _reportFrequency          : string;
-    _calibrationParam         : string;
-    _resolution               : double;
-    _sensorState              : LongInt;
     _bandwidth                : LongInt;
     _xValue                   : double;
     _yValue                   : double;

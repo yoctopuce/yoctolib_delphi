@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_motor.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_motor.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindMotor(), the high-level API for Motor functions
  *
@@ -91,8 +91,6 @@ type
   protected
   //--- (YMotor declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _motorStatus              : Integer;
     _drivingForce             : double;
     _brakingForce             : double;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_colorled.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_colorled.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindColorLed(), the high-level API for ColorLed functions
  *
@@ -91,8 +91,6 @@ type
   protected
   //--- (YColorLed declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _rgbColor                 : LongInt;
     _hslColor                 : LongInt;
     _rgbMove                  : TYColorLedMove;

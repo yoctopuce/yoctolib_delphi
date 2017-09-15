@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_voltage.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_voltage.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindVoltage(), the high-level API for Voltage functions
  *
@@ -75,18 +75,6 @@ type
   protected
   //--- (YVoltage declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
-    _unit                     : string;
-    _currentValue             : double;
-    _lowestValue              : double;
-    _highestValue             : double;
-    _currentRawValue          : double;
-    _logFrequency             : string;
-    _reportFrequency          : string;
-    _calibrationParam         : string;
-    _resolution               : double;
-    _sensorState              : LongInt;
     _enabled                  : Integer;
     _valueCallbackVoltage     : TYVoltageValueCallback;
     _timedReportCallbackVoltage : TYVoltageTimedReportCallback;

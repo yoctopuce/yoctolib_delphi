@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: pic24config.php 28204 2017-07-28 13:25:31Z mvuilleu $
+ * $Id: yocto_voltageoutput.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindVoltageOutput(), the high-level API for VoltageOutput functions
  *
@@ -73,8 +73,6 @@ type
   protected
   //--- (YVoltageOutput declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _currentVoltage           : double;
     _voltageTransition        : string;
     _voltageAtStartUp         : double;
@@ -90,7 +88,7 @@ type
 
     ////
     /// <summary>
-    ///   Changes the output voltage.
+    ///   Changes the output voltage, in V.
     /// <para>
     ///   Valid range is from 0 to 10V.
     /// </para>
@@ -98,7 +96,7 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a floating point number corresponding to the output voltage
+    ///   a floating point number corresponding to the output voltage, in V
     /// </param>
     /// <para>
     /// </para>
@@ -113,14 +111,14 @@ type
 
     ////
     /// <summary>
-    ///   Returns the loop current set point in mA.
+    ///   Returns the output voltage set point, in V.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a floating point number corresponding to the loop current set point in mA
+    ///   a floating point number corresponding to the output voltage set point, in V
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_CURRENTVOLTAGE_INVALID</c>.
@@ -410,7 +408,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Changes the output voltage.
+  ///   Changes the output voltage, in V.
   /// <para>
   ///   Valid range is from 0 to 10V.
   /// </para>
@@ -418,7 +416,7 @@ implementation
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   a floating point number corresponding to the output voltage
+  ///   a floating point number corresponding to the output voltage, in V
   /// </param>
   /// <para>
   /// </para>
@@ -439,14 +437,14 @@ implementation
 
   ////
   /// <summary>
-  ///   Returns the loop current set point in mA.
+  ///   Returns the output voltage set point, in V.
   /// <para>
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a floating point number corresponding to the loop current set point in mA
+  ///   a floating point number corresponding to the output voltage set point, in V
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_CURRENTVOLTAGE_INVALID.

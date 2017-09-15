@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwmoutput.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_pwmoutput.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindPwmOutput(), the high-level API for PwmOutput functions
  *
@@ -82,8 +82,6 @@ type
   protected
   //--- (YPwmOutput declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _enabled                  : Integer;
     _frequency                : double;
     _period                   : double;

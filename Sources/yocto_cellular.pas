@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_cellular.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -106,8 +106,6 @@ type
   protected
   //--- (generated code: YCellular declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _linkQuality              : LongInt;
     _cellOperator             : string;
     _cellIdentifier           : string;

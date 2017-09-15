@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_poweroutput.pas 27926 2017-06-27 13:25:52Z seb $
+ * $Id: yocto_poweroutput.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindPowerOutput(), the high-level API for PowerOutput functions
  *
@@ -75,8 +75,6 @@ type
   protected
   //--- (YPowerOutput declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _voltage                  : Integer;
     _valueCallbackPowerOutput : TYPowerOutputValueCallback;
     // Function-specific method for reading JSON output and caching result

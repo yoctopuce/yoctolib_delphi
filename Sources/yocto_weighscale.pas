@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_weighscale.pas 28231 2017-07-31 16:37:33Z mvuilleu $
+ * $Id: yocto_weighscale.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindWeighScale(), the high-level API for WeighScale functions
  *
@@ -83,18 +83,6 @@ type
   protected
   //--- (YWeighScale declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
-    _unit                     : string;
-    _currentValue             : double;
-    _lowestValue              : double;
-    _highestValue             : double;
-    _currentRawValue          : double;
-    _logFrequency             : string;
-    _reportFrequency          : string;
-    _calibrationParam         : string;
-    _resolution               : double;
-    _sensorState              : LongInt;
     _excitation               : Integer;
     _adaptRatio               : double;
     _compTemperature          : double;

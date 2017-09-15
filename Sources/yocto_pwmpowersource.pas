@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwmpowersource.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_pwmpowersource.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
  *
@@ -76,8 +76,6 @@ type
   protected
   //--- (YPwmPowerSource declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _powerMode                : Integer;
     _valueCallbackPwmPowerSource : TYPwmPowerSourceValueCallback;
     // Function-specific method for reading JSON output and caching result

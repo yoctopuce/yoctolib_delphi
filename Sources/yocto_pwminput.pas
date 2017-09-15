@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwminput.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_pwminput.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindPwmInput(), the high-level API for PwmInput functions
  *
@@ -58,6 +58,7 @@ const Y_PWMREPORTMODE_PWM_FREQUENCY = 1;
 const Y_PWMREPORTMODE_PWM_PULSEDURATION = 2;
 const Y_PWMREPORTMODE_PWM_EDGECOUNT = 3;
 const Y_PWMREPORTMODE_INVALID = -1;
+const Y_DEBOUNCEPERIOD_INVALID        = YAPI_INVALID_UINT;
 
 
 //--- (end of YPwmInput definitions)
@@ -85,18 +86,6 @@ type
   protected
   //--- (YPwmInput declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
-    _unit                     : string;
-    _currentValue             : double;
-    _lowestValue              : double;
-    _highestValue             : double;
-    _currentRawValue          : double;
-    _logFrequency             : string;
-    _reportFrequency          : string;
-    _calibrationParam         : string;
-    _resolution               : double;
-    _sensorState              : LongInt;
     _dutyCycle                : double;
     _pulseDuration            : double;
     _frequency                : double;
@@ -104,6 +93,7 @@ type
     _pulseCounter             : int64;
     _pulseTimer               : int64;
     _pwmReportMode            : Integer;
+    _debouncePeriod           : LongInt;
     _valueCallbackPwmInput    : TYPwmInputValueCallback;
     _timedReportCallbackPwmInput : TYPwmInputTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
@@ -245,7 +235,7 @@ type
 
     ////
     /// <summary>
-    ///   Modifies the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the get_currentValue function and callbacks.
+    ///   Changes the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the get_currentValue function and callbacks.
     /// <para>
     ///   The edge count value is limited to the 6 lowest digits. For values greater than one million, use
     ///   get_pulseCounter().
@@ -255,7 +245,9 @@ type
     /// </summary>
     /// <param name="newval">
     ///   a value among <c>Y_PWMREPORTMODE_PWM_DUTYCYCLE</c>, <c>Y_PWMREPORTMODE_PWM_FREQUENCY</c>,
-    ///   <c>Y_PWMREPORTMODE_PWM_PULSEDURATION</c> and <c>Y_PWMREPORTMODE_PWM_EDGECOUNT</c>
+    ///   <c>Y_PWMREPORTMODE_PWM_PULSEDURATION</c> and <c>Y_PWMREPORTMODE_PWM_EDGECOUNT</c> corresponding to
+    ///   the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the
+    ///   get_currentValue function and callbacks
     /// </param>
     /// <para>
     /// </para>
@@ -267,6 +259,47 @@ type
     /// </para>
     ///-
     function set_pwmReportMode(newval:Integer):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the shortest expected pulse duration, in ms.
+    /// <para>
+    ///   Any shorter pulse will be automatically ignored (debounce).
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the shortest expected pulse duration, in ms
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_DEBOUNCEPERIOD_INVALID</c>.
+    /// </para>
+    ///-
+    function get_debouncePeriod():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the shortest expected pulse duration, in ms.
+    /// <para>
+    ///   Any shorter pulse will be automatically ignored (debounce).
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the shortest expected pulse duration, in ms
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_debouncePeriod(newval:LongInt):integer;
 
     ////
     /// <summary>
@@ -489,6 +522,7 @@ implementation
       _pulseCounter := Y_PULSECOUNTER_INVALID;
       _pulseTimer := Y_PULSETIMER_INVALID;
       _pwmReportMode := Y_PWMREPORTMODE_INVALID;
+      _debouncePeriod := Y_DEBOUNCEPERIOD_INVALID;
       _valueCallbackPwmInput := nil;
       _timedReportCallbackPwmInput := nil;
       //--- (end of YPwmInput accessors initialization)
@@ -541,6 +575,12 @@ implementation
       if (member^.name = 'pwmReportMode') then
         begin
           _pwmReportMode := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'debouncePeriod') then
+        begin
+          _debouncePeriod := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -795,7 +835,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Modifies the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the get_currentValue function and callbacks.
+  ///   Changes the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the get_currentValue function and callbacks.
   /// <para>
   ///   The edge count value is limited to the 6 lowest digits. For values greater than one million, use
   ///   get_pulseCounter().
@@ -805,7 +845,8 @@ implementation
   /// </summary>
   /// <param name="newval">
   ///   a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
-  ///   Y_PWMREPORTMODE_PWM_PULSEDURATION and Y_PWMREPORTMODE_PWM_EDGECOUNT
+  ///   Y_PWMREPORTMODE_PWM_PULSEDURATION and Y_PWMREPORTMODE_PWM_EDGECOUNT corresponding to the  parameter
+  ///    type (frequency/duty cycle, pulse width, or edge count) returned by the get_currentValue function and callbacks
   /// </param>
   /// <para>
   /// </para>
@@ -822,6 +863,69 @@ implementation
     begin
       rest_val := inttostr(newval);
       result := _setAttr('pwmReportMode',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the shortest expected pulse duration, in ms.
+  /// <para>
+  ///   Any shorter pulse will be automatically ignored (debounce).
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the shortest expected pulse duration, in ms
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_DEBOUNCEPERIOD_INVALID.
+  /// </para>
+  ///-
+  function TYPwmInput.get_debouncePeriod():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_DEBOUNCEPERIOD_INVALID;
+              exit;
+            end;
+        end;
+      res := self._debouncePeriod;
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the shortest expected pulse duration, in ms.
+  /// <para>
+  ///   Any shorter pulse will be automatically ignored (debounce).
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   an integer corresponding to the shortest expected pulse duration, in ms
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYPwmInput.set_debouncePeriod(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('debouncePeriod',rest_val);
     end;
 
   ////

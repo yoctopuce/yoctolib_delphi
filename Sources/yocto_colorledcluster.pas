@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_colorledcluster.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_colorledcluster.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -82,8 +82,6 @@ type
   protected
   //--- (YColorLedCluster declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _activeLedCount           : LongInt;
     _maxLedCount              : LongInt;
     _blinkSeqMaxCount         : LongInt;
@@ -483,6 +481,51 @@ type
     /// </para>
     ///-
     function addMirrorToBlinkSeq(seqIndex: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Adds to a sequence a jump to another sequence.
+    /// <para>
+    ///   When a pixel will reach this jump,
+    ///   it will be automatically relinked to the new sequence, and will run it starting
+    ///   from the beginning.
+    /// </para>
+    /// </summary>
+    /// <param name="seqIndex">
+    ///   sequence index.
+    /// </param>
+    /// <param name="linkSeqIndex">
+    ///   index of the sequence to chain.
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function addJumpToBlinkSeq(seqIndex: LongInt; linkSeqIndex: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Adds a to a sequence a hard stop code.
+    /// <para>
+    ///   When a pixel will reach this stop code,
+    ///   instead of restarting the sequence in a loop it will automatically be unlinked
+    ///   from the sequence.
+    /// </para>
+    /// </summary>
+    /// <param name="seqIndex">
+    ///   sequence index.
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function addUnlinkToBlinkSeq(seqIndex: LongInt):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -1790,6 +1833,61 @@ implementation
   function TYColorLedCluster.addMirrorToBlinkSeq(seqIndex: LongInt):LongInt;
     begin
       result := self.sendCommand('AC'+inttostr(seqIndex)+',0,0');
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Adds to a sequence a jump to another sequence.
+  /// <para>
+  ///   When a pixel will reach this jump,
+  ///   it will be automatically relinked to the new sequence, and will run it starting
+  ///   from the beginning.
+  /// </para>
+  /// </summary>
+  /// <param name="seqIndex">
+  ///   sequence index.
+  /// </param>
+  /// <param name="linkSeqIndex">
+  ///   index of the sequence to chain.
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYColorLedCluster.addJumpToBlinkSeq(seqIndex: LongInt; linkSeqIndex: LongInt):LongInt;
+    begin
+      result := self.sendCommand('AC'+inttostr(seqIndex)+',100,'+inttostr(linkSeqIndex)+',1000');
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Adds a to a sequence a hard stop code.
+  /// <para>
+  ///   When a pixel will reach this stop code,
+  ///   instead of restarting the sequence in a loop it will automatically be unlinked
+  ///   from the sequence.
+  /// </para>
+  /// </summary>
+  /// <param name="seqIndex">
+  ///   sequence index.
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYColorLedCluster.addUnlinkToBlinkSeq(seqIndex: LongInt):LongInt;
+    begin
+      result := self.sendCommand('AC'+inttostr(seqIndex)+',100,-1,1000');
       exit;
     end;
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_temperature.pas 28142 2017-07-25 20:24:23Z mvuilleu $
+ * $Id: yocto_temperature.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindTemperature(), the high-level API for Temperature functions
  *
@@ -93,18 +93,6 @@ type
   protected
   //--- (YTemperature declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
-    _unit                     : string;
-    _currentValue             : double;
-    _lowestValue              : double;
-    _highestValue             : double;
-    _currentRawValue          : double;
-    _logFrequency             : string;
-    _reportFrequency          : string;
-    _calibrationParam         : string;
-    _resolution               : double;
-    _sensorState              : LongInt;
     _sensorType               : Integer;
     _signalValue              : double;
     _signalUnit               : string;
@@ -175,7 +163,7 @@ type
 
     ////
     /// <summary>
-    ///   Modifies the temperature sensor type.
+    ///   Changes the temperature sensor type.
     /// <para>
     ///   This function is used
     ///   to define the type of thermocouple (K,E...) used with the device.
@@ -192,6 +180,7 @@ type
     ///   <c>Y_SENSORTYPE_TYPE_S</c>, <c>Y_SENSORTYPE_TYPE_T</c>, <c>Y_SENSORTYPE_PT100_4WIRES</c>,
     ///   <c>Y_SENSORTYPE_PT100_3WIRES</c>, <c>Y_SENSORTYPE_PT100_2WIRES</c>, <c>Y_SENSORTYPE_RES_OHM</c>,
     ///   <c>Y_SENSORTYPE_RES_NTC</c>, <c>Y_SENSORTYPE_RES_LINEAR</c> and <c>Y_SENSORTYPE_RES_INTERNAL</c>
+    ///   corresponding to the temperature sensor type
     /// </param>
     /// <para>
     /// </para>
@@ -649,7 +638,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Modifies the temperature sensor type.
+  ///   Changes the temperature sensor type.
   /// <para>
   ///   This function is used
   ///   to define the type of thermocouple (K,E...) used with the device.
@@ -665,6 +654,7 @@ implementation
   ///   Y_SENSORTYPE_TYPE_N, Y_SENSORTYPE_TYPE_R, Y_SENSORTYPE_TYPE_S, Y_SENSORTYPE_TYPE_T,
   ///   Y_SENSORTYPE_PT100_4WIRES, Y_SENSORTYPE_PT100_3WIRES, Y_SENSORTYPE_PT100_2WIRES,
   ///   Y_SENSORTYPE_RES_OHM, Y_SENSORTYPE_RES_NTC, Y_SENSORTYPE_RES_LINEAR and Y_SENSORTYPE_RES_INTERNAL
+  ///   corresponding to the temperature sensor type
   /// </param>
   /// <para>
   /// </para>

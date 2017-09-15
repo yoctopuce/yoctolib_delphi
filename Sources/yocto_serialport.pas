@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 27948 2017-06-30 14:46:55Z mvuilleu $
+ * $Id: yocto_serialport.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -93,8 +93,6 @@ type
   protected
   //--- (YSerialPort declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _rxCount                  : LongInt;
     _txCount                  : LongInt;
     _errCount                 : LongInt;

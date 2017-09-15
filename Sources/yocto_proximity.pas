@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_proximity.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_proximity.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindProximity(), the high-level API for Proximity functions
  *
@@ -87,18 +87,6 @@ type
   protected
   //--- (YProximity declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
-    _unit                     : string;
-    _currentValue             : double;
-    _lowestValue              : double;
-    _highestValue             : double;
-    _currentRawValue          : double;
-    _logFrequency             : string;
-    _reportFrequency          : string;
-    _calibrationParam         : string;
-    _resolution               : double;
-    _sensorState              : LongInt;
     _signalValue              : double;
     _detectionThreshold       : LongInt;
     _isPresent                : Integer;
@@ -297,7 +285,7 @@ type
 
     ////
     /// <summary>
-    ///   Modifies the  parameter  type (sensor value, presence or pulse count) returned by the get_currentValue function and callbacks.
+    ///   Changes the  parameter  type (sensor value, presence or pulse count) returned by the get_currentValue function and callbacks.
     /// <para>
     ///   The edge count value is limited to the 6 lowest digits. For values greater than one million, use
     ///   get_pulseCounter().
@@ -307,7 +295,8 @@ type
     /// </summary>
     /// <param name="newval">
     ///   a value among <c>Y_PROXIMITYREPORTMODE_NUMERIC</c>, <c>Y_PROXIMITYREPORTMODE_PRESENCE</c> and
-    ///   <c>Y_PROXIMITYREPORTMODE_PULSECOUNT</c>
+    ///   <c>Y_PROXIMITYREPORTMODE_PULSECOUNT</c> corresponding to the  parameter  type (sensor value,
+    ///   presence or pulse count) returned by the get_currentValue function and callbacks
     /// </param>
     /// <para>
     /// </para>
@@ -925,7 +914,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Modifies the  parameter  type (sensor value, presence or pulse count) returned by the get_currentValue function and callbacks.
+  ///   Changes the  parameter  type (sensor value, presence or pulse count) returned by the get_currentValue function and callbacks.
   /// <para>
   ///   The edge count value is limited to the 6 lowest digits. For values greater than one million, use
   ///   get_pulseCounter().
@@ -934,7 +923,9 @@ implementation
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   a value among Y_PROXIMITYREPORTMODE_NUMERIC, Y_PROXIMITYREPORTMODE_PRESENCE and Y_PROXIMITYREPORTMODE_PULSECOUNT
+  ///   a value among Y_PROXIMITYREPORTMODE_NUMERIC, Y_PROXIMITYREPORTMODE_PRESENCE and
+  ///   Y_PROXIMITYREPORTMODE_PULSECOUNT corresponding to the  parameter  type (sensor value, presence or
+  ///   pulse count) returned by the get_currentValue function and callbacks
   /// </param>
   /// <para>
   /// </para>

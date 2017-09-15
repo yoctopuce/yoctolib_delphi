@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_steppermotor.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_steppermotor.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindStepperMotor(), the high-level API for StepperMotor functions
  *
@@ -96,8 +96,6 @@ type
   protected
   //--- (YStepperMotor declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _motorState               : Integer;
     _diags                    : LongInt;
     _stepPos                  : double;

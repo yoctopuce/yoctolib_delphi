@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_dualpower.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_dualpower.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindDualPower(), the high-level API for DualPower functions
  *
@@ -84,8 +84,6 @@ type
   protected
   //--- (YDualPower declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _powerState               : Integer;
     _powerControl             : Integer;
     _extVoltage               : LongInt;

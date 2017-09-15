@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_audioout.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_audioout.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindAudioOut(), the high-level API for AudioOut functions
  *
@@ -77,8 +77,6 @@ type
   protected
   //--- (YAudioOut declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _volume                   : LongInt;
     _mute                     : Integer;
     _volumeRange              : string;

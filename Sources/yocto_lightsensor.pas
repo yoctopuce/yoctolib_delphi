@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_lightsensor.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_lightsensor.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindLightSensor(), the high-level API for LightSensor functions
  *
@@ -82,18 +82,6 @@ type
   protected
   //--- (YLightSensor declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
-    _unit                     : string;
-    _currentValue             : double;
-    _lowestValue              : double;
-    _highestValue             : double;
-    _currentRawValue          : double;
-    _logFrequency             : string;
-    _reportFrequency          : string;
-    _calibrationParam         : string;
-    _resolution               : double;
-    _sensorState              : LongInt;
     _measureType              : Integer;
     _valueCallbackLightSensor : TYLightSensorValueCallback;
     _timedReportCallbackLightSensor : TYLightSensorTimedReportCallback;
@@ -156,7 +144,7 @@ type
 
     ////
     /// <summary>
-    ///   Modifies the light sensor type used in the device.
+    ///   Changes the light sensor type used in the device.
     /// <para>
     ///   The measure can either
     ///   approximate the response of the human eye, focus on a specific light
@@ -170,6 +158,7 @@ type
     /// <param name="newval">
     ///   a value among <c>Y_MEASURETYPE_HUMAN_EYE</c>, <c>Y_MEASURETYPE_WIDE_SPECTRUM</c>,
     ///   <c>Y_MEASURETYPE_INFRARED</c>, <c>Y_MEASURETYPE_HIGH_RATE</c> and <c>Y_MEASURETYPE_HIGH_ENERGY</c>
+    ///   corresponding to the light sensor type used in the device
     /// </param>
     /// <para>
     /// </para>
@@ -482,7 +471,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Modifies the light sensor type used in the device.
+  ///   Changes the light sensor type used in the device.
   /// <para>
   ///   The measure can either
   ///   approximate the response of the human eye, focus on a specific light
@@ -495,7 +484,7 @@ implementation
   /// </summary>
   /// <param name="newval">
   ///   a value among Y_MEASURETYPE_HUMAN_EYE, Y_MEASURETYPE_WIDE_SPECTRUM, Y_MEASURETYPE_INFRARED,
-  ///   Y_MEASURETYPE_HIGH_RATE and Y_MEASURETYPE_HIGH_ENERGY
+  ///   Y_MEASURETYPE_HIGH_RATE and Y_MEASURETYPE_HIGH_ENERGY corresponding to the light sensor type used in the device
   /// </param>
   /// <para>
   /// </para>

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_wakeupmonitor.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -85,8 +85,6 @@ type
   protected
   //--- (YWakeUpMonitor declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _powerDuration            : LongInt;
     _sleepCountdown           : LongInt;
     _nextWakeUp               : int64;

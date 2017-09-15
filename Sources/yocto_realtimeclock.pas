@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_realtimeclock.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_realtimeclock.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
@@ -79,8 +79,6 @@ type
   protected
   //--- (YRealTimeClock declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _unixTime                 : int64;
     _dateTime                 : string;
     _utcOffset                : LongInt;

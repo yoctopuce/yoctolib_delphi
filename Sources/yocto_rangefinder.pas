@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_rangefinder.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_rangefinder.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindRangeFinder(), the high-level API for RangeFinder functions
  *
@@ -82,18 +82,6 @@ type
   protected
   //--- (YRangeFinder declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
-    _unit                     : string;
-    _currentValue             : double;
-    _lowestValue              : double;
-    _highestValue             : double;
-    _currentRawValue          : double;
-    _logFrequency             : string;
-    _reportFrequency          : string;
-    _calibrationParam         : string;
-    _resolution               : double;
-    _sensorState              : LongInt;
     _rangeFinderMode          : Integer;
     _hardwareCalibration      : string;
     _currentTemperature       : double;

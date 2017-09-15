@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_spiport.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_spiport.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -99,8 +99,6 @@ type
   protected
   //--- (YSpiPort declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _rxCount                  : LongInt;
     _txCount                  : LongInt;
     _errCount                 : LongInt;

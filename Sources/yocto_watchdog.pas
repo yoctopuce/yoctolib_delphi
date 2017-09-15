@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_watchdog.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_watchdog.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindWatchdog(), the high-level API for Watchdog functions
  *
@@ -105,8 +105,6 @@ type
   protected
   //--- (YWatchdog declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _state                    : Integer;
     _stateAtPowerOn           : Integer;
     _maxTimeOnStateA          : int64;

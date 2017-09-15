@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 28235 2017-07-31 17:14:07Z mvuilleu $
+ * $Id: yocto_api.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -115,7 +115,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '28296';
+  YOCTO_API_BUILD_NO        = '28564';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -249,6 +249,11 @@ const Y_HIGHESTVALUE_INVALID          = YAPI_INVALID_DOUBLE;
 const Y_CURRENTRAWVALUE_INVALID       = YAPI_INVALID_DOUBLE;
 const Y_LOGFREQUENCY_INVALID          = YAPI_INVALID_STRING;
 const Y_REPORTFREQUENCY_INVALID       = YAPI_INVALID_STRING;
+const Y_ADVMODE_IMMEDIATE = 0;
+const Y_ADVMODE_PERIOD_AVG = 1;
+const Y_ADVMODE_PERIOD_MIN = 2;
+const Y_ADVMODE_PERIOD_MAX = 3;
+const Y_ADVMODE_INVALID = -1;
 const Y_CALIBRATIONPARAM_INVALID      = YAPI_INVALID_STRING;
 const Y_RESOLUTION_INVALID            = YAPI_INVALID_DOUBLE;
 const Y_SENSORSTATE_INVALID           = YAPI_INVALID_INT;
@@ -927,7 +932,6 @@ type
     // Attributes (function value cache)
     _productName              : string;
     _serialNumber             : string;
-    _logicalName              : string;
     _productId                : LongInt;
     _productRelease           : LongInt;
     _firmwareRelease          : string;
@@ -1870,8 +1874,6 @@ end;
   protected
   //--- (generated code: YSensor declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _unit                     : string;
     _currentValue             : double;
     _lowestValue              : double;
@@ -1879,6 +1881,7 @@ end;
     _currentRawValue          : double;
     _logFrequency             : string;
     _reportFrequency          : string;
+    _advMode                  : Integer;
     _calibrationParam         : string;
     _resolution               : double;
     _sensorState              : LongInt;
@@ -2126,6 +2129,49 @@ end;
     /// </para>
     ///-
     function set_reportFrequency(newval:string):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the measuring mode used for the advertised value pushed to the parent hub.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a value among <c>Y_ADVMODE_IMMEDIATE</c>, <c>Y_ADVMODE_PERIOD_AVG</c>, <c>Y_ADVMODE_PERIOD_MIN</c>
+    ///   and <c>Y_ADVMODE_PERIOD_MAX</c> corresponding to the measuring mode used for the advertised value
+    ///   pushed to the parent hub
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_ADVMODE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_advMode():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the measuring mode used for the advertised value pushed to the parent hub.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a value among <c>Y_ADVMODE_IMMEDIATE</c>, <c>Y_ADVMODE_PERIOD_AVG</c>, <c>Y_ADVMODE_PERIOD_MIN</c>
+    ///   and <c>Y_ADVMODE_PERIOD_MAX</c> corresponding to the measuring mode used for the advertised value
+    ///   pushed to the parent hub
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_advMode(newval:Integer):integer;
 
     function get_calibrationParam():string;
 
@@ -3509,8 +3555,6 @@ end;
   protected
   //--- (generated code: YDataLogger declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _currentRunIndex          : LongInt;
     _timeUTC                  : int64;
     _recording                : Integer;
@@ -10459,6 +10503,7 @@ var
       _currentRawValue := Y_CURRENTRAWVALUE_INVALID;
       _logFrequency := Y_LOGFREQUENCY_INVALID;
       _reportFrequency := Y_REPORTFREQUENCY_INVALID;
+      _advMode := Y_ADVMODE_INVALID;
       _calibrationParam := Y_CALIBRATIONPARAM_INVALID;
       _resolution := Y_RESOLUTION_INVALID;
       _sensorState := Y_SENSORSTATE_INVALID;
@@ -10520,6 +10565,12 @@ var
       if (member^.name = 'reportFrequency') then
         begin
           _reportFrequency := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'advMode') then
+        begin
+          _advMode := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -10908,6 +10959,69 @@ var
     begin
       rest_val := newval;
       result := _setAttr('reportFrequency',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the measuring mode used for the advertised value pushed to the parent hub.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a value among Y_ADVMODE_IMMEDIATE, Y_ADVMODE_PERIOD_AVG, Y_ADVMODE_PERIOD_MIN and
+  ///   Y_ADVMODE_PERIOD_MAX corresponding to the measuring mode used for the advertised value pushed to the parent hub
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_ADVMODE_INVALID.
+  /// </para>
+  ///-
+  function TYSensor.get_advMode():Integer;
+    var
+      res : Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_ADVMODE_INVALID;
+              exit;
+            end;
+        end;
+      res := self._advMode;
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the measuring mode used for the advertised value pushed to the parent hub.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a value among Y_ADVMODE_IMMEDIATE, Y_ADVMODE_PERIOD_AVG, Y_ADVMODE_PERIOD_MIN and
+  ///   Y_ADVMODE_PERIOD_MAX corresponding to the measuring mode used for the advertised value pushed to the parent hub
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYSensor.set_advMode(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('advMode',rest_val);
     end;
 
   function TYSensor.get_calibrationParam():string;
@@ -12127,7 +12241,7 @@ var
       ignoreErrMsg : string;
     begin
       errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
-      if self._progress_c < 100 then
+      if self._progress_c < 100 and self._progress_c <> YAPI_VERSION_MISMATCH then
         begin
           serial := self._serial;
           firmwarepath := self._firmwarepath;
@@ -12141,6 +12255,13 @@ var
               force := 0;
             end;
           res := _yapiUpdateFirmwareEx(pansichar(ansistring(serial)), pansichar(ansistring(firmwarepath)), pansichar(ansistring(settings)), force, newupdate, errmsg);
+          if res = YAPI_VERSION_MISMATCH and(length(self._settings) <> 0) then
+            begin
+              self._progress_c := res;
+              self._progress_msg := string(errmsg);
+              result := self._progress;
+              exit;
+            end;
           if res < 0 then
             begin
               self._progress := res;
@@ -12183,8 +12304,16 @@ var
                   m.set_allSettingsAndFiles(self._settings);
                   m.saveToFlash();
                   setlength(self._settings,0);
-                  self._progress := 100;
-                  self._progress_msg := 'success';
+                  if self._progress_c = YAPI_VERSION_MISMATCH then
+                    begin
+                      self._progress := YAPI_IO_ERROR;
+                      self._progress_msg := 'Unable to update firmware';
+                    end
+                  else
+                    begin
+                      self._progress :=  100;
+                      self._progress_msg := 'success';
+                    end;
                 end;
             end
           else

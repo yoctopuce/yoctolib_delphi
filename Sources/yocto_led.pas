@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_led.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_led.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindLed(), the high-level API for Led functions
  *
@@ -83,8 +83,6 @@ type
   protected
   //--- (YLed declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _power                    : Integer;
     _luminosity               : LongInt;
     _blinking                 : Integer;

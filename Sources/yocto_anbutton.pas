@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_anbutton.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_anbutton.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindAnButton(), the high-level API for AnButton functions
  *
@@ -90,8 +90,6 @@ type
   protected
   //--- (YAnButton declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _calibratedValue          : LongInt;
     _rawValue                 : LongInt;
     _analogCalibration        : Integer;

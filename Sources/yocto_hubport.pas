@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_hubport.pas 27705 2017-06-01 12:33:04Z seb $
+ * $Id: yocto_hubport.pas 28561 2017-09-15 15:09:45Z seb $
  *
  * Implements yFindHubPort(), the high-level API for HubPort functions
  *
@@ -83,8 +83,6 @@ type
   protected
   //--- (YHubPort declaration)
     // Attributes (function value cache)
-    _logicalName              : string;
-    _advertisedValue          : string;
     _enabled                  : Integer;
     _portState                : Integer;
     _baudRate                 : LongInt;
