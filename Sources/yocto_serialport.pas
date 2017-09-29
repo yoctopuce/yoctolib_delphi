@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_serialport.pas 28658 2017-09-26 16:30:25Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -45,7 +45,7 @@ interface
 uses
   sysutils, classes, windows, yocto_api, yjson;
 
-//--- (YSerialPort definitions)
+//--- (generated code: YSerialPort definitions)
 
 const Y_RXCOUNT_INVALID               = YAPI_INVALID_UINT;
 const Y_TXCOUNT_INVALID               = YAPI_INVALID_UINT;
@@ -68,11 +68,53 @@ const Y_PROTOCOL_INVALID              = YAPI_INVALID_STRING;
 const Y_SERIALMODE_INVALID            = YAPI_INVALID_STRING;
 
 
-//--- (end of YSerialPort definitions)
+//--- (end of generated code: YSerialPort definitions)
 
 type
   TYSerialPort = class;
-  //--- (YSerialPort class start)
+  TYSnoopingRecord = class;
+
+  //--- (generated code: YSnoopingRecord class start)
+  ////
+  /// <summary>
+  ///   TYSnoopingRecord Class: Description of a message intercepted
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  ///-
+  TYSnoopingRecord=class(TObject)
+  //--- (end of generated code: YSnoopingRecord class start)
+  protected
+
+    //--- (generated code: YSnoopingRecord declaration)
+    // Attributes (function value cache)
+    _tim                      : LongInt;
+    _dir                      : LongInt;
+    _msg                      : string;
+
+    //--- (end of generated code: YSnoopingRecord declaration)
+public
+   constructor create(data:string);
+
+
+   //--- (generated code: YSnoopingRecord accessors declaration)
+    function get_time():LongInt; overload; virtual;
+
+    function get_direction():LongInt; overload; virtual;
+
+    function get_message():string; overload; virtual;
+
+
+  //--- (end of generated code: YSnoopingRecord accessors declaration)
+end;
+
+
+TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
+
+
+  //--- (generated code: YSerialPort class start)
   TYSerialPortValueCallback = procedure(func: TYSerialPort; value:string);
   TYSerialPortTimedReportCallback = procedure(func: TYSerialPort; value:TYMeasure);
 
@@ -89,9 +131,9 @@ type
   /// </summary>
   ///-
   TYSerialPort=class(TYFunction)
-  //--- (end of YSerialPort class start)
+  //--- (end of generated code: YSerialPort class start)
   protected
-  //--- (YSerialPort declaration)
+  //--- (generated code: YSerialPort declaration)
     // Attributes (function value cache)
     _rxCount                  : LongInt;
     _txCount                  : LongInt;
@@ -112,10 +154,10 @@ type
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
 
-    //--- (end of YSerialPort declaration)
+    //--- (end of generated code: YSerialPort declaration)
 
   public
-    //--- (YSerialPort accessors declaration)
+    //--- (generated code: YSerialPort accessors declaration)
     constructor Create(func:string);
 
     ////
@@ -971,6 +1013,32 @@ type
 
     ////
     /// <summary>
+    ///   Retrieves messages (both direction) in the serial port buffer, starting at current position.
+    /// <para>
+    ///   This function will only compare and return printable characters in the message strings.
+    ///   Binary protocols are handled as hexadecimal strings.
+    /// </para>
+    /// <para>
+    ///   If no message is found, the search waits for one up to the specified maximum timeout
+    ///   (in milliseconds).
+    /// </para>
+    /// </summary>
+    /// <param name="maxWait">
+    ///   the maximum number of milliseconds to wait for a message if none is found
+    ///   in the receive buffer.
+    /// </param>
+    /// <returns>
+    ///   an array of YSnoopingRecord objects containing the messages found, if any.
+    ///   Binary messages are converted to hexadecimal representation.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty array.
+    /// </para>
+    ///-
+    function snoopMessages(maxWait: LongInt):TYSnoopingRecordArray; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Sends a MODBUS message (provided as a hexadecimal string) to the serial port.
     /// <para>
     ///   The message must start with the slave address. The MODBUS CRC/LRC is
@@ -1268,10 +1336,10 @@ type
     /// </summary>
     ///-
     class function FirstSerialPort():TYSerialPort;
-  //--- (end of YSerialPort accessors declaration)
+  //--- (end of generated code: YSerialPort accessors declaration)
   end;
 
-//--- (SerialPort functions declaration)
+//--- (generated code: SerialPort functions declaration)
   ////
   /// <summary>
   ///   Retrieves a serial port for a given identifier.
@@ -1338,17 +1406,17 @@ type
   ///-
   function yFirstSerialPort():TYSerialPort;
 
-//--- (end of SerialPort functions declaration)
+//--- (end of generated code: SerialPort functions declaration)
 
 implementation
-//--- (YSerialPort dlldef)
-//--- (end of YSerialPort dlldef)
+//--- (generated code: YSerialPort dlldef)
+//--- (end of generated code: YSerialPort dlldef)
 
   constructor TYSerialPort.Create(func:string);
     begin
       inherited Create(func);
       _className := 'SerialPort';
-      //--- (YSerialPort accessors initialization)
+      //--- (generated code: YSerialPort accessors initialization)
       _rxCount := Y_RXCOUNT_INVALID;
       _txCount := Y_TXCOUNT_INVALID;
       _errCount := Y_ERRCOUNT_INVALID;
@@ -1364,11 +1432,11 @@ implementation
       _valueCallbackSerialPort := nil;
       _rxptr := 0;
       _rxbuffptr := 0;
-      //--- (end of YSerialPort accessors initialization)
+      //--- (end of generated code: YSerialPort accessors initialization)
     end;
 
 
-//--- (YSerialPort implementation)
+//--- (generated code: YSerialPort implementation)
 {$HINTS OFF}
   function TYSerialPort._parseAttr(member:PJSONRECORD):integer;
     var
@@ -2455,7 +2523,6 @@ implementation
           result := res;
           exit;
         end;
-
       // try to preload more than one byte to speed-up byte-per-byte access
       currpos := self._rxptr;
       reqlen := 1024;
@@ -2486,7 +2553,6 @@ implementation
         end;
       // still mixed, need to process character by character
       self._rxptr := currpos;
-
 
       buff := self._download('rxdata.bin?pos='+inttostr(self._rxptr)+'&len=1');
       bufflen := length(buff) - 1;
@@ -3096,6 +3162,69 @@ implementation
           exit;
         end;
       res := buff[0] - 48;
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Retrieves messages (both direction) in the serial port buffer, starting at current position.
+  /// <para>
+  ///   This function will only compare and return printable characters in the message strings.
+  ///   Binary protocols are handled as hexadecimal strings.
+  /// </para>
+  /// <para>
+  ///   If no message is found, the search waits for one up to the specified maximum timeout
+  ///   (in milliseconds).
+  /// </para>
+  /// </summary>
+  /// <param name="maxWait">
+  ///   the maximum number of milliseconds to wait for a message if none is found
+  ///   in the receive buffer.
+  /// </param>
+  /// <returns>
+  ///   an array of YSnoopingRecord objects containing the messages found, if any.
+  ///   Binary messages are converted to hexadecimal representation.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns an empty array.
+  /// </para>
+  ///-
+  function TYSerialPort.snoopMessages(maxWait: LongInt):TYSnoopingRecordArray;
+    var
+      url : string;
+      msgbin : TByteArray;
+      msgarr : TStringArray;
+      msglen : LongInt;
+      res : TYSnoopingRecordArray;
+      idx : LongInt;
+      res_pos : LongInt;
+    begin
+      SetLength(msgarr, 0);
+
+      url := 'rxmsg.json?pos='+inttostr( self._rxptr)+'&maxw='+inttostr(maxWait)+'&t=0';
+      msgbin := self._download(url);
+      msgarr := self._json_get_array(msgbin);
+      msglen := length(msgarr);
+      if msglen = 0 then
+        begin
+          result := res;
+          exit;
+        end;
+      // last element of array is the new position
+      msglen := msglen - 1;
+      self._rxptr := _atoi(msgarr[msglen]);
+      idx := 0;
+      res_pos := length(res);
+      SetLength(res, res_pos+msglen);;
+      while idx < msglen do
+        begin
+          res[res_pos] := TYSnoopingRecord.create(msgarr[idx]);
+          inc(res_pos);
+          idx := idx + 1;
+        end;
+      SetLength(res, res_pos);;
       result := res;
       exit;
     end;
@@ -4040,9 +4169,9 @@ implementation
      result := TYSerialPort.FindSerialPort(serial+'.'+funcId);
     end;
 
-//--- (end of YSerialPort implementation)
+//--- (end of generated code: YSerialPort implementation)
 
-//--- (SerialPort functions)
+//--- (generated code: SerialPort functions)
 
   function yFindSerialPort(func:string): TYSerialPort;
     begin
@@ -4058,14 +4187,81 @@ implementation
     begin
     end;
 
-//--- (end of SerialPort functions)
+//--- (end of generated code: SerialPort functions)
+
+
+
+
+
+//--- (generated code: YSnoopingRecord implementation)
+
+  function TYSnoopingRecord.get_time():LongInt;
+    begin
+      result := self._tim;
+      exit;
+    end;
+
+
+  function TYSnoopingRecord.get_direction():LongInt;
+    begin
+      result := self._dir;
+      exit;
+    end;
+
+
+  function TYSnoopingRecord.get_message():string;
+    begin
+      result := self._msg;
+      exit;
+    end;
+
+
+//--- (end of generated code: YSnoopingRecord implementation)
+
+
+constructor TYSnoopingRecord.create(data:string);
+ var
+   p : TJSONparser;
+   node : PJSONRECORD;
+ begin
+   p := TJsonParser.create(data,false);
+   node:= p.GetChildNode(nil,'ssid');
+   self._ssid:=string(node^.svalue);
+   node:= p.GetChildNode(nil,'channel');
+   self._channel:=node^.ivalue;
+   node:= p.GetChildNode(nil,'sec');
+   self._sec:=string(node^.svalue);
+   node:= p.GetChildNode(nil,'rssi');
+   self._rssi:=node^.ivalue;
+   p.free;
+ end;
+
+//--- (generated code: SnoopingRecord functions)
+
+  procedure _SnoopingRecordCleanup();
+    begin
+    end;
+
+//--- (end of generated code: SnoopingRecord functions)
+
+procedure freeSnoopingRecordArray(var list:TYSnoopingRecordARRAY);
+ var i:integer;
+ begin
+  for i:=0 to length(list)-1 do
+   list[i].free();
+  setLength(list,0);
+ end;
 
 initialization
-  //--- (SerialPort initialization)
-  //--- (end of SerialPort initialization)
+  //--- (generated code: SerialPort initialization)
+  //--- (end of generated code: SerialPort initialization)
+  //--- (generated code: SnoopingRecord initialization)
+  //--- (end of generated code: SnoopingRecord initialization)
 
 finalization
-  //--- (SerialPort cleanup)
+  //--- (generated code: SerialPort cleanup)
   _SerialPortCleanup();
-  //--- (end of SerialPort cleanup)
+  //--- (end of generated code: SerialPort cleanup)
+  //--- (generated code: SnoopingRecord cleanup)
+  //--- (end of generated code: SnoopingRecord cleanup)
 end.

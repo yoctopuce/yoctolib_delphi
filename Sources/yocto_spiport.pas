@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_spiport.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_spiport.pas 28655 2017-09-26 15:55:10Z seb $
  *
  * Implements yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -2360,7 +2360,6 @@ implementation
           result := res;
           exit;
         end;
-
       // try to preload more than one byte to speed-up byte-per-byte access
       currpos := self._rxptr;
       reqlen := 1024;
@@ -2391,7 +2390,6 @@ implementation
         end;
       // still mixed, need to process character by character
       self._rxptr := currpos;
-
 
       buff := self._download('rxdata.bin?pos='+inttostr(self._rxptr)+'&len=1');
       bufflen := length(buff) - 1;

@@ -1,6 +1,6 @@
 @ECHO OFF
 REM --
-REM -- BUILD SCRIPT FOR DELPHI XE2 PRO 
+REM -- BUILD SCRIPT FOR DELPHI XE2 PRO
 REM --
 IF "%1" == "" goto build
 IF %1 == clean goto clean
@@ -16,7 +16,10 @@ SET BDS_NS=Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;
 SET BDS_LIBPATH="%BDS%\lib\%Platform%\release";"%BDS%\Imports";"%BDS%\include";"%BDSCOMMONDIR%\Dcp";"%BDS%\include";"..\..\Sources"
 SET BDS_PATHOPTS=-A%BDS_COLL% -I%BDS_LIBPATH% -LE"%BDSCOMMONDIR%\Bpl" -LN"%BDSCOMMONDIR%\Dcp" -NS%BDS_NS% -O%BDS_LIBPATH% -R%BDS_LIBPATH% -U%BDS_LIBPATH% -NB"%BDS%\Dcp" -NH"%BDSCOMMONDIR%\hpp"
 SET BDS_STDOPTS=-$O- -$W+ --no-config -B -Q -DDEBUG -K00400000
-dcc32.exe %BDS_STDOPTS% %BDS_PATHOPTS% inventory.dpr
+if exist helloworld.dpr dcc32.exe %BDS_STDOPTS% %BDS_PATHOPTS% helloworld.dpr
+if exist savesettings.dpr dcc32.exe %BDS_STDOPTS% %BDS_PATHOPTS% savesettings.dpr
+if exist modulecontrol.dpr dcc32.exe %BDS_STDOPTS% %BDS_PATHOPTS% modulecontrol.dpr
+if exist inventory.dpr dcc32.exe %BDS_STDOPTS% %BDS_PATHOPTS% inventory.dpr
 IF ERRORLEVEL 1 goto error
 if exist *.dcu del *.dcu /q /f
 IF "%1" == "" goto continue
