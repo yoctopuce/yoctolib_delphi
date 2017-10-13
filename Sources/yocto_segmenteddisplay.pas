@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_segmenteddisplay.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_segmenteddisplay.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindSegmentedDisplay(), the high-level API for SegmentedDisplay functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -230,7 +230,7 @@ type
   //--- (end of YSegmentedDisplay accessors declaration)
   end;
 
-//--- (SegmentedDisplay functions declaration)
+//--- (YSegmentedDisplay functions declaration)
   ////
   /// <summary>
   ///   Retrieves a segmented display for a given identifier.
@@ -297,7 +297,7 @@ type
   ///-
   function yFirstSegmentedDisplay():TYSegmentedDisplay;
 
-//--- (end of SegmentedDisplay functions declaration)
+//--- (end of YSegmentedDisplay functions declaration)
 
 implementation
 //--- (YSegmentedDisplay dlldef)
@@ -589,7 +589,7 @@ implementation
 
 //--- (end of YSegmentedDisplay implementation)
 
-//--- (SegmentedDisplay functions)
+//--- (YSegmentedDisplay functions)
 
   function yFindSegmentedDisplay(func:string): TYSegmentedDisplay;
     begin
@@ -605,14 +605,14 @@ implementation
     begin
     end;
 
-//--- (end of SegmentedDisplay functions)
+//--- (end of YSegmentedDisplay functions)
 
 initialization
-  //--- (SegmentedDisplay initialization)
-  //--- (end of SegmentedDisplay initialization)
+  //--- (YSegmentedDisplay initialization)
+  //--- (end of YSegmentedDisplay initialization)
 
 finalization
-  //--- (SegmentedDisplay cleanup)
+  //--- (YSegmentedDisplay cleanup)
   _SegmentedDisplayCleanup();
-  //--- (end of SegmentedDisplay cleanup)
+  //--- (end of YSegmentedDisplay cleanup)
 end.

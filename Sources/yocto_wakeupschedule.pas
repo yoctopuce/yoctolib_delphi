@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_wakeupschedule.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_wakeupschedule.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -473,7 +473,7 @@ type
   //--- (end of YWakeUpSchedule accessors declaration)
   end;
 
-//--- (WakeUpSchedule functions declaration)
+//--- (YWakeUpSchedule functions declaration)
   ////
   /// <summary>
   ///   Retrieves a wake up schedule for a given identifier.
@@ -540,7 +540,7 @@ type
   ///-
   function yFirstWakeUpSchedule():TYWakeUpSchedule;
 
-//--- (end of WakeUpSchedule functions declaration)
+//--- (end of YWakeUpSchedule functions declaration)
 
 implementation
 //--- (YWakeUpSchedule dlldef)
@@ -1223,7 +1223,7 @@ implementation
 
 //--- (end of YWakeUpSchedule implementation)
 
-//--- (WakeUpSchedule functions)
+//--- (YWakeUpSchedule functions)
 
   function yFindWakeUpSchedule(func:string): TYWakeUpSchedule;
     begin
@@ -1239,14 +1239,14 @@ implementation
     begin
     end;
 
-//--- (end of WakeUpSchedule functions)
+//--- (end of YWakeUpSchedule functions)
 
 initialization
-  //--- (WakeUpSchedule initialization)
-  //--- (end of WakeUpSchedule initialization)
+  //--- (YWakeUpSchedule initialization)
+  //--- (end of YWakeUpSchedule initialization)
 
 finalization
-  //--- (WakeUpSchedule cleanup)
+  //--- (YWakeUpSchedule cleanup)
   _WakeUpScheduleCleanup();
-  //--- (end of WakeUpSchedule cleanup)
+  //--- (end of YWakeUpSchedule cleanup)
 end.

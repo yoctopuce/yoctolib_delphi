@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_longitude.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_longitude.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindLongitude(), the high-level API for Longitude functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -205,7 +205,7 @@ type
   //--- (end of YLongitude accessors declaration)
   end;
 
-//--- (Longitude functions declaration)
+//--- (YLongitude functions declaration)
   ////
   /// <summary>
   ///   Retrieves a longitude sensor for a given identifier.
@@ -272,7 +272,7 @@ type
   ///-
   function yFirstLongitude():TYLongitude;
 
-//--- (end of Longitude functions declaration)
+//--- (end of YLongitude functions declaration)
 
 implementation
 //--- (YLongitude dlldef)
@@ -516,7 +516,7 @@ implementation
 
 //--- (end of YLongitude implementation)
 
-//--- (Longitude functions)
+//--- (YLongitude functions)
 
   function yFindLongitude(func:string): TYLongitude;
     begin
@@ -532,14 +532,14 @@ implementation
     begin
     end;
 
-//--- (end of Longitude functions)
+//--- (end of YLongitude functions)
 
 initialization
-  //--- (Longitude initialization)
-  //--- (end of Longitude initialization)
+  //--- (YLongitude initialization)
+  //--- (end of YLongitude initialization)
 
 finalization
-  //--- (Longitude cleanup)
+  //--- (YLongitude cleanup)
   _LongitudeCleanup();
-  //--- (end of Longitude cleanup)
+  //--- (end of YLongitude cleanup)
 end.

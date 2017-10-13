@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_pwminput.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_pwminput.pas 28807 2017-10-12 09:46:33Z seb $
  *
  * Implements yFindPwmInput(), the high-level API for PwmInput functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -57,6 +57,10 @@ const Y_PWMREPORTMODE_PWM_DUTYCYCLE = 0;
 const Y_PWMREPORTMODE_PWM_FREQUENCY = 1;
 const Y_PWMREPORTMODE_PWM_PULSEDURATION = 2;
 const Y_PWMREPORTMODE_PWM_EDGECOUNT = 3;
+const Y_PWMREPORTMODE_PWM_PULSECOUNT = 4;
+const Y_PWMREPORTMODE_PWM_CPS = 5;
+const Y_PWMREPORTMODE_PWM_CPM = 6;
+const Y_PWMREPORTMODE_PWM_STATE = 7;
 const Y_PWMREPORTMODE_INVALID = -1;
 const Y_DEBOUNCEPERIOD_INVALID        = YAPI_INVALID_UINT;
 
@@ -179,7 +183,7 @@ type
     /// <para>
     ///   Actually that
     ///   counter is incremented twice per period. That counter is
-    ///   limited  to 1 billion
+    ///   limited  to 1 billion.
     /// </para>
     /// <para>
     /// </para>
@@ -223,9 +227,10 @@ type
     /// </summary>
     /// <returns>
     ///   a value among <c>Y_PWMREPORTMODE_PWM_DUTYCYCLE</c>, <c>Y_PWMREPORTMODE_PWM_FREQUENCY</c>,
-    ///   <c>Y_PWMREPORTMODE_PWM_PULSEDURATION</c> and <c>Y_PWMREPORTMODE_PWM_EDGECOUNT</c> corresponding to
-    ///   the parameter (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue
-    ///   function and callbacks
+    ///   <c>Y_PWMREPORTMODE_PWM_PULSEDURATION</c>, <c>Y_PWMREPORTMODE_PWM_EDGECOUNT</c>,
+    ///   <c>Y_PWMREPORTMODE_PWM_PULSECOUNT</c>, <c>Y_PWMREPORTMODE_PWM_CPS</c>,
+    ///   <c>Y_PWMREPORTMODE_PWM_CPM</c> and <c>Y_PWMREPORTMODE_PWM_STATE</c> corresponding to the parameter
+    ///   (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue function and callbacks
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_PWMREPORTMODE_INVALID</c>.
@@ -245,9 +250,10 @@ type
     /// </summary>
     /// <param name="newval">
     ///   a value among <c>Y_PWMREPORTMODE_PWM_DUTYCYCLE</c>, <c>Y_PWMREPORTMODE_PWM_FREQUENCY</c>,
-    ///   <c>Y_PWMREPORTMODE_PWM_PULSEDURATION</c> and <c>Y_PWMREPORTMODE_PWM_EDGECOUNT</c> corresponding to
-    ///   the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the
-    ///   get_currentValue function and callbacks
+    ///   <c>Y_PWMREPORTMODE_PWM_PULSEDURATION</c>, <c>Y_PWMREPORTMODE_PWM_EDGECOUNT</c>,
+    ///   <c>Y_PWMREPORTMODE_PWM_PULSECOUNT</c>, <c>Y_PWMREPORTMODE_PWM_CPS</c>,
+    ///   <c>Y_PWMREPORTMODE_PWM_CPM</c> and <c>Y_PWMREPORTMODE_PWM_STATE</c> corresponding to the  parameter
+    ///    type (frequency/duty cycle, pulse width, or edge count) returned by the get_currentValue function and callbacks
     /// </param>
     /// <para>
     /// </para>
@@ -437,7 +443,7 @@ type
   //--- (end of YPwmInput accessors declaration)
   end;
 
-//--- (PwmInput functions declaration)
+//--- (YPwmInput functions declaration)
   ////
   /// <summary>
   ///   Retrieves a PWM input for a given identifier.
@@ -504,7 +510,7 @@ type
   ///-
   function yFirstPwmInput():TYPwmInput;
 
-//--- (end of PwmInput functions declaration)
+//--- (end of YPwmInput functions declaration)
 
 implementation
 //--- (YPwmInput dlldef)
@@ -726,7 +732,7 @@ implementation
   /// <para>
   ///   Actually that
   ///   counter is incremented twice per period. That counter is
-  ///   limited  to 1 billion
+  ///   limited  to 1 billion.
   /// </para>
   /// <para>
   /// </para>
@@ -808,8 +814,10 @@ implementation
   /// </summary>
   /// <returns>
   ///   a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
-  ///   Y_PWMREPORTMODE_PWM_PULSEDURATION and Y_PWMREPORTMODE_PWM_EDGECOUNT corresponding to the parameter
-  ///   (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue function and callbacks
+  ///   Y_PWMREPORTMODE_PWM_PULSEDURATION, Y_PWMREPORTMODE_PWM_EDGECOUNT, Y_PWMREPORTMODE_PWM_PULSECOUNT,
+  ///   Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM and Y_PWMREPORTMODE_PWM_STATE corresponding to the
+  ///   parameter (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue
+  ///   function and callbacks
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_PWMREPORTMODE_INVALID.
@@ -845,8 +853,10 @@ implementation
   /// </summary>
   /// <param name="newval">
   ///   a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
-  ///   Y_PWMREPORTMODE_PWM_PULSEDURATION and Y_PWMREPORTMODE_PWM_EDGECOUNT corresponding to the  parameter
-  ///    type (frequency/duty cycle, pulse width, or edge count) returned by the get_currentValue function and callbacks
+  ///   Y_PWMREPORTMODE_PWM_PULSEDURATION, Y_PWMREPORTMODE_PWM_EDGECOUNT, Y_PWMREPORTMODE_PWM_PULSECOUNT,
+  ///   Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM and Y_PWMREPORTMODE_PWM_STATE corresponding to the
+  ///    parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the
+  ///   get_currentValue function and callbacks
   /// </param>
   /// <para>
   /// </para>
@@ -1164,7 +1174,7 @@ implementation
 
 //--- (end of YPwmInput implementation)
 
-//--- (PwmInput functions)
+//--- (YPwmInput functions)
 
   function yFindPwmInput(func:string): TYPwmInput;
     begin
@@ -1180,14 +1190,14 @@ implementation
     begin
     end;
 
-//--- (end of PwmInput functions)
+//--- (end of YPwmInput functions)
 
 initialization
-  //--- (PwmInput initialization)
-  //--- (end of PwmInput initialization)
+  //--- (YPwmInput initialization)
+  //--- (end of YPwmInput initialization)
 
 finalization
-  //--- (PwmInput cleanup)
+  //--- (YPwmInput cleanup)
   _PwmInputCleanup();
-  //--- (end of PwmInput cleanup)
+  //--- (end of YPwmInput cleanup)
 end.

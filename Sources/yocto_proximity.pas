@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_proximity.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_proximity.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindProximity(), the high-level API for Proximity functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -445,7 +445,7 @@ type
   //--- (end of YProximity accessors declaration)
   end;
 
-//--- (Proximity functions declaration)
+//--- (YProximity functions declaration)
   ////
   /// <summary>
   ///   Retrieves a proximity sensor for a given identifier.
@@ -512,7 +512,7 @@ type
   ///-
   function yFirstProximity():TYProximity;
 
-//--- (end of Proximity functions declaration)
+//--- (end of YProximity functions declaration)
 
 implementation
 //--- (YProximity dlldef)
@@ -1180,7 +1180,7 @@ implementation
 
 //--- (end of YProximity implementation)
 
-//--- (Proximity functions)
+//--- (YProximity functions)
 
   function yFindProximity(func:string): TYProximity;
     begin
@@ -1196,14 +1196,14 @@ implementation
     begin
     end;
 
-//--- (end of Proximity functions)
+//--- (end of YProximity functions)
 
 initialization
-  //--- (Proximity initialization)
-  //--- (end of Proximity initialization)
+  //--- (YProximity initialization)
+  //--- (end of YProximity initialization)
 
 finalization
-  //--- (Proximity cleanup)
+  //--- (YProximity cleanup)
   _ProximityCleanup();
-  //--- (end of Proximity cleanup)
+  //--- (end of YProximity cleanup)
 end.

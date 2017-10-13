@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_voc.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_voc.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindVoc(), the high-level API for Voc functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -204,7 +204,7 @@ type
   //--- (end of YVoc accessors declaration)
   end;
 
-//--- (Voc functions declaration)
+//--- (YVoc functions declaration)
   ////
   /// <summary>
   ///   Retrieves a Volatile Organic Compound sensor for a given identifier.
@@ -271,7 +271,7 @@ type
   ///-
   function yFirstVoc():TYVoc;
 
-//--- (end of Voc functions declaration)
+//--- (end of YVoc functions declaration)
 
 implementation
 //--- (YVoc dlldef)
@@ -515,7 +515,7 @@ implementation
 
 //--- (end of YVoc implementation)
 
-//--- (Voc functions)
+//--- (YVoc functions)
 
   function yFindVoc(func:string): TYVoc;
     begin
@@ -531,14 +531,14 @@ implementation
     begin
     end;
 
-//--- (end of Voc functions)
+//--- (end of YVoc functions)
 
 initialization
-  //--- (Voc initialization)
-  //--- (end of Voc initialization)
+  //--- (YVoc initialization)
+  //--- (end of YVoc initialization)
 
 finalization
-  //--- (Voc cleanup)
+  //--- (YVoc cleanup)
   _VocCleanup();
-  //--- (end of Voc cleanup)
+  //--- (end of YVoc cleanup)
 end.

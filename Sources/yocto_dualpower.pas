@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_dualpower.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_dualpower.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindDualPower(), the high-level API for DualPower functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -275,7 +275,7 @@ type
   //--- (end of YDualPower accessors declaration)
   end;
 
-//--- (DualPower functions declaration)
+//--- (YDualPower functions declaration)
   ////
   /// <summary>
   ///   Retrieves a dual power control for a given identifier.
@@ -342,7 +342,7 @@ type
   ///-
   function yFirstDualPower():TYDualPower;
 
-//--- (end of DualPower functions declaration)
+//--- (end of YDualPower functions declaration)
 
 implementation
 //--- (YDualPower dlldef)
@@ -684,7 +684,7 @@ implementation
 
 //--- (end of YDualPower implementation)
 
-//--- (DualPower functions)
+//--- (YDualPower functions)
 
   function yFindDualPower(func:string): TYDualPower;
     begin
@@ -700,14 +700,14 @@ implementation
     begin
     end;
 
-//--- (end of DualPower functions)
+//--- (end of YDualPower functions)
 
 initialization
-  //--- (DualPower initialization)
-  //--- (end of DualPower initialization)
+  //--- (YDualPower initialization)
+  //--- (end of YDualPower initialization)
 
 finalization
-  //--- (DualPower cleanup)
+  //--- (YDualPower cleanup)
   _DualPowerCleanup();
-  //--- (end of DualPower cleanup)
+  //--- (end of YDualPower cleanup)
 end.

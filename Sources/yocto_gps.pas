@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_gps.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_gps.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindGps(), the high-level API for Gps functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -479,7 +479,7 @@ type
   //--- (end of YGps accessors declaration)
   end;
 
-//--- (Gps functions declaration)
+//--- (YGps functions declaration)
   ////
   /// <summary>
   ///   Retrieves a GPS for a given identifier.
@@ -546,7 +546,7 @@ type
   ///-
   function yFirstGps():TYGps;
 
-//--- (end of Gps functions declaration)
+//--- (end of YGps functions declaration)
 
 implementation
 //--- (YGps dlldef)
@@ -1318,7 +1318,7 @@ implementation
 
 //--- (end of YGps implementation)
 
-//--- (Gps functions)
+//--- (YGps functions)
 
   function yFindGps(func:string): TYGps;
     begin
@@ -1334,14 +1334,14 @@ implementation
     begin
     end;
 
-//--- (end of Gps functions)
+//--- (end of YGps functions)
 
 initialization
-  //--- (Gps initialization)
-  //--- (end of Gps initialization)
+  //--- (YGps initialization)
+  //--- (end of YGps initialization)
 
 finalization
-  //--- (Gps cleanup)
+  //--- (YGps cleanup)
   _GpsCleanup();
-  //--- (end of Gps cleanup)
+  //--- (end of YGps cleanup)
 end.

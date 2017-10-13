@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_display.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -10,26 +10,26 @@
  *
  *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
  *  non-exclusive license to use, modify, copy and integrate this
- *  file into your software for the sole purpose of interfacing 
- *  with Yoctopuce products. 
+ *  file into your software for the sole purpose of interfacing
+ *  with Yoctopuce products.
  *
- *  You may reproduce and distribute copies of this file in 
+ *  You may reproduce and distribute copies of this file in
  *  source or object form, as long as the sole purpose of this
- *  code is to interface with Yoctopuce products. You must retain 
+ *  code is to interface with Yoctopuce products. You must retain
  *  this notice in the distributed source file.
  *
  *  You should refer to Yoctopuce General Terms and Conditions
- *  for additional information regarding your rights and 
+ *  for additional information regarding your rights and
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
  *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
  *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -773,7 +773,7 @@ private
 
 public
    constructor Create(parent: TYdisplay; id :string);
- 
+
    function command_push(cmd:string):integer;
    function command_flush(cmd:string):integer;
    function flush_now():integer;
@@ -1445,7 +1445,7 @@ public
   //--- (end of generated code: YDisplayLayer accessors declaration)
 end;
 
-//--- (generated code: Display functions declaration)
+//--- (generated code: YDisplay functions declaration)
   ////
   /// <summary>
   ///   Retrieves a display for a given identifier.
@@ -1512,7 +1512,7 @@ end;
   ///-
   function yFirstDisplay():TYDisplay;
 
-//--- (end of generated code: Display functions declaration)
+//--- (end of generated code: YDisplay functions declaration)
 
 implementation
 
@@ -2600,7 +2600,7 @@ procedure TYDisplay.resetHiddenLayerFlags();
   end ;
 
 
-//--- (generated code: Display functions)
+//--- (generated code: YDisplay functions)
 
   function yFindDisplay(func:string): TYDisplay;
     begin
@@ -2616,7 +2616,7 @@ procedure TYDisplay.resetHiddenLayerFlags();
     begin
     end;
 
-//--- (end of generated code: Display functions)
+//--- (end of generated code: YDisplay functions)
 
 ////
 /// <summary>
@@ -3537,22 +3537,22 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
 
 //--- (end of generated code: YDisplayLayer implementation)
 
- //--- (generated code: DisplayLayer functions)
+ //--- (generated code: YDisplayLayer functions)
 
   procedure _DisplayLayerCleanup();
     begin
     end;
 
-//--- (end of generated code: DisplayLayer functions)
+//--- (end of generated code: YDisplayLayer functions)
 
 
 
 initialization
-   //--- (generated code: Display initialization)
-  //--- (end of generated code: Display initialization)
+   //--- (generated code: YDisplay initialization)
+  //--- (end of generated code: YDisplay initialization)
 
 finalization
-   //--- (generated code: Display cleanup)
+   //--- (generated code: YDisplay cleanup)
   _DisplayCleanup();
-  //--- (end of generated code: Display cleanup)
+  //--- (end of generated code: YDisplay cleanup)
 end.

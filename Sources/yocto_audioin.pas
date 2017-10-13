@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_audioin.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_audioin.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindAudioIn(), the high-level API for AudioIn functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -326,7 +326,7 @@ type
   //--- (end of YAudioIn accessors declaration)
   end;
 
-//--- (AudioIn functions declaration)
+//--- (YAudioIn functions declaration)
   ////
   /// <summary>
   ///   Retrieves an audio input for a given identifier.
@@ -393,7 +393,7 @@ type
   ///-
   function yFirstAudioIn():TYAudioIn;
 
-//--- (end of AudioIn functions declaration)
+//--- (end of YAudioIn functions declaration)
 
 implementation
 //--- (YAudioIn dlldef)
@@ -846,7 +846,7 @@ implementation
 
 //--- (end of YAudioIn implementation)
 
-//--- (AudioIn functions)
+//--- (YAudioIn functions)
 
   function yFindAudioIn(func:string): TYAudioIn;
     begin
@@ -862,14 +862,14 @@ implementation
     begin
     end;
 
-//--- (end of AudioIn functions)
+//--- (end of YAudioIn functions)
 
 initialization
-  //--- (AudioIn initialization)
-  //--- (end of AudioIn initialization)
+  //--- (YAudioIn initialization)
+  //--- (end of YAudioIn initialization)
 
 finalization
-  //--- (AudioIn cleanup)
+  //--- (YAudioIn cleanup)
   _AudioInCleanup();
-  //--- (end of AudioIn cleanup)
+  //--- (end of YAudioIn cleanup)
 end.

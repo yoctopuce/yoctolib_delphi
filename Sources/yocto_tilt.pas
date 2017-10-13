@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_tilt.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_tilt.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindTilt(), the high-level API for Tilt functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -260,7 +260,7 @@ type
   //--- (end of YTilt accessors declaration)
   end;
 
-//--- (Tilt functions declaration)
+//--- (YTilt functions declaration)
   ////
   /// <summary>
   ///   Retrieves a tilt sensor for a given identifier.
@@ -327,7 +327,7 @@ type
   ///-
   function yFirstTilt():TYTilt;
 
-//--- (end of Tilt functions declaration)
+//--- (end of YTilt functions declaration)
 
 implementation
 //--- (YTilt dlldef)
@@ -666,7 +666,7 @@ implementation
 
 //--- (end of YTilt implementation)
 
-//--- (Tilt functions)
+//--- (YTilt functions)
 
   function yFindTilt(func:string): TYTilt;
     begin
@@ -682,14 +682,14 @@ implementation
     begin
     end;
 
-//--- (end of Tilt functions)
+//--- (end of YTilt functions)
 
 initialization
-  //--- (Tilt initialization)
-  //--- (end of Tilt initialization)
+  //--- (YTilt initialization)
+  //--- (end of YTilt initialization)
 
 finalization
-  //--- (Tilt cleanup)
+  //--- (YTilt cleanup)
   _TiltCleanup();
-  //--- (end of Tilt cleanup)
+  //--- (end of YTilt cleanup)
 end.

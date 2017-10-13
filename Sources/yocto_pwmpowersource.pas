@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_pwmpowersource.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_pwmpowersource.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -234,7 +234,7 @@ type
   //--- (end of YPwmPowerSource accessors declaration)
   end;
 
-//--- (PwmPowerSource functions declaration)
+//--- (YPwmPowerSource functions declaration)
   ////
   /// <summary>
   ///   Retrieves a voltage source for a given identifier.
@@ -301,7 +301,7 @@ type
   ///-
   function yFirstPwmPowerSource():TYPwmPowerSource;
 
-//--- (end of PwmPowerSource functions declaration)
+//--- (end of YPwmPowerSource functions declaration)
 
 implementation
 //--- (YPwmPowerSource dlldef)
@@ -569,7 +569,7 @@ implementation
 
 //--- (end of YPwmPowerSource implementation)
 
-//--- (PwmPowerSource functions)
+//--- (YPwmPowerSource functions)
 
   function yFindPwmPowerSource(func:string): TYPwmPowerSource;
     begin
@@ -585,14 +585,14 @@ implementation
     begin
     end;
 
-//--- (end of PwmPowerSource functions)
+//--- (end of YPwmPowerSource functions)
 
 initialization
-  //--- (PwmPowerSource initialization)
-  //--- (end of PwmPowerSource initialization)
+  //--- (YPwmPowerSource initialization)
+  //--- (end of YPwmPowerSource initialization)
 
 finalization
-  //--- (PwmPowerSource cleanup)
+  //--- (YPwmPowerSource cleanup)
   _PwmPowerSourceCleanup();
-  //--- (end of PwmPowerSource cleanup)
+  //--- (end of YPwmPowerSource cleanup)
 end.

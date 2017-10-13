@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_pwmoutput.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_pwmoutput.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindPwmOutput(), the high-level API for PwmOutput functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -532,7 +532,7 @@ type
   //--- (end of YPwmOutput accessors declaration)
   end;
 
-//--- (PwmOutput functions declaration)
+//--- (YPwmOutput functions declaration)
   ////
   /// <summary>
   ///   Retrieves a PWM for a given identifier.
@@ -599,7 +599,7 @@ type
   ///-
   function yFirstPwmOutput():TYPwmOutput;
 
-//--- (end of PwmOutput functions declaration)
+//--- (end of YPwmOutput functions declaration)
 
 implementation
 //--- (YPwmOutput dlldef)
@@ -1381,7 +1381,7 @@ implementation
 
 //--- (end of YPwmOutput implementation)
 
-//--- (PwmOutput functions)
+//--- (YPwmOutput functions)
 
   function yFindPwmOutput(func:string): TYPwmOutput;
     begin
@@ -1397,14 +1397,14 @@ implementation
     begin
     end;
 
-//--- (end of PwmOutput functions)
+//--- (end of YPwmOutput functions)
 
 initialization
-  //--- (PwmOutput initialization)
-  //--- (end of PwmOutput initialization)
+  //--- (YPwmOutput initialization)
+  //--- (end of YPwmOutput initialization)
 
 finalization
-  //--- (PwmOutput cleanup)
+  //--- (YPwmOutput cleanup)
   _PwmOutputCleanup();
-  //--- (end of PwmOutput cleanup)
+  //--- (end of YPwmOutput cleanup)
 end.

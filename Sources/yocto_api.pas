@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_api.pas 28799 2017-10-11 16:07:10Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -115,7 +115,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '28707';
+  YOCTO_API_BUILD_NO        = '28878';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -3933,7 +3933,7 @@ end;
   //--- (end of generated code: YDataLogger accessors declaration)
 end;
 
-//--- (generated code: DataLogger functions declaration)
+//--- (generated code: YDataLogger functions declaration)
   ////
   /// <summary>
   ///   Retrieves a data logger for a given identifier.
@@ -4000,7 +4000,7 @@ end;
   ///-
   function yFirstDataLogger():TYDataLogger;
 
-//--- (end of generated code: DataLogger functions declaration)
+//--- (end of generated code: YDataLogger functions declaration)
 
 
   ////
@@ -4459,7 +4459,7 @@ type
   ///-
   function yTriggerHubDiscovery(var errmsg:string):integer;
 
-  //--- (generated code: Function functions declaration)
+  //--- (generated code: YFunction functions declaration)
   ////
   /// <summary>
   ///   Retrieves a function for a given identifier.
@@ -4520,9 +4520,9 @@ type
   ///-
   function yFirstFunction():TYFunction;
 
-//--- (end of generated code: Function functions declaration)
+//--- (end of generated code: YFunction functions declaration)
 
-  //--- (generated code: Module functions declaration)
+  //--- (generated code: YModule functions declaration)
   ////
   /// <summary>
   ///   Allows you to find a module from its serial number or from its logical name.
@@ -4571,9 +4571,9 @@ type
   ///-
   function yFirstModule():TYModule;
 
-//--- (end of generated code: Module functions declaration)
+//--- (end of generated code: YModule functions declaration)
 
-//--- (generated code: Sensor functions declaration)
+//--- (generated code: YSensor functions declaration)
   ////
   /// <summary>
   ///   Retrieves a sensor for a given identifier.
@@ -4640,15 +4640,15 @@ type
   ///-
   function yFirstSensor():TYSensor;
 
-//--- (end of generated code: Sensor functions declaration)
-//--- (generated code: FirmwareUpdate functions declaration)
-//--- (end of generated code: FirmwareUpdate functions declaration)
-//--- (generated code: DataStream functions declaration)
-//--- (end of generated code: DataStream functions declaration)
-//--- (generated code: Measure functions declaration)
-//--- (end of generated code: Measure functions declaration)
-//--- (generated code: DataSet functions declaration)
-//--- (end of generated code: DataSet functions declaration)
+//--- (end of generated code: YSensor functions declaration)
+//--- (generated code: YFirmwareUpdate functions declaration)
+//--- (end of generated code: YFirmwareUpdate functions declaration)
+//--- (generated code: YDataStream functions declaration)
+//--- (end of generated code: YDataStream functions declaration)
+//--- (generated code: YMeasure functions declaration)
+//--- (end of generated code: YMeasure functions declaration)
+//--- (generated code: YDataSet functions declaration)
+//--- (end of generated code: YDataSet functions declaration)
 
 
   {*****************************************************************************
@@ -12185,7 +12185,7 @@ var
 
 //--- (end of generated code: YSensor implementation)
 
-//--- (generated code: Sensor functions)
+//--- (generated code: YSensor functions)
 
   function yFindSensor(func:string): TYSensor;
     begin
@@ -12201,7 +12201,7 @@ var
     begin
     end;
 
-//--- (end of generated code: Sensor functions)
+//--- (end of generated code: YSensor functions)
 
 
   constructor TYDataStream.Create(parent : TYFunction);
@@ -12241,7 +12241,7 @@ var
       ignoreErrMsg : string;
     begin
       errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
-      if self._progress_c < 100 and self._progress_c <> YAPI_VERSION_MISMATCH then
+      if (self._progress_c < 100) and(self._progress_c <> YAPI_VERSION_MISMATCH) then
         begin
           serial := self._serial;
           firmwarepath := self._firmwarepath;
@@ -12255,7 +12255,7 @@ var
               force := 0;
             end;
           res := _yapiUpdateFirmwareEx(pansichar(ansistring(serial)), pansichar(ansistring(firmwarepath)), pansichar(ansistring(settings)), force, newupdate, errmsg);
-          if res = YAPI_VERSION_MISMATCH and(length(self._settings) <> 0) then
+          if (res = YAPI_VERSION_MISMATCH) and(length(self._settings) <> 0) then
             begin
               self._progress_c := res;
               self._progress_msg := string(errmsg);
@@ -14872,7 +14872,7 @@ const
 
 //--- (end of generated code: YDataLogger implementation)
 
-//--- (generated code: DataLogger functions)
+//--- (generated code: YDataLogger functions)
 
   function yFindDataLogger(func:string): TYDataLogger;
     begin
@@ -14888,7 +14888,7 @@ const
     begin
     end;
 
-//--- (end of generated code: DataLogger functions)
+//--- (end of generated code: YDataLogger functions)
 
 
 
@@ -15135,7 +15135,7 @@ const
 
 
 
-//--- (generated code: Function functions)
+//--- (generated code: YFunction functions)
 
   function yFindFunction(func:string): TYFunction;
     begin
@@ -15151,11 +15151,11 @@ const
     begin
     end;
 
-//--- (end of generated code: Function functions)
+//--- (end of generated code: YFunction functions)
 
 
 
-//--- (generated code: Module functions)
+//--- (generated code: YModule functions)
 
   function yFindModule(func:string): TYModule;
     begin
@@ -15171,29 +15171,29 @@ const
     begin
     end;
 
-//--- (end of generated code: Module functions)
+//--- (end of generated code: YModule functions)
 
-//--- (generated code: DataStream functions)
+//--- (generated code: YDataStream functions)
 
   procedure _DataStreamCleanup();
     begin
     end;
 
-//--- (end of generated code: DataStream functions)
-//--- (generated code: Measure functions)
+//--- (end of generated code: YDataStream functions)
+//--- (generated code: YMeasure functions)
 
   procedure _MeasureCleanup();
     begin
     end;
 
-//--- (end of generated code: Measure functions)
-//--- (generated code: DataSet functions)
+//--- (end of generated code: YMeasure functions)
+//--- (generated code: YDataSet functions)
 
   procedure _DataSetCleanup();
     begin
     end;
 
-//--- (end of generated code: DataSet functions)
+//--- (end of generated code: YDataSet functions)
 
   procedure handlersCleanUp();
     begin
@@ -15212,18 +15212,18 @@ initialization
 
 
   YDevice_devCache        := Tlist.create();
-  //--- (generated code: Module initialization)
-  //--- (end of generated code: Module initialization)
-  //--- (generated code: FirmwareUpdate initialization)
-  //--- (end of generated code: FirmwareUpdate initialization)
-  //--- (generated code: DataStream initialization)
-  //--- (end of generated code: DataStream initialization)
-  //--- (generated code: DataLogger initialization)
-  //--- (end of generated code: DataLogger initialization)
-  //--- (generated code: Measure initialization)
-  //--- (end of generated code: Measure initialization)
-  //--- (generated code: DataSet initialization)
-  //--- (end of generated code: DataSet initialization)
+  //--- (generated code: YModule initialization)
+  //--- (end of generated code: YModule initialization)
+  //--- (generated code: YFirmwareUpdate initialization)
+  //--- (end of generated code: YFirmwareUpdate initialization)
+  //--- (generated code: YDataStream initialization)
+  //--- (end of generated code: YDataStream initialization)
+  //--- (generated code: YDataLogger initialization)
+  //--- (end of generated code: YDataLogger initialization)
+  //--- (generated code: YMeasure initialization)
+  //--- (end of generated code: YMeasure initialization)
+  //--- (generated code: YDataSet initialization)
+  //--- (end of generated code: YDataSet initialization)
 
   _cache                := TStringList.create();
   _cache.sorted         := true;
@@ -15235,26 +15235,26 @@ initialization
   _CalibHandlers.sorted := true;
 
 finalization
-  //--- (generated code: Module cleanup)
+  //--- (generated code: YModule cleanup)
   _ModuleCleanup();
-  //--- (end of generated code: Module cleanup)
-  //--- (generated code: FirmwareUpdate cleanup)
-  //--- (end of generated code: FirmwareUpdate cleanup)
-  //--- (generated code: DataStream cleanup)
-  //--- (end of generated code: DataStream cleanup)
-  //--- (generated code: Measure cleanup)
-  //--- (end of generated code: Measure cleanup)
-  //--- (generated code: DataSet cleanup)
-  //--- (end of generated code: DataSet cleanup)
-  //--- (generated code: DataLogger cleanup)
+  //--- (end of generated code: YModule cleanup)
+  //--- (generated code: YFirmwareUpdate cleanup)
+  //--- (end of generated code: YFirmwareUpdate cleanup)
+  //--- (generated code: YDataStream cleanup)
+  //--- (end of generated code: YDataStream cleanup)
+  //--- (generated code: YMeasure cleanup)
+  //--- (end of generated code: YMeasure cleanup)
+  //--- (generated code: YDataSet cleanup)
+  //--- (end of generated code: YDataSet cleanup)
+  //--- (generated code: YDataLogger cleanup)
   _DataLoggerCleanup();
-  //--- (end of generated code: DataLogger cleanup)
-  //--- (generated code: Sensor cleanup)
+  //--- (end of generated code: YDataLogger cleanup)
+  //--- (generated code: YSensor cleanup)
   _SensorCleanup();
-  //--- (end of generated code: Sensor cleanup)
-  //--- (generated code: Function cleanup)
+  //--- (end of generated code: YSensor cleanup)
+  //--- (generated code: YFunction cleanup)
   _FunctionCleanup();
-  //--- (end of generated code: Function cleanup)
+  //--- (end of generated code: YFunction cleanup)
   _FunctionCallbacks.free();
   _TimedReportCallbackList.free();
   devicesCleanUp();

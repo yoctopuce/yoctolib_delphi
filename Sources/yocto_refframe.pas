@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_refframe.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_refframe.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindRefFrame(), the high-level API for RefFrame functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -564,7 +564,7 @@ type
   //--- (end of YRefFrame accessors declaration)
   end;
 
-//--- (RefFrame functions declaration)
+//--- (YRefFrame functions declaration)
   ////
   /// <summary>
   ///   Retrieves a reference frame for a given identifier.
@@ -631,7 +631,7 @@ type
   ///-
   function yFirstRefFrame():TYRefFrame;
 
-//--- (end of RefFrame functions declaration)
+//--- (end of YRefFrame functions declaration)
 
 implementation
 //--- (YRefFrame dlldef)
@@ -1937,7 +1937,7 @@ implementation
 
 //--- (end of YRefFrame implementation)
 
-//--- (RefFrame functions)
+//--- (YRefFrame functions)
 
   function yFindRefFrame(func:string): TYRefFrame;
     begin
@@ -1953,14 +1953,14 @@ implementation
     begin
     end;
 
-//--- (end of RefFrame functions)
+//--- (end of YRefFrame functions)
 
 initialization
-  //--- (RefFrame initialization)
-  //--- (end of RefFrame initialization)
+  //--- (YRefFrame initialization)
+  //--- (end of YRefFrame initialization)
 
 finalization
-  //--- (RefFrame cleanup)
+  //--- (YRefFrame cleanup)
   _RefFrameCleanup();
-  //--- (end of RefFrame cleanup)
+  //--- (end of YRefFrame cleanup)
 end.

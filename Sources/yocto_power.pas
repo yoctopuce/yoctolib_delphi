@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_power.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_power.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindPower(), the high-level API for Power functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -283,7 +283,7 @@ type
   //--- (end of YPower accessors declaration)
   end;
 
-//--- (Power functions declaration)
+//--- (YPower functions declaration)
   ////
   /// <summary>
   ///   Retrieves a electrical power sensor for a given identifier.
@@ -350,7 +350,7 @@ type
   ///-
   function yFirstPower():TYPower;
 
-//--- (end of Power functions declaration)
+//--- (end of YPower functions declaration)
 
 implementation
 //--- (YPower dlldef)
@@ -746,7 +746,7 @@ implementation
 
 //--- (end of YPower implementation)
 
-//--- (Power functions)
+//--- (YPower functions)
 
   function yFindPower(func:string): TYPower;
     begin
@@ -762,14 +762,14 @@ implementation
     begin
     end;
 
-//--- (end of Power functions)
+//--- (end of YPower functions)
 
 initialization
-  //--- (Power initialization)
-  //--- (end of Power initialization)
+  //--- (YPower initialization)
+  //--- (end of YPower initialization)
 
 finalization
-  //--- (Power cleanup)
+  //--- (YPower cleanup)
   _PowerCleanup();
-  //--- (end of Power cleanup)
+  //--- (end of YPower cleanup)
 end.

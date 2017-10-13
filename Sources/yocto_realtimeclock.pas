@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_realtimeclock.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_realtimeclock.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -307,7 +307,7 @@ type
   //--- (end of YRealTimeClock accessors declaration)
   end;
 
-//--- (RealTimeClock functions declaration)
+//--- (YRealTimeClock functions declaration)
   ////
   /// <summary>
   ///   Retrieves a clock for a given identifier.
@@ -374,7 +374,7 @@ type
   ///-
   function yFirstRealTimeClock():TYRealTimeClock;
 
-//--- (end of RealTimeClock functions declaration)
+//--- (end of YRealTimeClock functions declaration)
 
 implementation
 //--- (YRealTimeClock dlldef)
@@ -783,7 +783,7 @@ implementation
 
 //--- (end of YRealTimeClock implementation)
 
-//--- (RealTimeClock functions)
+//--- (YRealTimeClock functions)
 
   function yFindRealTimeClock(func:string): TYRealTimeClock;
     begin
@@ -799,14 +799,14 @@ implementation
     begin
     end;
 
-//--- (end of RealTimeClock functions)
+//--- (end of YRealTimeClock functions)
 
 initialization
-  //--- (RealTimeClock initialization)
-  //--- (end of RealTimeClock initialization)
+  //--- (YRealTimeClock initialization)
+  //--- (end of YRealTimeClock initialization)
 
 finalization
-  //--- (RealTimeClock cleanup)
+  //--- (YRealTimeClock cleanup)
   _RealTimeClockCleanup();
-  //--- (end of RealTimeClock cleanup)
+  //--- (end of YRealTimeClock cleanup)
 end.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_files.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -10,26 +10,26 @@
  *
  *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
  *  non-exclusive license to use, modify, copy and integrate this
- *  file into your software for the sole purpose of interfacing 
- *  with Yoctopuce products. 
+ *  file into your software for the sole purpose of interfacing
+ *  with Yoctopuce products.
  *
- *  You may reproduce and distribute copies of this file in 
+ *  You may reproduce and distribute copies of this file in
  *  source or object form, as long as the sole purpose of this
- *  code is to interface with Yoctopuce products. You must retain 
+ *  code is to interface with Yoctopuce products. You must retain
  *  this notice in the distributed source file.
  *
  *  You should refer to Yoctopuce General Terms and Conditions
- *  for additional information regarding your rights and 
+ *  for additional information regarding your rights and
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS" WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
  *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
  *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -81,7 +81,7 @@ type
     //--- (end of generated code: YFileRecord declaration)
 public
    constructor create(data:string);
-   
+
 
    //--- (generated code: YFileRecord accessors declaration)
     function get_name():string; overload; virtual;
@@ -386,7 +386,7 @@ end;
 procedure freeFileRecordArray(var list:TYFILERECORDARRAY);
 
 
-//--- (generated code: Files functions declaration)
+//--- (generated code: YFiles functions declaration)
   ////
   /// <summary>
   ///   Retrieves a filesystem for a given identifier.
@@ -453,7 +453,7 @@ procedure freeFileRecordArray(var list:TYFILERECORDARRAY);
   ///-
   function yFirstFiles():TYFiles;
 
-//--- (end of generated code: Files functions declaration)
+//--- (end of generated code: YFiles functions declaration)
 
 implementation
 
@@ -935,7 +935,7 @@ implementation
 
 //--- (end of generated code: YFiles implementation)
 
-//--- (generated code: Files functions)
+//--- (generated code: YFiles functions)
 
   function yFindFiles(func:string): TYFiles;
     begin
@@ -951,7 +951,7 @@ implementation
     begin
     end;
 
-//--- (end of generated code: Files functions)
+//--- (end of generated code: YFiles functions)
 
 
 
@@ -996,13 +996,13 @@ constructor TYFileRecord.create(data:string);
    p.free;
  end;
 
-//--- (generated code: FileRecord functions)
+//--- (generated code: YFileRecord functions)
 
   procedure _FileRecordCleanup();
     begin
     end;
 
-//--- (end of generated code: FileRecord functions)
+//--- (end of generated code: YFileRecord functions)
 
 procedure freeFileRecordArray(var list:TYFILERECORDARRAY);
  var i:integer;
@@ -1014,11 +1014,11 @@ procedure freeFileRecordArray(var list:TYFILERECORDARRAY);
 
 
 initialization
-   //--- (generated code: Files initialization)
-  //--- (end of generated code: Files initialization)
+   //--- (generated code: YFiles initialization)
+  //--- (end of generated code: YFiles initialization)
 
 finalization
-   //--- (Files cleanup)
-   _FilesCleanup();
-   //--- (end of generated code: Files cleanup)
+   //--- (generated code: YFiles cleanup)
+  _FilesCleanup();
+  //--- (end of generated code: YFiles cleanup)
 end.

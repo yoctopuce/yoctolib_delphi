@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_led.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_led.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindLed(), the high-level API for Led functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -316,7 +316,7 @@ type
   //--- (end of YLed accessors declaration)
   end;
 
-//--- (Led functions declaration)
+//--- (YLed functions declaration)
   ////
   /// <summary>
   ///   Retrieves a LED for a given identifier.
@@ -383,7 +383,7 @@ type
   ///-
   function yFirstLed():TYLed;
 
-//--- (end of Led functions declaration)
+//--- (end of YLed functions declaration)
 
 implementation
 //--- (YLed dlldef)
@@ -780,7 +780,7 @@ implementation
 
 //--- (end of YLed implementation)
 
-//--- (Led functions)
+//--- (YLed functions)
 
   function yFindLed(func:string): TYLed;
     begin
@@ -796,14 +796,14 @@ implementation
     begin
     end;
 
-//--- (end of Led functions)
+//--- (end of YLed functions)
 
 initialization
-  //--- (Led initialization)
-  //--- (end of Led initialization)
+  //--- (YLed initialization)
+  //--- (end of YLed initialization)
 
 finalization
-  //--- (Led cleanup)
+  //--- (YLed cleanup)
   _LedCleanup();
-  //--- (end of Led cleanup)
+  //--- (end of YLed cleanup)
 end.

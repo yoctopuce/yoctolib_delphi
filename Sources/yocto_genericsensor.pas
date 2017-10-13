@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_genericsensor.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_genericsensor.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindGenericSensor(), the high-level API for GenericSensor functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -475,7 +475,7 @@ type
   //--- (end of YGenericSensor accessors declaration)
   end;
 
-//--- (GenericSensor functions declaration)
+//--- (YGenericSensor functions declaration)
   ////
   /// <summary>
   ///   Retrieves a generic sensor for a given identifier.
@@ -542,7 +542,7 @@ type
   ///-
   function yFirstGenericSensor():TYGenericSensor;
 
-//--- (end of GenericSensor functions declaration)
+//--- (end of YGenericSensor functions declaration)
 
 implementation
 //--- (YGenericSensor dlldef)
@@ -1217,7 +1217,7 @@ implementation
 
 //--- (end of YGenericSensor implementation)
 
-//--- (GenericSensor functions)
+//--- (YGenericSensor functions)
 
   function yFindGenericSensor(func:string): TYGenericSensor;
     begin
@@ -1233,14 +1233,14 @@ implementation
     begin
     end;
 
-//--- (end of GenericSensor functions)
+//--- (end of YGenericSensor functions)
 
 initialization
-  //--- (GenericSensor initialization)
-  //--- (end of GenericSensor initialization)
+  //--- (YGenericSensor initialization)
+  //--- (end of YGenericSensor initialization)
 
 finalization
-  //--- (GenericSensor cleanup)
+  //--- (YGenericSensor cleanup)
   _GenericSensorCleanup();
-  //--- (end of GenericSensor cleanup)
+  //--- (end of YGenericSensor cleanup)
 end.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_messagebox.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *
@@ -596,7 +596,7 @@ type
   end;
 
 
-//--- (generated code: MessageBox functions declaration)
+//--- (generated code: YMessageBox functions declaration)
   ////
   /// <summary>
   ///   Retrieves a MessageBox interface for a given identifier.
@@ -663,9 +663,9 @@ type
   ///-
   function yFirstMessageBox():TYMessageBox;
 
-//--- (end of generated code: MessageBox functions declaration)
-//--- (generated code: Sms functions declaration)
-//--- (end of generated code: Sms functions declaration)
+//--- (end of generated code: YMessageBox functions declaration)
+//--- (generated code: YSms functions declaration)
+//--- (end of generated code: YSms functions declaration)
 
 implementation
 //--- (generated code: YMessageBox dlldef)
@@ -2019,7 +2019,7 @@ implementation
 
 //--- (end of generated code: YMessageBox implementation)
 
-//--- (generated code: MessageBox functions)
+//--- (generated code: YMessageBox functions)
 
   function yFindMessageBox(func:string): TYMessageBox;
     begin
@@ -2035,7 +2035,7 @@ implementation
     begin
     end;
 
-//--- (end of generated code: MessageBox functions)
+//--- (end of generated code: YMessageBox functions)
 
   constructor TYSms.Create(mbox :TYMessageBox);
     begin
@@ -3076,7 +3076,7 @@ implementation
       wpos : LongInt;
       carry : LongInt;
       nbits : LongInt;
-      thisb : LongInt;
+      thi_b : LongInt;
     begin
       udsize := self.udataSize;
       udhsize := length(self._udh);
@@ -3129,11 +3129,11 @@ implementation
                 end
               else
                 begin
-                  thisb := self._udata[i];
-                  res[wpos] := ((carry) or ((((((thisb) shl (nbits)))) and 255)));
+                  thi_b := self._udata[i];
+                  res[wpos] := ((carry) or ((((((thi_b) shl (nbits)))) and 255)));
                   wpos := wpos + 1;
                   nbits := nbits - 1;
-                  carry := ((thisb) shr ((7 - nbits)));
+                  carry := ((thi_b) shr ((7 - nbits)));
                 end;
               i := i + 1;
             end;
@@ -3396,7 +3396,7 @@ implementation
       i : LongInt;
       carry : LongInt;
       nbits : LongInt;
-      thisb : LongInt;
+      thi_b : LongInt;
     begin
       self._pdu := pdu;
       self._npdu := 1;
@@ -3471,9 +3471,9 @@ implementation
               nbits := 7*udhlen - 8 - 8*udhsize;
               if nbits > 0 then
                 begin
-                  thisb := pdu[rpos];
+                  thi_b := pdu[rpos];
                   rpos := rpos + 1;
-                  carry := ((thisb) shr (nbits));
+                  carry := ((thi_b) shr (nbits));
                   nbits := 8 - nbits;
                 end;
             end
@@ -3504,10 +3504,10 @@ implementation
                 end
               else
                 begin
-                  thisb := pdu[rpos];
+                  thi_b := pdu[rpos];
                   rpos := rpos + 1;
-                  self._udata[i] := ((carry) or ((((((thisb) shl (nbits)))) and 127)));
-                  carry := ((thisb) shr ((7 - nbits)));
+                  self._udata[i] := ((carry) or ((((((thi_b) shl (nbits)))) and 127)));
+                  carry := ((thi_b) shr ((7 - nbits)));
                   nbits := nbits + 1;
                 end;
               i := i + 1;
@@ -3584,25 +3584,25 @@ implementation
 
 //--- (end of generated code: YSms implementation)
 
-//--- (generated code: Sms functions)
+//--- (generated code: YSms functions)
 
   procedure _SmsCleanup();
     begin
     end;
 
-//--- (end of generated code: Sms functions)
+//--- (end of generated code: YSms functions)
 
 
 initialization
-  //--- (generated code: MessageBox initialization)
-  //--- (end of generated code: MessageBox initialization)
-  //--- (generated code: Sms initialization)
-  //--- (end of generated code: Sms initialization)
+  //--- (generated code: YMessageBox initialization)
+  //--- (end of generated code: YMessageBox initialization)
+  //--- (generated code: YSms initialization)
+  //--- (end of generated code: YSms initialization)
 
 finalization
-  //--- (generated code: MessageBox cleanup)
+  //--- (generated code: YMessageBox cleanup)
   _MessageBoxCleanup();
-  //--- (end of generated code: MessageBox cleanup)
-  //--- (generated code: Sms cleanup)
-  //--- (end of generated code: Sms cleanup)
+  //--- (end of generated code: YMessageBox cleanup)
+  //--- (generated code: YSms cleanup)
+  //--- (end of generated code: YSms cleanup)
 end.

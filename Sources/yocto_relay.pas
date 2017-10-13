@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_relay.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_relay.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindRelay(), the high-level API for Relay functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -516,7 +516,7 @@ type
   //--- (end of YRelay accessors declaration)
   end;
 
-//--- (Relay functions declaration)
+//--- (YRelay functions declaration)
   ////
   /// <summary>
   ///   Retrieves a relay for a given identifier.
@@ -583,7 +583,7 @@ type
   ///-
   function yFirstRelay():TYRelay;
 
-//--- (end of Relay functions declaration)
+//--- (end of YRelay functions declaration)
 
 implementation
 //--- (YRelay dlldef)
@@ -1332,7 +1332,7 @@ implementation
 
 //--- (end of YRelay implementation)
 
-//--- (Relay functions)
+//--- (YRelay functions)
 
   function yFindRelay(func:string): TYRelay;
     begin
@@ -1348,15 +1348,15 @@ implementation
     begin
     end;
 
-//--- (end of Relay functions)
+//--- (end of YRelay functions)
 
 initialization
-  //--- (Relay initialization)
+  //--- (YRelay initialization)
     Y_DELAYEDPULSETIMER_INVALID := TYRelayDelayedPulse.Create();
-  //--- (end of Relay initialization)
+  //--- (end of YRelay initialization)
 
 finalization
-  //--- (Relay cleanup)
+  //--- (YRelay cleanup)
   _RelayCleanup();
-  //--- (end of Relay cleanup)
+  //--- (end of YRelay cleanup)
 end.

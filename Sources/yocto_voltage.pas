@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_voltage.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_voltage.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindVoltage(), the high-level API for Voltage functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -212,7 +212,7 @@ type
   //--- (end of YVoltage accessors declaration)
   end;
 
-//--- (Voltage functions declaration)
+//--- (YVoltage functions declaration)
   ////
   /// <summary>
   ///   Retrieves a voltage sensor for a given identifier.
@@ -279,7 +279,7 @@ type
   ///-
   function yFirstVoltage():TYVoltage;
 
-//--- (end of Voltage functions declaration)
+//--- (end of YVoltage functions declaration)
 
 implementation
 //--- (YVoltage dlldef)
@@ -556,7 +556,7 @@ implementation
 
 //--- (end of YVoltage implementation)
 
-//--- (Voltage functions)
+//--- (YVoltage functions)
 
   function yFindVoltage(func:string): TYVoltage;
     begin
@@ -572,14 +572,14 @@ implementation
     begin
     end;
 
-//--- (end of Voltage functions)
+//--- (end of YVoltage functions)
 
 initialization
-  //--- (Voltage initialization)
-  //--- (end of Voltage initialization)
+  //--- (YVoltage initialization)
+  //--- (end of YVoltage initialization)
 
 finalization
-  //--- (Voltage cleanup)
+  //--- (YVoltage cleanup)
   _VoltageCleanup();
-  //--- (end of Voltage cleanup)
+  //--- (end of YVoltage cleanup)
 end.

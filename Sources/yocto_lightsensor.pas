@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_lightsensor.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_lightsensor.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindLightSensor(), the high-level API for LightSensor functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -292,7 +292,7 @@ type
   //--- (end of YLightSensor accessors declaration)
   end;
 
-//--- (LightSensor functions declaration)
+//--- (YLightSensor functions declaration)
   ////
   /// <summary>
   ///   Retrieves a light sensor for a given identifier.
@@ -359,7 +359,7 @@ type
   ///-
   function yFirstLightSensor():TYLightSensor;
 
-//--- (end of LightSensor functions declaration)
+//--- (end of YLightSensor functions declaration)
 
 implementation
 //--- (YLightSensor dlldef)
@@ -719,7 +719,7 @@ implementation
 
 //--- (end of YLightSensor implementation)
 
-//--- (LightSensor functions)
+//--- (YLightSensor functions)
 
   function yFindLightSensor(func:string): TYLightSensor;
     begin
@@ -735,14 +735,14 @@ implementation
     begin
     end;
 
-//--- (end of LightSensor functions)
+//--- (end of YLightSensor functions)
 
 initialization
-  //--- (LightSensor initialization)
-  //--- (end of LightSensor initialization)
+  //--- (YLightSensor initialization)
+  //--- (end of YLightSensor initialization)
 
 finalization
-  //--- (LightSensor cleanup)
+  //--- (YLightSensor cleanup)
   _LightSensorCleanup();
-  //--- (end of LightSensor cleanup)
+  //--- (end of YLightSensor cleanup)
 end.

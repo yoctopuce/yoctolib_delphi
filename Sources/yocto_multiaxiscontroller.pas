@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_multiaxiscontroller.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_multiaxiscontroller.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -377,7 +377,7 @@ type
   //--- (end of YMultiAxisController accessors declaration)
   end;
 
-//--- (MultiAxisController functions declaration)
+//--- (YMultiAxisController functions declaration)
   ////
   /// <summary>
   ///   Retrieves a multi-axis controller for a given identifier.
@@ -444,7 +444,7 @@ type
   ///-
   function yFirstMultiAxisController():TYMultiAxisController;
 
-//--- (end of MultiAxisController functions declaration)
+//--- (end of YMultiAxisController functions declaration)
 
 implementation
 //--- (YMultiAxisController dlldef)
@@ -982,7 +982,7 @@ implementation
 
 //--- (end of YMultiAxisController implementation)
 
-//--- (MultiAxisController functions)
+//--- (YMultiAxisController functions)
 
   function yFindMultiAxisController(func:string): TYMultiAxisController;
     begin
@@ -998,14 +998,14 @@ implementation
     begin
     end;
 
-//--- (end of MultiAxisController functions)
+//--- (end of YMultiAxisController functions)
 
 initialization
-  //--- (MultiAxisController initialization)
-  //--- (end of MultiAxisController initialization)
+  //--- (YMultiAxisController initialization)
+  //--- (end of YMultiAxisController initialization)
 
 finalization
-  //--- (MultiAxisController cleanup)
+  //--- (YMultiAxisController cleanup)
   _MultiAxisControllerCleanup();
-  //--- (end of MultiAxisController cleanup)
+  //--- (end of YMultiAxisController cleanup)
 end.

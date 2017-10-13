@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_datalogger.pas 28121 2017-07-25 07:14:39Z seb $
+ * $Id: yocto_datalogger.pas 28833 2017-10-13 06:49:21Z seb $
  *
  * Implements yFindDataLogger(), the high-level API for DataLogger functions
  *
@@ -43,9 +43,9 @@ unit yocto_datalogger;
 interface
 
 uses
-   sysutils, classes, windows, yocto_api
+   sysutils, classes, windows;
 
 initialization
 
-finalization
+finalization;
 end.

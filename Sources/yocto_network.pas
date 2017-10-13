@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_network.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_network.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindNetwork(), the high-level API for Network functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -1302,7 +1302,7 @@ type
   //--- (end of YNetwork accessors declaration)
   end;
 
-//--- (Network functions declaration)
+//--- (YNetwork functions declaration)
   ////
   /// <summary>
   ///   Retrieves a network interface for a given identifier.
@@ -1369,7 +1369,7 @@ type
   ///-
   function yFirstNetwork():TYNetwork;
 
-//--- (end of Network functions declaration)
+//--- (end of YNetwork functions declaration)
 
 implementation
 //--- (YNetwork dlldef)
@@ -3305,7 +3305,7 @@ implementation
 
 //--- (end of YNetwork implementation)
 
-//--- (Network functions)
+//--- (YNetwork functions)
 
   function yFindNetwork(func:string): TYNetwork;
     begin
@@ -3321,14 +3321,14 @@ implementation
     begin
     end;
 
-//--- (end of Network functions)
+//--- (end of YNetwork functions)
 
 initialization
-  //--- (Network initialization)
-  //--- (end of Network initialization)
+  //--- (YNetwork initialization)
+  //--- (end of YNetwork initialization)
 
 finalization
-  //--- (Network cleanup)
+  //--- (YNetwork cleanup)
   _NetworkCleanup();
-  //--- (end of Network cleanup)
+  //--- (end of YNetwork cleanup)
 end.

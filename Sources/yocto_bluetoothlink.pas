@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_bluetoothlink.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_bluetoothlink.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindBluetoothLink(), the high-level API for BluetoothLink functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -521,7 +521,7 @@ type
   //--- (end of YBluetoothLink accessors declaration)
   end;
 
-//--- (BluetoothLink functions declaration)
+//--- (YBluetoothLink functions declaration)
   ////
   /// <summary>
   ///   Retrieves a cellular interface for a given identifier.
@@ -588,7 +588,7 @@ type
   ///-
   function yFirstBluetoothLink():TYBluetoothLink;
 
-//--- (end of BluetoothLink functions declaration)
+//--- (end of YBluetoothLink functions declaration)
 
 implementation
 //--- (YBluetoothLink dlldef)
@@ -1367,7 +1367,7 @@ implementation
 
 //--- (end of YBluetoothLink implementation)
 
-//--- (BluetoothLink functions)
+//--- (YBluetoothLink functions)
 
   function yFindBluetoothLink(func:string): TYBluetoothLink;
     begin
@@ -1383,14 +1383,14 @@ implementation
     begin
     end;
 
-//--- (end of BluetoothLink functions)
+//--- (end of YBluetoothLink functions)
 
 initialization
-  //--- (BluetoothLink initialization)
-  //--- (end of BluetoothLink initialization)
+  //--- (YBluetoothLink initialization)
+  //--- (end of YBluetoothLink initialization)
 
 finalization
-  //--- (BluetoothLink cleanup)
+  //--- (YBluetoothLink cleanup)
   _BluetoothLinkCleanup();
-  //--- (end of BluetoothLink cleanup)
+  //--- (end of YBluetoothLink cleanup)
 end.

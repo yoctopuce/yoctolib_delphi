@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_digitalio.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_digitalio.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindDigitalIO(), the high-level API for DigitalIO functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -687,7 +687,7 @@ type
   //--- (end of YDigitalIO accessors declaration)
   end;
 
-//--- (DigitalIO functions declaration)
+//--- (YDigitalIO functions declaration)
   ////
   /// <summary>
   ///   Retrieves a digital IO port for a given identifier.
@@ -754,7 +754,7 @@ type
   ///-
   function yFirstDigitalIO():TYDigitalIO;
 
-//--- (end of DigitalIO functions declaration)
+//--- (end of YDigitalIO functions declaration)
 
 implementation
 //--- (YDigitalIO dlldef)
@@ -1766,7 +1766,7 @@ implementation
 
 //--- (end of YDigitalIO implementation)
 
-//--- (DigitalIO functions)
+//--- (YDigitalIO functions)
 
   function yFindDigitalIO(func:string): TYDigitalIO;
     begin
@@ -1782,14 +1782,14 @@ implementation
     begin
     end;
 
-//--- (end of DigitalIO functions)
+//--- (end of YDigitalIO functions)
 
 initialization
-  //--- (DigitalIO initialization)
-  //--- (end of DigitalIO initialization)
+  //--- (YDigitalIO initialization)
+  //--- (end of YDigitalIO initialization)
 
 finalization
-  //--- (DigitalIO cleanup)
+  //--- (YDigitalIO cleanup)
   _DigitalIOCleanup();
-  //--- (end of DigitalIO cleanup)
+  //--- (end of YDigitalIO cleanup)
 end.

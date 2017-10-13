@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_oscontrol.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_oscontrol.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindOsControl(), the high-level API for OsControl functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -222,7 +222,7 @@ type
   //--- (end of YOsControl accessors declaration)
   end;
 
-//--- (OsControl functions declaration)
+//--- (YOsControl functions declaration)
   ////
   /// <summary>
   ///   Retrieves OS control for a given identifier.
@@ -289,7 +289,7 @@ type
   ///-
   function yFirstOsControl():TYOsControl;
 
-//--- (end of OsControl functions declaration)
+//--- (end of YOsControl functions declaration)
 
 implementation
 //--- (YOsControl dlldef)
@@ -553,7 +553,7 @@ implementation
 
 //--- (end of YOsControl implementation)
 
-//--- (OsControl functions)
+//--- (YOsControl functions)
 
   function yFindOsControl(func:string): TYOsControl;
     begin
@@ -569,14 +569,14 @@ implementation
     begin
     end;
 
-//--- (end of OsControl functions)
+//--- (end of YOsControl functions)
 
 initialization
-  //--- (OsControl initialization)
-  //--- (end of OsControl initialization)
+  //--- (YOsControl initialization)
+  //--- (end of YOsControl initialization)
 
 finalization
-  //--- (OsControl cleanup)
+  //--- (YOsControl cleanup)
   _OsControlCleanup();
-  //--- (end of OsControl cleanup)
+  //--- (end of YOsControl cleanup)
 end.

@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_colorled.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_colorled.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindColorLed(), the high-level API for ColorLed functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -529,7 +529,7 @@ type
   //--- (end of YColorLed accessors declaration)
   end;
 
-//--- (ColorLed functions declaration)
+//--- (YColorLed functions declaration)
   ////
   /// <summary>
   ///   Retrieves an RGB LED for a given identifier.
@@ -596,7 +596,7 @@ type
   ///-
   function yFirstColorLed():TYColorLed;
 
-//--- (end of ColorLed functions declaration)
+//--- (end of YColorLed functions declaration)
 
 implementation
 //--- (YColorLed dlldef)
@@ -1423,7 +1423,7 @@ implementation
 
 //--- (end of YColorLed implementation)
 
-//--- (ColorLed functions)
+//--- (YColorLed functions)
 
   function yFindColorLed(func:string): TYColorLed;
     begin
@@ -1439,16 +1439,16 @@ implementation
     begin
     end;
 
-//--- (end of ColorLed functions)
+//--- (end of YColorLed functions)
 
 initialization
-  //--- (ColorLed initialization)
+  //--- (YColorLed initialization)
     Y_RGBMOVE_INVALID := TYColorLedMove.Create();
     Y_HSLMOVE_INVALID := TYColorLedMove.Create();
-  //--- (end of ColorLed initialization)
+  //--- (end of YColorLed initialization)
 
 finalization
-  //--- (ColorLed cleanup)
+  //--- (YColorLed cleanup)
   _ColorLedCleanup();
-  //--- (end of ColorLed cleanup)
+  //--- (end of YColorLed cleanup)
 end.

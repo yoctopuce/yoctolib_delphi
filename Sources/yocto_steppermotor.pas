@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_steppermotor.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_steppermotor.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindStepperMotor(), the high-level API for StepperMotor functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -808,7 +808,7 @@ type
   //--- (end of YStepperMotor accessors declaration)
   end;
 
-//--- (StepperMotor functions declaration)
+//--- (YStepperMotor functions declaration)
   ////
   /// <summary>
   ///   Retrieves a stepper motor for a given identifier.
@@ -875,7 +875,7 @@ type
   ///-
   function yFirstStepperMotor():TYStepperMotor;
 
-//--- (end of StepperMotor functions declaration)
+//--- (end of YStepperMotor functions declaration)
 
 implementation
 //--- (YStepperMotor dlldef)
@@ -2123,7 +2123,7 @@ implementation
 
 //--- (end of YStepperMotor implementation)
 
-//--- (StepperMotor functions)
+//--- (YStepperMotor functions)
 
   function yFindStepperMotor(func:string): TYStepperMotor;
     begin
@@ -2139,14 +2139,14 @@ implementation
     begin
     end;
 
-//--- (end of StepperMotor functions)
+//--- (end of YStepperMotor functions)
 
 initialization
-  //--- (StepperMotor initialization)
-  //--- (end of StepperMotor initialization)
+  //--- (YStepperMotor initialization)
+  //--- (end of YStepperMotor initialization)
 
 finalization
-  //--- (StepperMotor cleanup)
+  //--- (YStepperMotor cleanup)
   _StepperMotorCleanup();
-  //--- (end of StepperMotor cleanup)
+  //--- (end of YStepperMotor cleanup)
 end.

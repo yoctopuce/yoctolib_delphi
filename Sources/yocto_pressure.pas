@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_pressure.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_pressure.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindPressure(), the high-level API for Pressure functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -204,7 +204,7 @@ type
   //--- (end of YPressure accessors declaration)
   end;
 
-//--- (Pressure functions declaration)
+//--- (YPressure functions declaration)
   ////
   /// <summary>
   ///   Retrieves a pressure sensor for a given identifier.
@@ -271,7 +271,7 @@ type
   ///-
   function yFirstPressure():TYPressure;
 
-//--- (end of Pressure functions declaration)
+//--- (end of YPressure functions declaration)
 
 implementation
 //--- (YPressure dlldef)
@@ -515,7 +515,7 @@ implementation
 
 //--- (end of YPressure implementation)
 
-//--- (Pressure functions)
+//--- (YPressure functions)
 
   function yFindPressure(func:string): TYPressure;
     begin
@@ -531,14 +531,14 @@ implementation
     begin
     end;
 
-//--- (end of Pressure functions)
+//--- (end of YPressure functions)
 
 initialization
-  //--- (Pressure initialization)
-  //--- (end of Pressure initialization)
+  //--- (YPressure initialization)
+  //--- (end of YPressure initialization)
 
 finalization
-  //--- (Pressure cleanup)
+  //--- (YPressure cleanup)
   _PressureCleanup();
-  //--- (end of Pressure cleanup)
+  //--- (end of YPressure cleanup)
 end.

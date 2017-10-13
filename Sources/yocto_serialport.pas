@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 28658 2017-09-26 16:30:25Z seb $
+ * $Id: yocto_serialport.pas 28833 2017-10-13 06:49:21Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -1339,7 +1339,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
   //--- (end of generated code: YSerialPort accessors declaration)
   end;
 
-//--- (generated code: SerialPort functions declaration)
+//--- (generated code: YSerialPort functions declaration)
   ////
   /// <summary>
   ///   Retrieves a serial port for a given identifier.
@@ -1406,7 +1406,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
   ///-
   function yFirstSerialPort():TYSerialPort;
 
-//--- (end of generated code: SerialPort functions declaration)
+//--- (end of generated code: YSerialPort functions declaration)
 
 implementation
 //--- (generated code: YSerialPort dlldef)
@@ -4171,7 +4171,7 @@ implementation
 
 //--- (end of generated code: YSerialPort implementation)
 
-//--- (generated code: SerialPort functions)
+//--- (generated code: YSerialPort functions)
 
   function yFindSerialPort(func:string): TYSerialPort;
     begin
@@ -4187,7 +4187,7 @@ implementation
     begin
     end;
 
-//--- (end of generated code: SerialPort functions)
+//--- (end of generated code: YSerialPort functions)
 
 
 
@@ -4223,26 +4223,30 @@ constructor TYSnoopingRecord.create(data:string);
  var
    p : TJSONparser;
    node : PJSONRECORD;
+   tmp : string;
+   c: char;
  begin
    p := TJsonParser.create(data,false);
-   node:= p.GetChildNode(nil,'ssid');
-   self._ssid:=string(node^.svalue);
-   node:= p.GetChildNode(nil,'channel');
-   self._channel:=node^.ivalue;
-   node:= p.GetChildNode(nil,'sec');
-   self._sec:=string(node^.svalue);
-   node:= p.GetChildNode(nil,'rssi');
-   self._rssi:=node^.ivalue;
+   node:= p.GetChildNode(nil,'t');
+   self._tim:=node^.ivalue;
+   node:= p.GetChildNode(nil,'m');
+   tmp := string(node^.svalue);
+   c := tmp[1];
+   if (c = '<') then
+     self._dir := 1
+   else
+     self._dir := 0;
+   self._msg:=Copy(tmp, 2, Length(tmp)-1);
    p.free;
  end;
 
-//--- (generated code: SnoopingRecord functions)
+//--- (generated code: YSnoopingRecord functions)
 
   procedure _SnoopingRecordCleanup();
     begin
     end;
 
-//--- (end of generated code: SnoopingRecord functions)
+//--- (end of generated code: YSnoopingRecord functions)
 
 procedure freeSnoopingRecordArray(var list:TYSnoopingRecordARRAY);
  var i:integer;
@@ -4253,15 +4257,15 @@ procedure freeSnoopingRecordArray(var list:TYSnoopingRecordARRAY);
  end;
 
 initialization
-  //--- (generated code: SerialPort initialization)
-  //--- (end of generated code: SerialPort initialization)
-  //--- (generated code: SnoopingRecord initialization)
-  //--- (end of generated code: SnoopingRecord initialization)
+  //--- (generated code: YSerialPort initialization)
+  //--- (end of generated code: YSerialPort initialization)
+  //--- (generated code: YSnoopingRecord initialization)
+  //--- (end of generated code: YSnoopingRecord initialization)
 
 finalization
-  //--- (generated code: SerialPort cleanup)
+  //--- (generated code: YSerialPort cleanup)
   _SerialPortCleanup();
-  //--- (end of generated code: SerialPort cleanup)
-  //--- (generated code: SnoopingRecord cleanup)
-  //--- (end of generated code: SnoopingRecord cleanup)
+  //--- (end of generated code: YSerialPort cleanup)
+  //--- (generated code: YSnoopingRecord cleanup)
+  //--- (end of generated code: YSnoopingRecord cleanup)
 end.

@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_wakeupmonitor.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -448,7 +448,7 @@ type
   //--- (end of YWakeUpMonitor accessors declaration)
   end;
 
-//--- (WakeUpMonitor functions declaration)
+//--- (YWakeUpMonitor functions declaration)
   ////
   /// <summary>
   ///   Retrieves a monitor for a given identifier.
@@ -515,7 +515,7 @@ type
   ///-
   function yFirstWakeUpMonitor():TYWakeUpMonitor;
 
-//--- (end of WakeUpMonitor functions declaration)
+//--- (end of YWakeUpMonitor functions declaration)
 
 implementation
 //--- (YWakeUpMonitor dlldef)
@@ -1175,7 +1175,7 @@ implementation
 
 //--- (end of YWakeUpMonitor implementation)
 
-//--- (WakeUpMonitor functions)
+//--- (YWakeUpMonitor functions)
 
   function yFindWakeUpMonitor(func:string): TYWakeUpMonitor;
     begin
@@ -1191,14 +1191,14 @@ implementation
     begin
     end;
 
-//--- (end of WakeUpMonitor functions)
+//--- (end of YWakeUpMonitor functions)
 
 initialization
-  //--- (WakeUpMonitor initialization)
-  //--- (end of WakeUpMonitor initialization)
+  //--- (YWakeUpMonitor initialization)
+  //--- (end of YWakeUpMonitor initialization)
 
 finalization
-  //--- (WakeUpMonitor cleanup)
+  //--- (YWakeUpMonitor cleanup)
   _WakeUpMonitorCleanup();
-  //--- (end of WakeUpMonitor cleanup)
+  //--- (end of YWakeUpMonitor cleanup)
 end.

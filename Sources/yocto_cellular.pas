@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_cellular.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -882,7 +882,7 @@ type
   end;
 
 
-//--- (generated code: Cellular functions declaration)
+//--- (generated code: YCellular functions declaration)
   ////
   /// <summary>
   ///   Retrieves a cellular interface for a given identifier.
@@ -949,9 +949,9 @@ type
   ///-
   function yFirstCellular():TYCellular;
 
-//--- (end of generated code: Cellular functions declaration)
-//--- (generated code: CellRecord functions declaration)
-//--- (end of generated code: CellRecord functions declaration)
+//--- (end of generated code: YCellular functions declaration)
+//--- (generated code: YCellRecord functions declaration)
+//--- (end of generated code: YCellRecord functions declaration)
 
 implementation
 //--- (generated code: YCellular dlldef)
@@ -2405,7 +2405,7 @@ implementation
 
 //--- (end of generated code: YCellular implementation)
 
-//--- (generated code: Cellular functions)
+//--- (generated code: YCellular functions)
 
   function yFindCellular(func:string): TYCellular;
     begin
@@ -2421,7 +2421,7 @@ implementation
     begin
     end;
 
-//--- (end of generated code: Cellular functions)
+//--- (end of generated code: YCellular functions)
 
   constructor TYCellRecord.Create(mcc, mnc, lac, cellId, dbm, tad, cnsot: integer; oper :string);
     begin
@@ -2496,25 +2496,25 @@ implementation
 
 //--- (end of generated code: YCellRecord implementation)
 
-//--- (generated code: CellRecord functions)
+//--- (generated code: YCellRecord functions)
 
   procedure _CellRecordCleanup();
     begin
     end;
 
-//--- (end of generated code: CellRecord functions)
+//--- (end of generated code: YCellRecord functions)
 
 
 initialization
-  //--- (generated code: Cellular initialization)
-  //--- (end of generated code: Cellular initialization)
-  //--- (generated code: CellRecord initialization)
-  //--- (end of generated code: CellRecord initialization)
+  //--- (generated code: YCellular initialization)
+  //--- (end of generated code: YCellular initialization)
+  //--- (generated code: YCellRecord initialization)
+  //--- (end of generated code: YCellRecord initialization)
 
 finalization
-  //--- (generated code: Cellular cleanup)
+  //--- (generated code: YCellular cleanup)
   _CellularCleanup();
-  //--- (end of generated code: Cellular cleanup)
-  //--- (generated code: CellRecord cleanup)
-  //--- (end of generated code: CellRecord cleanup)
+  //--- (end of generated code: YCellular cleanup)
+  //--- (generated code: YCellRecord cleanup)
+  //--- (end of generated code: YCellRecord cleanup)
 end.

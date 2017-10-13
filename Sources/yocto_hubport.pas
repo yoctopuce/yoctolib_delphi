@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_hubport.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_hubport.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindHubPort(), the high-level API for HubPort functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -274,7 +274,7 @@ type
   //--- (end of YHubPort accessors declaration)
   end;
 
-//--- (HubPort functions declaration)
+//--- (YHubPort functions declaration)
   ////
   /// <summary>
   ///   Retrieves a Yocto-hub port for a given identifier.
@@ -341,7 +341,7 @@ type
   ///-
   function yFirstHubPort():TYHubPort;
 
-//--- (end of HubPort functions declaration)
+//--- (end of YHubPort functions declaration)
 
 implementation
 //--- (YHubPort dlldef)
@@ -685,7 +685,7 @@ implementation
 
 //--- (end of YHubPort implementation)
 
-//--- (HubPort functions)
+//--- (YHubPort functions)
 
   function yFindHubPort(func:string): TYHubPort;
     begin
@@ -701,14 +701,14 @@ implementation
     begin
     end;
 
-//--- (end of HubPort functions)
+//--- (end of YHubPort functions)
 
 initialization
-  //--- (HubPort initialization)
-  //--- (end of HubPort initialization)
+  //--- (YHubPort initialization)
+  //--- (end of YHubPort initialization)
 
 finalization
-  //--- (HubPort cleanup)
+  //--- (YHubPort cleanup)
   _HubPortCleanup();
-  //--- (end of HubPort cleanup)
+  //--- (end of YHubPort cleanup)
 end.

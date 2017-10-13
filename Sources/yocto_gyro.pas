@@ -1,35 +1,35 @@
 {*********************************************************************
  *
- * $Id: yocto_gyro.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_gyro.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindGyro(), the high-level API for Gyro functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
  *  Yoctopuce Sarl (hereafter Licensor) grants to you a perpetual
  *  non-exclusive license to use, modify, copy and integrate this
- *  file into your software for the sole purpose of interfacing 
- *  with Yoctopuce products. 
+ *  file into your software for the sole purpose of interfacing
+ *  with Yoctopuce products.
  *
- *  You may reproduce and distribute copies of this file in 
+ *  You may reproduce and distribute copies of this file in
  *  source or object form, as long as the sole purpose of this
- *  code is to interface with Yoctopuce products. You must retain 
+ *  code is to interface with Yoctopuce products. You must retain
  *  this notice in the distributed source file.
  *
  *  You should refer to Yoctopuce General Terms and Conditions
- *  for additional information regarding your rights and 
+ *  for additional information regarding your rights and
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
- *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
+ *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, 
- *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR 
- *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT 
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA,
+ *  COST OF PROCUREMENT OF SUBSTITUTE GOODS, TECHNOLOGY OR
+ *  SERVICES, ANY CLAIMS BY THIRD PARTIES (INCLUDING BUT NOT
  *  LIMITED TO ANY DEFENSE THEREOF), ANY CLAIMS FOR INDEMNITY OR
  *  CONTRIBUTION, OR OTHER SIMILAR COSTS, WHETHER ASSERTED ON THE
  *  BASIS OF CONTRACT, TORT (INCLUDING NEGLIGENCE), BREACH OF
@@ -213,7 +213,7 @@ type
     class function FirstQt():TYQt;
   //--- (end of generated code: YQt accessors declaration)
   end;
-  //--- (generated code: Qt functions declaration)
+  //--- (generated code: YQt functions declaration)
   ////
   /// <summary>
   ///   Retrieves a quaternion component for a given identifier.
@@ -280,7 +280,7 @@ type
   ///-
   function yFirstQt():TYQt;
 
-//--- (end of generated code: Qt functions declaration)
+//--- (end of generated code: YQt functions declaration)
 
   procedure yInternalGyroCallback(obj:TYQt; value:string);
 
@@ -753,7 +753,7 @@ type
   //--- (end of generated code: YGyro accessors declaration)
   end;
 
-//--- (generated code: Gyro functions declaration)
+//--- (generated code: YGyro functions declaration)
   ////
   /// <summary>
   ///   Retrieves a gyroscope for a given identifier.
@@ -820,7 +820,7 @@ type
   ///-
   function yFirstGyro():TYGyro;
 
-//--- (end of generated code: Gyro functions declaration)
+//--- (end of generated code: YGyro functions declaration)
 
 implementation
 
@@ -1063,7 +1063,7 @@ constructor TYQt.Create(func:string);
 
 //--- (end of generated code: YQt implementation)
 
-//--- (generated code: Qt functions)
+//--- (generated code: YQt functions)
 
   function yFindQt(func:string): TYQt;
     begin
@@ -1079,7 +1079,7 @@ constructor TYQt.Create(func:string);
     begin
     end;
 
-//--- (end of generated code: Qt functions)
+//--- (end of generated code: YQt functions)
   procedure yInternalGyroCallback(obj:TYQt; value:string);
     var
       gyro :  TYGyro;
@@ -1973,7 +1973,7 @@ constructor TYQt.Create(func:string);
 
 //--- (end of generated code: YGyro implementation)
 
-//--- (generated code: Gyro functions)
+//--- (generated code: YGyro functions)
 
   function yFindGyro(func:string): TYGyro;
     begin
@@ -1989,19 +1989,19 @@ constructor TYQt.Create(func:string);
     begin
     end;
 
-//--- (end of generated code: Gyro functions)
+//--- (end of generated code: YGyro functions)
 
 initialization
-  //--- (generated code: Qt initialization)
-  //--- (end of generated code: Qt initialization)
-  //--- (generated code: Gyro initialization)
-  //--- (end of generated code: Gyro initialization)
+  //--- (generated code: YQt initialization)
+  //--- (end of generated code: YQt initialization)
+  //--- (generated code: YGyro initialization)
+  //--- (end of generated code: YGyro initialization)
 
 finalization
-  //--- (generated code: Qt cleanup)
+  //--- (generated code: YQt cleanup)
   _QtCleanup();
-  //--- (end of generated code: Qt cleanup)
-  //--- (generated code: Gyro cleanup)
+  //--- (end of generated code: YQt cleanup)
+  //--- (generated code: YGyro cleanup)
   _GyroCleanup();
-  //--- (end of generated code: Gyro cleanup)
+  //--- (end of generated code: YGyro cleanup)
 end.

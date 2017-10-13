@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_current.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_current.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindCurrent(), the high-level API for Current functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -212,7 +212,7 @@ type
   //--- (end of YCurrent accessors declaration)
   end;
 
-//--- (Current functions declaration)
+//--- (YCurrent functions declaration)
   ////
   /// <summary>
   ///   Retrieves a current sensor for a given identifier.
@@ -279,7 +279,7 @@ type
   ///-
   function yFirstCurrent():TYCurrent;
 
-//--- (end of Current functions declaration)
+//--- (end of YCurrent functions declaration)
 
 implementation
 //--- (YCurrent dlldef)
@@ -556,7 +556,7 @@ implementation
 
 //--- (end of YCurrent implementation)
 
-//--- (Current functions)
+//--- (YCurrent functions)
 
   function yFindCurrent(func:string): TYCurrent;
     begin
@@ -572,14 +572,14 @@ implementation
     begin
     end;
 
-//--- (end of Current functions)
+//--- (end of YCurrent functions)
 
 initialization
-  //--- (Current initialization)
-  //--- (end of Current initialization)
+  //--- (YCurrent initialization)
+  //--- (end of YCurrent initialization)
 
 finalization
-  //--- (Current cleanup)
+  //--- (YCurrent cleanup)
   _CurrentCleanup();
-  //--- (end of Current cleanup)
+  //--- (end of YCurrent cleanup)
 end.

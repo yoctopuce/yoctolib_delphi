@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_quadraturedecoder.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_quadraturedecoder.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -291,7 +291,7 @@ type
   //--- (end of YQuadratureDecoder accessors declaration)
   end;
 
-//--- (QuadratureDecoder functions declaration)
+//--- (YQuadratureDecoder functions declaration)
   ////
   /// <summary>
   ///   Retrieves a quadrature decoder for a given identifier.
@@ -358,7 +358,7 @@ type
   ///-
   function yFirstQuadratureDecoder():TYQuadratureDecoder;
 
-//--- (end of QuadratureDecoder functions declaration)
+//--- (end of YQuadratureDecoder functions declaration)
 
 implementation
 //--- (YQuadratureDecoder dlldef)
@@ -739,7 +739,7 @@ implementation
 
 //--- (end of YQuadratureDecoder implementation)
 
-//--- (QuadratureDecoder functions)
+//--- (YQuadratureDecoder functions)
 
   function yFindQuadratureDecoder(func:string): TYQuadratureDecoder;
     begin
@@ -755,14 +755,14 @@ implementation
     begin
     end;
 
-//--- (end of QuadratureDecoder functions)
+//--- (end of YQuadratureDecoder functions)
 
 initialization
-  //--- (QuadratureDecoder initialization)
-  //--- (end of QuadratureDecoder initialization)
+  //--- (YQuadratureDecoder initialization)
+  //--- (end of YQuadratureDecoder initialization)
 
 finalization
-  //--- (QuadratureDecoder cleanup)
+  //--- (YQuadratureDecoder cleanup)
   _QuadratureDecoderCleanup();
-  //--- (end of QuadratureDecoder cleanup)
+  //--- (end of YQuadratureDecoder cleanup)
 end.

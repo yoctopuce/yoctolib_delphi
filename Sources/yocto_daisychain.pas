@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_daisychain.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_daisychain.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindDaisyChain(), the high-level API for DaisyChain functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -270,7 +270,7 @@ type
   //--- (end of YDaisyChain accessors declaration)
   end;
 
-//--- (DaisyChain functions declaration)
+//--- (YDaisyChain functions declaration)
   ////
   /// <summary>
   ///   Retrieves a module chain for a given identifier.
@@ -337,7 +337,7 @@ type
   ///-
   function yFirstDaisyChain():TYDaisyChain;
 
-//--- (end of DaisyChain functions declaration)
+//--- (end of YDaisyChain functions declaration)
 
 implementation
 //--- (YDaisyChain dlldef)
@@ -681,7 +681,7 @@ implementation
 
 //--- (end of YDaisyChain implementation)
 
-//--- (DaisyChain functions)
+//--- (YDaisyChain functions)
 
   function yFindDaisyChain(func:string): TYDaisyChain;
     begin
@@ -697,14 +697,14 @@ implementation
     begin
     end;
 
-//--- (end of DaisyChain functions)
+//--- (end of YDaisyChain functions)
 
 initialization
-  //--- (DaisyChain initialization)
-  //--- (end of DaisyChain initialization)
+  //--- (YDaisyChain initialization)
+  //--- (end of YDaisyChain initialization)
 
 finalization
-  //--- (DaisyChain cleanup)
+  //--- (YDaisyChain cleanup)
   _DaisyChainCleanup();
-  //--- (end of DaisyChain cleanup)
+  //--- (end of YDaisyChain cleanup)
 end.

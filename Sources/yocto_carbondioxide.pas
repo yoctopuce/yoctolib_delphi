@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_carbondioxide.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_carbondioxide.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -313,7 +313,7 @@ type
   //--- (end of YCarbonDioxide accessors declaration)
   end;
 
-//--- (CarbonDioxide functions declaration)
+//--- (YCarbonDioxide functions declaration)
   ////
   /// <summary>
   ///   Retrieves a CO2 sensor for a given identifier.
@@ -380,7 +380,7 @@ type
   ///-
   function yFirstCarbonDioxide():TYCarbonDioxide;
 
-//--- (end of CarbonDioxide functions declaration)
+//--- (end of YCarbonDioxide functions declaration)
 
 implementation
 //--- (YCarbonDioxide dlldef)
@@ -806,7 +806,7 @@ implementation
 
 //--- (end of YCarbonDioxide implementation)
 
-//--- (CarbonDioxide functions)
+//--- (YCarbonDioxide functions)
 
   function yFindCarbonDioxide(func:string): TYCarbonDioxide;
     begin
@@ -822,14 +822,14 @@ implementation
     begin
     end;
 
-//--- (end of CarbonDioxide functions)
+//--- (end of YCarbonDioxide functions)
 
 initialization
-  //--- (CarbonDioxide initialization)
-  //--- (end of CarbonDioxide initialization)
+  //--- (YCarbonDioxide initialization)
+  //--- (end of YCarbonDioxide initialization)
 
 finalization
-  //--- (CarbonDioxide cleanup)
+  //--- (YCarbonDioxide cleanup)
   _CarbonDioxideCleanup();
-  //--- (end of CarbonDioxide cleanup)
+  //--- (end of YCarbonDioxide cleanup)
 end.

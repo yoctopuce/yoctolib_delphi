@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_voltageoutput.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_voltageoutput.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindVoltageOutput(), the high-level API for VoltageOutput functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -291,7 +291,7 @@ type
   //--- (end of YVoltageOutput accessors declaration)
   end;
 
-//--- (VoltageOutput functions declaration)
+//--- (YVoltageOutput functions declaration)
   ////
   /// <summary>
   ///   Retrieves a voltage output for a given identifier.
@@ -358,7 +358,7 @@ type
   ///-
   function yFirstVoltageOutput():TYVoltageOutput;
 
-//--- (end of VoltageOutput functions declaration)
+//--- (end of YVoltageOutput functions declaration)
 
 implementation
 //--- (YVoltageOutput dlldef)
@@ -759,7 +759,7 @@ implementation
 
 //--- (end of YVoltageOutput implementation)
 
-//--- (VoltageOutput functions)
+//--- (YVoltageOutput functions)
 
   function yFindVoltageOutput(func:string): TYVoltageOutput;
     begin
@@ -775,14 +775,14 @@ implementation
     begin
     end;
 
-//--- (end of VoltageOutput functions)
+//--- (end of YVoltageOutput functions)
 
 initialization
-  //--- (VoltageOutput initialization)
-  //--- (end of VoltageOutput initialization)
+  //--- (YVoltageOutput initialization)
+  //--- (end of YVoltageOutput initialization)
 
 finalization
-  //--- (VoltageOutput cleanup)
+  //--- (YVoltageOutput cleanup)
   _VoltageOutputCleanup();
-  //--- (end of VoltageOutput cleanup)
+  //--- (end of YVoltageOutput cleanup)
 end.

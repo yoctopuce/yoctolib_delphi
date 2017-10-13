@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_colorledcluster.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_colorledcluster.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -646,6 +646,7 @@ type
     ///   Starts a sequence execution: every LED linked to that sequence starts to
     ///   run it in a loop.
     /// <para>
+    ///   Note that a sequence with a zero duration can't be started.
     /// </para>
     /// </summary>
     /// <param name="seqIndex">
@@ -705,6 +706,7 @@ type
     ///   Configures a sequence to make it start automatically at device
     ///   startup.
     /// <para>
+    ///   Note that a sequence with a zero duration can't be started.
     ///   Don't forget to call <c>saveBlinkSeq()</c> to make sure the
     ///   modification is saved in the device flash memory.
     /// </para>
@@ -1135,7 +1137,7 @@ type
   //--- (end of YColorLedCluster accessors declaration)
   end;
 
-//--- (ColorLedCluster functions declaration)
+//--- (YColorLedCluster functions declaration)
   ////
   /// <summary>
   ///   Retrieves a RGB LED cluster for a given identifier.
@@ -1202,7 +1204,7 @@ type
   ///-
   function yFirstColorLedCluster():TYColorLedCluster;
 
-//--- (end of ColorLedCluster functions declaration)
+//--- (end of YColorLedCluster functions declaration)
 
 implementation
 //--- (YColorLedCluster dlldef)
@@ -2031,6 +2033,7 @@ implementation
   ///   Starts a sequence execution: every LED linked to that sequence starts to
   ///   run it in a loop.
   /// <para>
+  ///   Note that a sequence with a zero duration can't be started.
   /// </para>
   /// </summary>
   /// <param name="seqIndex">
@@ -2105,6 +2108,7 @@ implementation
   ///   Configures a sequence to make it start automatically at device
   ///   startup.
   /// <para>
+  ///   Note that a sequence with a zero duration can't be started.
   ///   Don't forget to call <c>saveBlinkSeq()</c> to make sure the
   ///   modification is saved in the device flash memory.
   /// </para>
@@ -2869,7 +2873,7 @@ implementation
 
 //--- (end of YColorLedCluster implementation)
 
-//--- (ColorLedCluster functions)
+//--- (YColorLedCluster functions)
 
   function yFindColorLedCluster(func:string): TYColorLedCluster;
     begin
@@ -2885,14 +2889,14 @@ implementation
     begin
     end;
 
-//--- (end of ColorLedCluster functions)
+//--- (end of YColorLedCluster functions)
 
 initialization
-  //--- (ColorLedCluster initialization)
-  //--- (end of ColorLedCluster initialization)
+  //--- (YColorLedCluster initialization)
+  //--- (end of YColorLedCluster initialization)
 
 finalization
-  //--- (ColorLedCluster cleanup)
+  //--- (YColorLedCluster cleanup)
   _ColorLedClusterCleanup();
-  //--- (end of ColorLedCluster cleanup)
+  //--- (end of YColorLedCluster cleanup)
 end.

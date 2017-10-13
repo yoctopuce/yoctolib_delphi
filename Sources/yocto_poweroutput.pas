@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_poweroutput.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_poweroutput.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindPowerOutput(), the high-level API for PowerOutput functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -230,7 +230,7 @@ type
   //--- (end of YPowerOutput accessors declaration)
   end;
 
-//--- (PowerOutput functions declaration)
+//--- (YPowerOutput functions declaration)
   ////
   /// <summary>
   ///   Retrieves a dual power  ouput control for a given identifier.
@@ -297,7 +297,7 @@ type
   ///-
   function yFirstPowerOutput():TYPowerOutput;
 
-//--- (end of PowerOutput functions declaration)
+//--- (end of YPowerOutput functions declaration)
 
 implementation
 //--- (YPowerOutput dlldef)
@@ -562,7 +562,7 @@ implementation
 
 //--- (end of YPowerOutput implementation)
 
-//--- (PowerOutput functions)
+//--- (YPowerOutput functions)
 
   function yFindPowerOutput(func:string): TYPowerOutput;
     begin
@@ -578,14 +578,14 @@ implementation
     begin
     end;
 
-//--- (end of PowerOutput functions)
+//--- (end of YPowerOutput functions)
 
 initialization
-  //--- (PowerOutput initialization)
-  //--- (end of PowerOutput initialization)
+  //--- (YPowerOutput initialization)
+  //--- (end of YPowerOutput initialization)
 
 finalization
-  //--- (PowerOutput cleanup)
+  //--- (YPowerOutput cleanup)
   _PowerOutputCleanup();
-  //--- (end of PowerOutput cleanup)
+  //--- (end of YPowerOutput cleanup)
 end.

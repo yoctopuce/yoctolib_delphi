@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_weighscale.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_weighscale.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindWeighScale(), the high-level API for WeighScale functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -536,7 +536,7 @@ type
   //--- (end of YWeighScale accessors declaration)
   end;
 
-//--- (WeighScale functions declaration)
+//--- (YWeighScale functions declaration)
   ////
   /// <summary>
   ///   Retrieves a weighing scale sensor for a given identifier.
@@ -603,7 +603,7 @@ type
   ///-
   function yFirstWeighScale():TYWeighScale;
 
-//--- (end of WeighScale functions declaration)
+//--- (end of YWeighScale functions declaration)
 
 implementation
 //--- (YWeighScale dlldef)
@@ -1548,7 +1548,7 @@ implementation
 
 //--- (end of YWeighScale implementation)
 
-//--- (WeighScale functions)
+//--- (YWeighScale functions)
 
   function yFindWeighScale(func:string): TYWeighScale;
     begin
@@ -1564,14 +1564,14 @@ implementation
     begin
     end;
 
-//--- (end of WeighScale functions)
+//--- (end of YWeighScale functions)
 
 initialization
-  //--- (WeighScale initialization)
-  //--- (end of WeighScale initialization)
+  //--- (YWeighScale initialization)
+  //--- (end of YWeighScale initialization)
 
 finalization
-  //--- (WeighScale cleanup)
+  //--- (YWeighScale cleanup)
   _WeighScaleCleanup();
-  //--- (end of WeighScale cleanup)
+  //--- (end of YWeighScale cleanup)
 end.

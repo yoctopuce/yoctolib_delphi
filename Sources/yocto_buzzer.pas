@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_buzzer.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_buzzer.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindBuzzer(), the high-level API for Buzzer functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -556,7 +556,7 @@ type
   //--- (end of YBuzzer accessors declaration)
   end;
 
-//--- (Buzzer functions declaration)
+//--- (YBuzzer functions declaration)
   ////
   /// <summary>
   ///   Retrieves a buzzer for a given identifier.
@@ -623,7 +623,7 @@ type
   ///-
   function yFirstBuzzer():TYBuzzer;
 
-//--- (end of Buzzer functions declaration)
+//--- (end of YBuzzer functions declaration)
 
 implementation
 //--- (YBuzzer dlldef)
@@ -1592,7 +1592,7 @@ implementation
 
 //--- (end of YBuzzer implementation)
 
-//--- (Buzzer functions)
+//--- (YBuzzer functions)
 
   function yFindBuzzer(func:string): TYBuzzer;
     begin
@@ -1608,14 +1608,14 @@ implementation
     begin
     end;
 
-//--- (end of Buzzer functions)
+//--- (end of YBuzzer functions)
 
 initialization
-  //--- (Buzzer initialization)
-  //--- (end of Buzzer initialization)
+  //--- (YBuzzer initialization)
+  //--- (end of YBuzzer initialization)
 
 finalization
-  //--- (Buzzer cleanup)
+  //--- (YBuzzer cleanup)
   _BuzzerCleanup();
-  //--- (end of Buzzer cleanup)
+  //--- (end of YBuzzer cleanup)
 end.

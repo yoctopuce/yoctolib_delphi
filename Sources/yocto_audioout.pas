@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_audioout.pas 28561 2017-09-15 15:09:45Z seb $
+ * $Id: yocto_audioout.pas 28747 2017-10-03 08:22:06Z seb $
  *
  * Implements yFindAudioOut(), the high-level API for AudioOut functions
  *
- * - - - - - - - - - License information: - - - - - - - - - 
+ * - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -23,7 +23,7 @@
  *  obligations.
  *
  *  THE SOFTWARE AND DOCUMENTATION ARE PROVIDED 'AS IS' WITHOUT
- *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING 
+ *  WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  *  WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY, FITNESS
  *  FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO
  *  EVENT SHALL LICENSOR BE LIABLE FOR ANY INCIDENTAL, SPECIAL,
@@ -326,7 +326,7 @@ type
   //--- (end of YAudioOut accessors declaration)
   end;
 
-//--- (AudioOut functions declaration)
+//--- (YAudioOut functions declaration)
   ////
   /// <summary>
   ///   Retrieves an audio output for a given identifier.
@@ -393,7 +393,7 @@ type
   ///-
   function yFirstAudioOut():TYAudioOut;
 
-//--- (end of AudioOut functions declaration)
+//--- (end of YAudioOut functions declaration)
 
 implementation
 //--- (YAudioOut dlldef)
@@ -846,7 +846,7 @@ implementation
 
 //--- (end of YAudioOut implementation)
 
-//--- (AudioOut functions)
+//--- (YAudioOut functions)
 
   function yFindAudioOut(func:string): TYAudioOut;
     begin
@@ -862,14 +862,14 @@ implementation
     begin
     end;
 
-//--- (end of AudioOut functions)
+//--- (end of YAudioOut functions)
 
 initialization
-  //--- (AudioOut initialization)
-  //--- (end of AudioOut initialization)
+  //--- (YAudioOut initialization)
+  //--- (end of YAudioOut initialization)
 
 finalization
-  //--- (AudioOut cleanup)
+  //--- (YAudioOut cleanup)
   _AudioOutCleanup();
-  //--- (end of AudioOut cleanup)
+  //--- (end of YAudioOut cleanup)
 end.
