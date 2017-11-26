@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 28799 2017-10-11 16:07:10Z seb $
+ * $Id: yocto_api.pas 29240 2017-11-23 13:29:57Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -115,7 +115,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '28878';
+  YOCTO_API_BUILD_NO        = '29281';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -217,6 +217,7 @@ const Y_ADVERTISEDVALUE_INVALID       = YAPI_INVALID_STRING;
 
 
 //--- (end of generated code: YFunction definitions)
+const YAPI_HASH_BUF_SIZE            = 28;
 
 //--- (generated code: YModule definitions)
 
@@ -10169,6 +10170,7 @@ var
         begin
           self._download(restoreLast[i_i]);
         end;
+      self.clearCache;
       result := YAPI_SUCCESS;
       exit;
     end;

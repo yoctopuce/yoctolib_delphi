@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_colorledcluster.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_colorledcluster.pas 29186 2017-11-16 10:04:13Z seb $
  *
  * Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -846,6 +846,33 @@ type
     ///   the next color code represents the target value of the next LED, etc.
     /// </para>
     /// </summary>
+    /// <param name="ledIndex">
+    ///   index of the first LED which should be updated
+    /// </param>
+    /// <param name="rgbList">
+    ///   a list of target 24bit RGB codes, in the form 0xRRGGBB
+    /// </param>
+    /// <param name="delay">
+    ///   transition duration in ms
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function rgbArrayOfs_move(ledIndex: LongInt; rgbList: TLongIntArray; delay: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Sets up a smooth RGB color transition to the specified pixel-by-pixel list of RGB
+    ///   color codes.
+    /// <para>
+    ///   The first color code represents the target RGB value of the first LED,
+    ///   the next color code represents the target value of the next LED, etc.
+    /// </para>
+    /// </summary>
     /// <param name="rgbList">
     ///   a list of target 24bit RGB codes, in the form 0xRRGGBB
     /// </param>
@@ -930,6 +957,33 @@ type
     /// </para>
     ///-
     function hslArray_move(hslList: TLongIntArray; delay: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Sets up a smooth HSL color transition to the specified pixel-by-pixel list of HSL
+    ///   color codes.
+    /// <para>
+    ///   The first color code represents the target HSL value of the first LED,
+    ///   the second color code represents the target value of the second LED, etc.
+    /// </para>
+    /// </summary>
+    /// <param name="ledIndex">
+    ///   index of the first LED which should be updated
+    /// </param>
+    /// <param name="hslList">
+    ///   a list of target 24bit HSL codes, in the form 0xHHSSLL
+    /// </param>
+    /// <param name="delay">
+    ///   transition duration in ms
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function hslArrayOfs_move(ledIndex: LongInt; hslList: TLongIntArray; delay: LongInt):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -2302,6 +2356,9 @@ implementation
   ///   the next color code represents the target value of the next LED, etc.
   /// </para>
   /// </summary>
+  /// <param name="ledIndex">
+  ///   index of the first LED which should be updated
+  /// </param>
   /// <param name="rgbList">
   ///   a list of target 24bit RGB codes, in the form 0xRRGGBB
   /// </param>
@@ -2315,7 +2372,7 @@ implementation
   ///   On failure, throws an exception or returns a negative error code.
   /// </para>
   ///-
-  function TYColorLedCluster.rgbArray_move(rgbList: TLongIntArray; delay: LongInt):LongInt;
+  function TYColorLedCluster.rgbArrayOfs_move(ledIndex: LongInt; rgbList: TLongIntArray; delay: LongInt):LongInt;
     var
       listlen : LongInt;
       buff : TByteArray;
@@ -2335,7 +2392,39 @@ implementation
           idx := idx + 1;
         end;
 
-      res := self._upload('rgb:'+inttostr(delay), buff);
+      res := self._upload('rgb:'+inttostr(delay)+':'+inttostr(ledIndex), buff);
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Sets up a smooth RGB color transition to the specified pixel-by-pixel list of RGB
+  ///   color codes.
+  /// <para>
+  ///   The first color code represents the target RGB value of the first LED,
+  ///   the next color code represents the target value of the next LED, etc.
+  /// </para>
+  /// </summary>
+  /// <param name="rgbList">
+  ///   a list of target 24bit RGB codes, in the form 0xRRGGBB
+  /// </param>
+  /// <param name="delay">
+  ///   transition duration in ms
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYColorLedCluster.rgbArray_move(rgbList: TLongIntArray; delay: LongInt):LongInt;
+    var
+      res : LongInt;
+    begin
+      res := self.rgbArrayOfs_move(0, rgbList, delay);
       result := res;
       exit;
     end;
@@ -2440,6 +2529,41 @@ implementation
   ///-
   function TYColorLedCluster.hslArray_move(hslList: TLongIntArray; delay: LongInt):LongInt;
     var
+      res : LongInt;
+    begin
+      res := self.hslArrayOfs_move(0, hslList, delay);
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Sets up a smooth HSL color transition to the specified pixel-by-pixel list of HSL
+  ///   color codes.
+  /// <para>
+  ///   The first color code represents the target HSL value of the first LED,
+  ///   the second color code represents the target value of the second LED, etc.
+  /// </para>
+  /// </summary>
+  /// <param name="ledIndex">
+  ///   index of the first LED which should be updated
+  /// </param>
+  /// <param name="hslList">
+  ///   a list of target 24bit HSL codes, in the form 0xHHSSLL
+  /// </param>
+  /// <param name="delay">
+  ///   transition duration in ms
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYColorLedCluster.hslArrayOfs_move(ledIndex: LongInt; hslList: TLongIntArray; delay: LongInt):LongInt;
+    var
       listlen : LongInt;
       buff : TByteArray;
       idx : LongInt;
@@ -2458,7 +2582,7 @@ implementation
           idx := idx + 1;
         end;
 
-      res := self._upload('hsl:'+inttostr(delay), buff);
+      res := self._upload('hsl:'+inttostr(delay)+':'+inttostr(ledIndex), buff);
       result := res;
       exit;
     end;

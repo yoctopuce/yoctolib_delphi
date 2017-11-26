@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_network.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_network.pas 29074 2017-11-03 11:27:21Z seb $
  *
  * Implements yFindNetwork(), the high-level API for Network functions
  *
@@ -2054,6 +2054,12 @@ implementation
     var
       rest_val: string;
     begin
+      if Length(newval) > YAPI_HASH_BUF_SIZE then
+        begin
+          _throw(YAPI_INVALID_ARGUMENT,'Password too long :' + newval);
+          result := YAPI_INVALID_ARGUMENT;
+          exit;
+        end;
       rest_val := newval;
       result := _setAttr('userPassword',rest_val);
     end;
@@ -2122,6 +2128,12 @@ implementation
     var
       rest_val: string;
     begin
+      if Length(newval) > YAPI_HASH_BUF_SIZE then
+        begin
+          _throw(YAPI_INVALID_ARGUMENT,'Password too long :' + newval);
+          result := YAPI_INVALID_ARGUMENT;
+          exit;
+        end;
       rest_val := newval;
       result := _setAttr('adminPassword',rest_val);
     end;
