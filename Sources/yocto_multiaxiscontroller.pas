@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_multiaxiscontroller.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_multiaxiscontroller.pas 29507 2017-12-28 14:14:56Z mvuilleu $
  *
  * Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
  *
@@ -738,8 +738,34 @@ implementation
 
 
   function TYMultiAxisController.sendCommand(command: string):LongInt;
+    var
+      url : string;
+      retBin : TByteArray;
+      res : LongInt;
     begin
-      result := self.set_command(command);
+      url := 'cmd.txt?X='+command;
+      //may throw an exception
+      retBin := self._download(url);
+      res := retBin[0];
+      if res = 49 then
+        begin
+          if not(res = 48) then
+            begin
+              self._throw( YAPI_DEVICE_BUSY, 'Motor command pipeline is full, try again later');
+              result:=YAPI_DEVICE_BUSY;
+              exit;
+            end;
+        end
+      else
+        begin
+          if not(res = 48) then
+            begin
+              self._throw( YAPI_IO_ERROR, 'Motor command failed permanently');
+              result:=YAPI_IO_ERROR;
+              exit;
+            end;
+        end;
+      result := YAPI_SUCCESS;
       exit;
     end;
 

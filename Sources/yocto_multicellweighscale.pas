@@ -1,8 +1,8 @@
 {*********************************************************************
  *
- * $Id: yocto_weighscale.pas 29472 2017-12-20 11:34:07Z mvuilleu $
+ * $Id: yocto_multicellweighscale.pas 29478 2017-12-21 08:10:05Z seb $
  *
- * Implements yFindWeighScale(), the high-level API for WeighScale functions
+ * Implements yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
  *
  * - - - - - - - - - License information: - - - - - - - - -
  *
@@ -38,15 +38,16 @@
  *********************************************************************}
 
 
-unit yocto_weighscale;
+unit yocto_multicellweighscale;
 
 interface
 
 uses
   sysutils, classes, windows, yocto_api, yjson;
 
-//--- (YWeighScale definitions)
+//--- (YMultiCellWeighScale definitions)
 
+const Y_CELLCOUNT_INVALID             = YAPI_INVALID_UINT;
 const Y_EXCITATION_OFF = 0;
 const Y_EXCITATION_DC = 1;
 const Y_EXCITATION_AC = 2;
@@ -59,31 +60,32 @@ const Y_ZEROTRACKING_INVALID          = YAPI_INVALID_DOUBLE;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 
-//--- (end of YWeighScale definitions)
+//--- (end of YMultiCellWeighScale definitions)
 
 type
-  TYWeighScale = class;
-  //--- (YWeighScale class start)
-  TYWeighScaleValueCallback = procedure(func: TYWeighScale; value:string);
-  TYWeighScaleTimedReportCallback = procedure(func: TYWeighScale; value:TYMeasure);
+  TYMultiCellWeighScale = class;
+  //--- (YMultiCellWeighScale class start)
+  TYMultiCellWeighScaleValueCallback = procedure(func: TYMultiCellWeighScale; value:string);
+  TYMultiCellWeighScaleTimedReportCallback = procedure(func: TYMultiCellWeighScale; value:TYMeasure);
 
   ////
   /// <summary>
-  ///   TYWeighScale Class: WeighScale function interface
+  ///   TYMultiCellWeighScale Class: MultiCellWeighScale function interface
   /// <para>
-  ///   The YWeighScale class provides a weight measurement from a ratiometric load cell
+  ///   The YMultiCellWeighScale class provides a weight measurement from a set of ratiometric load cells
   ///   sensor. It can be used to control the bridge excitation parameters, in order to avoid
   ///   measure shifts caused by temperature variation in the electronics, and can also
   ///   automatically apply an additional correction factor based on temperature to
-  ///   compensate for offsets in the load cell itself.
+  ///   compensate for offsets in the load cells themselves.
   /// </para>
   /// </summary>
   ///-
-  TYWeighScale=class(TYSensor)
-  //--- (end of YWeighScale class start)
+  TYMultiCellWeighScale=class(TYSensor)
+  //--- (end of YMultiCellWeighScale class start)
   protected
-  //--- (YWeighScale declaration)
+  //--- (YMultiCellWeighScale declaration)
     // Attributes (function value cache)
+    _cellCount                : LongInt;
     _excitation               : Integer;
     _compTempAdaptRatio       : double;
     _compTempAvg              : double;
@@ -91,16 +93,55 @@ type
     _compensation             : double;
     _zeroTracking             : double;
     _command                  : string;
-    _valueCallbackWeighScale  : TYWeighScaleValueCallback;
-    _timedReportCallbackWeighScale : TYWeighScaleTimedReportCallback;
+    _valueCallbackMultiCellWeighScale : TYMultiCellWeighScaleValueCallback;
+    _timedReportCallbackMultiCellWeighScale : TYMultiCellWeighScaleTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
 
-    //--- (end of YWeighScale declaration)
+    //--- (end of YMultiCellWeighScale declaration)
 
   public
-    //--- (YWeighScale accessors declaration)
+    //--- (YMultiCellWeighScale accessors declaration)
     constructor Create(func:string);
+
+    ////
+    /// <summary>
+    ///   Returns the number of load cells in use.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the number of load cells in use
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_CELLCOUNT_INVALID</c>.
+    /// </para>
+    ///-
+    function get_cellCount():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the number of load cells in use.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the number of load cells in use
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_cellCount(newval:LongInt):integer;
 
     ////
     /// <summary>
@@ -313,7 +354,7 @@ type
     /// <para>
     ///   This function does not require that $THEFUNCTION$ is online at the time
     ///   it is invoked. The returned object is nevertheless valid.
-    ///   Use the method <c>YWeighScale.isOnline()</c> to test if $THEFUNCTION$ is
+    ///   Use the method <c>YMultiCellWeighScale.isOnline()</c> to test if $THEFUNCTION$ is
     ///   indeed online at a given time. In case of ambiguity when looking for
     ///   $AFUNCTION$ by logical name, no error is notified: the first instance
     ///   found is returned. The search is performed first by hardware name,
@@ -331,10 +372,10 @@ type
     ///   a string that uniquely characterizes $THEFUNCTION$
     /// </param>
     /// <returns>
-    ///   a <c>YWeighScale</c> object allowing you to drive $THEFUNCTION$.
+    ///   a <c>YMultiCellWeighScale</c> object allowing you to drive $THEFUNCTION$.
     /// </returns>
     ///-
-    class function FindWeighScale(func: string):TYWeighScale;
+    class function FindMultiCellWeighScale(func: string):TYMultiCellWeighScale;
 
     ////
     /// <summary>
@@ -354,7 +395,7 @@ type
     /// @noreturn
     /// </param>
     ///-
-    function registerValueCallback(callback: TYWeighScaleValueCallback):LongInt; overload;
+    function registerValueCallback(callback: TYMultiCellWeighScaleValueCallback):LongInt; overload;
 
     function _invokeValueCallback(value: string):LongInt; override;
 
@@ -376,13 +417,13 @@ type
     /// @noreturn
     /// </param>
     ///-
-    function registerTimedReportCallback(callback: TYWeighScaleTimedReportCallback):LongInt; overload;
+    function registerTimedReportCallback(callback: TYMultiCellWeighScaleTimedReportCallback):LongInt; overload;
 
     function _invokeTimedReportCallback(value: TYMeasure):LongInt; override;
 
     ////
     /// <summary>
-    ///   Adapts the load cell signal bias (stored in the corresponding genericSensor)
+    ///   Adapts the load cells signal bias (stored in the corresponding genericSensor)
     ///   so that the current signal corresponds to a zero weight.
     /// <para>
     /// </para>
@@ -400,7 +441,7 @@ type
 
     ////
     /// <summary>
-    ///   Configures the load cell span parameters (stored in the corresponding genericSensor)
+    ///   Configures the load cells span parameters (stored in the corresponding genericSensors)
     ///   so that the current signal corresponds to the specified reference weight.
     /// <para>
     /// </para>
@@ -422,248 +463,20 @@ type
     ///-
     function setupSpan(currWeight: double; maxWeight: double):LongInt; overload; virtual;
 
-    function setCompensationTable(tableIndex: LongInt; tempValues: TDoubleArray; compValues: TDoubleArray):LongInt; overload; virtual;
-
-    function loadCompensationTable(tableIndex: LongInt; var tempValues: TDoubleArray; var compValues: TDoubleArray):LongInt; overload; virtual;
 
     ////
     /// <summary>
-    ///   Records a weight offset thermal compensation table, in order to automatically correct the
-    ///   measured weight based on the averaged compensation temperature.
-    /// <para>
-    ///   The weight correction will be applied by linear interpolation between specified points.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="tempValues">
-    ///   array of floating point numbers, corresponding to all averaged
-    ///   temperatures for which an offset correction is specified.
-    /// </param>
-    /// <param name="compValues">
-    ///   array of floating point numbers, corresponding to the offset correction
-    ///   to apply for each of the temperature included in the first
-    ///   argument, index by index.
-    /// </param>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_offsetAvgCompensationTable(tempValues: TDoubleArray; compValues: TDoubleArray):LongInt; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Retrieves the weight offset thermal compensation table previously configured using the
-    ///   <c>set_offsetAvgCompensationTable</c> function.
-    /// <para>
-    ///   The weight correction is applied by linear interpolation between specified points.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="tempValues">
-    ///   array of floating point numbers, that is filled by the function
-    ///   with all averaged temperatures for which an offset correction is specified.
-    /// </param>
-    /// <param name="compValues">
-    ///   array of floating point numbers, that is filled by the function
-    ///   with the offset correction applied for each of the temperature
-    ///   included in the first argument, index by index.
-    /// </param>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function loadOffsetAvgCompensationTable(var tempValues: TDoubleArray; var compValues: TDoubleArray):LongInt; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Records a weight offset thermal compensation table, in order to automatically correct the
-    ///   measured weight based on the variation of temperature.
-    /// <para>
-    ///   The weight correction will be applied by linear interpolation between specified points.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="tempValues">
-    ///   array of floating point numbers, corresponding to temperature
-    ///   variations for which an offset correction is specified.
-    /// </param>
-    /// <param name="compValues">
-    ///   array of floating point numbers, corresponding to the offset correction
-    ///   to apply for each of the temperature variation included in the first
-    ///   argument, index by index.
-    /// </param>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_offsetChgCompensationTable(tempValues: TDoubleArray; compValues: TDoubleArray):LongInt; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Retrieves the weight offset thermal compensation table previously configured using the
-    ///   <c>set_offsetChgCompensationTable</c> function.
-    /// <para>
-    ///   The weight correction is applied by linear interpolation between specified points.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="tempValues">
-    ///   array of floating point numbers, that is filled by the function
-    ///   with all temperature variations for which an offset correction is specified.
-    /// </param>
-    /// <param name="compValues">
-    ///   array of floating point numbers, that is filled by the function
-    ///   with the offset correction applied for each of the temperature
-    ///   variation included in the first argument, index by index.
-    /// </param>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function loadOffsetChgCompensationTable(var tempValues: TDoubleArray; var compValues: TDoubleArray):LongInt; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Records a weight span thermal compensation table, in order to automatically correct the
-    ///   measured weight based on the compensation temperature.
-    /// <para>
-    ///   The weight correction will be applied by linear interpolation between specified points.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="tempValues">
-    ///   array of floating point numbers, corresponding to all averaged
-    ///   temperatures for which a span correction is specified.
-    /// </param>
-    /// <param name="compValues">
-    ///   array of floating point numbers, corresponding to the span correction
-    ///   (in percents) to apply for each of the temperature included in the first
-    ///   argument, index by index.
-    /// </param>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_spanAvgCompensationTable(tempValues: TDoubleArray; compValues: TDoubleArray):LongInt; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Retrieves the weight span thermal compensation table previously configured using the
-    ///   <c>set_spanAvgCompensationTable</c> function.
-    /// <para>
-    ///   The weight correction is applied by linear interpolation between specified points.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="tempValues">
-    ///   array of floating point numbers, that is filled by the function
-    ///   with all averaged temperatures for which an span correction is specified.
-    /// </param>
-    /// <param name="compValues">
-    ///   array of floating point numbers, that is filled by the function
-    ///   with the span correction applied for each of the temperature
-    ///   included in the first argument, index by index.
-    /// </param>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function loadSpanAvgCompensationTable(var tempValues: TDoubleArray; var compValues: TDoubleArray):LongInt; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Records a weight span thermal compensation table, in order to automatically correct the
-    ///   measured weight based on the variation of temperature.
-    /// <para>
-    ///   The weight correction will be applied by linear interpolation between specified points.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="tempValues">
-    ///   array of floating point numbers, corresponding to all variations of
-    ///   temperatures for which a span correction is specified.
-    /// </param>
-    /// <param name="compValues">
-    ///   array of floating point numbers, corresponding to the span correction
-    ///   (in percents) to apply for each of the temperature variation included
-    ///   in the first argument, index by index.
-    /// </param>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_spanChgCompensationTable(tempValues: TDoubleArray; compValues: TDoubleArray):LongInt; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Retrieves the weight span thermal compensation table previously configured using the
-    ///   <c>set_spanChgCompensationTable</c> function.
-    /// <para>
-    ///   The weight correction is applied by linear interpolation between specified points.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="tempValues">
-    ///   array of floating point numbers, that is filled by the function
-    ///   with all variation of temperature for which an span correction is specified.
-    /// </param>
-    /// <param name="compValues">
-    ///   array of floating point numbers, that is filled by the function
-    ///   with the span correction applied for each of variation of temperature
-    ///   included in the first argument, index by index.
-    /// </param>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function loadSpanChgCompensationTable(var tempValues: TDoubleArray; var compValues: TDoubleArray):LongInt; overload; virtual;
-
-
-    ////
-    /// <summary>
-    ///   Continues the enumeration of weighing scale sensors started using <c>yFirstWeighScale()</c>.
+    ///   Continues the enumeration of multi-cell weighing scale sensors started using <c>yFirstMultiCellWeighScale()</c>.
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a pointer to a <c>YWeighScale</c> object, corresponding to
-    ///   a weighing scale sensor currently online, or a <c>NIL</c> pointer
-    ///   if there are no more weighing scale sensors to enumerate.
+    ///   a pointer to a <c>YMultiCellWeighScale</c> object, corresponding to
+    ///   a multi-cell weighing scale sensor currently online, or a <c>NIL</c> pointer
+    ///   if there are no more multi-cell weighing scale sensors to enumerate.
     /// </returns>
     ///-
-    function nextWeighScale():TYWeighScale;
+    function nextMultiCellWeighScale():TYMultiCellWeighScale;
     ////
     /// <summary>
     ///   c
@@ -672,14 +485,14 @@ type
     /// </para>
     /// </summary>
     ///-
-    class function FirstWeighScale():TYWeighScale;
-  //--- (end of YWeighScale accessors declaration)
+    class function FirstMultiCellWeighScale():TYMultiCellWeighScale;
+  //--- (end of YMultiCellWeighScale accessors declaration)
   end;
 
-//--- (YWeighScale functions declaration)
+//--- (YMultiCellWeighScale functions declaration)
   ////
   /// <summary>
-  ///   Retrieves a weighing scale sensor for a given identifier.
+  ///   Retrieves a multi-cell weighing scale sensor for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
   /// </para>
@@ -703,11 +516,11 @@ type
   /// <para>
   /// </para>
   /// <para>
-  ///   This function does not require that the weighing scale sensor is online at the time
+  ///   This function does not require that the multi-cell weighing scale sensor is online at the time
   ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YWeighScale.isOnline()</c> to test if the weighing scale sensor is
+  ///   Use the method <c>YMultiCellWeighScale.isOnline()</c> to test if the multi-cell weighing scale sensor is
   ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   a weighing scale sensor by logical name, no error is notified: the first instance
+  ///   a multi-cell weighing scale sensor by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
   /// </para>
@@ -720,40 +533,41 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the weighing scale sensor
+  ///   a string that uniquely characterizes the multi-cell weighing scale sensor
   /// </param>
   /// <returns>
-  ///   a <c>YWeighScale</c> object allowing you to drive the weighing scale sensor.
+  ///   a <c>YMultiCellWeighScale</c> object allowing you to drive the multi-cell weighing scale sensor.
   /// </returns>
   ///-
-  function yFindWeighScale(func:string):TYWeighScale;
+  function yFindMultiCellWeighScale(func:string):TYMultiCellWeighScale;
   ////
   /// <summary>
-  ///   Starts the enumeration of weighing scale sensors currently accessible.
+  ///   Starts the enumeration of multi-cell weighing scale sensors currently accessible.
   /// <para>
-  ///   Use the method <c>YWeighScale.nextWeighScale()</c> to iterate on
-  ///   next weighing scale sensors.
+  ///   Use the method <c>YMultiCellWeighScale.nextMultiCellWeighScale()</c> to iterate on
+  ///   next multi-cell weighing scale sensors.
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a pointer to a <c>YWeighScale</c> object, corresponding to
-  ///   the first weighing scale sensor currently online, or a <c>NIL</c> pointer
+  ///   a pointer to a <c>YMultiCellWeighScale</c> object, corresponding to
+  ///   the first multi-cell weighing scale sensor currently online, or a <c>NIL</c> pointer
   ///   if there are none.
   /// </returns>
   ///-
-  function yFirstWeighScale():TYWeighScale;
+  function yFirstMultiCellWeighScale():TYMultiCellWeighScale;
 
-//--- (end of YWeighScale functions declaration)
+//--- (end of YMultiCellWeighScale functions declaration)
 
 implementation
-//--- (YWeighScale dlldef)
-//--- (end of YWeighScale dlldef)
+//--- (YMultiCellWeighScale dlldef)
+//--- (end of YMultiCellWeighScale dlldef)
 
-  constructor TYWeighScale.Create(func:string);
+  constructor TYMultiCellWeighScale.Create(func:string);
     begin
       inherited Create(func);
-      _className := 'WeighScale';
-      //--- (YWeighScale accessors initialization)
+      _className := 'MultiCellWeighScale';
+      //--- (YMultiCellWeighScale accessors initialization)
+      _cellCount := Y_CELLCOUNT_INVALID;
       _excitation := Y_EXCITATION_INVALID;
       _compTempAdaptRatio := Y_COMPTEMPADAPTRATIO_INVALID;
       _compTempAvg := Y_COMPTEMPAVG_INVALID;
@@ -761,19 +575,25 @@ implementation
       _compensation := Y_COMPENSATION_INVALID;
       _zeroTracking := Y_ZEROTRACKING_INVALID;
       _command := Y_COMMAND_INVALID;
-      _valueCallbackWeighScale := nil;
-      _timedReportCallbackWeighScale := nil;
-      //--- (end of YWeighScale accessors initialization)
+      _valueCallbackMultiCellWeighScale := nil;
+      _timedReportCallbackMultiCellWeighScale := nil;
+      //--- (end of YMultiCellWeighScale accessors initialization)
     end;
 
 
-//--- (YWeighScale implementation)
+//--- (YMultiCellWeighScale implementation)
 {$HINTS OFF}
-  function TYWeighScale._parseAttr(member:PJSONRECORD):integer;
+  function TYMultiCellWeighScale._parseAttr(member:PJSONRECORD):integer;
     var
       sub : PJSONRECORD;
       i,l        : integer;
     begin
+      if (member^.name = 'cellCount') then
+        begin
+          _cellCount := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
       if (member^.name = 'excitation') then
         begin
           _excitation := integer(member^.ivalue);
@@ -822,6 +642,67 @@ implementation
 
   ////
   /// <summary>
+  ///   Returns the number of load cells in use.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the number of load cells in use
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_CELLCOUNT_INVALID.
+  /// </para>
+  ///-
+  function TYMultiCellWeighScale.get_cellCount():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_CELLCOUNT_INVALID;
+              exit;
+            end;
+        end;
+      res := self._cellCount;
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the number of load cells in use.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   an integer corresponding to the number of load cells in use
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYMultiCellWeighScale.set_cellCount(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('cellCount',rest_val);
+    end;
+
+  ////
+  /// <summary>
   ///   Returns the current load cell bridge excitation method.
   /// <para>
   /// </para>
@@ -836,7 +717,7 @@ implementation
   ///   On failure, throws an exception or returns Y_EXCITATION_INVALID.
   /// </para>
   ///-
-  function TYWeighScale.get_excitation():Integer;
+  function TYMultiCellWeighScale.get_excitation():Integer;
     var
       res : Integer;
     begin
@@ -875,7 +756,7 @@ implementation
   ///   On failure, throws an exception or returns a negative error code.
   /// </para>
   ///-
-  function TYWeighScale.set_excitation(newval:Integer):integer;
+  function TYMultiCellWeighScale.set_excitation(newval:Integer):integer;
     var
       rest_val: string;
     begin
@@ -906,7 +787,7 @@ implementation
   ///   On failure, throws an exception or returns a negative error code.
   /// </para>
   ///-
-  function TYWeighScale.set_compTempAdaptRatio(newval:double):integer;
+  function TYMultiCellWeighScale.set_compTempAdaptRatio(newval:double):integer;
     var
       rest_val: string;
     begin
@@ -932,7 +813,7 @@ implementation
   ///   On failure, throws an exception or returns Y_COMPTEMPADAPTRATIO_INVALID.
   /// </para>
   ///-
-  function TYWeighScale.get_compTempAdaptRatio():double;
+  function TYMultiCellWeighScale.get_compTempAdaptRatio():double;
     var
       res : double;
     begin
@@ -965,7 +846,7 @@ implementation
   ///   On failure, throws an exception or returns Y_COMPTEMPAVG_INVALID.
   /// </para>
   ///-
-  function TYWeighScale.get_compTempAvg():double;
+  function TYMultiCellWeighScale.get_compTempAvg():double;
     var
       res : double;
     begin
@@ -998,7 +879,7 @@ implementation
   ///   On failure, throws an exception or returns Y_COMPTEMPCHG_INVALID.
   /// </para>
   ///-
-  function TYWeighScale.get_compTempChg():double;
+  function TYMultiCellWeighScale.get_compTempChg():double;
     var
       res : double;
     begin
@@ -1031,7 +912,7 @@ implementation
   ///   On failure, throws an exception or returns Y_COMPENSATION_INVALID.
   /// </para>
   ///-
-  function TYWeighScale.get_compensation():double;
+  function TYMultiCellWeighScale.get_compensation():double;
     var
       res : double;
     begin
@@ -1069,7 +950,7 @@ implementation
   ///   On failure, throws an exception or returns a negative error code.
   /// </para>
   ///-
-  function TYWeighScale.set_zeroTracking(newval:double):integer;
+  function TYMultiCellWeighScale.set_zeroTracking(newval:double):integer;
     var
       rest_val: string;
     begin
@@ -1095,7 +976,7 @@ implementation
   ///   On failure, throws an exception or returns Y_ZEROTRACKING_INVALID.
   /// </para>
   ///-
-  function TYWeighScale.get_zeroTracking():double;
+  function TYMultiCellWeighScale.get_zeroTracking():double;
     var
       res : double;
     begin
@@ -1113,7 +994,7 @@ implementation
     end;
 
 
-  function TYWeighScale.get_command():string;
+  function TYMultiCellWeighScale.get_command():string;
     var
       res : string;
     begin
@@ -1131,7 +1012,7 @@ implementation
     end;
 
 
-  function TYWeighScale.set_command(newval:string):integer;
+  function TYMultiCellWeighScale.set_command(newval:string):integer;
     var
       rest_val: string;
     begin
@@ -1167,7 +1048,7 @@ implementation
   /// <para>
   ///   This function does not require that $THEFUNCTION$ is online at the time
   ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YWeighScale.isOnline()</c> to test if $THEFUNCTION$ is
+  ///   Use the method <c>YMultiCellWeighScale.isOnline()</c> to test if $THEFUNCTION$ is
   ///   indeed online at a given time. In case of ambiguity when looking for
   ///   $AFUNCTION$ by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
@@ -1185,18 +1066,18 @@ implementation
   ///   a string that uniquely characterizes $THEFUNCTION$
   /// </param>
   /// <returns>
-  ///   a <c>YWeighScale</c> object allowing you to drive $THEFUNCTION$.
+  ///   a <c>YMultiCellWeighScale</c> object allowing you to drive $THEFUNCTION$.
   /// </returns>
   ///-
-  class function TYWeighScale.FindWeighScale(func: string):TYWeighScale;
+  class function TYMultiCellWeighScale.FindMultiCellWeighScale(func: string):TYMultiCellWeighScale;
     var
-      obj : TYWeighScale;
+      obj : TYMultiCellWeighScale;
     begin
-      obj := TYWeighScale(TYFunction._FindFromCache('WeighScale', func));
+      obj := TYMultiCellWeighScale(TYFunction._FindFromCache('MultiCellWeighScale', func));
       if obj = nil then
         begin
-          obj :=  TYWeighScale.create(func);
-          TYFunction._AddToCache('WeighScale',  func, obj);
+          obj :=  TYMultiCellWeighScale.create(func);
+          TYFunction._AddToCache('MultiCellWeighScale',  func, obj);
         end;
       result := obj;
       exit;
@@ -1221,7 +1102,7 @@ implementation
   /// @noreturn
   /// </param>
   ///-
-  function TYWeighScale.registerValueCallback(callback: TYWeighScaleValueCallback):LongInt;
+  function TYMultiCellWeighScale.registerValueCallback(callback: TYMultiCellWeighScaleValueCallback):LongInt;
     var
       val : string;
     begin
@@ -1233,7 +1114,7 @@ implementation
         begin
           TYFunction._UpdateValueCallbackList(self, false);
         end;
-      self._valueCallbackWeighScale := callback;
+      self._valueCallbackMultiCellWeighScale := callback;
       // Immediately invoke value callback with current value
       if (addr(callback) <> nil) and self.isOnline then
         begin
@@ -1248,11 +1129,11 @@ implementation
     end;
 
 
-  function TYWeighScale._invokeValueCallback(value: string):LongInt;
+  function TYMultiCellWeighScale._invokeValueCallback(value: string):LongInt;
     begin
-      if (addr(self._valueCallbackWeighScale) <> nil) then
+      if (addr(self._valueCallbackMultiCellWeighScale) <> nil) then
         begin
-          self._valueCallbackWeighScale(self, value);
+          self._valueCallbackMultiCellWeighScale(self, value);
         end
       else
         begin
@@ -1281,7 +1162,7 @@ implementation
   /// @noreturn
   /// </param>
   ///-
-  function TYWeighScale.registerTimedReportCallback(callback: TYWeighScaleTimedReportCallback):LongInt;
+  function TYMultiCellWeighScale.registerTimedReportCallback(callback: TYMultiCellWeighScaleTimedReportCallback):LongInt;
     var
       sensor : TYSensor;
     begin
@@ -1294,17 +1175,17 @@ implementation
         begin
           TYFunction._UpdateTimedReportCallbackList(sensor, false);
         end;
-      self._timedReportCallbackWeighScale := callback;
+      self._timedReportCallbackMultiCellWeighScale := callback;
       result := 0;
       exit;
     end;
 
 
-  function TYWeighScale._invokeTimedReportCallback(value: TYMeasure):LongInt;
+  function TYMultiCellWeighScale._invokeTimedReportCallback(value: TYMeasure):LongInt;
     begin
-      if (addr(self._timedReportCallbackWeighScale) <> nil) then
+      if (addr(self._timedReportCallbackMultiCellWeighScale) <> nil) then
         begin
-          self._timedReportCallbackWeighScale(self, value);
+          self._timedReportCallbackMultiCellWeighScale(self, value);
         end
       else
         begin
@@ -1317,7 +1198,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Adapts the load cell signal bias (stored in the corresponding genericSensor)
+  ///   Adapts the load cells signal bias (stored in the corresponding genericSensor)
   ///   so that the current signal corresponds to a zero weight.
   /// <para>
   /// </para>
@@ -1331,7 +1212,7 @@ implementation
   ///   On failure, throws an exception or returns a negative error code.
   /// </para>
   ///-
-  function TYWeighScale.tare():LongInt;
+  function TYMultiCellWeighScale.tare():LongInt;
     begin
       result := self.set_command('T');
       exit;
@@ -1340,7 +1221,7 @@ implementation
 
   ////
   /// <summary>
-  ///   Configures the load cell span parameters (stored in the corresponding genericSensor)
+  ///   Configures the load cells span parameters (stored in the corresponding genericSensors)
   ///   so that the current signal corresponds to the specified reference weight.
   /// <para>
   /// </para>
@@ -1360,413 +1241,38 @@ implementation
   ///   On failure, throws an exception or returns a negative error code.
   /// </para>
   ///-
-  function TYWeighScale.setupSpan(currWeight: double; maxWeight: double):LongInt;
+  function TYMultiCellWeighScale.setupSpan(currWeight: double; maxWeight: double):LongInt;
     begin
       result := self.set_command('S'+inttostr( round(1000*currWeight))+':'+inttostr(round(1000*maxWeight)));
       exit;
     end;
 
 
-  function TYWeighScale.setCompensationTable(tableIndex: LongInt; tempValues: TDoubleArray; compValues: TDoubleArray):LongInt;
-    var
-      siz : LongInt;
-      res : LongInt;
-      idx : LongInt;
-      found : LongInt;
-      prev : double;
-      curr : double;
-      currComp : double;
-      idxTemp : double;
-    begin
-      siz := length(tempValues);
-      if not(siz <> 1) then
-        begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'thermal compensation table must have at least two points');
-          result:=YAPI_INVALID_ARGUMENT;
-          exit;
-        end;
-      if not(siz = length(compValues)) then
-        begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'table sizes mismatch');
-          result:=YAPI_INVALID_ARGUMENT;
-          exit;
-        end;
-
-      res := self.set_command(''+inttostr(tableIndex)+'Z');
-      if not(res=YAPI_SUCCESS) then
-        begin
-          self._throw( YAPI_IO_ERROR, 'unable to reset thermal compensation table');
-          result:=YAPI_IO_ERROR;
-          exit;
-        end;
-      // add records in growing temperature value
-      found := 1;
-      prev := -999999.0;
-      while found > 0 do
-        begin
-          found := 0;
-          curr := 99999999.0;
-          currComp := -999999.0;
-          idx := 0;
-          while idx < siz do
-            begin
-              idxTemp := tempValues[idx];
-              if (idxTemp > prev) and(idxTemp < curr) then
-                begin
-                  curr := idxTemp;
-                  currComp := compValues[idx];
-                  found := 1;
-                end;
-              idx := idx + 1;
-            end;
-          if found > 0 then
-            begin
-              res := self.set_command(''+inttostr( tableIndex)+'m'+inttostr( round(1000*curr))+':'+inttostr(round(1000*currComp)));
-              if not(res=YAPI_SUCCESS) then
-                begin
-                  self._throw( YAPI_IO_ERROR, 'unable to set thermal compensation table');
-                  result:=YAPI_IO_ERROR;
-                  exit;
-                end;
-              prev := curr;
-            end;
-        end;
-      result := YAPI_SUCCESS;
-      exit;
-    end;
-
-
-  function TYWeighScale.loadCompensationTable(tableIndex: LongInt; var tempValues: TDoubleArray; var compValues: TDoubleArray):LongInt;
-    var
-      id : string;
-      bin_json : TByteArray;
-      paramlist : TStringArray;
-      siz : LongInt;
-      idx : LongInt;
-      temp : double;
-      comp : double;
-      tempValues_pos : LongInt;
-      compValues_pos : LongInt;
-    begin
-      SetLength(paramlist, 0);
-
-      id := self.get_functionId;
-      id := Copy(id,  10 + 1, Length(id) - 10);
-      bin_json := self._download('extra.json?page='+inttostr((4*_atoi(id))+tableIndex));
-      paramlist := self._json_get_array(bin_json);
-      // convert all values to float and append records
-      siz := ((length(paramlist)) shr 1);
-      tempValues_pos := 0;
-      SetLength(tempValues, siz);;
-      compValues_pos := 0;
-      SetLength(compValues, siz);;
-      idx := 0;
-      while idx < siz do
-        begin
-          temp := StrToFloat(paramlist[2*idx])/1000.0;
-          comp := StrToFloat(paramlist[2*idx+1])/1000.0;
-          tempValues[tempValues_pos] := temp;
-          inc(tempValues_pos);
-          compValues[compValues_pos] := comp;
-          inc(compValues_pos);
-          idx := idx + 1;
-        end;
-      SetLength(tempValues, tempValues_pos);;
-      SetLength(compValues, compValues_pos);;
-      result := YAPI_SUCCESS;
-      exit;
-    end;
-
-
-  ////
-  /// <summary>
-  ///   Records a weight offset thermal compensation table, in order to automatically correct the
-  ///   measured weight based on the averaged compensation temperature.
-  /// <para>
-  ///   The weight correction will be applied by linear interpolation between specified points.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="tempValues">
-  ///   array of floating point numbers, corresponding to all averaged
-  ///   temperatures for which an offset correction is specified.
-  /// </param>
-  /// <param name="compValues">
-  ///   array of floating point numbers, corresponding to the offset correction
-  ///   to apply for each of the temperature included in the first
-  ///   argument, index by index.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYWeighScale.set_offsetAvgCompensationTable(tempValues: TDoubleArray; compValues: TDoubleArray):LongInt;
-    begin
-      result := self.setCompensationTable(0,  tempValues, compValues);
-      exit;
-    end;
-
-
-  ////
-  /// <summary>
-  ///   Retrieves the weight offset thermal compensation table previously configured using the
-  ///   <c>set_offsetAvgCompensationTable</c> function.
-  /// <para>
-  ///   The weight correction is applied by linear interpolation between specified points.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="tempValues">
-  ///   array of floating point numbers, that is filled by the function
-  ///   with all averaged temperatures for which an offset correction is specified.
-  /// </param>
-  /// <param name="compValues">
-  ///   array of floating point numbers, that is filled by the function
-  ///   with the offset correction applied for each of the temperature
-  ///   included in the first argument, index by index.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYWeighScale.loadOffsetAvgCompensationTable(var tempValues: TDoubleArray; var compValues: TDoubleArray):LongInt;
-    begin
-      result := self.loadCompensationTable(0,  tempValues, compValues);
-      exit;
-    end;
-
-
-  ////
-  /// <summary>
-  ///   Records a weight offset thermal compensation table, in order to automatically correct the
-  ///   measured weight based on the variation of temperature.
-  /// <para>
-  ///   The weight correction will be applied by linear interpolation between specified points.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="tempValues">
-  ///   array of floating point numbers, corresponding to temperature
-  ///   variations for which an offset correction is specified.
-  /// </param>
-  /// <param name="compValues">
-  ///   array of floating point numbers, corresponding to the offset correction
-  ///   to apply for each of the temperature variation included in the first
-  ///   argument, index by index.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYWeighScale.set_offsetChgCompensationTable(tempValues: TDoubleArray; compValues: TDoubleArray):LongInt;
-    begin
-      result := self.setCompensationTable(1,  tempValues, compValues);
-      exit;
-    end;
-
-
-  ////
-  /// <summary>
-  ///   Retrieves the weight offset thermal compensation table previously configured using the
-  ///   <c>set_offsetChgCompensationTable</c> function.
-  /// <para>
-  ///   The weight correction is applied by linear interpolation between specified points.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="tempValues">
-  ///   array of floating point numbers, that is filled by the function
-  ///   with all temperature variations for which an offset correction is specified.
-  /// </param>
-  /// <param name="compValues">
-  ///   array of floating point numbers, that is filled by the function
-  ///   with the offset correction applied for each of the temperature
-  ///   variation included in the first argument, index by index.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYWeighScale.loadOffsetChgCompensationTable(var tempValues: TDoubleArray; var compValues: TDoubleArray):LongInt;
-    begin
-      result := self.loadCompensationTable(1,  tempValues, compValues);
-      exit;
-    end;
-
-
-  ////
-  /// <summary>
-  ///   Records a weight span thermal compensation table, in order to automatically correct the
-  ///   measured weight based on the compensation temperature.
-  /// <para>
-  ///   The weight correction will be applied by linear interpolation between specified points.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="tempValues">
-  ///   array of floating point numbers, corresponding to all averaged
-  ///   temperatures for which a span correction is specified.
-  /// </param>
-  /// <param name="compValues">
-  ///   array of floating point numbers, corresponding to the span correction
-  ///   (in percents) to apply for each of the temperature included in the first
-  ///   argument, index by index.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYWeighScale.set_spanAvgCompensationTable(tempValues: TDoubleArray; compValues: TDoubleArray):LongInt;
-    begin
-      result := self.setCompensationTable(2,  tempValues, compValues);
-      exit;
-    end;
-
-
-  ////
-  /// <summary>
-  ///   Retrieves the weight span thermal compensation table previously configured using the
-  ///   <c>set_spanAvgCompensationTable</c> function.
-  /// <para>
-  ///   The weight correction is applied by linear interpolation between specified points.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="tempValues">
-  ///   array of floating point numbers, that is filled by the function
-  ///   with all averaged temperatures for which an span correction is specified.
-  /// </param>
-  /// <param name="compValues">
-  ///   array of floating point numbers, that is filled by the function
-  ///   with the span correction applied for each of the temperature
-  ///   included in the first argument, index by index.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYWeighScale.loadSpanAvgCompensationTable(var tempValues: TDoubleArray; var compValues: TDoubleArray):LongInt;
-    begin
-      result := self.loadCompensationTable(2,  tempValues, compValues);
-      exit;
-    end;
-
-
-  ////
-  /// <summary>
-  ///   Records a weight span thermal compensation table, in order to automatically correct the
-  ///   measured weight based on the variation of temperature.
-  /// <para>
-  ///   The weight correction will be applied by linear interpolation between specified points.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="tempValues">
-  ///   array of floating point numbers, corresponding to all variations of
-  ///   temperatures for which a span correction is specified.
-  /// </param>
-  /// <param name="compValues">
-  ///   array of floating point numbers, corresponding to the span correction
-  ///   (in percents) to apply for each of the temperature variation included
-  ///   in the first argument, index by index.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYWeighScale.set_spanChgCompensationTable(tempValues: TDoubleArray; compValues: TDoubleArray):LongInt;
-    begin
-      result := self.setCompensationTable(3,  tempValues, compValues);
-      exit;
-    end;
-
-
-  ////
-  /// <summary>
-  ///   Retrieves the weight span thermal compensation table previously configured using the
-  ///   <c>set_spanChgCompensationTable</c> function.
-  /// <para>
-  ///   The weight correction is applied by linear interpolation between specified points.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="tempValues">
-  ///   array of floating point numbers, that is filled by the function
-  ///   with all variation of temperature for which an span correction is specified.
-  /// </param>
-  /// <param name="compValues">
-  ///   array of floating point numbers, that is filled by the function
-  ///   with the span correction applied for each of variation of temperature
-  ///   included in the first argument, index by index.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
-  function TYWeighScale.loadSpanChgCompensationTable(var tempValues: TDoubleArray; var compValues: TDoubleArray):LongInt;
-    begin
-      result := self.loadCompensationTable(3,  tempValues, compValues);
-      exit;
-    end;
-
-
-  function TYWeighScale.nextWeighScale(): TYWeighScale;
+  function TYMultiCellWeighScale.nextMultiCellWeighScale(): TYMultiCellWeighScale;
     var
       hwid: string;
     begin
       if YISERR(_nextFunction(hwid)) then
         begin
-          nextWeighScale := nil;
+          nextMultiCellWeighScale := nil;
           exit;
         end;
       if hwid = '' then
         begin
-          nextWeighScale := nil;
+          nextMultiCellWeighScale := nil;
           exit;
         end;
-      nextWeighScale := TYWeighScale.FindWeighScale(hwid);
+      nextMultiCellWeighScale := TYMultiCellWeighScale.FindMultiCellWeighScale(hwid);
     end;
 
-  class function TYWeighScale.FirstWeighScale(): TYWeighScale;
+  class function TYMultiCellWeighScale.FirstMultiCellWeighScale(): TYMultiCellWeighScale;
     var
       v_fundescr      : YFUN_DESCR;
       dev             : YDEV_DESCR;
       neededsize, err : integer;
       serial, funcId, funcName, funcVal, errmsg : string;
     begin
-      err := yapiGetFunctionsByClass('WeighScale', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
+      err := yapiGetFunctionsByClass('MultiCellWeighScale', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
       if (YISERR(err) or (neededsize = 0)) then
         begin
           result := nil;
@@ -1777,35 +1283,35 @@ implementation
           result := nil;
           exit;
         end;
-     result := TYWeighScale.FindWeighScale(serial+'.'+funcId);
+     result := TYMultiCellWeighScale.FindMultiCellWeighScale(serial+'.'+funcId);
     end;
 
-//--- (end of YWeighScale implementation)
+//--- (end of YMultiCellWeighScale implementation)
 
-//--- (YWeighScale functions)
+//--- (YMultiCellWeighScale functions)
 
-  function yFindWeighScale(func:string): TYWeighScale;
+  function yFindMultiCellWeighScale(func:string): TYMultiCellWeighScale;
     begin
-      result := TYWeighScale.FindWeighScale(func);
+      result := TYMultiCellWeighScale.FindMultiCellWeighScale(func);
     end;
 
-  function yFirstWeighScale(): TYWeighScale;
+  function yFirstMultiCellWeighScale(): TYMultiCellWeighScale;
     begin
-      result := TYWeighScale.FirstWeighScale();
+      result := TYMultiCellWeighScale.FirstMultiCellWeighScale();
     end;
 
-  procedure _WeighScaleCleanup();
+  procedure _MultiCellWeighScaleCleanup();
     begin
     end;
 
-//--- (end of YWeighScale functions)
+//--- (end of YMultiCellWeighScale functions)
 
 initialization
-  //--- (YWeighScale initialization)
-  //--- (end of YWeighScale initialization)
+  //--- (YMultiCellWeighScale initialization)
+  //--- (end of YMultiCellWeighScale initialization)
 
 finalization
-  //--- (YWeighScale cleanup)
-  _WeighScaleCleanup();
-  //--- (end of YWeighScale cleanup)
+  //--- (YMultiCellWeighScale cleanup)
+  _MultiCellWeighScaleCleanup();
+  //--- (end of YMultiCellWeighScale cleanup)
 end.

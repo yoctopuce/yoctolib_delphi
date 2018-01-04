@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_steppermotor.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_steppermotor.pas 29507 2017-12-28 14:14:56Z mvuilleu $
  *
  * Implements yFindStepperMotor(), the high-level API for StepperMotor functions
  *
@@ -714,6 +714,28 @@ type
 
     ////
     /// <summary>
+    ///   Starts the motor to reach a given relative position, keeping the speed under the
+    ///   specified limit.
+    /// <para>
+    ///   The time needed to reach the requested position will depend on
+    ///   the acceleration parameters configured for the motor.
+    /// </para>
+    /// </summary>
+    /// <param name="relPos">
+    ///   relative position, measured in steps from the current position.
+    /// </param>
+    /// <param name="maxSpeed">
+    ///   limit speed, in steps per second.
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </returns>
+    ///-
+    function moveRelSlow(relPos: double; maxSpeed: double):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Keep the motor in the same state for the specified amount of time, before processing next command.
     /// <para>
     /// </para>
@@ -755,6 +777,24 @@ type
     /// </returns>
     ///-
     function alertStepOut():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Move one single step in the selected direction without regards to end switches.
+    /// <para>
+    ///   The move occures even if the system is still in alert mode (end switch depressed). Caution.
+    ///   use this function with great care as it may cause mechanical damages !
+    /// </para>
+    /// </summary>
+    /// <param name="dir">
+    ///   Value +1 ou -1, according to the desired direction of the move
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </returns>
+    ///-
+    function alertStepDir(dir: LongInt):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -1871,8 +1911,37 @@ implementation
 
 
   function TYStepperMotor.sendCommand(command: string):LongInt;
+    var
+      id : string;
+      url : string;
+      retBin : TByteArray;
+      res : LongInt;
     begin
-      result := self.set_command(command);
+      id := self.get_functionId;
+      id := Copy(id,  12 + 1, 1);
+      url := 'cmd.txt?'+ id+'='+command;
+      //may throw an exception
+      retBin := self._download(url);
+      res := retBin[0];
+      if res = 49 then
+        begin
+          if not(res = 48) then
+            begin
+              self._throw( YAPI_DEVICE_BUSY, 'Motor command pipeline is full, try again later');
+              result:=YAPI_DEVICE_BUSY;
+              exit;
+            end;
+        end
+      else
+        begin
+          if not(res = 48) then
+            begin
+              self._throw( YAPI_IO_ERROR, 'Motor command failed permanently');
+              result:=YAPI_IO_ERROR;
+              exit;
+            end;
+        end;
+      result := YAPI_SUCCESS;
       exit;
     end;
 
@@ -1990,6 +2059,33 @@ implementation
 
   ////
   /// <summary>
+  ///   Starts the motor to reach a given relative position, keeping the speed under the
+  ///   specified limit.
+  /// <para>
+  ///   The time needed to reach the requested position will depend on
+  ///   the acceleration parameters configured for the motor.
+  /// </para>
+  /// </summary>
+  /// <param name="relPos">
+  ///   relative position, measured in steps from the current position.
+  /// </param>
+  /// <param name="maxSpeed">
+  ///   limit speed, in steps per second.
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </returns>
+  ///-
+  function TYStepperMotor.moveRelSlow(relPos: double; maxSpeed: double):LongInt;
+    begin
+      result := self.sendCommand('m'+inttostr(round(16*relPos))+'@'+inttostr(round(1000*maxSpeed)));
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
   ///   Keep the motor in the same state for the specified amount of time, before processing next command.
   /// <para>
   /// </para>
@@ -2043,6 +2139,40 @@ implementation
   function TYStepperMotor.alertStepOut():LongInt;
     begin
       result := self.sendCommand('.');
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Move one single step in the selected direction without regards to end switches.
+  /// <para>
+  ///   The move occures even if the system is still in alert mode (end switch depressed). Caution.
+  ///   use this function with great care as it may cause mechanical damages !
+  /// </para>
+  /// </summary>
+  /// <param name="dir">
+  ///   Value +1 ou -1, according to the desired direction of the move
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </returns>
+  ///-
+  function TYStepperMotor.alertStepDir(dir: LongInt):LongInt;
+    begin
+      if not(dir <> 0) then
+        begin
+          self._throw( YAPI_INVALID_ARGUMENT, 'direction must be +1 or -1');
+          result:=YAPI_INVALID_ARGUMENT;
+          exit;
+        end;
+      if dir > 0 then
+        begin
+          result := self.sendCommand('.+');
+          exit;
+        end;
+      result := self.sendCommand('.-');
       exit;
     end;
 

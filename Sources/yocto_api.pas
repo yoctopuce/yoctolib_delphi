@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 29240 2017-11-23 13:29:57Z seb $
+ * $Id: yocto_api.pas 29465 2017-12-20 08:11:31Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -115,7 +115,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '29281';
+  YOCTO_API_BUILD_NO        = '29543';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -1949,6 +1949,8 @@ end;
     /// <summary>
     ///   Changes the recorded minimal value observed.
     /// <para>
+    ///   Can be used to reset the value returned
+    ///   by get_lowestValue().
     /// </para>
     /// <para>
     /// </para>
@@ -1971,6 +1973,7 @@ end;
     /// <summary>
     ///   Returns the minimal value observed for the measure since the device was started.
     /// <para>
+    ///   Can be reset to an arbitrary value thanks to set_lowestValue().
     /// </para>
     /// <para>
     /// </para>
@@ -1988,6 +1991,8 @@ end;
     /// <summary>
     ///   Changes the recorded maximal value observed.
     /// <para>
+    ///   Can be used to reset the value returned
+    ///   by get_lowestValue().
     /// </para>
     /// <para>
     /// </para>
@@ -2010,6 +2015,7 @@ end;
     /// <summary>
     ///   Returns the maximal value observed for the measure since the device was started.
     /// <para>
+    ///   Can be reset to an arbitrary value thanks to set_highestValue().
     /// </para>
     /// <para>
     /// </para>
@@ -4234,7 +4240,7 @@ type
 
   ////
   /// <summary>
-  ///   Fault-tolerant alternative to RegisterHub().
+  ///   Fault-tolerant alternative to <c>RegisterHub()</c>.
   /// <para>
   ///   This function has the same
   ///   purpose and same arguments as <c>RegisterHub()</c>, but does not trigger
@@ -10675,6 +10681,8 @@ var
   /// <summary>
   ///   Changes the recorded minimal value observed.
   /// <para>
+  ///   Can be used to reset the value returned
+  ///   by get_lowestValue().
   /// </para>
   /// <para>
   /// </para>
@@ -10703,6 +10711,7 @@ var
   /// <summary>
   ///   Returns the minimal value observed for the measure since the device was started.
   /// <para>
+  ///   Can be reset to an arbitrary value thanks to set_lowestValue().
   /// </para>
   /// <para>
   /// </para>
@@ -10737,6 +10746,8 @@ var
   /// <summary>
   ///   Changes the recorded maximal value observed.
   /// <para>
+  ///   Can be used to reset the value returned
+  ///   by get_lowestValue().
   /// </para>
   /// <para>
   /// </para>
@@ -10765,6 +10776,7 @@ var
   /// <summary>
   ///   Returns the maximal value observed for the measure since the device was started.
   /// <para>
+  ///   Can be reset to an arbitrary value thanks to set_highestValue().
   /// </para>
   /// <para>
   /// </para>
