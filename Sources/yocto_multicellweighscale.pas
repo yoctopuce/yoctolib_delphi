@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_multicellweighscale.pas 29478 2017-12-21 08:10:05Z seb $
+ * $Id: yocto_multicellweighscale.pas 29661 2018-01-18 13:32:13Z mvuilleu $
  *
  * Implements yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
  *
@@ -103,6 +103,30 @@ type
   public
     //--- (YMultiCellWeighScale accessors declaration)
     constructor Create(func:string);
+
+    ////
+    /// <summary>
+    ///   Changes the measuring unit for the weight.
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a string corresponding to the measuring unit for the weight
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_unit(newval:string):integer;
 
     ////
     /// <summary>
@@ -639,6 +663,36 @@ implementation
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
+
+  ////
+  /// <summary>
+  ///   Changes the measuring unit for the weight.
+  /// <para>
+  ///   Remember to call the saveToFlash() method of the module if the
+  ///   modification must be kept.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a string corresponding to the measuring unit for the weight
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYMultiCellWeighScale.set_unit(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('unit',rest_val);
+    end;
 
   ////
   /// <summary>

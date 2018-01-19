@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_weighscale.pas 29472 2017-12-20 11:34:07Z mvuilleu $
+ * $Id: yocto_weighscale.pas 29661 2018-01-18 13:32:13Z mvuilleu $
  *
  * Implements yFindWeighScale(), the high-level API for WeighScale functions
  *
@@ -101,6 +101,30 @@ type
   public
     //--- (YWeighScale accessors declaration)
     constructor Create(func:string);
+
+    ////
+    /// <summary>
+    ///   Changes the measuring unit for the weight.
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a string corresponding to the measuring unit for the weight
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_unit(newval:string):integer;
 
     ////
     /// <summary>
@@ -819,6 +843,36 @@ implementation
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
+
+  ////
+  /// <summary>
+  ///   Changes the measuring unit for the weight.
+  /// <para>
+  ///   Remember to call the saveToFlash() method of the module if the
+  ///   modification must be kept.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a string corresponding to the measuring unit for the weight
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYWeighScale.set_unit(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('unit',rest_val);
+    end;
 
   ////
   /// <summary>

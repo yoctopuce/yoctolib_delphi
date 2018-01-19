@@ -1,1 +1,1 @@
-- Add YMultiCellWeighScale class
+- Fix handling of functionIds of length 19 (Yocto-MaxiBridge & Yocto-Stepper)
