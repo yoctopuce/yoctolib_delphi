@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_proximity.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_proximity.pas 29767 2018-01-26 08:53:27Z seb $
  *
  * Implements yFindProximity(), the high-level API for Proximity functions
  *
@@ -49,6 +49,9 @@ uses
 
 const Y_SIGNALVALUE_INVALID           = YAPI_INVALID_DOUBLE;
 const Y_DETECTIONTHRESHOLD_INVALID    = YAPI_INVALID_UINT;
+const Y_DETECTIONHYSTERESIS_INVALID   = YAPI_INVALID_UINT;
+const Y_PRESENCEMINTIME_INVALID       = YAPI_INVALID_UINT;
+const Y_REMOVALMINTIME_INVALID        = YAPI_INVALID_UINT;
 const Y_ISPRESENT_FALSE = 0;
 const Y_ISPRESENT_TRUE = 1;
 const Y_ISPRESENT_INVALID = -1;
@@ -89,6 +92,9 @@ type
     // Attributes (function value cache)
     _signalValue              : double;
     _detectionThreshold       : LongInt;
+    _detectionHysteresis      : LongInt;
+    _presenceMinTime          : LongInt;
+    _removalMinTime           : LongInt;
     _isPresent                : Integer;
     _lastTimeApproached       : int64;
     _lastTimeRemoved          : int64;
@@ -167,6 +173,137 @@ type
     /// </para>
     ///-
     function set_detectionThreshold(newval:LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the hysteresis used to determine the logical state of the proximity sensor, when considered
+    ///   as a binary input (on/off).
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the hysteresis used to determine the logical state of the proximity
+    ///   sensor, when considered
+    ///   as a binary input (on/off)
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_DETECTIONHYSTERESIS_INVALID</c>.
+    /// </para>
+    ///-
+    function get_detectionHysteresis():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the hysteresis used to determine the logical state of the proximity sensor, when considered
+    ///   as a binary input (on/off).
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the hysteresis used to determine the logical state of the proximity
+    ///   sensor, when considered
+    ///   as a binary input (on/off)
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_detectionHysteresis(newval:LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the minimal detection duration before signaling a presence event.
+    /// <para>
+    ///   Any shorter detection is
+    ///   considered as noise or bounce (false positive) and filtered out.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the minimal detection duration before signaling a presence event
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_PRESENCEMINTIME_INVALID</c>.
+    /// </para>
+    ///-
+    function get_presenceMinTime():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the minimal detection duration before signaling a presence event.
+    /// <para>
+    ///   Any shorter detection is
+    ///   considered as noise or bounce (false positive) and filtered out.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the minimal detection duration before signaling a presence event
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_presenceMinTime(newval:LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the minimal detection duration before signaling a removal event.
+    /// <para>
+    ///   Any shorter detection is
+    ///   considered as noise or bounce (false positive) and filtered out.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the minimal detection duration before signaling a removal event
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_REMOVALMINTIME_INVALID</c>.
+    /// </para>
+    ///-
+    function get_removalMinTime():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the minimal detection duration before signaling a removal event.
+    /// <para>
+    ///   Any shorter detection is
+    ///   considered as noise or bounce (false positive) and filtered out.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the minimal detection duration before signaling a removal event
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_removalMinTime(newval:LongInt):integer;
 
     ////
     /// <summary>
@@ -525,6 +662,9 @@ implementation
       //--- (YProximity accessors initialization)
       _signalValue := Y_SIGNALVALUE_INVALID;
       _detectionThreshold := Y_DETECTIONTHRESHOLD_INVALID;
+      _detectionHysteresis := Y_DETECTIONHYSTERESIS_INVALID;
+      _presenceMinTime := Y_PRESENCEMINTIME_INVALID;
+      _removalMinTime := Y_REMOVALMINTIME_INVALID;
       _isPresent := Y_ISPRESENT_INVALID;
       _lastTimeApproached := Y_LASTTIMEAPPROACHED_INVALID;
       _lastTimeRemoved := Y_LASTTIMEREMOVED_INVALID;
@@ -553,6 +693,24 @@ implementation
       if (member^.name = 'detectionThreshold') then
         begin
           _detectionThreshold := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'detectionHysteresis') then
+        begin
+          _detectionHysteresis := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'presenceMinTime') then
+        begin
+          _presenceMinTime := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'removalMinTime') then
+        begin
+          _removalMinTime := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -694,6 +852,203 @@ implementation
     begin
       rest_val := inttostr(newval);
       result := _setAttr('detectionThreshold',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the hysteresis used to determine the logical state of the proximity sensor, when considered
+  ///   as a binary input (on/off).
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the hysteresis used to determine the logical state of the proximity
+  ///   sensor, when considered
+  ///   as a binary input (on/off)
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_DETECTIONHYSTERESIS_INVALID.
+  /// </para>
+  ///-
+  function TYProximity.get_detectionHysteresis():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_DETECTIONHYSTERESIS_INVALID;
+              exit;
+            end;
+        end;
+      res := self._detectionHysteresis;
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the hysteresis used to determine the logical state of the proximity sensor, when considered
+  ///   as a binary input (on/off).
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   an integer corresponding to the hysteresis used to determine the logical state of the proximity
+  ///   sensor, when considered
+  ///   as a binary input (on/off)
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYProximity.set_detectionHysteresis(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('detectionHysteresis',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the minimal detection duration before signaling a presence event.
+  /// <para>
+  ///   Any shorter detection is
+  ///   considered as noise or bounce (false positive) and filtered out.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the minimal detection duration before signaling a presence event
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_PRESENCEMINTIME_INVALID.
+  /// </para>
+  ///-
+  function TYProximity.get_presenceMinTime():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_PRESENCEMINTIME_INVALID;
+              exit;
+            end;
+        end;
+      res := self._presenceMinTime;
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the minimal detection duration before signaling a presence event.
+  /// <para>
+  ///   Any shorter detection is
+  ///   considered as noise or bounce (false positive) and filtered out.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   an integer corresponding to the minimal detection duration before signaling a presence event
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYProximity.set_presenceMinTime(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('presenceMinTime',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the minimal detection duration before signaling a removal event.
+  /// <para>
+  ///   Any shorter detection is
+  ///   considered as noise or bounce (false positive) and filtered out.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the minimal detection duration before signaling a removal event
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_REMOVALMINTIME_INVALID.
+  /// </para>
+  ///-
+  function TYProximity.get_removalMinTime():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_REMOVALMINTIME_INVALID;
+              exit;
+            end;
+        end;
+      res := self._removalMinTime;
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the minimal detection duration before signaling a removal event.
+  /// <para>
+  ///   Any shorter detection is
+  ///   considered as noise or bounce (false positive) and filtered out.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   an integer corresponding to the minimal detection duration before signaling a removal event
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYProximity.set_removalMinTime(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('removalMinTime',rest_val);
     end;
 
   ////
