@@ -45,24 +45,24 @@ begin
          end
       end
   else
-    sensor:= yFindWeighScale(paramstr(1)+'.WeighScale');
+    sensor:= yFindWeighScale(paramstr(1)+'.weighScale1');
 
   if sensor.isOnline() then 
     begin
       // On startup, enable excitation and tare weigh scale
       Writeln('Resetting tare weight...');
       sensor.set_excitation(Y_EXCITATION_AC);
-      ySleep(3000);
+      ySleep(3000,errmsg);
       sensor.tare();
       sensorUnit := sensor.get_unit();
-    end
+    end;
 
   // Show measured weight continuously
   while sensor.isOnline() do
     begin
       Write('Weight : '+FloatToStr(sensor.get_currentValue())+sensorUnit);
       Writeln('   (press Ctrl-C to exit)');
-      ySleep(1000);
+      ySleep(1000,errmsg);
     end;
   yFreeAPI();
   Writeln('Module not connected (check identification and USB cable)');

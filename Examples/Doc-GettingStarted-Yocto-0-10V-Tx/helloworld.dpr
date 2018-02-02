@@ -61,7 +61,7 @@ begin
       // output 1 : immediate change
       vout1.set_currentVoltage(voltage);
       // output 2 : smooth change
-      vout1.voltageMove(voltage,3000);
+      vout2.voltageMove(voltage,3000);
     end
   else writeln('Module not connected (check identification and USB cable)');
   yFreeAPI();
