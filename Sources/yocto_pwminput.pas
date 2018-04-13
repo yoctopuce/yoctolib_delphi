@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwminput.pas 28807 2017-10-12 09:46:33Z seb $
+ * $Id: yocto_pwminput.pas 29968 2018-02-19 15:12:34Z seb $
  *
  * Implements yFindPwmInput(), the high-level API for PwmInput functions
  *
@@ -61,6 +61,8 @@ const Y_PWMREPORTMODE_PWM_PULSECOUNT = 4;
 const Y_PWMREPORTMODE_PWM_CPS = 5;
 const Y_PWMREPORTMODE_PWM_CPM = 6;
 const Y_PWMREPORTMODE_PWM_STATE = 7;
+const Y_PWMREPORTMODE_PWM_FREQ_CPS = 8;
+const Y_PWMREPORTMODE_PWM_FREQ_CPM = 9;
 const Y_PWMREPORTMODE_INVALID = -1;
 const Y_DEBOUNCEPERIOD_INVALID        = YAPI_INVALID_UINT;
 
@@ -229,8 +231,10 @@ type
     ///   a value among <c>Y_PWMREPORTMODE_PWM_DUTYCYCLE</c>, <c>Y_PWMREPORTMODE_PWM_FREQUENCY</c>,
     ///   <c>Y_PWMREPORTMODE_PWM_PULSEDURATION</c>, <c>Y_PWMREPORTMODE_PWM_EDGECOUNT</c>,
     ///   <c>Y_PWMREPORTMODE_PWM_PULSECOUNT</c>, <c>Y_PWMREPORTMODE_PWM_CPS</c>,
-    ///   <c>Y_PWMREPORTMODE_PWM_CPM</c> and <c>Y_PWMREPORTMODE_PWM_STATE</c> corresponding to the parameter
-    ///   (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue function and callbacks
+    ///   <c>Y_PWMREPORTMODE_PWM_CPM</c>, <c>Y_PWMREPORTMODE_PWM_STATE</c>,
+    ///   <c>Y_PWMREPORTMODE_PWM_FREQ_CPS</c> and <c>Y_PWMREPORTMODE_PWM_FREQ_CPM</c> corresponding to the
+    ///   parameter (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue
+    ///   function and callbacks
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_PWMREPORTMODE_INVALID</c>.
@@ -252,8 +256,10 @@ type
     ///   a value among <c>Y_PWMREPORTMODE_PWM_DUTYCYCLE</c>, <c>Y_PWMREPORTMODE_PWM_FREQUENCY</c>,
     ///   <c>Y_PWMREPORTMODE_PWM_PULSEDURATION</c>, <c>Y_PWMREPORTMODE_PWM_EDGECOUNT</c>,
     ///   <c>Y_PWMREPORTMODE_PWM_PULSECOUNT</c>, <c>Y_PWMREPORTMODE_PWM_CPS</c>,
-    ///   <c>Y_PWMREPORTMODE_PWM_CPM</c> and <c>Y_PWMREPORTMODE_PWM_STATE</c> corresponding to the  parameter
-    ///    type (frequency/duty cycle, pulse width, or edge count) returned by the get_currentValue function and callbacks
+    ///   <c>Y_PWMREPORTMODE_PWM_CPM</c>, <c>Y_PWMREPORTMODE_PWM_STATE</c>,
+    ///   <c>Y_PWMREPORTMODE_PWM_FREQ_CPS</c> and <c>Y_PWMREPORTMODE_PWM_FREQ_CPM</c> corresponding to the 
+    ///   parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the get_currentValue
+    ///   function and callbacks
     /// </param>
     /// <para>
     /// </para>
@@ -815,9 +821,9 @@ implementation
   /// <returns>
   ///   a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
   ///   Y_PWMREPORTMODE_PWM_PULSEDURATION, Y_PWMREPORTMODE_PWM_EDGECOUNT, Y_PWMREPORTMODE_PWM_PULSECOUNT,
-  ///   Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM and Y_PWMREPORTMODE_PWM_STATE corresponding to the
-  ///   parameter (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue
-  ///   function and callbacks
+  ///   Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM, Y_PWMREPORTMODE_PWM_STATE,
+  ///   Y_PWMREPORTMODE_PWM_FREQ_CPS and Y_PWMREPORTMODE_PWM_FREQ_CPM corresponding to the parameter
+  ///   (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue function and callbacks
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns Y_PWMREPORTMODE_INVALID.
@@ -854,9 +860,9 @@ implementation
   /// <param name="newval">
   ///   a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
   ///   Y_PWMREPORTMODE_PWM_PULSEDURATION, Y_PWMREPORTMODE_PWM_EDGECOUNT, Y_PWMREPORTMODE_PWM_PULSECOUNT,
-  ///   Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM and Y_PWMREPORTMODE_PWM_STATE corresponding to the
-  ///    parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the
-  ///   get_currentValue function and callbacks
+  ///   Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM, Y_PWMREPORTMODE_PWM_STATE,
+  ///   Y_PWMREPORTMODE_PWM_FREQ_CPS and Y_PWMREPORTMODE_PWM_FREQ_CPM corresponding to the  parameter  type
+  ///   (frequency/duty cycle, pulse width, or edge count) returned by the get_currentValue function and callbacks
   /// </param>
   /// <para>
   /// </para>

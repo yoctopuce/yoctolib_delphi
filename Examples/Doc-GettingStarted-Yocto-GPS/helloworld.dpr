@@ -44,7 +44,7 @@ begin
          end
        end
    else  // or use the one specified on the commande line
-    gps:= YFindGps(paramstr(1)+'.temperature');
+    gps:= YFindGps(paramstr(1)+'.gps');
 
   // let's poll
   done := false;

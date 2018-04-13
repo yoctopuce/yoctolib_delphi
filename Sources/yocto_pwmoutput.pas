@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwmoutput.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_pwmoutput.pas 30595 2018-04-12 21:36:11Z mvuilleu $
  *
  * Implements yFindPwmOutput(), the high-level API for PwmOutput functions
  *
@@ -464,8 +464,7 @@ type
     /// <summary>
     ///   Performs a smooth transistion of the pulse duration toward a given value.
     /// <para>
-    ///   Any period,
-    ///   frequency, duty cycle or pulse width change will cancel any ongoing transition process.
+    ///   Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
     /// </para>
     /// </summary>
     /// <param name="ms_target">
@@ -486,13 +485,14 @@ type
 
     ////
     /// <summary>
-    ///   Performs a smooth change of the pulse duration toward a given value.
+    ///   Performs a smooth change of the duty cycle toward a given value.
     /// <para>
+    ///   Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
     /// </para>
     /// </summary>
     /// <param name="target">
     ///   new duty cycle at the end of the transition
-    ///   (floating-point number, between 0 and 1)
+    ///   (percentage, floating-point number between 0 and 100)
     /// </param>
     /// <param name="ms_duration">
     ///   total duration of the transition, in milliseconds
@@ -505,6 +505,97 @@ type
     /// </para>
     ///-
     function dutyCycleMove(target: double; ms_duration: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Performs a smooth frequency change toward a given value.
+    /// <para>
+    ///   Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
+    /// </para>
+    /// </summary>
+    /// <param name="target">
+    ///   new freuency at the end of the transition (floating-point number)
+    /// </param>
+    /// <param name="ms_duration">
+    ///   total duration of the transition, in milliseconds
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function frequencyMove(target: double; ms_duration: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Trigger a given number of pulses of specified duration, at current frequency.
+    /// <para>
+    ///   At the end of the pulse train, revert to the original state of the PWM generator.
+    /// </para>
+    /// </summary>
+    /// <param name="ms_target">
+    ///   desired pulse duration
+    ///   (floating-point number, representing the pulse duration in milliseconds)
+    /// </param>
+    /// <param name="n_pulses">
+    ///   desired pulse count
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function triggerPulsesByDuration(ms_target: double; n_pulses: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Trigger a given number of pulses of specified duration, at current frequency.
+    /// <para>
+    ///   At the end of the pulse train, revert to the original state of the PWM generator.
+    /// </para>
+    /// </summary>
+    /// <param name="target">
+    ///   desired duty cycle for the generated pulses
+    ///   (percentage, floating-point number between 0 and 100)
+    /// </param>
+    /// <param name="n_pulses">
+    ///   desired pulse count
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function triggerPulsesByDutyCycle(target: double; n_pulses: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Trigger a given number of pulses at the specified frequency, using current duty cycle.
+    /// <para>
+    ///   At the end of the pulse train, revert to the original state of the PWM generator.
+    /// </para>
+    /// </summary>
+    /// <param name="target">
+    ///   desired frequency for the generated pulses (floating-point number)
+    ///   (percentage, floating-point number between 0 and 100)
+    /// </param>
+    /// <param name="n_pulses">
+    ///   desired pulse count
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function triggerPulsesByFrequency(target: double; n_pulses: LongInt):LongInt; overload; virtual;
 
 
     ////
@@ -1271,8 +1362,7 @@ implementation
   /// <summary>
   ///   Performs a smooth transistion of the pulse duration toward a given value.
   /// <para>
-  ///   Any period,
-  ///   frequency, duty cycle or pulse width change will cancel any ongoing transition process.
+  ///   Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
   /// </para>
   /// </summary>
   /// <param name="ms_target">
@@ -1305,13 +1395,14 @@ implementation
 
   ////
   /// <summary>
-  ///   Performs a smooth change of the pulse duration toward a given value.
+  ///   Performs a smooth change of the duty cycle toward a given value.
   /// <para>
+  ///   Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
   /// </para>
   /// </summary>
   /// <param name="target">
   ///   new duty cycle at the end of the transition
-  ///   (floating-point number, between 0 and 1)
+  ///   (percentage, floating-point number between 0 and 100)
   /// </param>
   /// <param name="ms_duration">
   ///   total duration of the transition, in milliseconds
@@ -1336,6 +1427,149 @@ implementation
           target := 100.0;
         end;
       newval := ''+inttostr( round(target*65536))+':'+inttostr(ms_duration);
+      result := self.set_pwmTransition(newval);
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Performs a smooth frequency change toward a given value.
+  /// <para>
+  ///   Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
+  /// </para>
+  /// </summary>
+  /// <param name="target">
+  ///   new freuency at the end of the transition (floating-point number)
+  /// </param>
+  /// <param name="ms_duration">
+  ///   total duration of the transition, in milliseconds
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYPwmOutput.frequencyMove(target: double; ms_duration: LongInt):LongInt;
+    var
+      newval : string;
+    begin
+      if target < 0.001 then
+        begin
+          target := 0.001;
+        end;
+      newval := ''+_yapiFloatToStr( target)+'Hz:'+inttostr(ms_duration);
+      result := self.set_pwmTransition(newval);
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Trigger a given number of pulses of specified duration, at current frequency.
+  /// <para>
+  ///   At the end of the pulse train, revert to the original state of the PWM generator.
+  /// </para>
+  /// </summary>
+  /// <param name="ms_target">
+  ///   desired pulse duration
+  ///   (floating-point number, representing the pulse duration in milliseconds)
+  /// </param>
+  /// <param name="n_pulses">
+  ///   desired pulse count
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYPwmOutput.triggerPulsesByDuration(ms_target: double; n_pulses: LongInt):LongInt;
+    var
+      newval : string;
+    begin
+      if ms_target < 0.0 then
+        begin
+          ms_target := 0.0;
+        end;
+      newval := ''+inttostr( round(ms_target*65536))+'ms*'+inttostr(n_pulses);
+      result := self.set_pwmTransition(newval);
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Trigger a given number of pulses of specified duration, at current frequency.
+  /// <para>
+  ///   At the end of the pulse train, revert to the original state of the PWM generator.
+  /// </para>
+  /// </summary>
+  /// <param name="target">
+  ///   desired duty cycle for the generated pulses
+  ///   (percentage, floating-point number between 0 and 100)
+  /// </param>
+  /// <param name="n_pulses">
+  ///   desired pulse count
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYPwmOutput.triggerPulsesByDutyCycle(target: double; n_pulses: LongInt):LongInt;
+    var
+      newval : string;
+    begin
+      if target < 0.0 then
+        begin
+          target := 0.0;
+        end;
+      if target > 100.0 then
+        begin
+          target := 100.0;
+        end;
+      newval := ''+inttostr( round(target*65536))+'*'+inttostr(n_pulses);
+      result := self.set_pwmTransition(newval);
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Trigger a given number of pulses at the specified frequency, using current duty cycle.
+  /// <para>
+  ///   At the end of the pulse train, revert to the original state of the PWM generator.
+  /// </para>
+  /// </summary>
+  /// <param name="target">
+  ///   desired frequency for the generated pulses (floating-point number)
+  ///   (percentage, floating-point number between 0 and 100)
+  /// </param>
+  /// <param name="n_pulses">
+  ///   desired pulse count
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYPwmOutput.triggerPulsesByFrequency(target: double; n_pulses: LongInt):LongInt;
+    var
+      newval : string;
+    begin
+      if target < 0.001 then
+        begin
+          target := 0.001;
+        end;
+      newval := ''+_yapiFloatToStr( target)+'Hz*'+inttostr(n_pulses);
       result := self.set_pwmTransition(newval);
       exit;
     end;

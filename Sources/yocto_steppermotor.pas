@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_steppermotor.pas 29507 2017-12-28 14:14:56Z mvuilleu $
+ * $Id: yocto_steppermotor.pas 30483 2018-03-29 07:43:07Z mvuilleu $
  *
  * Implements yFindStepperMotor(), the high-level API for StepperMotor functions
  *
@@ -1959,7 +1959,7 @@ implementation
   ///-
   function TYStepperMotor.reset():LongInt;
     begin
-      result := self.sendCommand('Z');
+      result := self.set_command('Z');
       exit;
     end;
 
@@ -2118,7 +2118,7 @@ implementation
   ///-
   function TYStepperMotor.emergencyStop():LongInt;
     begin
-      result := self.sendCommand('!');
+      result := self.set_command('!');
       exit;
     end;
 
@@ -2138,7 +2138,7 @@ implementation
   ///-
   function TYStepperMotor.alertStepOut():LongInt;
     begin
-      result := self.sendCommand('.');
+      result := self.set_command('.');
       exit;
     end;
 
@@ -2169,10 +2169,10 @@ implementation
         end;
       if dir > 0 then
         begin
-          result := self.sendCommand('.+');
+          result := self.set_command('.+');
           exit;
         end;
-      result := self.sendCommand('.-');
+      result := self.set_command('.-');
       exit;
     end;
 
@@ -2190,7 +2190,7 @@ implementation
   ///-
   function TYStepperMotor.abortAndBrake():LongInt;
     begin
-      result := self.sendCommand('B');
+      result := self.set_command('B');
       exit;
     end;
 
@@ -2208,7 +2208,7 @@ implementation
   ///-
   function TYStepperMotor.abortAndHiZ():LongInt;
     begin
-      result := self.sendCommand('z');
+      result := self.set_command('z');
       exit;
     end;
 

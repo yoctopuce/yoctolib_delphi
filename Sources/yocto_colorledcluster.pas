@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_colorledcluster.pas 29186 2017-11-16 10:04:13Z seb $
+ * $Id: yocto_colorledcluster.pas 30500 2018-04-04 07:53:46Z mvuilleu $
  *
  * Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -48,6 +48,9 @@ uses
 //--- (YColorLedCluster definitions)
 
 const Y_ACTIVELEDCOUNT_INVALID        = YAPI_INVALID_UINT;
+const Y_LEDTYPE_RGB = 0;
+const Y_LEDTYPE_RGBW = 1;
+const Y_LEDTYPE_INVALID = -1;
 const Y_MAXLEDCOUNT_INVALID           = YAPI_INVALID_UINT;
 const Y_BLINKSEQMAXCOUNT_INVALID      = YAPI_INVALID_UINT;
 const Y_BLINKSEQMAXSIZE_INVALID       = YAPI_INVALID_UINT;
@@ -83,6 +86,7 @@ type
   //--- (YColorLedCluster declaration)
     // Attributes (function value cache)
     _activeLedCount           : LongInt;
+    _ledType                  : Integer;
     _maxLedCount              : LongInt;
     _blinkSeqMaxCount         : LongInt;
     _blinkSeqMaxSize          : LongInt;
@@ -135,6 +139,47 @@ type
     /// </para>
     ///-
     function set_activeLedCount(newval:LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the RGB LED type currently handled by the device.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   either <c>Y_LEDTYPE_RGB</c> or <c>Y_LEDTYPE_RGBW</c>, according to the RGB LED type currently
+    ///   handled by the device
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_LEDTYPE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_ledType():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the RGB LED type currently handled by the device.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   either <c>Y_LEDTYPE_RGB</c> or <c>Y_LEDTYPE_RGBW</c>, according to the RGB LED type currently
+    ///   handled by the device
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_ledType(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -1270,6 +1315,7 @@ implementation
       _className := 'ColorLedCluster';
       //--- (YColorLedCluster accessors initialization)
       _activeLedCount := Y_ACTIVELEDCOUNT_INVALID;
+      _ledType := Y_LEDTYPE_INVALID;
       _maxLedCount := Y_MAXLEDCOUNT_INVALID;
       _blinkSeqMaxCount := Y_BLINKSEQMAXCOUNT_INVALID;
       _blinkSeqMaxSize := Y_BLINKSEQMAXSIZE_INVALID;
@@ -1289,6 +1335,12 @@ implementation
       if (member^.name = 'activeLedCount') then
         begin
           _activeLedCount := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'ledType') then
+        begin
+          _ledType := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -1379,6 +1431,67 @@ implementation
     begin
       rest_val := inttostr(newval);
       result := _setAttr('activeLedCount',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the RGB LED type currently handled by the device.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   either Y_LEDTYPE_RGB or Y_LEDTYPE_RGBW, according to the RGB LED type currently handled by the device
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_LEDTYPE_INVALID.
+  /// </para>
+  ///-
+  function TYColorLedCluster.get_ledType():Integer;
+    var
+      res : Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_LEDTYPE_INVALID;
+              exit;
+            end;
+        end;
+      res := self._ledType;
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the RGB LED type currently handled by the device.
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   either Y_LEDTYPE_RGB or Y_LEDTYPE_RGBW, according to the RGB LED type currently handled by the device
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYColorLedCluster.set_ledType(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('ledType',rest_val);
     end;
 
   ////

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_multiaxiscontroller.pas 29507 2017-12-28 14:14:56Z mvuilleu $
+ * $Id: yocto_multiaxiscontroller.pas 30483 2018-03-29 07:43:07Z mvuilleu $
  *
  * Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
  *
@@ -783,7 +783,7 @@ implementation
   ///-
   function TYMultiAxisController.reset():LongInt;
     begin
-      result := self.sendCommand('Z');
+      result := self.set_command('Z');
       exit;
     end;
 
@@ -927,7 +927,7 @@ implementation
   ///-
   function TYMultiAxisController.emergencyStop():LongInt;
     begin
-      result := self.sendCommand('!');
+      result := self.set_command('!');
       exit;
     end;
 
@@ -945,7 +945,7 @@ implementation
   ///-
   function TYMultiAxisController.abortAndBrake():LongInt;
     begin
-      result := self.sendCommand('B');
+      result := self.set_command('B');
       exit;
     end;
 
@@ -963,7 +963,7 @@ implementation
   ///-
   function TYMultiAxisController.abortAndHiZ():LongInt;
     begin
-      result := self.sendCommand('z');
+      result := self.set_command('z');
       exit;
     end;
 
