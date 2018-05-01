@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwmoutput.pas 30595 2018-04-12 21:36:11Z mvuilleu $
+ * $Id: yocto_pwmoutput.pas 30679 2018-04-24 09:34:17Z mvuilleu $
  *
  * Implements yFindPwmOutput(), the high-level API for PwmOutput functions
  *
@@ -596,6 +596,10 @@ type
     /// </para>
     ///-
     function triggerPulsesByFrequency(target: double; n_pulses: LongInt):LongInt; overload; virtual;
+
+    function markForRepeat():LongInt; overload; virtual;
+
+    function repeatFromMark():LongInt; overload; virtual;
 
 
     ////
@@ -1571,6 +1575,20 @@ implementation
         end;
       newval := ''+_yapiFloatToStr( target)+'Hz*'+inttostr(n_pulses);
       result := self.set_pwmTransition(newval);
+      exit;
+    end;
+
+
+  function TYPwmOutput.markForRepeat():LongInt;
+    begin
+      result := self.set_pwmTransition(':');
+      exit;
+    end;
+
+
+  function TYPwmOutput.repeatFromMark():LongInt;
+    begin
+      result := self.set_pwmTransition('R');
       exit;
     end;
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_display.pas 30655 2018-04-19 12:39:18Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -2780,7 +2780,7 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
   ///-
   function TYDisplayLayer.selectColorPen(color: LongInt):LongInt;
     begin
-      result := self.command_push('c'+inttohex(color,06));
+      result := self.command_push('c'+AnsiLowerCase(inttohex(color,06)));
       exit;
     end;
 

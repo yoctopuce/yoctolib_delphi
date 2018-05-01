@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 28833 2017-10-13 06:49:21Z seb $
+ * $Id: yocto_serialport.pas 30685 2018-04-24 13:46:18Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -2268,7 +2268,7 @@ implementation
   ///-
   function TYSerialPort.writeByte(code: LongInt):LongInt;
     begin
-      result := self.sendCommand('$'+inttohex(code,02));
+      result := self.sendCommand('$'+AnsiUpperCase(inttohex(code,02)));
       exit;
     end;
 
@@ -2787,12 +2787,12 @@ implementation
       ofs := 0;
       while ofs + 3 < bufflen do
         begin
-          res := ''+ res+''+inttohex( buff[ofs],02)+''+inttohex( buff[ofs + 1],02)+''+inttohex( buff[ofs + 2],02)+''+inttohex(buff[ofs + 3],02);
+          res := ''+ res+''+AnsiUpperCase(inttohex( buff[ofs],02))+''+AnsiUpperCase(inttohex( buff[ofs + 1],02))+''+AnsiUpperCase(inttohex( buff[ofs + 2],02))+''+AnsiUpperCase(inttohex(buff[ofs + 3],02));
           ofs := ofs + 4;
         end;
       while ofs < bufflen do
         begin
-          res := ''+ res+''+inttohex(buff[ofs],02);
+          res := ''+ res+''+AnsiUpperCase(inttohex(buff[ofs],02));
           ofs := ofs + 1;
         end;
       result := res;
@@ -3296,12 +3296,12 @@ implementation
       SetLength(reps, 0);
       funCode := pduBytes[0];
       nib := ((funCode) shr 4);
-      pat := ''+inttohex( slaveNo,02)+'['+inttohex( nib,1)+''+inttohex( (nib+8),1)+']'+inttohex(((funCode) and 15),1)+'.*';
-      cmd := ''+inttohex( slaveNo,02)+''+inttohex(funCode,02);
+      pat := ''+AnsiUpperCase(inttohex( slaveNo,02))+'['+AnsiUpperCase(inttohex( nib,1))+''+AnsiUpperCase(inttohex( (nib+8),1))+']'+AnsiUpperCase(inttohex(((funCode) and 15),1))+'.*';
+      cmd := ''+AnsiUpperCase(inttohex( slaveNo,02))+''+AnsiUpperCase(inttohex(funCode,02));
       i := 1;
       while i < length(pduBytes) do
         begin
-          cmd := ''+ cmd+''+inttohex(((pduBytes[i]) and ($0ff)),02);
+          cmd := ''+ cmd+''+AnsiUpperCase(inttohex(((pduBytes[i]) and ($0ff)),02));
           i := i + 1;
         end;
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_spiport.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_spiport.pas 30685 2018-04-24 13:46:18Z seb $
  *
  * Implements yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -2105,7 +2105,7 @@ implementation
   ///-
   function TYSpiPort.writeByte(code: LongInt):LongInt;
     begin
-      result := self.sendCommand('$'+inttohex(code,02));
+      result := self.sendCommand('$'+AnsiUpperCase(inttohex(code,02)));
       exit;
     end;
 
@@ -2624,12 +2624,12 @@ implementation
       ofs := 0;
       while ofs + 3 < bufflen do
         begin
-          res := ''+ res+''+inttohex( buff[ofs],02)+''+inttohex( buff[ofs + 1],02)+''+inttohex( buff[ofs + 2],02)+''+inttohex(buff[ofs + 3],02);
+          res := ''+ res+''+AnsiUpperCase(inttohex( buff[ofs],02))+''+AnsiUpperCase(inttohex( buff[ofs + 1],02))+''+AnsiUpperCase(inttohex( buff[ofs + 2],02))+''+AnsiUpperCase(inttohex(buff[ofs + 3],02));
           ofs := ofs + 4;
         end;
       while ofs < bufflen do
         begin
-          res := ''+ res+''+inttohex(buff[ofs],02);
+          res := ''+ res+''+AnsiUpperCase(inttohex(buff[ofs],02));
           ofs := ofs + 1;
         end;
       result := res;

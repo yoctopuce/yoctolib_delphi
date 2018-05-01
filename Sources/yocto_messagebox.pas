@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_messagebox.pas 30655 2018-04-19 12:39:18Z seb $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *
@@ -2818,7 +2818,7 @@ implementation
           while i < siz do
             begin
               byt := addr[ofs+i+1];
-              res := ''+ res+''+inttohex( ((byt) and 15),1)+''+inttohex(((byt) shr 4),1);
+              res := ''+ res+''+AnsiLowerCase(inttohex( ((byt) and 15),1))+''+AnsiLowerCase(inttohex(((byt) shr 4),1));
               i := i + 1;
             end;
           // remove padding digit if needed
@@ -2990,7 +2990,7 @@ implementation
       while (i < siz) and(i < 6) do
         begin
           byt := exp[ofs+i];
-          res := ''+ res+''+inttohex( ((byt) and 15),1)+''+inttohex(((byt) shr 4),1);
+          res := ''+ res+''+AnsiLowerCase(inttohex( ((byt) and 15),1))+''+AnsiLowerCase(inttohex(((byt) shr 4),1));
           if i < 3 then
             begin
               if i < 2 then
@@ -3360,8 +3360,8 @@ implementation
               if (iei = 0) and(ielen = 3) then
                 begin
                   // concatenated SMS, 8-bit ref
-                  sig := ''+ self._orig+'-'+ self._dest+'-'+inttohex(
-                  self._mref,02)+'-'+inttohex(self._udh[i],02);
+                  sig := ''+ self._orig+'-'+ self._dest+'-'+AnsiLowerCase(inttohex(
+                  self._mref,02))+'-'+AnsiLowerCase(inttohex(self._udh[i],02));
                   self._aggSig := sig;
                   self._aggCnt := self._udh[i+1];
                   self._aggIdx := self._udh[i+2];
@@ -3369,8 +3369,8 @@ implementation
               if (iei = 8) and(ielen = 4) then
                 begin
                   // concatenated SMS, 16-bit ref
-                  sig := ''+ self._orig+'-'+ self._dest+'-'+inttohex(
-                  self._mref,02)+'-'+inttohex( self._udh[i],02)+''+inttohex(self._udh[i+1],02);
+                  sig := ''+ self._orig+'-'+ self._dest+'-'+AnsiLowerCase(inttohex(
+                  self._mref,02))+'-'+AnsiLowerCase(inttohex( self._udh[i],02))+''+AnsiLowerCase(inttohex(self._udh[i+1],02));
                   self._aggSig := sig;
                   self._aggCnt := self._udh[i+2];
                   self._aggIdx := self._udh[i+3];

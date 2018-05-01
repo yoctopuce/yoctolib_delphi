@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_colorledcluster.pas 30500 2018-04-04 07:53:46Z mvuilleu $
+ * $Id: yocto_colorledcluster.pas 30655 2018-04-19 12:39:18Z seb $
  *
  * Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -1775,7 +1775,7 @@ implementation
   ///-
   function TYColorLedCluster.set_rgbColor(ledIndex: LongInt; count: LongInt; rgbValue: LongInt):LongInt;
     begin
-      result := self.sendCommand('SR'+inttostr(ledIndex)+','+inttostr(count)+','+inttohex(rgbValue,1));
+      result := self.sendCommand('SR'+inttostr(ledIndex)+','+inttostr(count)+','+AnsiLowerCase(inttohex(rgbValue,1)));
       exit;
     end;
 
@@ -1807,7 +1807,7 @@ implementation
   ///-
   function TYColorLedCluster.set_rgbColorAtPowerOn(ledIndex: LongInt; count: LongInt; rgbValue: LongInt):LongInt;
     begin
-      result := self.sendCommand('SC'+inttostr(ledIndex)+','+inttostr(count)+','+inttohex(rgbValue,1));
+      result := self.sendCommand('SC'+inttostr(ledIndex)+','+inttostr(count)+','+AnsiLowerCase(inttohex(rgbValue,1)));
       exit;
     end;
 
@@ -1837,7 +1837,7 @@ implementation
   ///-
   function TYColorLedCluster.set_hslColor(ledIndex: LongInt; count: LongInt; hslValue: LongInt):LongInt;
     begin
-      result := self.sendCommand('SH'+inttostr(ledIndex)+','+inttostr(count)+','+inttohex(hslValue,1));
+      result := self.sendCommand('SH'+inttostr(ledIndex)+','+inttostr(count)+','+AnsiLowerCase(inttohex(hslValue,1)));
       exit;
     end;
 
@@ -1871,7 +1871,7 @@ implementation
   ///-
   function TYColorLedCluster.rgb_move(ledIndex: LongInt; count: LongInt; rgbValue: LongInt; delay: LongInt):LongInt;
     begin
-      result := self.sendCommand('MR'+inttostr(ledIndex)+','+inttostr(count)+','+inttohex(rgbValue,1)+','+inttostr(delay));
+      result := self.sendCommand('MR'+inttostr(ledIndex)+','+inttostr(count)+','+AnsiLowerCase(inttohex(rgbValue,1))+','+inttostr(delay));
       exit;
     end;
 
@@ -1909,7 +1909,7 @@ implementation
   ///-
   function TYColorLedCluster.hsl_move(ledIndex: LongInt; count: LongInt; hslValue: LongInt; delay: LongInt):LongInt;
     begin
-      result := self.sendCommand('MH'+inttostr(ledIndex)+','+inttostr(count)+','+inttohex(hslValue,1)+','+inttostr(delay));
+      result := self.sendCommand('MH'+inttostr(ledIndex)+','+inttostr(count)+','+AnsiLowerCase(inttohex(hslValue,1))+','+inttostr(delay));
       exit;
     end;
 
@@ -1941,7 +1941,7 @@ implementation
   ///-
   function TYColorLedCluster.addRgbMoveToBlinkSeq(seqIndex: LongInt; rgbValue: LongInt; delay: LongInt):LongInt;
     begin
-      result := self.sendCommand('AR'+inttostr(seqIndex)+','+inttohex(rgbValue,1)+','+inttostr(delay));
+      result := self.sendCommand('AR'+inttostr(seqIndex)+','+AnsiLowerCase(inttohex(rgbValue,1))+','+inttostr(delay));
       exit;
     end;
 
@@ -1973,7 +1973,7 @@ implementation
   ///-
   function TYColorLedCluster.addHslMoveToBlinkSeq(seqIndex: LongInt; hslValue: LongInt; delay: LongInt):LongInt;
     begin
-      result := self.sendCommand('AH'+inttostr(seqIndex)+','+inttohex(hslValue,1)+','+inttostr(delay));
+      result := self.sendCommand('AH'+inttostr(seqIndex)+','+AnsiLowerCase(inttohex(hslValue,1))+','+inttostr(delay));
       exit;
     end;
 

@@ -1,1 +1,4 @@
 - Add new PWMOutput methods
+- Improve function documentation in French for PWM-Tx
+- Fix Modbus ASCII message handling
+- Fix search of function by deviceref.func_logicalname
