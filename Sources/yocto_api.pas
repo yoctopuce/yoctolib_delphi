@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 29465 2017-12-20 08:11:31Z mvuilleu $
+ * $Id: yocto_api.pas 31238 2018-07-17 11:08:47Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -115,7 +115,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '30760';
+  YOCTO_API_BUILD_NO        = '31315';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -913,6 +913,7 @@ type
 
   //--- (generated code: YModule class start)
   TYModuleLogCallback = procedure(func: TYModule; logline:string);
+  TYModuleConfigChangeCallback = procedure(func: TYModule);
   TYModuleValueCallback = procedure(func: TYModule; value:string);
   TYModuleTimedReportCallback = procedure(func: TYModule; value:TYMeasure);
 
@@ -945,6 +946,7 @@ type
     _userVar                  : LongInt;
     _valueCallbackModule      : TYModuleValueCallback;
     _logCallback              : TYModuleLogCallback;
+    _confChangeCallback       : TYModuleConfigChangeCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
 
@@ -1520,6 +1522,32 @@ type
     /// </para>
     ///-
     function triggerFirmwareUpdate(secBeforeReboot: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Register a callback function, to be called when a persistent settings in
+    ///   a device configuration has been changed (e.g.
+    /// <para>
+    ///   change of unit, etc).
+    /// </para>
+    /// </summary>
+    /// <param name="callback">
+    ///   a procedure taking a YModule parameter, or <c>NIL</c>
+    ///   to unregister a previously registered  callback.
+    /// </param>
+    ///-
+    function registerConfigChangeCallback(callback: TYModuleConfigChangeCallback):LongInt; overload; virtual;
+
+    function _invokeConfigChangeCallback():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Triggers a configuration change callback, to check if they are supported or not.
+    /// <para>
+    /// </para>
+    /// </summary>
+    ///-
+    function triggerConfigChangeCallback():LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -4880,6 +4908,7 @@ const
   procedure _yapiRegisterDeviceArrivalCallback(fct:_yapiDeviceUpdateFunc); cdecl; external dllfile name 'yapiRegisterDeviceArrivalCallback';
   procedure _yapiRegisterDeviceRemovalCallback(fct:_yapiDeviceUpdateFunc); cdecl; external dllfile name 'yapiRegisterDeviceRemovalCallback';
   procedure _yapiRegisterDeviceChangeCallback(fct:_yapiDeviceUpdateFunc); cdecl; external dllfile name 'yapiRegisterDeviceChangeCallback';
+  procedure _yapiRegisterDeviceConfigChangeCallback(fct:_yapiDeviceUpdateFunc); cdecl; external dllfile name 'yapiRegisterDeviceConfigChangeCallback';
   procedure _yapiRegisterFunctionUpdateCallback(fct:_yapiFunctionUpdateFunc); cdecl; external dllfile name 'yapiRegisterFunctionUpdateCallback';
   procedure _yapiRegisterTimedReportCallback(fct:_yapiTimedReportFunc); cdecl; external dllfile name 'yapiRegisterTimedReportCallback';
   function  _yapiLockDeviceCallBack(errmsg:pansichar):integer;  cdecl; external dllfile name 'yapiLockDeviceCallBack';
@@ -4985,7 +5014,8 @@ const
 type
 
   TyapiEventType = (YAPI_DEV_ARRIVAL,YAPI_DEV_REMOVAL,YAPI_DEV_CHANGE,
-                    YAPI_FUN_UPDATE,YAPI_FUN_VALUE,YAPI_FUN_TIMEDREPORT,YAPI_HUB_DISCOVERY);
+                    YAPI_FUN_UPDATE,YAPI_FUN_VALUE,YAPI_FUN_TIMEDREPORT,
+                    YAPI_HUB_DISCOVERY,YAPI_DEV_CONFIGCHANGE);
 
   TyapiEvent = record
     eventtype: TyapiEventType;
@@ -5080,6 +5110,20 @@ var
       event^.module := yFindModule(string(infos.serial)+'.module');
       if(assigned(yChange)) then   _PlugEvents.add(event)
       else _yapiFreeMem(event);
+    end;
+
+
+  procedure native_yDeviceConfigChangeCallback (d:YDEV_DESCR);cdecl;
+    var
+      infos  : yDeviceSt;
+      errmsg : string;
+      event  : PyapiEvent;
+    begin
+      event := _yapiGetMem(sizeof(TyapiEvent));
+      event^.eventtype    := YAPI_DEV_CONFIGCHANGE;
+      if(yapiGetDeviceInfo(d, infos, errmsg) <> YAPI_SUCCESS) then exit;
+      event^.module := yFindModule(string(infos.serial)+'.module');
+      _DataEvents.add(event)
     end;
 
 
@@ -5668,6 +5712,7 @@ var
       _yapiRegisterDeviceArrivalCallback(native_yDeviceArrivalCallback);
       _yapiRegisterDeviceRemovalCallback(native_yDeviceRemovalCallback);
       _yapiRegisterDeviceChangeCallback(native_yDeviceChangeCallback);
+      _yapiRegisterDeviceConfigChangeCallback(native_yDeviceConfigChangeCallback);
       _yapiRegisterFunctionUpdateCallback(native_yFunctionUpdateCallback);
       _yapiRegisterTimedReportCallback(native_yTimedReportCallback);
       _yapiRegisterLogFunction(native_yLogFunction);
@@ -5835,6 +5880,10 @@ var
                           measure.free();
                         end;
                     end;
+                end
+              else If (p^.eventtype = YAPI_DEV_CONFIGCHANGE) Then
+                begin
+                  p^.module._invokeConfigChangeCallback();
                 end;
               _yapiFreeMem(p);
             end;
@@ -8142,6 +8191,7 @@ var
       _userVar := Y_USERVAR_INVALID;
       _valueCallbackModule := nil;
       _logCallback := nil;
+      _confChangeCallback := nil;
       //--- (end of generated code: YModule accessors initialization)
     end;
 
@@ -8946,6 +8996,53 @@ var
   function TYModule.triggerFirmwareUpdate(secBeforeReboot: LongInt):LongInt;
     begin
       result := self.set_rebootCountdown(-secBeforeReboot);
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Register a callback function, to be called when a persistent settings in
+  ///   a device configuration has been changed (e.g.
+  /// <para>
+  ///   change of unit, etc).
+  /// </para>
+  /// </summary>
+  /// <param name="callback">
+  ///   a procedure taking a YModule parameter, or <c>null</c>
+  ///   to unregister a previously registered  callback.
+  /// </param>
+  ///-
+  function TYModule.registerConfigChangeCallback(callback: TYModuleConfigChangeCallback):LongInt;
+    begin
+      self._confChangeCallback := callback;
+      result := 0;
+      exit;
+    end;
+
+
+  function TYModule._invokeConfigChangeCallback():LongInt;
+    begin
+      if (addr(self._confChangeCallback) <> nil) then
+        begin
+          self._confChangeCallback(self);
+        end;
+      result := 0;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Triggers a configuration change callback, to check if they are supported or not.
+  /// <para>
+  /// </para>
+  /// </summary>
+  ///-
+  function TYModule.triggerConfigChangeCallback():LongInt;
+    begin
+      self._setAttr('persistentSettings', '2');
+      result := 0;
       exit;
     end;
 

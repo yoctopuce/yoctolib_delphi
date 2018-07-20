@@ -18,6 +18,11 @@ uses
     writeln(fct.get_hardwareId() + ' : ' + FloatToStr(measure.get_averageValue()) + ' ' + fct.get_unit() + ' (timed report)');
    end;
 
+  Procedure configChangeCallBack(m:TYModule);
+   begin
+    writeln(m.get_serialNumber() + ' : config changed');
+   end;
+
   Procedure deviceArrival(m:TYModule);
    var
      serial     : string;
@@ -29,6 +34,7 @@ uses
    begin
      serial := m.get_serialNumber();
      writeln('Device arrival : ' + serial);
+     m.registerConfigChangeCallback(configChangeCallback);
 
      // First solution: look for a specific type of function (eg. anButton)
      fctcount := m.functionCount();

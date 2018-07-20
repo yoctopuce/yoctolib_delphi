@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_multicellweighscale.pas 29804 2018-01-30 18:05:21Z mvuilleu $
+ * $Id: yocto_multicellweighscale.pas 31016 2018-06-04 08:45:40Z mvuilleu $
  *
  * Implements yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
  *
@@ -52,7 +52,8 @@ const Y_EXCITATION_OFF = 0;
 const Y_EXCITATION_DC = 1;
 const Y_EXCITATION_AC = 2;
 const Y_EXCITATION_INVALID = -1;
-const Y_COMPTEMPADAPTRATIO_INVALID    = YAPI_INVALID_DOUBLE;
+const Y_TEMPAVGADAPTRATIO_INVALID     = YAPI_INVALID_DOUBLE;
+const Y_TEMPCHGADAPTRATIO_INVALID     = YAPI_INVALID_DOUBLE;
 const Y_COMPTEMPAVG_INVALID           = YAPI_INVALID_DOUBLE;
 const Y_COMPTEMPCHG_INVALID           = YAPI_INVALID_DOUBLE;
 const Y_COMPENSATION_INVALID          = YAPI_INVALID_DOUBLE;
@@ -87,7 +88,8 @@ type
     // Attributes (function value cache)
     _cellCount                : LongInt;
     _excitation               : Integer;
-    _compTempAdaptRatio       : double;
+    _tempAvgAdaptRatio        : double;
+    _tempChgAdaptRatio        : double;
     _compTempAvg              : double;
     _compTempChg              : double;
     _compensation             : double;
@@ -210,17 +212,18 @@ type
 
     ////
     /// <summary>
-    ///   Changes the averaged temperature update rate, in percents.
+    ///   Changes the averaged temperature update rate, in per mille.
     /// <para>
+    ///   The purpose of this adaptation ratio is to model the thermal inertia of the load cell.
     ///   The averaged temperature is updated every 10 seconds, by applying this adaptation rate
     ///   to the difference between the measures ambiant temperature and the current compensation
-    ///   temperature. The standard rate is 0.04 percents, and the maximal rate is 65 percents.
+    ///   temperature. The standard rate is 0.2 per mille, and the maximal rate is 65 per mille.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a floating point number corresponding to the averaged temperature update rate, in percents
+    ///   a floating point number corresponding to the averaged temperature update rate, in per mille
     /// </param>
     /// <para>
     /// </para>
@@ -231,27 +234,73 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function set_compTempAdaptRatio(newval:double):integer;
+    function set_tempAvgAdaptRatio(newval:double):integer;
 
     ////
     /// <summary>
-    ///   Returns the averaged temperature update rate, in percents.
+    ///   Returns the averaged temperature update rate, in per mille.
     /// <para>
+    ///   The purpose of this adaptation ratio is to model the thermal inertia of the load cell.
     ///   The averaged temperature is updated every 10 seconds, by applying this adaptation rate
     ///   to the difference between the measures ambiant temperature and the current compensation
-    ///   temperature. The standard rate is 0.04 percents, and the maximal rate is 65 percents.
+    ///   temperature. The standard rate is 0.2 per mille, and the maximal rate is 65 per mille.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a floating point number corresponding to the averaged temperature update rate, in percents
+    ///   a floating point number corresponding to the averaged temperature update rate, in per mille
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_COMPTEMPADAPTRATIO_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>Y_TEMPAVGADAPTRATIO_INVALID</c>.
     /// </para>
     ///-
-    function get_compTempAdaptRatio():double;
+    function get_tempAvgAdaptRatio():double;
+
+    ////
+    /// <summary>
+    ///   Changes the temperature change update rate, in per mille.
+    /// <para>
+    ///   The temperature change is updated every 10 seconds, by applying this adaptation rate
+    ///   to the difference between the measures ambiant temperature and the current temperature used for
+    ///   change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a floating point number corresponding to the temperature change update rate, in per mille
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_tempChgAdaptRatio(newval:double):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the temperature change update rate, in per mille.
+    /// <para>
+    ///   The temperature change is updated every 10 seconds, by applying this adaptation rate
+    ///   to the difference between the measures ambiant temperature and the current temperature used for
+    ///   change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a floating point number corresponding to the temperature change update rate, in per mille
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_TEMPCHGADAPTRATIO_INVALID</c>.
+    /// </para>
+    ///-
+    function get_tempChgAdaptRatio():double;
 
     ////
     /// <summary>
@@ -596,7 +645,8 @@ implementation
       //--- (YMultiCellWeighScale accessors initialization)
       _cellCount := Y_CELLCOUNT_INVALID;
       _excitation := Y_EXCITATION_INVALID;
-      _compTempAdaptRatio := Y_COMPTEMPADAPTRATIO_INVALID;
+      _tempAvgAdaptRatio := Y_TEMPAVGADAPTRATIO_INVALID;
+      _tempChgAdaptRatio := Y_TEMPCHGADAPTRATIO_INVALID;
       _compTempAvg := Y_COMPTEMPAVG_INVALID;
       _compTempChg := Y_COMPTEMPCHG_INVALID;
       _compensation := Y_COMPENSATION_INVALID;
@@ -627,9 +677,15 @@ implementation
          result := 1;
          exit;
          end;
-      if (member^.name = 'compTempAdaptRatio') then
+      if (member^.name = 'tempAvgAdaptRatio') then
         begin
-          _compTempAdaptRatio := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _tempAvgAdaptRatio := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'tempChgAdaptRatio') then
+        begin
+          _tempChgAdaptRatio := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
@@ -823,17 +879,18 @@ implementation
 
   ////
   /// <summary>
-  ///   Changes the averaged temperature update rate, in percents.
+  ///   Changes the averaged temperature update rate, in per mille.
   /// <para>
+  ///   The purpose of this adaptation ratio is to model the thermal inertia of the load cell.
   ///   The averaged temperature is updated every 10 seconds, by applying this adaptation rate
   ///   to the difference between the measures ambiant temperature and the current compensation
-  ///   temperature. The standard rate is 0.04 percents, and the maximal rate is 65 percents.
+  ///   temperature. The standard rate is 0.2 per mille, and the maximal rate is 65 per mille.
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <param name="newval">
-  ///   a floating point number corresponding to the averaged temperature update rate, in percents
+  ///   a floating point number corresponding to the averaged temperature update rate, in per mille
   /// </param>
   /// <para>
   /// </para>
@@ -844,33 +901,34 @@ implementation
   ///   On failure, throws an exception or returns a negative error code.
   /// </para>
   ///-
-  function TYMultiCellWeighScale.set_compTempAdaptRatio(newval:double):integer;
+  function TYMultiCellWeighScale.set_tempAvgAdaptRatio(newval:double):integer;
     var
       rest_val: string;
     begin
       rest_val := inttostr(round(newval * 65536.0));
-      result := _setAttr('compTempAdaptRatio',rest_val);
+      result := _setAttr('tempAvgAdaptRatio',rest_val);
     end;
 
   ////
   /// <summary>
-  ///   Returns the averaged temperature update rate, in percents.
+  ///   Returns the averaged temperature update rate, in per mille.
   /// <para>
+  ///   The purpose of this adaptation ratio is to model the thermal inertia of the load cell.
   ///   The averaged temperature is updated every 10 seconds, by applying this adaptation rate
   ///   to the difference between the measures ambiant temperature and the current compensation
-  ///   temperature. The standard rate is 0.04 percents, and the maximal rate is 65 percents.
+  ///   temperature. The standard rate is 0.2 per mille, and the maximal rate is 65 per mille.
   /// </para>
   /// <para>
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a floating point number corresponding to the averaged temperature update rate, in percents
+  ///   a floating point number corresponding to the averaged temperature update rate, in per mille
   /// </returns>
   /// <para>
-  ///   On failure, throws an exception or returns Y_COMPTEMPADAPTRATIO_INVALID.
+  ///   On failure, throws an exception or returns Y_TEMPAVGADAPTRATIO_INVALID.
   /// </para>
   ///-
-  function TYMultiCellWeighScale.get_compTempAdaptRatio():double;
+  function TYMultiCellWeighScale.get_tempAvgAdaptRatio():double;
     var
       res : double;
     begin
@@ -878,11 +936,78 @@ implementation
         begin
           if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
             begin
-              result := Y_COMPTEMPADAPTRATIO_INVALID;
+              result := Y_TEMPAVGADAPTRATIO_INVALID;
               exit;
             end;
         end;
-      res := self._compTempAdaptRatio;
+      res := self._tempAvgAdaptRatio;
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the temperature change update rate, in per mille.
+  /// <para>
+  ///   The temperature change is updated every 10 seconds, by applying this adaptation rate
+  ///   to the difference between the measures ambiant temperature and the current temperature used for
+  ///   change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="newval">
+  ///   a floating point number corresponding to the temperature change update rate, in per mille
+  /// </param>
+  /// <para>
+  /// </para>
+  /// <returns>
+  ///   YAPI_SUCCESS if the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYMultiCellWeighScale.set_tempChgAdaptRatio(newval:double):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(round(newval * 65536.0));
+      result := _setAttr('tempChgAdaptRatio',rest_val);
+    end;
+
+  ////
+  /// <summary>
+  ///   Returns the temperature change update rate, in per mille.
+  /// <para>
+  ///   The temperature change is updated every 10 seconds, by applying this adaptation rate
+  ///   to the difference between the measures ambiant temperature and the current temperature used for
+  ///   change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   a floating point number corresponding to the temperature change update rate, in per mille
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns Y_TEMPCHGADAPTRATIO_INVALID.
+  /// </para>
+  ///-
+  function TYMultiCellWeighScale.get_tempChgAdaptRatio():double;
+    var
+      res : double;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+            begin
+              result := Y_TEMPCHGADAPTRATIO_INVALID;
+              exit;
+            end;
+        end;
+      res := self._tempChgAdaptRatio;
       result := res;
       exit;
     end;
