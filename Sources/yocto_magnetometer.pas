@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_magnetometer.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_magnetometer.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindMagnetometer(), the high-level API for Magnetometer functions
  *
@@ -54,6 +54,8 @@ const Y_ZVALUE_INVALID                = YAPI_INVALID_DOUBLE;
 
 
 //--- (end of YMagnetometer definitions)
+//--- (YMagnetometer yapiwrapper declaration)
+//--- (end of YMagnetometer yapiwrapper declaration)
 
 type
   TYMagnetometer = class;
@@ -397,6 +399,8 @@ implementation
       //--- (end of YMagnetometer accessors initialization)
     end;
 
+//--- (YMagnetometer yapiwrapper)
+//--- (end of YMagnetometer yapiwrapper)
 
 //--- (YMagnetometer implementation)
 {$HINTS OFF}
@@ -454,7 +458,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_BANDWIDTH_INVALID;
               exit;
@@ -517,7 +521,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_XVALUE_INVALID;
               exit;
@@ -550,7 +554,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_YVALUE_INVALID;
               exit;
@@ -583,7 +587,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_ZVALUE_INVALID;
               exit;

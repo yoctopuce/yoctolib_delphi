@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_compass.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_compass.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindCompass(), the high-level API for Compass functions
  *
@@ -56,6 +56,8 @@ const Y_MAGNETICHEADING_INVALID       = YAPI_INVALID_DOUBLE;
 
 
 //--- (end of YCompass definitions)
+//--- (YCompass yapiwrapper declaration)
+//--- (end of YCompass yapiwrapper declaration)
 
 type
   TYCompass = class;
@@ -365,6 +367,8 @@ implementation
       //--- (end of YCompass accessors initialization)
     end;
 
+//--- (YCompass yapiwrapper)
+//--- (end of YCompass yapiwrapper)
 
 //--- (YCompass implementation)
 {$HINTS OFF}
@@ -416,7 +420,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_BANDWIDTH_INVALID;
               exit;
@@ -464,7 +468,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_AXIS_INVALID;
               exit;
@@ -497,7 +501,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_MAGNETICHEADING_INVALID;
               exit;

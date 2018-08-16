@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_temperature.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_temperature.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindTemperature(), the high-level API for Temperature functions
  *
@@ -69,6 +69,8 @@ const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 
 //--- (end of YTemperature definitions)
+//--- (YTemperature yapiwrapper declaration)
+//--- (end of YTemperature yapiwrapper declaration)
 
 type
   TYTemperature = class;
@@ -526,6 +528,8 @@ implementation
       //--- (end of YTemperature accessors initialization)
     end;
 
+//--- (YTemperature yapiwrapper)
+//--- (end of YTemperature yapiwrapper)
 
 //--- (YTemperature implementation)
 {$HINTS OFF}
@@ -624,7 +628,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_SENSORTYPE_INVALID;
               exit;
@@ -694,7 +698,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_SIGNALVALUE_INVALID;
               exit;
@@ -727,7 +731,7 @@ implementation
     begin
       if self._cacheExpiration = 0 then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_SIGNALUNIT_INVALID;
               exit;
@@ -745,7 +749,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_COMMAND_INVALID;
               exit;

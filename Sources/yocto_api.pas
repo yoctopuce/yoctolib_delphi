@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 31238 2018-07-17 11:08:47Z mvuilleu $
+ * $Id: yocto_api.pas 31493 2018-08-10 08:43:29Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -86,7 +86,6 @@ var
   // with languages without exception support like C
   YAPI_ExceptionsDisabled : Boolean ;
   YAPI_apiInitialized  : Boolean;
-  YAPI_DefaultCacheValidity : Integer;
   _decExp: array[0..15] of Double =
     (1.0e-6, 1.0e-5, 1.0e-4, 1.0e-3, 1.0e-2, 1.0e-1, 1.0,
       1.0e1, 1.0e2, 1.0e3, 1.0e4, 1.0e5, 1.0e6, 1.0e7, 1.0e8, 1.0e9 );
@@ -115,7 +114,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '31315';
+  YOCTO_API_BUILD_NO        = '31701';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -262,6 +261,12 @@ const Y_SENSORSTATE_INVALID           = YAPI_INVALID_INT;
 
 //--- (end of generated code: YSensor definitions)
 
+//--- (generated code: YAPIContext definitions)
+
+
+//--- (end of generated code: YAPIContext definitions)
+
+
 //--- (generated code: YFirmwareUpdate definitions)
 
 
@@ -314,6 +319,8 @@ type
   TDoubleArrayArray = array of TDoubleArray;
   TYDataStreamArray = array of TYDataStream;
   TYMeasureArray = array of TYMeasure;
+
+  TYAPIContext = class;
 
 
   YAPI_Exception  = class (exception)
@@ -597,7 +604,7 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function load(msValidity:integer):YRETCODE;
+    function load(msValidity:u64):YRETCODE;
 
     ////
     /// <summary>
@@ -2570,6 +2577,100 @@ end;
   //--- (end of generated code: YSensor accessors declaration)
   end;
 
+//--- (generated code: YAPIContext class start)
+  ////
+  /// <summary>
+  ///   TYAPIContext Class: Control interface for the firmware update process
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  ///-
+  TYAPIContext=class(TObject)
+  //--- (end of generated code: YAPIContext class start)
+  protected
+  //--- (generated code: YAPIContext declaration)
+    // Attributes (function value cache)
+    _cacheValidity            : u64;
+
+    //--- (end of generated code: YAPIContext declaration)
+  public
+   constructor Create();
+    //--- (generated code: YAPIContext accessors declaration)
+    ////
+    /// <summary>
+    ///   Change the time between each forced enumeration of the YoctoHub used.
+    /// <para>
+    ///   By default, the library performs a complete enumeration every 10 seconds.
+    ///   To reduce network traffic it is possible to increase this delay.
+    ///   This is particularly useful when a YoctoHub is connected to a GSM network
+    ///   where the traffic is charged. This setting does not affect modules connected by USB,
+    ///   nor the operation of arrival/removal callbacks.
+    ///   Note: This function must be called after <c>yInitAPI</c>.
+    /// </para>
+    /// </summary>
+    /// <param name="deviceListValidity">
+    ///   number of seconds between each enumeration.
+    /// </param>
+    ///-
+    procedure SetDeviceListValidity(deviceListValidity: LongInt); overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the time between each forced enumeration of the YoctoHub used.
+    /// <para>
+    ///   Note: This function must be called after <c>yInitAPI</c>.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the number of seconds between each enumeration.
+    /// </returns>
+    ///-
+    function GetDeviceListValidity():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Change the validity period of the data loaded by the library.
+    /// <para>
+    ///   By default, when accessing a module, all the attributes of the
+    ///   module functions are automatically kept in cache for the standard
+    ///   duration (5 ms). This method can be used to change this standard duration,
+    ///   for example in order to reduce network or USB traffic. This parameter
+    ///   does not affect value change callbacks
+    ///   Note: This function must be called after <c>yInitAPI</c>.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="cacheValidityMs">
+    ///   an integer corresponding to the validity attributed to the
+    ///   loaded function parameters, in milliseconds
+    /// </param>
+    ///-
+    procedure SetCacheValidity(cacheValidityMs: u64); overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the validity period of the data loaded by the library.
+    /// <para>
+    ///   This method returns the cache validity of all attributes
+    ///   module functions.
+    ///   Note: This function must be called after <c>yInitAPI </c>.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the validity attributed to the
+    ///   loaded function parameters, in milliseconds
+    /// </returns>
+    ///-
+    function GetCacheValidity():u64; overload; virtual;
+
+
+  //--- (end of generated code: YAPIContext accessors declaration)
+  end;
 
   //--- (generated code: YFirmwareUpdate class start)
   ////
@@ -4037,6 +4138,78 @@ end;
 
 //--- (end of generated code: YDataLogger functions declaration)
 
+//--- (generated code: YAPIContext yapiwrapper declaration)
+    ////
+    /// <summary>
+    ///   Change the time between each forced enumeration of the YoctoHub used.
+    /// <para>
+    ///   By default, the library performs a complete enumeration every 10 seconds.
+    ///   To reduce network traffic it is possible to increase this delay.
+    ///   This is particularly useful when a YoctoHub is connected to a GSM network
+    ///   where the traffic is charged. This setting does not affect modules connected by USB,
+    ///   nor the operation of arrival/removal callbacks.
+    ///   Note: This function must be called after <c>yInitAPI</c>.
+    /// </para>
+    /// </summary>
+    /// <param name="deviceListValidity">
+    ///   number of seconds between each enumeration.
+    /// </param>
+    ///-
+    procedure ySetDeviceListValidity(deviceListValidity: LongInt);
+
+    ////
+    /// <summary>
+    ///   Returns the time between each forced enumeration of the YoctoHub used.
+    /// <para>
+    ///   Note: This function must be called after <c>yInitAPI</c>.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the number of seconds between each enumeration.
+    /// </returns>
+    ///-
+    function yGetDeviceListValidity():LongInt;
+
+    ////
+    /// <summary>
+    ///   Change the validity period of the data loaded by the library.
+    /// <para>
+    ///   By default, when accessing a module, all the attributes of the
+    ///   module functions are automatically kept in cache for the standard
+    ///   duration (5 ms). This method can be used to change this standard duration,
+    ///   for example in order to reduce network or USB traffic. This parameter
+    ///   does not affect value change callbacks
+    ///   Note: This function must be called after <c>yInitAPI</c>.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="cacheValidityMs">
+    ///   an integer corresponding to the validity attributed to the
+    ///   loaded function parameters, in milliseconds
+    /// </param>
+    ///-
+    procedure ySetCacheValidity(cacheValidityMs: u64);
+
+    ////
+    /// <summary>
+    ///   Returns the validity period of the data loaded by the library.
+    /// <para>
+    ///   This method returns the cache validity of all attributes
+    ///   module functions.
+    ///   Note: This function must be called after <c>yInitAPI </c>.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the validity attributed to the
+    ///   loaded function parameters, in milliseconds
+    /// </returns>
+    ///-
+    function yGetCacheValidity():u64;
+
+//--- (end of generated code: YAPIContext yapiwrapper declaration)
 
   ////
   /// <summary>
@@ -4737,6 +4910,10 @@ type
   function _hexStrToBin(hex_str:string):TByteArray;
   function _bytesMerge(array_a:TByteArray; array_b:TByteArray):TByteArray;
 
+var
+  _yapiContext       : TYAPIContext;
+
+
 implementation
 
 var
@@ -4961,6 +5138,8 @@ const
   function _yapiGetSubdevices(serial:pansichar; buffer:pansichar; buffersize:integer; var totalSize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetSubdevices';
   procedure _yapiFreeMem(buffer:pointer); cdecl; external dllfile name 'yapiFreeMem';
   function _yapiGetDevicePathEx(serial:pansichar; rootdevice:pansichar; path:pansichar; pathsize:integer; var neededsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetDevicePathEx';
+  procedure _yapiSetNetDevListValidity(sValidity:integer); cdecl; external dllfile name 'yapiSetNetDevListValidity';
+  function _yapiGetNetDevListValidity():integer; cdecl; external dllfile name 'yapiGetNetDevListValidity';
 //--- (end of generated code: YFunction dlldef)
 
 
@@ -6964,7 +7143,7 @@ const
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_LOGICALNAME_INVALID;
               exit;
@@ -7035,7 +7214,7 @@ const
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_ADVERTISEDVALUE_INVALID;
               exit;
@@ -7500,7 +7679,7 @@ const
       // Try to execute a function request to be positively sure that the device is ready
       if(YISERR(dev.requestAPI(apires, errmsg)))  then
       begin result:=false;exit;end;
-      self.load(YAPI_DEFAULTCACHEVALIDITY);
+      self.load(_yapicontext.GetCacheValidity());
       result :=true;
     end;
 
@@ -7620,7 +7799,7 @@ const
 
   // Preload the function cache with a specified validity duration.
   // Note: the function cache is a typed (parsed) cache, contrarily to the agnostic device cache
-  function TYFunction.load(msValidity:integer):YRETCODE;
+  function TYFunction.load(msValidity:u64):YRETCODE;
     var
       dev            : TYDevice;
       errmsg         : string;
@@ -8128,7 +8307,7 @@ var
       if assigned(_cacheJson) then _cacheJson.free();
       _cacheJson:= j;
       apires    := j;
-      _cacheStamp := yGetTickCount() + YAPI_defaultCacheValidity;
+      _cacheStamp := yGetTickCount() + _yapicontext.GetCacheValidity();
       result:= YAPI_SUCCESS;
     end;
 
@@ -8301,7 +8480,7 @@ var
     begin
       if self._cacheExpiration = 0 then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PRODUCTNAME_INVALID;
               exit;
@@ -8334,7 +8513,7 @@ var
     begin
       if self._cacheExpiration = 0 then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_SERIALNUMBER_INVALID;
               exit;
@@ -8367,7 +8546,7 @@ var
     begin
       if self._cacheExpiration = 0 then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PRODUCTID_INVALID;
               exit;
@@ -8400,7 +8579,7 @@ var
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PRODUCTRELEASE_INVALID;
               exit;
@@ -8433,7 +8612,7 @@ var
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_FIRMWARERELEASE_INVALID;
               exit;
@@ -8467,7 +8646,7 @@ var
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PERSISTENTSETTINGS_INVALID;
               exit;
@@ -8508,7 +8687,7 @@ var
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_LUMINOSITY_INVALID;
               exit;
@@ -8573,7 +8752,7 @@ var
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_BEACON_INVALID;
               exit;
@@ -8634,7 +8813,7 @@ var
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_UPTIME_INVALID;
               exit;
@@ -8667,7 +8846,7 @@ var
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_USBCURRENT_INVALID;
               exit;
@@ -8702,7 +8881,7 @@ var
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_REBOOTCOUNTDOWN_INVALID;
               exit;
@@ -8744,7 +8923,7 @@ var
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_USERVAR_INVALID;
               exit;
@@ -10722,7 +10901,7 @@ var
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_UNIT_INVALID;
               exit;
@@ -10756,7 +10935,7 @@ var
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_CURRENTVALUE_INVALID;
               exit;
@@ -10826,7 +11005,7 @@ var
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_LOWESTVALUE_INVALID;
               exit;
@@ -10891,7 +11070,7 @@ var
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_HIGHESTVALUE_INVALID;
               exit;
@@ -10926,7 +11105,7 @@ var
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_CURRENTRAWVALUE_INVALID;
               exit;
@@ -10961,7 +11140,7 @@ var
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_LOGFREQUENCY_INVALID;
               exit;
@@ -11028,7 +11207,7 @@ var
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_REPORTFREQUENCY_INVALID;
               exit;
@@ -11094,7 +11273,7 @@ var
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_ADVMODE_INVALID;
               exit;
@@ -11141,7 +11320,7 @@ var
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_CALIBRATIONPARAM_INVALID;
               exit;
@@ -11214,7 +11393,7 @@ var
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_RESOLUTION_INVALID;
               exit;
@@ -11249,7 +11428,7 @@ var
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_SENSORSTATE_INVALID;
               exit;
@@ -11894,7 +12073,7 @@ var
       // Load function parameters if not yet loaded
       if self._scale = 0 then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := YAPI_DEVICE_NOT_FOUND;
               exit;
@@ -11950,7 +12129,7 @@ var
       // Load function parameters if not yet loaded
       if self._scale = 0 then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := YAPI_INVALID_STRING;
               exit;
@@ -12314,6 +12493,209 @@ var
 
 //--- (end of generated code: YSensor functions)
 
+//--- (generated code: YAPIContext dlldef)
+//--- (end of generated code: YAPIContext dlldef)
+
+  constructor TYAPIContext.Create();
+    begin
+      //--- (generated code: YAPIContext accessors initialization)
+      _cacheValidity := 5;
+      //--- (end of generated code: YAPIContext accessors initialization)
+    end;
+
+
+//--- (generated code: YAPIContext implementation)
+
+  ////
+  /// <summary>
+  ///   Change the time between each forced enumeration of the YoctoHub used.
+  /// <para>
+  ///   By default, the library performs a complete enumeration every 10 seconds.
+  ///   To reduce network traffic it is possible to increase this delay.
+  ///   This is particularly useful when a YoctoHub is connected to a GSM network
+  ///   where the traffic is charged. This setting does not affect modules connected by USB,
+  ///   nor the operation of arrival/removal callbacks.
+  ///   Note: This function must be called after <c>yInitAPI</c>.
+  /// </para>
+  /// </summary>
+  /// <param name="deviceListValidity">
+  ///   number of seconds between each enumeration.
+  /// </param>
+  ///-
+  procedure TYAPIContext.SetDeviceListValidity(deviceListValidity: LongInt);
+    begin
+      _yapiSetNetDevListValidity(deviceListValidity);
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the time between each forced enumeration of the YoctoHub used.
+  /// <para>
+  ///   Note: This function must be called after <c>yInitAPI</c>.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   the number of seconds between each enumeration.
+  /// </returns>
+  ///-
+  function TYAPIContext.GetDeviceListValidity():LongInt;
+    var
+      res : LongInt;
+    begin
+      res := _yapiGetNetDevListValidity();
+      result := res;
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Change the validity period of the data loaded by the library.
+  /// <para>
+  ///   By default, when accessing a module, all the attributes of the
+  ///   module functions are automatically kept in cache for the standard
+  ///   duration (5 ms). This method can be used to change this standard duration,
+  ///   for example in order to reduce network or USB traffic. This parameter
+  ///   does not affect value change callbacks
+  ///   Note: This function must be called after <c>yInitAPI</c>.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="cacheValidityMs">
+  ///   an integer corresponding to the validity attributed to the
+  ///   loaded function parameters, in milliseconds
+  /// </param>
+  ///-
+  procedure TYAPIContext.SetCacheValidity(cacheValidityMs: u64);
+    begin
+      self._cacheValidity := cacheValidityMs;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the validity period of the data loaded by the library.
+  /// <para>
+  ///   This method returns the cache validity of all attributes
+  ///   module functions.
+  ///   Note: This function must be called after <c>yInitAPI </c>.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the validity attributed to the
+  ///   loaded function parameters, in milliseconds
+  /// </returns>
+  ///-
+  function TYAPIContext.GetCacheValidity():u64;
+    begin
+      result := self._cacheValidity;
+      exit;
+    end;
+
+
+//--- (end of generated code: YAPIContext implementation)
+
+//--- (generated code: YAPIContext functions)
+
+  procedure _APIContextCleanup();
+    begin
+    end;
+
+//--- (end of generated code: YAPIContext functions)
+
+
+//--- (generated code: YAPIContext yapiwrapper)
+
+  ////
+  /// <summary>
+  ///   Change the time between each forced enumeration of the YoctoHub used.
+  /// <para>
+  ///   By default, the library performs a complete enumeration every 10 seconds.
+  ///   To reduce network traffic it is possible to increase this delay.
+  ///   This is particularly useful when a YoctoHub is connected to a GSM network
+  ///   where the traffic is charged. This setting does not affect modules connected by USB,
+  ///   nor the operation of arrival/removal callbacks.
+  ///   Note: This function must be called after <c>yInitAPI</c>.
+  /// </para>
+  /// </summary>
+  /// <param name="deviceListValidity">
+  ///   number of seconds between each enumeration.
+  /// </param>
+  ///-
+  procedure ySetDeviceListValidity(deviceListValidity: LongInt);
+    begin
+        _yapiContext.SetDeviceListValidity(deviceListValidity);
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the time between each forced enumeration of the YoctoHub used.
+  /// <para>
+  ///   Note: This function must be called after <c>yInitAPI</c>.
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   the number of seconds between each enumeration.
+  /// </returns>
+  ///-
+  function yGetDeviceListValidity():LongInt;
+    begin
+        result := _yapiContext.GetDeviceListValidity();
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Change the validity period of the data loaded by the library.
+  /// <para>
+  ///   By default, when accessing a module, all the attributes of the
+  ///   module functions are automatically kept in cache for the standard
+  ///   duration (5 ms). This method can be used to change this standard duration,
+  ///   for example in order to reduce network or USB traffic. This parameter
+  ///   does not affect value change callbacks
+  ///   Note: This function must be called after <c>yInitAPI</c>.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <param name="cacheValidityMs">
+  ///   an integer corresponding to the validity attributed to the
+  ///   loaded function parameters, in milliseconds
+  /// </param>
+  ///-
+  procedure ySetCacheValidity(cacheValidityMs: u64);
+    begin
+        _yapiContext.SetCacheValidity(cacheValidityMs);
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Returns the validity period of the data loaded by the library.
+  /// <para>
+  ///   This method returns the cache validity of all attributes
+  ///   module functions.
+  ///   Note: This function must be called after <c>yInitAPI </c>.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  /// <returns>
+  ///   an integer corresponding to the validity attributed to the
+  ///   loaded function parameters, in milliseconds
+  /// </returns>
+  ///-
+  function yGetCacheValidity():u64;
+    begin
+        result := _yapiContext.GetCacheValidity();
+    end;
+
+//--- (end of generated code: YAPIContext yapiwrapper)
 
   constructor TYDataStream.Create(parent : TYFunction);
     begin
@@ -14036,8 +14418,13 @@ var
               url := stream._get_url();
             end;
         end;
-      result := self.processMore(self._progress, self._parent._download(url));
-      exit;
+      Try
+        result := self.processMore(self._progress, self._parent._download(url));
+        exit;
+      Except
+        result := self.processMore(self._progress, self._parent._download(url));
+        exit;
+      End;
     end;
 
 
@@ -14454,7 +14841,7 @@ const
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_CURRENTRUNINDEX_INVALID;
               exit;
@@ -14487,7 +14874,7 @@ const
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_TIMEUTC_INVALID;
               exit;
@@ -14549,7 +14936,7 @@ const
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_RECORDING_INVALID;
               exit;
@@ -14612,7 +14999,7 @@ const
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_AUTOSTART_INVALID;
               exit;
@@ -14677,7 +15064,7 @@ const
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_BEACONDRIVEN_INVALID;
               exit;
@@ -14725,7 +15112,7 @@ const
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_CLEARHISTORY_INVALID;
               exit;
@@ -15317,9 +15704,6 @@ initialization
   randomize;
   YAPI_apiInitialized     := false;
   YAPI_ExceptionsDisabled := false;
-  // Default cache validity (in [ms]) before reloading data from device. This saves a lots of trafic.
-  // Note that a value undger 2 ms makes little sense since a USB bus itself has a 2ms roundtrip period
-  YAPI_DefaultCacheValidity := 5;
 
 
   YDevice_devCache        := Tlist.create();
@@ -15335,10 +15719,13 @@ initialization
   //--- (end of generated code: YMeasure initialization)
   //--- (generated code: YDataSet initialization)
   //--- (end of generated code: YDataSet initialization)
+  //--- (generated code: YAPIContext initialization)
+  //--- (end of generated code: YAPIContext initialization)
 
   _cache                := TStringList.create();
   _cache.sorted         := true;
   _FunctionCallbacks    := TList.create();
+  _yapiContext          := TYAPIContext.create();
   _TimedReportCallbackList := TList.create();
   _PlugEvents           := TList.create;
   _DataEvents           := TList.create;
@@ -15366,11 +15753,15 @@ finalization
   //--- (generated code: YFunction cleanup)
   _FunctionCleanup();
   //--- (end of generated code: YFunction cleanup)
+    //--- (generated code: YAPIContext cleanup)
+  //--- (end of generated code: YAPIContext cleanup)
+
   _FunctionCallbacks.free();
   _TimedReportCallbackList.free();
   devicesCleanUp();
   queuesCleanUp();
   handlersCleanUp();
+  _yapiContext.free();
 
 end.
 

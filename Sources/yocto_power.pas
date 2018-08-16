@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_power.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_power.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindPower(), the high-level API for Power functions
  *
@@ -53,6 +53,8 @@ const Y_METERTIMER_INVALID            = YAPI_INVALID_UINT;
 
 
 //--- (end of YPower definitions)
+//--- (YPower yapiwrapper declaration)
+//--- (end of YPower yapiwrapper declaration)
 
 type
   TYPower = class;
@@ -369,6 +371,8 @@ implementation
       //--- (end of YPower accessors initialization)
     end;
 
+//--- (YPower yapiwrapper)
+//--- (end of YPower yapiwrapper)
 
 //--- (YPower implementation)
 {$HINTS OFF}
@@ -422,7 +426,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_COSPHI_INVALID;
               exit;
@@ -465,7 +469,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_METER_INVALID;
               exit;
@@ -498,7 +502,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_METERTIMER_INVALID;
               exit;

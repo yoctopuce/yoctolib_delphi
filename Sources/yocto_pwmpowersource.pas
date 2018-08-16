@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwmpowersource.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_pwmpowersource.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
  *
@@ -55,6 +55,8 @@ const Y_POWERMODE_INVALID = -1;
 
 
 //--- (end of YPwmPowerSource definitions)
+//--- (YPwmPowerSource yapiwrapper declaration)
+//--- (end of YPwmPowerSource yapiwrapper declaration)
 
 type
   TYPwmPowerSource = class;
@@ -317,6 +319,8 @@ implementation
       //--- (end of YPwmPowerSource accessors initialization)
     end;
 
+//--- (YPwmPowerSource yapiwrapper)
+//--- (end of YPwmPowerSource yapiwrapper)
 
 //--- (YPwmPowerSource implementation)
 {$HINTS OFF}
@@ -357,7 +361,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_POWERMODE_INVALID;
               exit;

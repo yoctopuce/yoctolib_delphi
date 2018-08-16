@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wakeupschedule.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_wakeupschedule.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
@@ -57,6 +57,8 @@ const Y_NEXTOCCURENCE_INVALID         = YAPI_INVALID_LONG;
 
 
 //--- (end of YWakeUpSchedule definitions)
+//--- (YWakeUpSchedule yapiwrapper declaration)
+//--- (end of YWakeUpSchedule yapiwrapper declaration)
 
 type
   TYWakeUpSchedule = class;
@@ -562,6 +564,8 @@ implementation
       //--- (end of YWakeUpSchedule accessors initialization)
     end;
 
+//--- (YWakeUpSchedule yapiwrapper)
+//--- (end of YWakeUpSchedule yapiwrapper)
 
 //--- (YWakeUpSchedule implementation)
 {$HINTS OFF}
@@ -637,7 +641,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_MINUTESA_INVALID;
               exit;
@@ -698,7 +702,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_MINUTESB_INVALID;
               exit;
@@ -759,7 +763,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_HOURS_INVALID;
               exit;
@@ -820,7 +824,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_WEEKDAYS_INVALID;
               exit;
@@ -881,7 +885,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_MONTHDAYS_INVALID;
               exit;
@@ -942,7 +946,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_MONTHS_INVALID;
               exit;
@@ -1003,7 +1007,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_NEXTOCCURENCE_INVALID;
               exit;

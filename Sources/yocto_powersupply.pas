@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_powersupply.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_powersupply.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindPowerSupply(), the high-level API for PowerSupply functions
  *
@@ -67,6 +67,8 @@ const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 
 //--- (end of YPowerSupply definitions)
+//--- (YPowerSupply yapiwrapper declaration)
+//--- (end of YPowerSupply yapiwrapper declaration)
 
 type
   TYPowerSupply = class;
@@ -657,6 +659,8 @@ implementation
       //--- (end of YPowerSupply accessors initialization)
     end;
 
+//--- (YPowerSupply yapiwrapper)
+//--- (end of YPowerSupply yapiwrapper)
 
 //--- (YPowerSupply implementation)
 {$HINTS OFF}
@@ -796,7 +800,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_VOLTAGESETPOINT_INVALID;
               exit;
@@ -857,7 +861,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_CURRENTLIMIT_INVALID;
               exit;
@@ -890,7 +894,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_POWEROUTPUT_INVALID;
               exit;
@@ -951,7 +955,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_VOLTAGESENSE_INVALID;
               exit;
@@ -1012,7 +1016,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_MEASUREDVOLTAGE_INVALID;
               exit;
@@ -1045,7 +1049,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_MEASUREDCURRENT_INVALID;
               exit;
@@ -1078,7 +1082,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_INPUTVOLTAGE_INVALID;
               exit;
@@ -1111,7 +1115,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_VINT_INVALID;
               exit;
@@ -1144,7 +1148,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_LDOTEMPERATURE_INVALID;
               exit;
@@ -1162,7 +1166,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_VOLTAGETRANSITION_INVALID;
               exit;
@@ -1233,7 +1237,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_VOLTAGEATSTARTUP_INVALID;
               exit;
@@ -1296,7 +1300,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_CURRENTATSTARTUP_INVALID;
               exit;
@@ -1314,7 +1318,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_COMMAND_INVALID;
               exit;

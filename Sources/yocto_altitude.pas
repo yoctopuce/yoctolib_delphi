@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_altitude.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_altitude.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindAltitude(), the high-level API for Altitude functions
  *
@@ -52,6 +52,8 @@ const Y_TECHNOLOGY_INVALID            = YAPI_INVALID_STRING;
 
 
 //--- (end of YAltitude definitions)
+//--- (YAltitude yapiwrapper declaration)
+//--- (end of YAltitude yapiwrapper declaration)
 
 type
   TYAltitude = class;
@@ -384,6 +386,8 @@ implementation
       //--- (end of YAltitude accessors initialization)
     end;
 
+//--- (YAltitude yapiwrapper)
+//--- (end of YAltitude yapiwrapper)
 
 //--- (YAltitude implementation)
 {$HINTS OFF}
@@ -493,7 +497,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_QNH_INVALID;
               exit;
@@ -529,7 +533,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_TECHNOLOGY_INVALID;
               exit;

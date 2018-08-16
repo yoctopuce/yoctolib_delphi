@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_current.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_current.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindCurrent(), the high-level API for Current functions
  *
@@ -53,6 +53,8 @@ const Y_ENABLED_INVALID = -1;
 
 
 //--- (end of YCurrent definitions)
+//--- (YCurrent yapiwrapper declaration)
+//--- (end of YCurrent yapiwrapper declaration)
 
 type
   TYCurrent = class;
@@ -296,6 +298,8 @@ implementation
       //--- (end of YCurrent accessors initialization)
     end;
 
+//--- (YCurrent yapiwrapper)
+//--- (end of YCurrent yapiwrapper)
 
 //--- (YCurrent implementation)
 {$HINTS OFF}
@@ -320,7 +324,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_ENABLED_INVALID;
               exit;

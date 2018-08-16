@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_lightsensor.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_lightsensor.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindLightSensor(), the high-level API for LightSensor functions
  *
@@ -56,6 +56,8 @@ const Y_MEASURETYPE_INVALID = -1;
 
 
 //--- (end of YLightSensor definitions)
+//--- (YLightSensor yapiwrapper declaration)
+//--- (end of YLightSensor yapiwrapper declaration)
 
 type
   TYLightSensor = class;
@@ -376,6 +378,8 @@ implementation
       //--- (end of YLightSensor accessors initialization)
     end;
 
+//--- (YLightSensor yapiwrapper)
+//--- (end of YLightSensor yapiwrapper)
 
 //--- (YLightSensor implementation)
 {$HINTS OFF}
@@ -457,7 +461,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_MEASURETYPE_INVALID;
               exit;

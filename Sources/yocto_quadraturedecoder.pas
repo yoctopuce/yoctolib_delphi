@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_quadraturedecoder.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_quadraturedecoder.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
  *
@@ -54,6 +54,8 @@ const Y_DECODING_INVALID = -1;
 
 
 //--- (end of YQuadratureDecoder definitions)
+//--- (YQuadratureDecoder yapiwrapper declaration)
+//--- (end of YQuadratureDecoder yapiwrapper declaration)
 
 type
   TYQuadratureDecoder = class;
@@ -376,6 +378,8 @@ implementation
       //--- (end of YQuadratureDecoder accessors initialization)
     end;
 
+//--- (YQuadratureDecoder yapiwrapper)
+//--- (end of YQuadratureDecoder yapiwrapper)
 
 //--- (YQuadratureDecoder implementation)
 {$HINTS OFF}
@@ -450,7 +454,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_SPEED_INVALID;
               exit;
@@ -483,7 +487,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_DECODING_INVALID;
               exit;

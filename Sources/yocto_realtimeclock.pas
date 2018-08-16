@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_realtimeclock.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_realtimeclock.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
@@ -56,6 +56,8 @@ const Y_TIMESET_INVALID = -1;
 
 
 //--- (end of YRealTimeClock definitions)
+//--- (YRealTimeClock yapiwrapper declaration)
+//--- (end of YRealTimeClock yapiwrapper declaration)
 
 type
   TYRealTimeClock = class;
@@ -393,6 +395,8 @@ implementation
       //--- (end of YRealTimeClock accessors initialization)
     end;
 
+//--- (YRealTimeClock yapiwrapper)
+//--- (end of YRealTimeClock yapiwrapper)
 
 //--- (YRealTimeClock implementation)
 {$HINTS OFF}
@@ -450,7 +454,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_UNIXTIME_INVALID;
               exit;
@@ -512,7 +516,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_DATETIME_INVALID;
               exit;
@@ -545,7 +549,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_UTCOFFSET_INVALID;
               exit;
@@ -607,7 +611,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_TIMESET_INVALID;
               exit;

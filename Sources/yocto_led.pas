@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_led.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_led.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindLed(), the high-level API for Led functions
  *
@@ -61,6 +61,8 @@ const Y_BLINKING_INVALID = -1;
 
 
 //--- (end of YLed definitions)
+//--- (YLed yapiwrapper declaration)
+//--- (end of YLed yapiwrapper declaration)
 
 type
   TYLed = class;
@@ -401,6 +403,8 @@ implementation
       //--- (end of YLed accessors initialization)
     end;
 
+//--- (YLed yapiwrapper)
+//--- (end of YLed yapiwrapper)
 
 //--- (YLed implementation)
 {$HINTS OFF}
@@ -452,7 +456,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_POWER_INVALID;
               exit;
@@ -513,7 +517,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_LUMINOSITY_INVALID;
               exit;
@@ -575,7 +579,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_BLINKING_INVALID;
               exit;

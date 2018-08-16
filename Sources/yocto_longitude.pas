@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_longitude.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_longitude.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindLongitude(), the high-level API for Longitude functions
  *
@@ -50,6 +50,8 @@ uses
 
 
 //--- (end of YLongitude definitions)
+//--- (YLongitude yapiwrapper declaration)
+//--- (end of YLongitude yapiwrapper declaration)
 
 type
   TYLongitude = class;
@@ -288,6 +290,8 @@ implementation
       //--- (end of YLongitude accessors initialization)
     end;
 
+//--- (YLongitude yapiwrapper)
+//--- (end of YLongitude yapiwrapper)
 
 //--- (YLongitude implementation)
 {$HINTS OFF}

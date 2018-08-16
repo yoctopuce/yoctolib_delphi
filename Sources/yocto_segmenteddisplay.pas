@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_segmenteddisplay.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_segmenteddisplay.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindSegmentedDisplay(), the high-level API for SegmentedDisplay functions
  *
@@ -56,6 +56,8 @@ const Y_DISPLAYMODE_INVALID = -1;
 
 
 //--- (end of YSegmentedDisplay definitions)
+//--- (YSegmentedDisplay yapiwrapper declaration)
+//--- (end of YSegmentedDisplay yapiwrapper declaration)
 
 type
   TYSegmentedDisplay = class;
@@ -314,6 +316,8 @@ implementation
       //--- (end of YSegmentedDisplay accessors initialization)
     end;
 
+//--- (YSegmentedDisplay yapiwrapper)
+//--- (end of YSegmentedDisplay yapiwrapper)
 
 //--- (YSegmentedDisplay implementation)
 {$HINTS OFF}
@@ -359,7 +363,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_DISPLAYEDTEXT_INVALID;
               exit;
@@ -405,7 +409,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_DISPLAYMODE_INVALID;
               exit;

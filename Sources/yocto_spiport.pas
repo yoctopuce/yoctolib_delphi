@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_spiport.pas 30685 2018-04-24 13:46:18Z seb $
+ * $Id: yocto_spiport.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -75,6 +75,8 @@ const Y_SHITFTSAMPLING_INVALID = -1;
 
 
 //--- (end of YSpiPort definitions)
+//--- (YSpiPort yapiwrapper declaration)
+//--- (end of YSpiPort yapiwrapper declaration)
 
 type
   TYSpiPort = class;
@@ -1148,6 +1150,8 @@ implementation
       //--- (end of YSpiPort accessors initialization)
     end;
 
+//--- (YSpiPort yapiwrapper)
+//--- (end of YSpiPort yapiwrapper)
 
 //--- (YSpiPort implementation)
 {$HINTS OFF}
@@ -1265,7 +1269,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_RXCOUNT_INVALID;
               exit;
@@ -1298,7 +1302,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_TXCOUNT_INVALID;
               exit;
@@ -1331,7 +1335,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_ERRCOUNT_INVALID;
               exit;
@@ -1364,7 +1368,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_RXMSGCOUNT_INVALID;
               exit;
@@ -1397,7 +1401,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_TXMSGCOUNT_INVALID;
               exit;
@@ -1430,7 +1434,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_LASTMSG_INVALID;
               exit;
@@ -1463,7 +1467,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_CURRENTJOB_INVALID;
               exit;
@@ -1526,7 +1530,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_STARTUPJOB_INVALID;
               exit;
@@ -1574,7 +1578,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_COMMAND_INVALID;
               exit;
@@ -1617,7 +1621,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_VOLTAGELEVEL_INVALID;
               exit;
@@ -1689,7 +1693,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PROTOCOL_INVALID;
               exit;
@@ -1760,7 +1764,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_SPIMODE_INVALID;
               exit;
@@ -1825,7 +1829,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_SSPOLARITY_INVALID;
               exit;
@@ -1887,7 +1891,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_SHITFTSAMPLING_INVALID;
               exit;

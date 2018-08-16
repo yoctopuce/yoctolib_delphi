@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_daisychain.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_daisychain.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindDaisyChain(), the high-level API for DaisyChain functions
  *
@@ -58,6 +58,8 @@ const Y_REQUIREDCHILDCOUNT_INVALID    = YAPI_INVALID_UINT;
 
 
 //--- (end of YDaisyChain definitions)
+//--- (YDaisyChain yapiwrapper declaration)
+//--- (end of YDaisyChain yapiwrapper declaration)
 
 type
   TYDaisyChain = class;
@@ -355,6 +357,8 @@ implementation
       //--- (end of YDaisyChain accessors initialization)
     end;
 
+//--- (YDaisyChain yapiwrapper)
+//--- (end of YDaisyChain yapiwrapper)
 
 //--- (YDaisyChain implementation)
 {$HINTS OFF}
@@ -408,7 +412,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_DAISYSTATE_INVALID;
               exit;
@@ -441,7 +445,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_CHILDCOUNT_INVALID;
               exit;
@@ -474,7 +478,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_REQUIREDCHILDCOUNT_INVALID;
               exit;

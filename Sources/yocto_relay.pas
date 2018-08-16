@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_relay.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_relay.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindRelay(), the high-level API for Relay functions
  *
@@ -72,6 +72,8 @@ const Y_COUNTDOWN_INVALID             = YAPI_INVALID_LONG;
 var Y_DELAYEDPULSETIMER_INVALID : TYRelayDelayedPulse;
 
 //--- (end of YRelay definitions)
+//--- (YRelay yapiwrapper declaration)
+//--- (end of YRelay yapiwrapper declaration)
 
 type
   TYRelay = class;
@@ -613,6 +615,8 @@ implementation
       //--- (end of YRelay accessors initialization)
     end;
 
+//--- (YRelay yapiwrapper)
+//--- (end of YRelay yapiwrapper)
 
 //--- (YRelay implementation)
 {$HINTS OFF}
@@ -707,7 +711,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_STATE_INVALID;
               exit;
@@ -771,7 +775,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_STATEATPOWERON_INVALID;
               exit;
@@ -836,7 +840,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_MAXTIMEONSTATEA_INVALID;
               exit;
@@ -899,7 +903,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_MAXTIMEONSTATEB_INVALID;
               exit;
@@ -962,7 +966,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_OUTPUT_INVALID;
               exit;
@@ -1027,7 +1031,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PULSETIMER_INVALID;
               exit;
@@ -1082,7 +1086,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_DELAYEDPULSETIMER_INVALID;
               exit;
@@ -1156,7 +1160,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_COUNTDOWN_INVALID;
               exit;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_digitalio.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_digitalio.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindDigitalIO(), the high-level API for DigitalIO functions
  *
@@ -61,6 +61,8 @@ const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 
 //--- (end of YDigitalIO definitions)
+//--- (YDigitalIO yapiwrapper declaration)
+//--- (end of YDigitalIO yapiwrapper declaration)
 
 type
   TYDigitalIO = class;
@@ -777,6 +779,8 @@ implementation
       //--- (end of YDigitalIO accessors initialization)
     end;
 
+//--- (YDigitalIO yapiwrapper)
+//--- (end of YDigitalIO yapiwrapper)
 
 //--- (YDigitalIO implementation)
 {$HINTS OFF}
@@ -858,7 +862,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PORTSTATE_INVALID;
               exit;
@@ -922,7 +926,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PORTDIRECTION_INVALID;
               exit;
@@ -987,7 +991,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PORTOPENDRAIN_INVALID;
               exit;
@@ -1053,7 +1057,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PORTPOLARITY_INVALID;
               exit;
@@ -1121,7 +1125,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PORTDIAGS_INVALID;
               exit;
@@ -1154,7 +1158,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PORTSIZE_INVALID;
               exit;
@@ -1188,7 +1192,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_OUTPUTVOLTAGE_INVALID;
               exit;
@@ -1236,7 +1240,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_COMMAND_INVALID;
               exit;

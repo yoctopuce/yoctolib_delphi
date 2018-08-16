@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_colorled.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_colorled.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindColorLed(), the high-level API for ColorLed functions
  *
@@ -66,6 +66,8 @@ var Y_RGBMOVE_INVALID : TYColorLedMove;
 var Y_HSLMOVE_INVALID : TYColorLedMove;
 
 //--- (end of YColorLed definitions)
+//--- (YColorLed yapiwrapper declaration)
+//--- (end of YColorLed yapiwrapper declaration)
 
 type
   TYColorLed = class;
@@ -627,6 +629,8 @@ implementation
       //--- (end of YColorLed accessors initialization)
     end;
 
+//--- (YColorLed yapiwrapper)
+//--- (end of YColorLed yapiwrapper)
 
 //--- (YColorLed implementation)
 {$HINTS OFF}
@@ -738,7 +742,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_RGBCOLOR_INVALID;
               exit;
@@ -800,7 +804,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_HSLCOLOR_INVALID;
               exit;
@@ -847,7 +851,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_RGBMOVE_INVALID;
               exit;
@@ -904,7 +908,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_HSLMOVE_INVALID;
               exit;
@@ -976,7 +980,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_RGBCOLORATPOWERON_INVALID;
               exit;
@@ -1037,7 +1041,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_BLINKSEQSIZE_INVALID;
               exit;
@@ -1070,7 +1074,7 @@ implementation
     begin
       if self._cacheExpiration = 0 then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_BLINKSEQMAXSIZE_INVALID;
               exit;
@@ -1107,7 +1111,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_BLINKSEQSIGNATURE_INVALID;
               exit;
@@ -1125,7 +1129,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_COMMAND_INVALID;
               exit;

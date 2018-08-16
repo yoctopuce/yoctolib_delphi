@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_humidity.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_humidity.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindHumidity(), the high-level API for Humidity functions
  *
@@ -52,6 +52,8 @@ const Y_ABSHUM_INVALID                = YAPI_INVALID_DOUBLE;
 
 
 //--- (end of YHumidity definitions)
+//--- (YHumidity yapiwrapper declaration)
+//--- (end of YHumidity yapiwrapper declaration)
 
 type
   TYHumidity = class;
@@ -357,6 +359,8 @@ implementation
       //--- (end of YHumidity accessors initialization)
     end;
 
+//--- (YHumidity yapiwrapper)
+//--- (end of YHumidity yapiwrapper)
 
 //--- (YHumidity implementation)
 {$HINTS OFF}
@@ -438,7 +442,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_RELHUM_INVALID;
               exit;
@@ -471,7 +475,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_ABSHUM_INVALID;
               exit;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_latitude.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_latitude.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindLatitude(), the high-level API for Latitude functions
  *
@@ -50,6 +50,8 @@ uses
 
 
 //--- (end of YLatitude definitions)
+//--- (YLatitude yapiwrapper declaration)
+//--- (end of YLatitude yapiwrapper declaration)
 
 type
   TYLatitude = class;
@@ -288,6 +290,8 @@ implementation
       //--- (end of YLatitude accessors initialization)
     end;
 
+//--- (YLatitude yapiwrapper)
+//--- (end of YLatitude yapiwrapper)
 
 //--- (YLatitude implementation)
 {$HINTS OFF}

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_currentloopoutput.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_currentloopoutput.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
  *
@@ -57,6 +57,8 @@ const Y_LOOPPOWER_INVALID = -1;
 
 
 //--- (end of YCurrentLoopOutput definitions)
+//--- (YCurrentLoopOutput yapiwrapper declaration)
+//--- (end of YCurrentLoopOutput yapiwrapper declaration)
 
 type
   TYCurrentLoopOutput = class;
@@ -406,6 +408,8 @@ implementation
       //--- (end of YCurrentLoopOutput accessors initialization)
     end;
 
+//--- (YCurrentLoopOutput yapiwrapper)
+//--- (end of YCurrentLoopOutput yapiwrapper)
 
 //--- (YCurrentLoopOutput implementation)
 {$HINTS OFF}
@@ -494,7 +498,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_CURRENT_INVALID;
               exit;
@@ -512,7 +516,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_CURRENTTRANSITION_INVALID;
               exit;
@@ -583,7 +587,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_CURRENTATSTARTUP_INVALID;
               exit;
@@ -619,7 +623,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_LOOPPOWER_INVALID;
               exit;

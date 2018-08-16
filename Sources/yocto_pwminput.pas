@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwminput.pas 29968 2018-02-19 15:12:34Z seb $
+ * $Id: yocto_pwminput.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindPwmInput(), the high-level API for PwmInput functions
  *
@@ -68,6 +68,8 @@ const Y_DEBOUNCEPERIOD_INVALID        = YAPI_INVALID_UINT;
 
 
 //--- (end of YPwmInput definitions)
+//--- (YPwmInput yapiwrapper declaration)
+//--- (end of YPwmInput yapiwrapper declaration)
 
 type
   TYPwmInput = class;
@@ -540,6 +542,8 @@ implementation
       //--- (end of YPwmInput accessors initialization)
     end;
 
+//--- (YPwmInput yapiwrapper)
+//--- (end of YPwmInput yapiwrapper)
 
 //--- (YPwmInput implementation)
 {$HINTS OFF}
@@ -621,7 +625,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_DUTYCYCLE_INVALID;
               exit;
@@ -654,7 +658,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PULSEDURATION_INVALID;
               exit;
@@ -687,7 +691,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_FREQUENCY_INVALID;
               exit;
@@ -720,7 +724,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PERIOD_INVALID;
               exit;
@@ -756,7 +760,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PULSECOUNTER_INVALID;
               exit;
@@ -797,7 +801,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PULSETIMER_INVALID;
               exit;
@@ -835,7 +839,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PWMREPORTMODE_INVALID;
               exit;
@@ -903,7 +907,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_DEBOUNCEPERIOD_INVALID;
               exit;

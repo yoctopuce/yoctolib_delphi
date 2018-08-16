@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_motor.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_motor.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindMotor(), the high-level API for Motor functions
  *
@@ -67,6 +67,8 @@ const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 
 //--- (end of YMotor definitions)
+//--- (YMotor yapiwrapper declaration)
+//--- (end of YMotor yapiwrapper declaration)
 
 type
   TYMotor = class;
@@ -723,6 +725,8 @@ implementation
       //--- (end of YMotor accessors initialization)
     end;
 
+//--- (YMotor yapiwrapper)
+//--- (end of YMotor yapiwrapper)
 
 //--- (YMotor implementation)
 {$HINTS OFF}
@@ -824,7 +828,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_MOTORSTATUS_INVALID;
               exit;
@@ -898,7 +902,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_DRIVINGFORCE_INVALID;
               exit;
@@ -962,7 +966,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_BRAKINGFORCE_INVALID;
               exit;
@@ -1035,7 +1039,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_CUTOFFVOLTAGE_INVALID;
               exit;
@@ -1071,7 +1075,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_OVERCURRENTLIMIT_INVALID;
               exit;
@@ -1169,7 +1173,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_FREQUENCY_INVALID;
               exit;
@@ -1204,7 +1208,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_STARTERTIME_INVALID;
               exit;
@@ -1272,7 +1276,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_FAILSAFETIMEOUT_INVALID;
               exit;
@@ -1323,7 +1327,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_COMMAND_INVALID;
               exit;

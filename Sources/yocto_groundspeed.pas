@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_groundspeed.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_groundspeed.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindGroundSpeed(), the high-level API for GroundSpeed functions
  *
@@ -50,6 +50,8 @@ uses
 
 
 //--- (end of YGroundSpeed definitions)
+//--- (YGroundSpeed yapiwrapper declaration)
+//--- (end of YGroundSpeed yapiwrapper declaration)
 
 type
   TYGroundSpeed = class;
@@ -288,6 +290,8 @@ implementation
       //--- (end of YGroundSpeed accessors initialization)
     end;
 
+//--- (YGroundSpeed yapiwrapper)
+//--- (end of YGroundSpeed yapiwrapper)
 
 //--- (YGroundSpeed implementation)
 {$HINTS OFF}

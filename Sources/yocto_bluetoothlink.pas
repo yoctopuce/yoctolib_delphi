@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_bluetoothlink.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_bluetoothlink.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindBluetoothLink(), the high-level API for BluetoothLink functions
  *
@@ -68,6 +68,8 @@ const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 
 //--- (end of YBluetoothLink definitions)
+//--- (YBluetoothLink yapiwrapper declaration)
+//--- (end of YBluetoothLink yapiwrapper declaration)
 
 type
   TYBluetoothLink = class;
@@ -613,6 +615,8 @@ implementation
       //--- (end of YBluetoothLink accessors initialization)
     end;
 
+//--- (YBluetoothLink yapiwrapper)
+//--- (end of YBluetoothLink yapiwrapper)
 
 //--- (YBluetoothLink implementation)
 {$HINTS OFF}
@@ -707,7 +711,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_OWNADDRESS_INVALID;
               exit;
@@ -744,7 +748,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PAIRINGPIN_INVALID;
               exit;
@@ -807,7 +811,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_REMOTEADDRESS_INVALID;
               exit;
@@ -868,7 +872,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_REMOTENAME_INVALID;
               exit;
@@ -901,7 +905,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_MUTE_INVALID;
               exit;
@@ -964,7 +968,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PREAMPLIFIER_INVALID;
               exit;
@@ -1025,7 +1029,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_VOLUME_INVALID;
               exit;
@@ -1087,7 +1091,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_LINKSTATE_INVALID;
               exit;
@@ -1121,7 +1125,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_LINKQUALITY_INVALID;
               exit;
@@ -1139,7 +1143,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_COMMAND_INVALID;
               exit;

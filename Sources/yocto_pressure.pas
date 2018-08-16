@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pressure.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_pressure.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindPressure(), the high-level API for Pressure functions
  *
@@ -50,6 +50,8 @@ uses
 
 
 //--- (end of YPressure definitions)
+//--- (YPressure yapiwrapper declaration)
+//--- (end of YPressure yapiwrapper declaration)
 
 type
   TYPressure = class;
@@ -287,6 +289,8 @@ implementation
       //--- (end of YPressure accessors initialization)
     end;
 
+//--- (YPressure yapiwrapper)
+//--- (end of YPressure yapiwrapper)
 
 //--- (YPressure implementation)
 {$HINTS OFF}

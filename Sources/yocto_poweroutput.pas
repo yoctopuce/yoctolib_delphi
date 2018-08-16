@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_poweroutput.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_poweroutput.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindPowerOutput(), the high-level API for PowerOutput functions
  *
@@ -54,6 +54,8 @@ const Y_VOLTAGE_INVALID = -1;
 
 
 //--- (end of YPowerOutput definitions)
+//--- (YPowerOutput yapiwrapper declaration)
+//--- (end of YPowerOutput yapiwrapper declaration)
 
 type
   TYPowerOutput = class;
@@ -313,6 +315,8 @@ implementation
       //--- (end of YPowerOutput accessors initialization)
     end;
 
+//--- (YPowerOutput yapiwrapper)
+//--- (end of YPowerOutput yapiwrapper)
 
 //--- (YPowerOutput implementation)
 {$HINTS OFF}
@@ -353,7 +357,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_VOLTAGE_INVALID;
               exit;

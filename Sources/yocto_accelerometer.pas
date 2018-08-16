@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_accelerometer.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_accelerometer.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindAccelerometer(), the high-level API for Accelerometer functions
  *
@@ -57,6 +57,8 @@ const Y_GRAVITYCANCELLATION_INVALID = -1;
 
 
 //--- (end of YAccelerometer definitions)
+//--- (YAccelerometer yapiwrapper declaration)
+//--- (end of YAccelerometer yapiwrapper declaration)
 
 type
   TYAccelerometer = class;
@@ -406,6 +408,8 @@ implementation
       //--- (end of YAccelerometer accessors initialization)
     end;
 
+//--- (YAccelerometer yapiwrapper)
+//--- (end of YAccelerometer yapiwrapper)
 
 //--- (YAccelerometer implementation)
 {$HINTS OFF}
@@ -469,7 +473,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_BANDWIDTH_INVALID;
               exit;
@@ -532,7 +536,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_XVALUE_INVALID;
               exit;
@@ -565,7 +569,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_YVALUE_INVALID;
               exit;
@@ -598,7 +602,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_ZVALUE_INVALID;
               exit;
@@ -616,7 +620,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_GRAVITYCANCELLATION_INVALID;
               exit;

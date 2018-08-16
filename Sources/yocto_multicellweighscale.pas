@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_multicellweighscale.pas 31016 2018-06-04 08:45:40Z mvuilleu $
+ * $Id: yocto_multicellweighscale.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
  *
@@ -62,6 +62,8 @@ const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 
 //--- (end of YMultiCellWeighScale definitions)
+//--- (YMultiCellWeighScale yapiwrapper declaration)
+//--- (end of YMultiCellWeighScale yapiwrapper declaration)
 
 type
   TYMultiCellWeighScale = class;
@@ -657,6 +659,8 @@ implementation
       //--- (end of YMultiCellWeighScale accessors initialization)
     end;
 
+//--- (YMultiCellWeighScale yapiwrapper)
+//--- (end of YMultiCellWeighScale yapiwrapper)
 
 //--- (YMultiCellWeighScale implementation)
 {$HINTS OFF}
@@ -774,7 +778,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_CELLCOUNT_INVALID;
               exit;
@@ -836,7 +840,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_EXCITATION_INVALID;
               exit;
@@ -934,7 +938,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_TEMPAVGADAPTRATIO_INVALID;
               exit;
@@ -1001,7 +1005,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_TEMPCHGADAPTRATIO_INVALID;
               exit;
@@ -1034,7 +1038,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_COMPTEMPAVG_INVALID;
               exit;
@@ -1067,7 +1071,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_COMPTEMPCHG_INVALID;
               exit;
@@ -1100,7 +1104,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_COMPENSATION_INVALID;
               exit;
@@ -1167,7 +1171,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_ZEROTRACKING_INVALID;
               exit;
@@ -1185,7 +1189,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_COMMAND_INVALID;
               exit;

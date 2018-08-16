@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_audioin.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_audioin.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindAudioIn(), the high-level API for AudioIn functions
  *
@@ -57,6 +57,8 @@ const Y_NOSIGNALFOR_INVALID           = YAPI_INVALID_INT;
 
 
 //--- (end of YAudioIn definitions)
+//--- (YAudioIn yapiwrapper declaration)
+//--- (end of YAudioIn yapiwrapper declaration)
 
 type
   TYAudioIn = class;
@@ -413,6 +415,8 @@ implementation
       //--- (end of YAudioIn accessors initialization)
     end;
 
+//--- (YAudioIn yapiwrapper)
+//--- (end of YAudioIn yapiwrapper)
 
 //--- (YAudioIn implementation)
 {$HINTS OFF}
@@ -476,7 +480,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_VOLUME_INVALID;
               exit;
@@ -537,7 +541,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_MUTE_INVALID;
               exit;
@@ -604,7 +608,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_VOLUMERANGE_INVALID;
               exit;
@@ -637,7 +641,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_SIGNAL_INVALID;
               exit;
@@ -670,7 +674,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_NOSIGNALFOR_INVALID;
               exit;

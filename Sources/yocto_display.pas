@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 30655 2018-04-19 12:39:18Z seb $
+ * $Id: yocto_display.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -1653,7 +1653,7 @@ destructor TYDisplay.destroy();
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_ENABLED_INVALID;
               exit;
@@ -1714,7 +1714,7 @@ destructor TYDisplay.destroy();
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_STARTUPSEQ_INVALID;
               exit;
@@ -1777,7 +1777,7 @@ destructor TYDisplay.destroy();
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_BRIGHTNESS_INVALID;
               exit;
@@ -1842,7 +1842,7 @@ destructor TYDisplay.destroy();
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_ORIENTATION_INVALID;
               exit;
@@ -1906,7 +1906,7 @@ destructor TYDisplay.destroy();
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_DISPLAYWIDTH_INVALID;
               exit;
@@ -1939,7 +1939,7 @@ destructor TYDisplay.destroy();
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_DISPLAYHEIGHT_INVALID;
               exit;
@@ -1973,7 +1973,7 @@ destructor TYDisplay.destroy();
     begin
       if self._cacheExpiration = 0 then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_DISPLAYTYPE_INVALID;
               exit;
@@ -2006,7 +2006,7 @@ destructor TYDisplay.destroy();
     begin
       if self._cacheExpiration = 0 then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_LAYERWIDTH_INVALID;
               exit;
@@ -2039,7 +2039,7 @@ destructor TYDisplay.destroy();
     begin
       if self._cacheExpiration = 0 then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_LAYERHEIGHT_INVALID;
               exit;
@@ -2072,7 +2072,7 @@ destructor TYDisplay.destroy();
     begin
       if self._cacheExpiration = 0 then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_LAYERCOUNT_INVALID;
               exit;
@@ -2090,7 +2090,7 @@ destructor TYDisplay.destroy();
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_COMMAND_INVALID;
               exit;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_servo.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_servo.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindServo(), the high-level API for Servo functions
  *
@@ -68,6 +68,8 @@ const Y_ENABLEDATPOWERON_INVALID = -1;
 var Y_MOVE_INVALID : TYServoMove;
 
 //--- (end of YServo definitions)
+//--- (YServo yapiwrapper declaration)
+//--- (end of YServo yapiwrapper declaration)
 
 type
   TYServo = class;
@@ -582,6 +584,8 @@ implementation
       //--- (end of YServo accessors initialization)
     end;
 
+//--- (YServo yapiwrapper)
+//--- (end of YServo yapiwrapper)
 
 //--- (YServo implementation)
 {$HINTS OFF}
@@ -669,7 +673,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_POSITION_INVALID;
               exit;
@@ -730,7 +734,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_ENABLED_INVALID;
               exit;
@@ -791,7 +795,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_RANGE_INVALID;
               exit;
@@ -858,7 +862,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_NEUTRAL_INVALID;
               exit;
@@ -909,7 +913,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_MOVE_INVALID;
               exit;
@@ -981,7 +985,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_POSITIONATPOWERON_INVALID;
               exit;
@@ -1045,7 +1049,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_ENABLEDATPOWERON_INVALID;
               exit;

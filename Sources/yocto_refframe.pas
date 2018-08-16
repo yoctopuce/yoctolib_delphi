@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_refframe.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_refframe.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -61,6 +61,8 @@ const Y_FUSIONMODE_INVALID = -1;
 
 
 //--- (end of YRefFrame definitions)
+//--- (YRefFrame yapiwrapper declaration)
+//--- (end of YRefFrame yapiwrapper declaration)
 
 type
   TYRefFrame = class;
@@ -662,6 +664,8 @@ implementation
       //--- (end of YRefFrame accessors initialization)
     end;
 
+//--- (YRefFrame yapiwrapper)
+//--- (end of YRefFrame yapiwrapper)
 
 //--- (YRefFrame implementation)
 {$HINTS OFF}
@@ -704,7 +708,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_MOUNTPOS_INVALID;
               exit;
@@ -793,7 +797,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_BEARING_INVALID;
               exit;
@@ -811,7 +815,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_CALIBRATIONPARAM_INVALID;
               exit;
@@ -837,7 +841,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_FUSIONMODE_INVALID;
               exit;

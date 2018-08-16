@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_voltageoutput.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_voltageoutput.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindVoltageOutput(), the high-level API for VoltageOutput functions
  *
@@ -53,6 +53,8 @@ const Y_VOLTAGEATSTARTUP_INVALID      = YAPI_INVALID_DOUBLE;
 
 
 //--- (end of YVoltageOutput definitions)
+//--- (YVoltageOutput yapiwrapper declaration)
+//--- (end of YVoltageOutput yapiwrapper declaration)
 
 type
   TYVoltageOutput = class;
@@ -376,6 +378,8 @@ implementation
       //--- (end of YVoltageOutput accessors initialization)
     end;
 
+//--- (YVoltageOutput yapiwrapper)
+//--- (end of YVoltageOutput yapiwrapper)
 
 //--- (YVoltageOutput implementation)
 {$HINTS OFF}
@@ -456,7 +460,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_CURRENTVOLTAGE_INVALID;
               exit;
@@ -474,7 +478,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_VOLTAGETRANSITION_INVALID;
               exit;
@@ -545,7 +549,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_VOLTAGEATSTARTUP_INVALID;
               exit;

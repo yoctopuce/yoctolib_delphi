@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_tilt.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_tilt.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindTilt(), the high-level API for Tilt functions
  *
@@ -55,6 +55,8 @@ const Y_AXIS_INVALID = -1;
 
 
 //--- (end of YTilt definitions)
+//--- (YTilt yapiwrapper declaration)
+//--- (end of YTilt yapiwrapper declaration)
 
 type
   TYTilt = class;
@@ -345,6 +347,8 @@ implementation
       //--- (end of YTilt accessors initialization)
     end;
 
+//--- (YTilt yapiwrapper)
+//--- (end of YTilt yapiwrapper)
 
 //--- (YTilt implementation)
 {$HINTS OFF}
@@ -390,7 +394,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_BANDWIDTH_INVALID;
               exit;
@@ -438,7 +442,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_AXIS_INVALID;
               exit;

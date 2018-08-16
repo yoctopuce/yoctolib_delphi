@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_voltage.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_voltage.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindVoltage(), the high-level API for Voltage functions
  *
@@ -53,6 +53,8 @@ const Y_ENABLED_INVALID = -1;
 
 
 //--- (end of YVoltage definitions)
+//--- (YVoltage yapiwrapper declaration)
+//--- (end of YVoltage yapiwrapper declaration)
 
 type
   TYVoltage = class;
@@ -296,6 +298,8 @@ implementation
       //--- (end of YVoltage accessors initialization)
     end;
 
+//--- (YVoltage yapiwrapper)
+//--- (end of YVoltage yapiwrapper)
 
 //--- (YVoltage implementation)
 {$HINTS OFF}
@@ -320,7 +324,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_ENABLED_INVALID;
               exit;

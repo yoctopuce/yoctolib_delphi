@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_multiaxiscontroller.pas 30483 2018-03-29 07:43:07Z mvuilleu $
+ * $Id: yocto_multiaxiscontroller.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
  *
@@ -59,6 +59,8 @@ const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 
 //--- (end of YMultiAxisController definitions)
+//--- (YMultiAxisController yapiwrapper declaration)
+//--- (end of YMultiAxisController yapiwrapper declaration)
 
 type
   TYMultiAxisController = class;
@@ -462,6 +464,8 @@ implementation
       //--- (end of YMultiAxisController accessors initialization)
     end;
 
+//--- (YMultiAxisController yapiwrapper)
+//--- (end of YMultiAxisController yapiwrapper)
 
 //--- (YMultiAxisController implementation)
 {$HINTS OFF}
@@ -513,7 +517,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_NAXIS_INVALID;
               exit;
@@ -575,7 +579,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_GLOBALSTATE_INVALID;
               exit;
@@ -593,7 +597,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_COMMAND_INVALID;
               exit;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_colorledcluster.pas 30655 2018-04-19 12:39:18Z seb $
+ * $Id: yocto_colorledcluster.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -58,6 +58,8 @@ const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 
 //--- (end of YColorLedCluster definitions)
+//--- (YColorLedCluster yapiwrapper declaration)
+//--- (end of YColorLedCluster yapiwrapper declaration)
 
 type
   TYColorLedCluster = class;
@@ -1324,6 +1326,8 @@ implementation
       //--- (end of YColorLedCluster accessors initialization)
     end;
 
+//--- (YColorLedCluster yapiwrapper)
+//--- (end of YColorLedCluster yapiwrapper)
 
 //--- (YColorLedCluster implementation)
 {$HINTS OFF}
@@ -1393,7 +1397,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_ACTIVELEDCOUNT_INVALID;
               exit;
@@ -1454,7 +1458,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_LEDTYPE_INVALID;
               exit;
@@ -1515,7 +1519,7 @@ implementation
     begin
       if self._cacheExpiration = 0 then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_MAXLEDCOUNT_INVALID;
               exit;
@@ -1548,7 +1552,7 @@ implementation
     begin
       if self._cacheExpiration = 0 then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_BLINKSEQMAXCOUNT_INVALID;
               exit;
@@ -1581,7 +1585,7 @@ implementation
     begin
       if self._cacheExpiration = 0 then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_BLINKSEQMAXSIZE_INVALID;
               exit;
@@ -1599,7 +1603,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_COMMAND_INVALID;
               exit;

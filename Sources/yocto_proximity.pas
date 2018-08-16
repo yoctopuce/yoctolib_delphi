@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_proximity.pas 29767 2018-01-26 08:53:27Z seb $
+ * $Id: yocto_proximity.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindProximity(), the high-level API for Proximity functions
  *
@@ -66,6 +66,8 @@ const Y_PROXIMITYREPORTMODE_INVALID = -1;
 
 
 //--- (end of YProximity definitions)
+//--- (YProximity yapiwrapper declaration)
+//--- (end of YProximity yapiwrapper declaration)
 
 type
   TYProximity = class;
@@ -676,6 +678,8 @@ implementation
       //--- (end of YProximity accessors initialization)
     end;
 
+//--- (YProximity yapiwrapper)
+//--- (end of YProximity yapiwrapper)
 
 //--- (YProximity implementation)
 {$HINTS OFF}
@@ -775,7 +779,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_SIGNALVALUE_INVALID;
               exit;
@@ -811,7 +815,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_DETECTIONTHRESHOLD_INVALID;
               exit;
@@ -878,7 +882,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_DETECTIONHYSTERESIS_INVALID;
               exit;
@@ -944,7 +948,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PRESENCEMINTIME_INVALID;
               exit;
@@ -1009,7 +1013,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_REMOVALMINTIME_INVALID;
               exit;
@@ -1073,7 +1077,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_ISPRESENT_INVALID;
               exit;
@@ -1108,7 +1112,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_LASTTIMEAPPROACHED_INVALID;
               exit;
@@ -1143,7 +1147,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_LASTTIMEREMOVED_INVALID;
               exit;
@@ -1179,7 +1183,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PULSECOUNTER_INVALID;
               exit;
@@ -1220,7 +1224,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PULSETIMER_INVALID;
               exit;
@@ -1255,7 +1259,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PROXIMITYREPORTMODE_INVALID;
               exit;

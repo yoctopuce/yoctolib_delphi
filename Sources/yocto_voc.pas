@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_voc.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_voc.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindVoc(), the high-level API for Voc functions
  *
@@ -50,6 +50,8 @@ uses
 
 
 //--- (end of YVoc definitions)
+//--- (YVoc yapiwrapper declaration)
+//--- (end of YVoc yapiwrapper declaration)
 
 type
   TYVoc = class;
@@ -287,6 +289,8 @@ implementation
       //--- (end of YVoc accessors initialization)
     end;
 
+//--- (YVoc yapiwrapper)
+//--- (end of YVoc yapiwrapper)
 
 //--- (YVoc implementation)
 {$HINTS OFF}

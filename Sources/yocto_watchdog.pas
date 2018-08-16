@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_watchdog.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_watchdog.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindWatchdog(), the high-level API for Watchdog functions
  *
@@ -80,6 +80,8 @@ const Y_TRIGGERDURATION_INVALID       = YAPI_INVALID_LONG;
 var Y_DELAYEDPULSETIMER_INVALID : TYWatchdogDelayedPulse;
 
 //--- (end of YWatchdog definitions)
+//--- (YWatchdog yapiwrapper declaration)
+//--- (end of YWatchdog yapiwrapper declaration)
 
 type
   TYWatchdog = class;
@@ -810,6 +812,8 @@ implementation
       //--- (end of YWatchdog accessors initialization)
     end;
 
+//--- (YWatchdog yapiwrapper)
+//--- (end of YWatchdog yapiwrapper)
 
 //--- (YWatchdog implementation)
 {$HINTS OFF}
@@ -928,7 +932,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_STATE_INVALID;
               exit;
@@ -992,7 +996,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_STATEATPOWERON_INVALID;
               exit;
@@ -1057,7 +1061,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_MAXTIMEONSTATEA_INVALID;
               exit;
@@ -1120,7 +1124,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_MAXTIMEONSTATEB_INVALID;
               exit;
@@ -1183,7 +1187,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_OUTPUT_INVALID;
               exit;
@@ -1249,7 +1253,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PULSETIMER_INVALID;
               exit;
@@ -1304,7 +1308,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_DELAYEDPULSETIMER_INVALID;
               exit;
@@ -1378,7 +1382,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_COUNTDOWN_INVALID;
               exit;
@@ -1411,7 +1415,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_AUTOSTART_INVALID;
               exit;
@@ -1474,7 +1478,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_RUNNING_INVALID;
               exit;
@@ -1562,7 +1566,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_TRIGGERDELAY_INVALID;
               exit;
@@ -1623,7 +1627,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_TRIGGERDURATION_INVALID;
               exit;

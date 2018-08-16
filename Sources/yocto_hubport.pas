@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_hubport.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_hubport.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindHubPort(), the high-level API for HubPort functions
  *
@@ -60,6 +60,8 @@ const Y_BAUDRATE_INVALID              = YAPI_INVALID_UINT;
 
 
 //--- (end of YHubPort definitions)
+//--- (YHubPort yapiwrapper declaration)
+//--- (end of YHubPort yapiwrapper declaration)
 
 type
   TYHubPort = class;
@@ -359,6 +361,8 @@ implementation
       //--- (end of YHubPort accessors initialization)
     end;
 
+//--- (YHubPort yapiwrapper)
+//--- (end of YHubPort yapiwrapper)
 
 //--- (YHubPort implementation)
 {$HINTS OFF}
@@ -410,7 +414,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_ENABLED_INVALID;
               exit;
@@ -474,7 +478,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_PORTSTATE_INVALID;
               exit;
@@ -509,7 +513,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_BAUDRATE_INVALID;
               exit;

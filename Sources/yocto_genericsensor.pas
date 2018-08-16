@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_genericsensor.pas 28747 2017-10-03 08:22:06Z seb $
+ * $Id: yocto_genericsensor.pas 31386 2018-07-31 12:26:57Z seb $
  *
  * Implements yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -60,6 +60,8 @@ const Y_SIGNALSAMPLING_INVALID = -1;
 
 
 //--- (end of YGenericSensor definitions)
+//--- (YGenericSensor yapiwrapper declaration)
+//--- (end of YGenericSensor yapiwrapper declaration)
 
 type
   TYGenericSensor = class;
@@ -564,6 +566,8 @@ implementation
       //--- (end of YGenericSensor accessors initialization)
     end;
 
+//--- (YGenericSensor yapiwrapper)
+//--- (end of YGenericSensor yapiwrapper)
 
 //--- (YGenericSensor implementation)
 {$HINTS OFF}
@@ -663,7 +667,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_SIGNALVALUE_INVALID;
               exit;
@@ -696,7 +700,7 @@ implementation
     begin
       if self._cacheExpiration = 0 then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_SIGNALUNIT_INVALID;
               exit;
@@ -729,7 +733,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_SIGNALRANGE_INVALID;
               exit;
@@ -791,7 +795,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_VALUERANGE_INVALID;
               exit;
@@ -886,7 +890,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_SIGNALBIAS_INVALID;
               exit;
@@ -926,7 +930,7 @@ implementation
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
-          if self.load(YAPI_DEFAULTCACHEVALIDITY) <> YAPI_SUCCESS then
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
               result := Y_SIGNALSAMPLING_INVALID;
               exit;
