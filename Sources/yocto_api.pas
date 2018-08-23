@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 31493 2018-08-10 08:43:29Z seb $
+ * $Id: yocto_api.pas 31770 2018-08-20 09:54:36Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -114,7 +114,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '31701';
+  YOCTO_API_BUILD_NO        = '31874';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -2592,7 +2592,7 @@ end;
   protected
   //--- (generated code: YAPIContext declaration)
     // Attributes (function value cache)
-    _cacheValidity            : u64;
+    _defaultCacheValidity     : u64;
 
     //--- (end of generated code: YAPIContext declaration)
   public
@@ -2609,9 +2609,12 @@ end;
     ///   nor the operation of arrival/removal callbacks.
     ///   Note: This function must be called after <c>yInitAPI</c>.
     /// </para>
+    /// <para>
+    /// </para>
     /// </summary>
     /// <param name="deviceListValidity">
     ///   number of seconds between each enumeration.
+    /// @noreturn
     /// </param>
     ///-
     procedure SetDeviceListValidity(deviceListValidity: LongInt); overload; virtual;
@@ -2645,7 +2648,8 @@ end;
     /// </summary>
     /// <param name="cacheValidityMs">
     ///   an integer corresponding to the validity attributed to the
-    ///   loaded function parameters, in milliseconds
+    ///   loaded function parameters, in milliseconds.
+    /// @noreturn
     /// </param>
     ///-
     procedure SetCacheValidity(cacheValidityMs: u64); overload; virtual;
@@ -4150,9 +4154,12 @@ end;
     ///   nor the operation of arrival/removal callbacks.
     ///   Note: This function must be called after <c>yInitAPI</c>.
     /// </para>
+    /// <para>
+    /// </para>
     /// </summary>
     /// <param name="deviceListValidity">
     ///   number of seconds between each enumeration.
+    /// @noreturn
     /// </param>
     ///-
     procedure ySetDeviceListValidity(deviceListValidity: LongInt);
@@ -4186,7 +4193,8 @@ end;
     /// </summary>
     /// <param name="cacheValidityMs">
     ///   an integer corresponding to the validity attributed to the
-    ///   loaded function parameters, in milliseconds
+    ///   loaded function parameters, in milliseconds.
+    /// @noreturn
     /// </param>
     ///-
     procedure ySetCacheValidity(cacheValidityMs: u64);
@@ -12499,7 +12507,7 @@ var
   constructor TYAPIContext.Create();
     begin
       //--- (generated code: YAPIContext accessors initialization)
-      _cacheValidity := 5;
+      _defaultCacheValidity := 5;
       //--- (end of generated code: YAPIContext accessors initialization)
     end;
 
@@ -12517,9 +12525,12 @@ var
   ///   nor the operation of arrival/removal callbacks.
   ///   Note: This function must be called after <c>yInitAPI</c>.
   /// </para>
+  /// <para>
+  /// </para>
   /// </summary>
   /// <param name="deviceListValidity">
   ///   number of seconds between each enumeration.
+  /// @noreturn
   /// </param>
   ///-
   procedure TYAPIContext.SetDeviceListValidity(deviceListValidity: LongInt);
@@ -12565,12 +12576,13 @@ var
   /// </summary>
   /// <param name="cacheValidityMs">
   ///   an integer corresponding to the validity attributed to the
-  ///   loaded function parameters, in milliseconds
+  ///   loaded function parameters, in milliseconds.
+  /// @noreturn
   /// </param>
   ///-
   procedure TYAPIContext.SetCacheValidity(cacheValidityMs: u64);
     begin
-      self._cacheValidity := cacheValidityMs;
+      self._defaultCacheValidity := cacheValidityMs;
     end;
 
 
@@ -12592,7 +12604,7 @@ var
   ///-
   function TYAPIContext.GetCacheValidity():u64;
     begin
-      result := self._cacheValidity;
+      result := self._defaultCacheValidity;
       exit;
     end;
 
@@ -12621,9 +12633,12 @@ var
   ///   nor the operation of arrival/removal callbacks.
   ///   Note: This function must be called after <c>yInitAPI</c>.
   /// </para>
+  /// <para>
+  /// </para>
   /// </summary>
   /// <param name="deviceListValidity">
   ///   number of seconds between each enumeration.
+  /// @noreturn
   /// </param>
   ///-
   procedure ySetDeviceListValidity(deviceListValidity: LongInt);
@@ -12665,7 +12680,8 @@ var
   /// </summary>
   /// <param name="cacheValidityMs">
   ///   an integer corresponding to the validity attributed to the
-  ///   loaded function parameters, in milliseconds
+  ///   loaded function parameters, in milliseconds.
+  /// @noreturn
   /// </param>
   ///-
   procedure ySetCacheValidity(cacheValidityMs: u64);
