@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_colorledcluster.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_colorledcluster.pas 31897 2018-08-25 15:37:56Z seb $
  *
  * Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -364,6 +364,33 @@ type
     /// </para>
     ///-
     function set_rgbColorAtPowerOn(ledIndex: LongInt; count: LongInt; rgbValue: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Changes the  color at device startup of consecutve LEDs in the cluster, using a HSL color.
+    /// <para>
+    ///   Encoding is done as follows: 0xHHSSLL.
+    ///   Don't forget to call <c>saveLedsConfigAtPowerOn()</c> to make sure the modification is saved in the
+    ///   device flash memory.
+    /// </para>
+    /// </summary>
+    /// <param name="ledIndex">
+    ///   index of the first affected LED.
+    /// </param>
+    /// <param name="count">
+    ///   affected LED count.
+    /// </param>
+    /// <param name="hslValue">
+    ///   new color.
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_hslColorAtPowerOn(ledIndex: LongInt; count: LongInt; hslValue: LongInt):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -1212,6 +1239,10 @@ type
     ///-
     function get_blinkSeqState(seqIndex: LongInt; count: LongInt):TLongIntArray; overload; virtual;
 
+    function hsl2rgbInt(temp1: LongInt; temp2: LongInt; temp3: LongInt):LongInt; overload; virtual;
+
+    function hsl2rgb(hslValue: LongInt):LongInt; overload; virtual;
+
 
     ////
     /// <summary>
@@ -1811,6 +1842,41 @@ implementation
   ///-
   function TYColorLedCluster.set_rgbColorAtPowerOn(ledIndex: LongInt; count: LongInt; rgbValue: LongInt):LongInt;
     begin
+      result := self.sendCommand('SC'+inttostr(ledIndex)+','+inttostr(count)+','+AnsiLowerCase(inttohex(rgbValue,1)));
+      exit;
+    end;
+
+
+  ////
+  /// <summary>
+  ///   Changes the  color at device startup of consecutve LEDs in the cluster, using a HSL color.
+  /// <para>
+  ///   Encoding is done as follows: 0xHHSSLL.
+  ///   Don't forget to call <c>saveLedsConfigAtPowerOn()</c> to make sure the modification is saved in the
+  ///   device flash memory.
+  /// </para>
+  /// </summary>
+  /// <param name="ledIndex">
+  ///   index of the first affected LED.
+  /// </param>
+  /// <param name="count">
+  ///   affected LED count.
+  /// </param>
+  /// <param name="hslValue">
+  ///   new color.
+  /// </param>
+  /// <returns>
+  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  /// </returns>
+  /// <para>
+  ///   On failure, throws an exception or returns a negative error code.
+  /// </para>
+  ///-
+  function TYColorLedCluster.set_hslColorAtPowerOn(ledIndex: LongInt; count: LongInt; hslValue: LongInt):LongInt;
+    var
+      rgbValue : LongInt;
+    begin
+      rgbValue := self.hsl2rgb(hslValue);
       result := self.sendCommand('SC'+inttostr(ledIndex)+','+inttostr(count)+','+AnsiLowerCase(inttohex(rgbValue,1)));
       exit;
     end;
@@ -3069,6 +3135,101 @@ implementation
           idx := idx + 1;
         end;
       SetLength(res, res_pos);;
+      result := res;
+      exit;
+    end;
+
+
+  function TYColorLedCluster.hsl2rgbInt(temp1: LongInt; temp2: LongInt; temp3: LongInt):LongInt;
+    begin
+      if temp3 >= 170 then
+        begin
+          result := ((temp1 + 127) div 255);
+          exit;
+        end;
+      if temp3 > 42 then
+        begin
+          if temp3 <= 127 then
+            begin
+              result := ((temp2 + 127) div 255);
+              exit;
+            end;
+          temp3 := 170 - temp3;
+        end;
+      result := ((temp1*255 + (temp2-temp1) * (6 * temp3) + 32512) div 65025);
+      exit;
+    end;
+
+
+  function TYColorLedCluster.hsl2rgb(hslValue: LongInt):LongInt;
+    var
+      R : LongInt;
+      G : LongInt;
+      B : LongInt;
+      H : LongInt;
+      S : LongInt;
+      L : LongInt;
+      temp1 : LongInt;
+      temp2 : LongInt;
+      temp3 : LongInt;
+      res : LongInt;
+    begin
+      L := ((hslValue) and ($0ff));
+      S := ((((hslValue) shr 8)) and ($0ff));
+      H := ((((hslValue) shr 16)) and ($0ff));
+      if S=0 then
+        begin
+          res := ((L) shl 16)+((L) shl 8)+L;
+          result := res;
+          exit;
+        end;
+      if L<=127 then
+        begin
+          temp2 := L * (255 + S);
+        end
+      else
+        begin
+          temp2 := (L+S) * 255 - L*S;
+        end;
+      temp1 := 510 * L - temp2;
+      // R
+      temp3 := (H + 85);
+      if temp3 > 255 then
+        begin
+          temp3 := temp3-255;
+        end;
+      R := self.hsl2rgbInt(temp1,  temp2, temp3);
+      // G
+      temp3 := H;
+      if temp3 > 255 then
+        begin
+          temp3 := temp3-255;
+        end;
+      G := self.hsl2rgbInt(temp1,  temp2, temp3);
+      // B
+      if H >= 85 then
+        begin
+          temp3 := H - 85 ;
+        end
+      else
+        begin
+          temp3 := H + 170;
+        end;
+      B := self.hsl2rgbInt(temp1,  temp2, temp3);
+      // just in case
+      if R>255 then
+        begin
+          R:=255;
+        end;
+      if G>255 then
+        begin
+          G:=255;
+        end;
+      if B>255 then
+        begin
+          B:=255;
+        end;
+      res := ((R) shl 16)+((G) shl 8)+B;
       result := res;
       exit;
     end;
