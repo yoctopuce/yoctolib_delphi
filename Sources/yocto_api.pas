@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 31770 2018-08-20 09:54:36Z seb $
+ * $Id: yocto_api.pas 32376 2018-09-27 07:57:07Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -114,7 +114,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '31897';
+  YOCTO_API_BUILD_NO        = '32391';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -157,6 +157,7 @@ type
     logicalname     : array [0..YOCTO_LOGICAL_LEN-1] of ansichar;
     firmware        : array [0..YOCTO_FIRMWARE_LEN-1] of ansichar;
     beacon          : u8;
+    pad             : u8;
   end;
 
   YIOHDL = packed record
@@ -921,6 +922,7 @@ type
   //--- (generated code: YModule class start)
   TYModuleLogCallback = procedure(func: TYModule; logline:string);
   TYModuleConfigChangeCallback = procedure(func: TYModule);
+  TYModuleBeaconCallback = procedure(func: TYModule; beacon:Integer);
   TYModuleValueCallback = procedure(func: TYModule; value:string);
   TYModuleTimedReportCallback = procedure(func: TYModule; value:TYMeasure);
 
@@ -954,6 +956,7 @@ type
     _valueCallbackModule      : TYModuleValueCallback;
     _logCallback              : TYModuleLogCallback;
     _confChangeCallback       : TYModuleConfigChangeCallback;
+    _beaconCallback           : TYModuleBeaconCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
 
@@ -1098,6 +1101,8 @@ type
     function registerLogCallback(callback : TYModuleLogCallback): integer;
 
     function get_logCallback(): TYModuleLogCallback;
+
+    class procedure _updateModuleCallbackList(modul : TYModule; add : boolean);
 
 
     //--- (generated code: YModule accessors declaration)
@@ -1546,6 +1551,24 @@ type
     function registerConfigChangeCallback(callback: TYModuleConfigChangeCallback):LongInt; overload; virtual;
 
     function _invokeConfigChangeCallback():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Register a callback function, to be called when the localization beacon of the module
+    ///   has been changed.
+    /// <para>
+    ///   The callback function should take two arguments: the YModule object of
+    ///   which the beacon has changed, and an integer describing the new beacon state.
+    /// </para>
+    /// </summary>
+    /// <param name="callback">
+    ///   The callback function to call, or <c>NIL</c> to unregister a
+    ///   previously registered callback.
+    /// </param>
+    ///-
+    function registerBeaconCallback(callback: TYModuleBeaconCallback):LongInt; overload; virtual;
+
+    function _invokeBeaconCallback(beaconState: LongInt):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -4929,6 +4952,7 @@ var
   _FunctionCallbacks : Tlist;
   _TimedReportCallbackList : Tlist;
   _CalibHandlers     : TStringList;
+  _moduleCallbackList: TStringList;
 
   constructor  YAPI_Exception.Create(errType:YRETCODE;  errMsg:string );
     begin
@@ -4940,6 +4964,7 @@ type
   _yapiLogFunc            = procedure (log:pansichar; loglen:u32);cdecl;
   _yapiDeviceUpdateFunc   = procedure (dev:YDEV_DESCR);cdecl;
   _yapiFunctionUpdateFunc = procedure (func:YFUN_DESCR; value:pansichar);cdecl;
+  _yapiBeaconFunc         = procedure (dev:YDEV_DESCR; beacon:integer);cdecl;
   _yapiTimedReportFunc    = procedure (func:YFUN_DESCR; timestamp:double; bytes:pansichar; len:integer);cdecl;
   _yapiHubDiscoveryCallback = procedure (serial:pansichar; url:pansichar);cdecl;
   _yapiDeviceLogCallback  = procedure (dev:YDEV_DESCR; line:pansichar);cdecl;
@@ -5148,6 +5173,7 @@ const
   function _yapiGetDevicePathEx(serial:pansichar; rootdevice:pansichar; path:pansichar; pathsize:integer; var neededsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetDevicePathEx';
   procedure _yapiSetNetDevListValidity(sValidity:integer); cdecl; external dllfile name 'yapiSetNetDevListValidity';
   function _yapiGetNetDevListValidity():integer; cdecl; external dllfile name 'yapiGetNetDevListValidity';
+  procedure _yapiRegisterBeaconCallback(beaconCallback:_yapiBeaconFunc); cdecl; external dllfile name 'yapiRegisterBeaconCallback';
 //--- (end of generated code: YFunction dlldef)
 
 
@@ -5202,7 +5228,7 @@ type
 
   TyapiEventType = (YAPI_DEV_ARRIVAL,YAPI_DEV_REMOVAL,YAPI_DEV_CHANGE,
                     YAPI_FUN_UPDATE,YAPI_FUN_VALUE,YAPI_FUN_TIMEDREPORT,
-                    YAPI_HUB_DISCOVERY,YAPI_DEV_CONFIGCHANGE);
+                    YAPI_HUB_DISCOVERY,YAPI_DEV_CONFIGCHANGE,YAPI_BEACON_CHANGE);
 
   TyapiEvent = record
     eventtype: TyapiEventType;
@@ -5214,6 +5240,7 @@ type
     data_len : integer;
     serial   : string[YOCTO_SERIAL_LEN];
     url      : string[64];
+    beacon   : integer;
   end;
   PyapiEvent = ^TyapiEvent;
 
@@ -5305,12 +5332,44 @@ var
       infos  : yDeviceSt;
       errmsg : string;
       event  : PyapiEvent;
+      key    : string;
+      index  : integer;
+      modul  : TYModule;
     begin
-      event := _yapiGetMem(sizeof(TyapiEvent));
-      event^.eventtype    := YAPI_DEV_CONFIGCHANGE;
       if(yapiGetDeviceInfo(d, infos, errmsg) <> YAPI_SUCCESS) then exit;
-      event^.module := yFindModule(string(infos.serial)+'.module');
-      _DataEvents.add(event)
+      modul := yFindModule(string(infos.serial)+'.module');
+      key := modul.get_hardwareId();
+      index := _moduleCallbackList.indexof(key);
+      if (index > 0) and (Integer(_moduleCallbackList.Objects[index]) > 1) then
+      begin
+        event := _yapiGetMem(sizeof(TyapiEvent));
+        event^.eventtype    := YAPI_DEV_CONFIGCHANGE;
+        event^.module := modul;
+        _DataEvents.add(event);
+      end;
+   end;
+
+  procedure native_yBeaconChangeCallback (d:YDEV_DESCR; beacon:integer);cdecl;
+    var
+      infos  : yDeviceSt;
+      errmsg : string;
+      event  : PyapiEvent;
+      key    : string;
+      index  : integer;
+      modul  : TYModule;
+    begin
+      if(yapiGetDeviceInfo(d, infos, errmsg) <> YAPI_SUCCESS) then exit;
+      modul := yFindModule(string(infos.serial)+'.module');
+      key := modul.get_hardwareId();
+      index := _moduleCallbackList.indexof(key);
+      if (index >= 0) and (Integer(_moduleCallbackList.Objects[index]) > 1) then
+      begin
+        event := _yapiGetMem(sizeof(TyapiEvent));
+        event^.eventtype    := YAPI_BEACON_CHANGE;
+        event^.module := modul;
+        event^.beacon := beacon;
+        _DataEvents.add(event);
+      end;
     end;
 
 
@@ -5900,6 +5959,7 @@ var
       _yapiRegisterDeviceRemovalCallback(native_yDeviceRemovalCallback);
       _yapiRegisterDeviceChangeCallback(native_yDeviceChangeCallback);
       _yapiRegisterDeviceConfigChangeCallback(native_yDeviceConfigChangeCallback);
+      _yapiRegisterBeaconCallback(native_yBeaconChangeCallback);
       _yapiRegisterFunctionUpdateCallback(native_yFunctionUpdateCallback);
       _yapiRegisterTimedReportCallback(native_yTimedReportCallback);
       _yapiRegisterLogFunction(native_yLogFunction);
@@ -6071,6 +6131,10 @@ var
               else If (p^.eventtype = YAPI_DEV_CONFIGCHANGE) Then
                 begin
                   p^.module._invokeConfigChangeCallback();
+                end
+              else If (p^.eventtype = YAPI_BEACON_CHANGE) Then
+                begin
+                  p^.module._invokeBeaconCallback(p^.beacon);
                 end;
               _yapiFreeMem(p);
             end;
@@ -7130,21 +7194,6 @@ const
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the logical name of the function.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the logical name of the function
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LOGICALNAME_INVALID.
-  /// </para>
-  ///-
   function TYFunction.get_logicalName():string;
     var
       res : string;
@@ -7163,30 +7212,6 @@ const
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the logical name of the function.
-  /// <para>
-  ///   You can use yCheckLogicalName()
-  ///   prior to this call to make sure that your parameter is valid.
-  ///   Remember to call the saveToFlash() method of the module if the
-  ///   modification must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the logical name of the function
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYFunction.set_logicalName(newval:string):integer;
     var
       rest_val: string;
@@ -7201,21 +7226,6 @@ const
       result := _setAttr('logicalName',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns a short string representing the current state of the function.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to a short string representing the current state of the function
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_ADVERTISEDVALUE_INVALID.
-  /// </para>
-  ///-
   function TYFunction.get_advertisedValue():string;
     var
       res : string;
@@ -7242,55 +7252,6 @@ const
       result := _setAttr('advertisedValue',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YFunction.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YFunction</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYFunction.FindFunction(func: string):TYFunction;
     var
       obj : TYFunction;
@@ -7306,24 +7267,6 @@ const
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYFunction.registerValueCallback(callback: TYFunctionValueCallback):LongInt;
     var
       val : string;
@@ -7365,23 +7308,6 @@ const
     end;
 
 
-  ////
-  /// <summary>
-  ///   Disables the propagation of every new advertised value to the parent hub.
-  /// <para>
-  ///   You can use this function to save bandwidth and CPU on computers with limited
-  ///   resources, or to prevent unwanted invocations of the HTTP callback.
-  ///   Remember to call the <c>saveToFlash()</c> method of the module if the
-  ///   modification must be kept.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYFunction.muteValueCallbacks():LongInt;
     begin
       result := self.set_advertisedValue('SILENT');
@@ -7389,22 +7315,6 @@ const
     end;
 
 
-  ////
-  /// <summary>
-  ///   Re-enables the propagation of every new advertised value to the parent hub.
-  /// <para>
-  ///   This function reverts the effect of a previous call to <c>muteValueCallbacks()</c>.
-  ///   Remember to call the <c>saveToFlash()</c> method of the module if the
-  ///   modification must be kept.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYFunction.unmuteValueCallbacks():LongInt;
     begin
       result := self.set_advertisedValue('');
@@ -7412,25 +7322,6 @@ const
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the current value of a single function attribute, as a text string, as quickly as
-  ///   possible but without using the cached value.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="attrName">
-  ///   the name of the requested attribute
-  /// </param>
-  /// <returns>
-  ///   a string with the value of the the attribute
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns an empty string.
-  /// </para>
-  ///-
   function TYFunction.loadAttribute(attrName: string):string;
     var
       url : string;
@@ -8383,6 +8274,26 @@ var
     end;
 
 
+  class procedure TYModule._updateModuleCallbackList(modul: TYModule; add:boolean);
+    var
+      key : string;
+      index : integer;
+    begin
+      key := modul.get_hardwareId();
+      index := _moduleCallbackList.indexof(key);
+      if add then
+        begin
+          if index < 0 then
+            _moduleCallbackList.AddObject(key, TObject(1))
+          else
+            _moduleCallbackList.Objects[index] :=  TObject(Integer(_moduleCallbackList.Objects[index]) + 1);
+        end
+      else
+        begin
+          if (index >= 0) and (Integer(_moduleCallbackList.Objects[index]) > 1) then
+             _moduleCallbackList.Objects[index] := TObject(Integer(_moduleCallbackList.Objects[index]) - 1);
+        end;
+    end;
 
 //--- (generated code: YModule implementation)
 {$HINTS OFF}
@@ -8467,21 +8378,6 @@ var
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the commercial name of the module, as set by the factory.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the commercial name of the module, as set by the factory
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PRODUCTNAME_INVALID.
-  /// </para>
-  ///-
   function TYModule.get_productName():string;
     var
       res : string;
@@ -8500,21 +8396,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the serial number of the module, as set by the factory.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the serial number of the module, as set by the factory
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_SERIALNUMBER_INVALID.
-  /// </para>
-  ///-
   function TYModule.get_serialNumber():string;
     var
       res : string;
@@ -8533,21 +8414,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the USB device identifier of the module.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the USB device identifier of the module
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PRODUCTID_INVALID.
-  /// </para>
-  ///-
   function TYModule.get_productId():LongInt;
     var
       res : LongInt;
@@ -8566,21 +8432,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the hardware release version of the module.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the hardware release version of the module
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PRODUCTRELEASE_INVALID.
-  /// </para>
-  ///-
   function TYModule.get_productRelease():LongInt;
     var
       res : LongInt;
@@ -8599,21 +8450,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the version of the firmware embedded in the module.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the version of the firmware embedded in the module
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_FIRMWARERELEASE_INVALID.
-  /// </para>
-  ///-
   function TYModule.get_firmwareRelease():string;
     var
       res : string;
@@ -8632,22 +8468,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the current state of persistent module settings.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_PERSISTENTSETTINGS_LOADED, Y_PERSISTENTSETTINGS_SAVED and
-  ///   Y_PERSISTENTSETTINGS_MODIFIED corresponding to the current state of persistent module settings
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PERSISTENTSETTINGS_INVALID.
-  /// </para>
-  ///-
   function TYModule.get_persistentSettings():Integer;
     var
       res : Integer;
@@ -8674,21 +8494,6 @@ var
       result := _setAttr('persistentSettings',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the luminosity of the  module informative leds (from 0 to 100).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the luminosity of the  module informative leds (from 0 to 100)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LUMINOSITY_INVALID.
-  /// </para>
-  ///-
   function TYModule.get_luminosity():LongInt;
     var
       res : LongInt;
@@ -8707,30 +8512,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the luminosity of the module informative leds.
-  /// <para>
-  ///   The parameter is a
-  ///   value between 0 and 100.
-  ///   Remember to call the saveToFlash() method of the module if the
-  ///   modification must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the luminosity of the module informative leds
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYModule.set_luminosity(newval:LongInt):integer;
     var
       rest_val: string;
@@ -8739,21 +8520,6 @@ var
       result := _setAttr('luminosity',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the state of the localization beacon.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_BEACON_OFF or Y_BEACON_ON, according to the state of the localization beacon
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_BEACON_INVALID.
-  /// </para>
-  ///-
   function TYModule.get_beacon():Integer;
     var
       res : Integer;
@@ -8772,26 +8538,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Turns on or off the module localization beacon.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_BEACON_OFF or Y_BEACON_ON
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYModule.set_beacon(newval:Integer):integer;
     var
       rest_val: string;
@@ -8800,21 +8546,6 @@ var
       result := _setAttr('beacon',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the number of milliseconds spent since the module was powered on.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of milliseconds spent since the module was powered on
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_UPTIME_INVALID.
-  /// </para>
-  ///-
   function TYModule.get_upTime():int64;
     var
       res : int64;
@@ -8833,21 +8564,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the current consumed by the module on the USB bus, in milli-amps.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the current consumed by the module on the USB bus, in milli-amps
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_USBCURRENT_INVALID.
-  /// </para>
-  ///-
   function TYModule.get_usbCurrent():LongInt;
     var
       res : LongInt;
@@ -8866,23 +8582,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the remaining number of seconds before the module restarts, or zero when no
-  ///   reboot has been scheduled.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the remaining number of seconds before the module restarts, or zero when no
-  ///   reboot has been scheduled
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_REBOOTCOUNTDOWN_INVALID.
-  /// </para>
-  ///-
   function TYModule.get_rebootCountdown():LongInt;
     var
       res : LongInt;
@@ -8909,22 +8608,6 @@ var
       result := _setAttr('rebootCountdown',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the value previously stored in this attribute.
-  /// <para>
-  ///   On startup and after a device reboot, the value is always reset to zero.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the value previously stored in this attribute
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_USERVAR_INVALID.
-  /// </para>
-  ///-
   function TYModule.get_userVar():LongInt;
     var
       res : LongInt;
@@ -8943,29 +8626,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Stores a 32 bit value in the device RAM.
-  /// <para>
-  ///   This attribute is at programmer disposal,
-  ///   should he need to store a state variable.
-  ///   On startup and after a device reboot, the value is always reset to zero.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYModule.set_userVar(newval:LongInt):integer;
     var
       rest_val: string;
@@ -8974,55 +8634,6 @@ var
       result := _setAttr('userVar',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YModule.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YModule</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYModule.FindModule(func: string):TYModule;
     var
       obj : TYModule;
@@ -9038,24 +8649,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYModule.registerValueCallback(callback: TYModuleValueCallback):LongInt;
     var
       val : string;
@@ -9098,21 +8691,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Saves current settings in the nonvolatile memory of the module.
-  /// <para>
-  ///   Warning: the number of allowed save operations during a module life is
-  ///   limited (about 100000 cycles). Do not call this function within a loop.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYModule.saveToFlash():LongInt;
     begin
       result := self.set_persistentSettings(Y_PERSISTENTSETTINGS_SAVED);
@@ -9120,20 +8698,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Reloads the settings stored in the nonvolatile memory, as
-  ///   when the module is powered on.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYModule.revertFromFlash():LongInt;
     begin
       result := self.set_persistentSettings(Y_PERSISTENTSETTINGS_LOADED);
@@ -9141,22 +8705,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Schedules a simple module reboot after the given number of seconds.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="secBeforeReboot">
-  ///   number of seconds before rebooting
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYModule.reboot(secBeforeReboot: LongInt):LongInt;
     begin
       result := self.set_rebootCountdown(secBeforeReboot);
@@ -9164,22 +8712,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Schedules a module reboot into special firmware update mode.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="secBeforeReboot">
-  ///   number of seconds before rebooting
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYModule.triggerFirmwareUpdate(secBeforeReboot: LongInt):LongInt;
     begin
       result := self.set_rebootCountdown(-secBeforeReboot);
@@ -9187,21 +8719,16 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Register a callback function, to be called when a persistent settings in
-  ///   a device configuration has been changed (e.g.
-  /// <para>
-  ///   change of unit, etc).
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   a procedure taking a YModule parameter, or <c>null</c>
-  ///   to unregister a previously registered  callback.
-  /// </param>
-  ///-
   function TYModule.registerConfigChangeCallback(callback: TYModuleConfigChangeCallback):LongInt;
     begin
+      if (addr(callback) <> nil) then
+        begin
+          TYModule._updateModuleCallbackList(self, true);
+        end
+      else
+        begin
+          TYModule._updateModuleCallbackList(self, false);
+        end;
       self._confChangeCallback := callback;
       result := 0;
       exit;
@@ -9219,13 +8746,33 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Triggers a configuration change callback, to check if they are supported or not.
-  /// <para>
-  /// </para>
-  /// </summary>
-  ///-
+  function TYModule.registerBeaconCallback(callback: TYModuleBeaconCallback):LongInt;
+    begin
+      if (addr(callback) <> nil) then
+        begin
+          TYModule._updateModuleCallbackList(self, true);
+        end
+      else
+        begin
+          TYModule._updateModuleCallbackList(self, false);
+        end;
+      self._beaconCallback := callback;
+      result := 0;
+      exit;
+    end;
+
+
+  function TYModule._invokeBeaconCallback(beaconState: LongInt):LongInt;
+    begin
+      if (addr(self._beaconCallback) <> nil) then
+        begin
+          self._beaconCallback(self, beaconState);
+        end;
+      result := 0;
+      exit;
+    end;
+
+
   function TYModule.triggerConfigChangeCallback():LongInt;
     begin
       self._setAttr('persistentSettings', '2');
@@ -9234,35 +8781,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Tests whether the byn file is valid for this module.
-  /// <para>
-  ///   This method is useful to test if the module needs to be updated.
-  ///   It is possible to pass a directory as argument instead of a file. In this case, this method returns
-  ///   the path of the most recent
-  ///   appropriate <c>.byn</c> file. If the parameter <c>onlynew</c> is true, the function discards
-  ///   firmwares that are older or
-  ///   equal to the installed firmware.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="path">
-  ///   the path of a byn file or a directory that contains byn files
-  /// </param>
-  /// <param name="onlynew">
-  ///   returns only files that are strictly newer
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   the path of the byn file to use or a empty string if no byn files matches the requirement
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a string that start with "error:".
-  /// </para>
-  ///-
   function TYModule.checkFirmware(path: string; onlynew: boolean):string;
     var
       serial : string;
@@ -9279,7 +8797,7 @@ var
         end;
       //may throw an exception
       serial := self.get_serialNumber;
-      tmp_res := TYFirmwareUpdate.CheckFirmware(serial, path, release);
+      tmp_res := TYFirmwareUpdate.CheckFirmware(serial,  path, release);
       if (pos('error:', tmp_res) - 1) = 0 then
         begin
           self._throw(YAPI_INVALID_ARGUMENT, tmp_res);
@@ -9289,26 +8807,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Prepares a firmware update of the module.
-  /// <para>
-  ///   This method returns a <c>YFirmwareUpdate</c> object which
-  ///   handles the firmware update process.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="path">
-  ///   the path of the <c>.byn</c> file to use.
-  /// </param>
-  /// <param name="force">
-  ///   true to force the firmware update even if some prerequisites appear not to be met
-  /// </param>
-  /// <returns>
-  ///   a <c>YFirmwareUpdate</c> object or NULL on error.
-  /// </returns>
-  ///-
   function TYModule.updateFirmwareEx(path: string; force: boolean):TYFirmwareUpdate;
     var
       serial : string;
@@ -9326,23 +8824,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Prepares a firmware update of the module.
-  /// <para>
-  ///   This method returns a <c>YFirmwareUpdate</c> object which
-  ///   handles the firmware update process.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="path">
-  ///   the path of the <c>.byn</c> file to use.
-  /// </param>
-  /// <returns>
-  ///   a <c>YFirmwareUpdate</c> object or NULL on error.
-  /// </returns>
-  ///-
   function TYModule.updateFirmware(path: string):TYFirmwareUpdate;
     begin
       result := self.updateFirmwareEx(path, false);
@@ -9350,23 +8831,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns all the settings and uploaded files of the module.
-  /// <para>
-  ///   Useful to backup all the
-  ///   logical names, calibrations parameters, and uploaded files of a device.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a binary buffer with all the settings.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns an binary object of size 0.
-  /// </para>
-  ///-
   function TYModule.get_allSettings():TByteArray;
     var
       settings : TByteArray;
@@ -9503,28 +8967,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Restores all the settings and uploaded files to the module.
-  /// <para>
-  ///   This method is useful to restore all the logical names and calibrations parameters,
-  ///   uploaded files etc. of a device from a backup.
-  ///   Remember to call the <c>saveToFlash()</c> method of the module if the
-  ///   modifications must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="settings">
-  ///   a binary buffer with all the settings.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYModule.set_allSettingsAndFiles(settings: TByteArray):LongInt;
     var
       down : TByteArray;
@@ -9579,34 +9021,17 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Tests if the device includes a specific function.
-  /// <para>
-  ///   This method takes a function identifier
-  ///   and returns a boolean.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="funcId">
-  ///   the requested function identifier
-  /// </param>
-  /// <returns>
-  ///   true if the device has the function identifier
-  /// </returns>
-  ///-
   function TYModule.hasFunction(funcId: string):boolean;
     var
       count : LongInt;
       i : LongInt;
       fid : string;
     begin
-      count  := self.functionCount;
+      count := self.functionCount;
       i := 0;
       while i < count do
         begin
-          fid  := self.functionId(i);
+          fid := self.functionId(i);
           if (fid = funcId) then
             begin
               result := true;
@@ -9619,21 +9044,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Retrieve all hardware identifier that match the type passed in argument.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="funType">
-  ///   The type of function (Relay, LightSensor, Voltage,...)
-  /// </param>
-  /// <returns>
-  ///   an array of strings.
-  /// </returns>
-  ///-
   function TYModule.get_functionIds(funType: string):TStringArray;
     var
       count : LongInt;
@@ -10063,27 +9473,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Restores all the settings of the device.
-  /// <para>
-  ///   Useful to restore all the logical names and calibrations parameters
-  ///   of a module from a backup.Remember to call the <c>saveToFlash()</c> method of the module if the
-  ///   modifications must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="settings">
-  ///   a binary buffer with all the settings.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYModule.set_allSettings(settings: TByteArray):LongInt;
     var
       restoreLast : TStringArray;
@@ -10466,22 +9855,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Downloads the specified built-in file and returns a binary buffer with its content.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="pathname">
-  ///   name of the new file to load
-  /// </param>
-  /// <returns>
-  ///   a binary buffer with the file content
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns  <c>YAPI_INVALID_STRING</c>.
-  /// </para>
-  ///-
   function TYModule.download(pathname: string):TByteArray;
     begin
       result := self._download(pathname);
@@ -10489,21 +9862,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the icon of the module.
-  /// <para>
-  ///   The icon is a PNG image and does not
-  ///   exceeds 1536 bytes.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a binary buffer with module icon, in png format.
-  ///   On failure, throws an exception or returns  <c>YAPI_INVALID_STRING</c>.
-  /// </returns>
-  ///-
   function TYModule.get_icon2d():TByteArray;
     begin
       result := self._download('icon2d.png');
@@ -10511,21 +9869,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns a string with last logs of the module.
-  /// <para>
-  ///   This method return only
-  ///   logs that are still in the module.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string with last logs of the module.
-  ///   On failure, throws an exception or returns  <c>YAPI_INVALID_STRING</c>.
-  /// </returns>
-  ///-
   function TYModule.get_lastLogs():string;
     var
       content : TByteArray;
@@ -10536,25 +9879,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Adds a text message to the device logs.
-  /// <para>
-  ///   This function is useful in
-  ///   particular to trace the execution of HTTP callbacks. If a newline
-  ///   is desired after the message, it must be included in the string.
-  /// </para>
-  /// </summary>
-  /// <param name="text">
-  ///   the string to append to the logs.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYModule.log(text: string):LongInt;
     begin
       result := self._upload('logs.txt', _StrToByte(text));
@@ -10562,18 +9886,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns a list of all the modules that are plugged into the current module.
-  /// <para>
-  ///   This method only makes sense when called for a YoctoHub/VirtualHub.
-  ///   Otherwise, an empty array will be returned.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an array of strings containing the sub modules.
-  /// </returns>
-  ///-
   function TYModule.get_subDevices():TStringArray;
     var
       errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
@@ -10630,18 +9942,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the serial number of the YoctoHub on which this module is connected.
-  /// <para>
-  ///   If the module is connected by USB, or if the module is the root YoctoHub, an
-  ///   empty string is returned.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string with the serial number of the YoctoHub or an empty string
-  /// </returns>
-  ///-
   function TYModule.get_parentHub():string;
     var
       errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
@@ -10669,18 +9969,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the URL used to access the module.
-  /// <para>
-  ///   If the module is connected by USB, the
-  ///   string 'usb' is returned.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string with the URL of the module.
-  /// </returns>
-  ///-
   function TYModule.get_url():string;
     var
       errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
@@ -10888,21 +10176,6 @@ var
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the measuring unit for the measure.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the measuring unit for the measure
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_UNIT_INVALID.
-  /// </para>
-  ///-
   function TYSensor.get_unit():string;
     var
       res : string;
@@ -10921,22 +10194,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the current value of the measure, in the specified unit, as a floating point number.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the current value of the measure, in the specified unit,
-  ///   as a floating point number
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CURRENTVALUE_INVALID.
-  /// </para>
-  ///-
   function TYSensor.get_currentValue():double;
     var
       res : double;
@@ -10961,28 +10218,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the recorded minimal value observed.
-  /// <para>
-  ///   Can be used to reset the value returned
-  ///   by get_lowestValue().
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the recorded minimal value observed
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSensor.set_lowestValue(newval:double):integer;
     var
       rest_val: string;
@@ -10991,22 +10226,6 @@ var
       result := _setAttr('lowestValue',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the minimal value observed for the measure since the device was started.
-  /// <para>
-  ///   Can be reset to an arbitrary value thanks to set_lowestValue().
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the minimal value observed for the measure since the device was started
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LOWESTVALUE_INVALID.
-  /// </para>
-  ///-
   function TYSensor.get_lowestValue():double;
     var
       res : double;
@@ -11026,28 +10245,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the recorded maximal value observed.
-  /// <para>
-  ///   Can be used to reset the value returned
-  ///   by get_lowestValue().
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the recorded maximal value observed
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSensor.set_highestValue(newval:double):integer;
     var
       rest_val: string;
@@ -11056,22 +10253,6 @@ var
       result := _setAttr('highestValue',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the maximal value observed for the measure since the device was started.
-  /// <para>
-  ///   Can be reset to an arbitrary value thanks to set_highestValue().
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the maximal value observed for the measure since the device was started
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_HIGHESTVALUE_INVALID.
-  /// </para>
-  ///-
   function TYSensor.get_highestValue():double;
     var
       res : double;
@@ -11091,22 +10272,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the uncalibrated, unrounded raw value returned by the sensor, in the specified unit, as a floating point number.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the uncalibrated, unrounded raw value returned by the
-  ///   sensor, in the specified unit, as a floating point number
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CURRENTRAWVALUE_INVALID.
-  /// </para>
-  ///-
   function TYSensor.get_currentRawValue():double;
     var
       res : double;
@@ -11125,23 +10290,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the datalogger recording frequency for this function, or "OFF"
-  ///   when measures are not stored in the data logger flash memory.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the datalogger recording frequency for this function, or "OFF"
-  ///   when measures are not stored in the data logger flash memory
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LOGFREQUENCY_INVALID.
-  /// </para>
-  ///-
   function TYSensor.get_logFrequency():string;
     var
       res : string;
@@ -11160,30 +10308,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the datalogger recording frequency for this function.
-  /// <para>
-  ///   The frequency can be specified as samples per second,
-  ///   as sample per minute (for instance "15/m") or in samples per
-  ///   hour (eg. "4/h"). To disable recording for this function, use
-  ///   the value "OFF".
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the datalogger recording frequency for this function
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSensor.set_logFrequency(newval:string):integer;
     var
       rest_val: string;
@@ -11192,23 +10316,6 @@ var
       result := _setAttr('logFrequency',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the timed value notification frequency, or "OFF" if timed
-  ///   value notifications are disabled for this function.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the timed value notification frequency, or "OFF" if timed
-  ///   value notifications are disabled for this function
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_REPORTFREQUENCY_INVALID.
-  /// </para>
-  ///-
   function TYSensor.get_reportFrequency():string;
     var
       res : string;
@@ -11227,30 +10334,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the timed value notification frequency for this function.
-  /// <para>
-  ///   The frequency can be specified as samples per second,
-  ///   as sample per minute (for instance "15/m") or in samples per
-  ///   hour (eg. "4/h"). To disable timed value notifications for this
-  ///   function, use the value "OFF".
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the timed value notification frequency for this function
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSensor.set_reportFrequency(newval:string):integer;
     var
       rest_val: string;
@@ -11259,22 +10342,6 @@ var
       result := _setAttr('reportFrequency',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the measuring mode used for the advertised value pushed to the parent hub.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_ADVMODE_IMMEDIATE, Y_ADVMODE_PERIOD_AVG, Y_ADVMODE_PERIOD_MIN and
-  ///   Y_ADVMODE_PERIOD_MAX corresponding to the measuring mode used for the advertised value pushed to the parent hub
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_ADVMODE_INVALID.
-  /// </para>
-  ///-
   function TYSensor.get_advMode():Integer;
     var
       res : Integer;
@@ -11293,27 +10360,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the measuring mode used for the advertised value pushed to the parent hub.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a value among Y_ADVMODE_IMMEDIATE, Y_ADVMODE_PERIOD_AVG, Y_ADVMODE_PERIOD_MIN and
-  ///   Y_ADVMODE_PERIOD_MAX corresponding to the measuring mode used for the advertised value pushed to the parent hub
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSensor.set_advMode(newval:Integer):integer;
     var
       rest_val: string;
@@ -11348,28 +10394,6 @@ var
       result := _setAttr('calibrationParam',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Changes the resolution of the measured physical values.
-  /// <para>
-  ///   The resolution corresponds to the numerical precision
-  ///   when displaying value. It does not change the precision of the measure itself.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the resolution of the measured physical values
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSensor.set_resolution(newval:double):integer;
     var
       rest_val: string;
@@ -11378,23 +10402,6 @@ var
       result := _setAttr('resolution',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the resolution of the measured values.
-  /// <para>
-  ///   The resolution corresponds to the numerical precision
-  ///   of the measures, which is not always the same as the actual precision of the sensor.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the resolution of the measured values
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_RESOLUTION_INVALID.
-  /// </para>
-  ///-
   function TYSensor.get_resolution():double;
     var
       res : double;
@@ -11413,23 +10420,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the sensor health state code, which is zero when there is an up-to-date measure
-  ///   available or a positive code if the sensor is not able to provide a measure right now.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the sensor health state code, which is zero when there is an up-to-date measure
-  ///   available or a positive code if the sensor is not able to provide a measure right now
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_SENSORSTATE_INVALID.
-  /// </para>
-  ///-
   function TYSensor.get_sensorState():LongInt;
     var
       res : LongInt;
@@ -11448,55 +10438,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YSensor.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YSensor</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYSensor.FindSensor(func: string):TYSensor;
     var
       obj : TYSensor;
@@ -11512,24 +10453,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYSensor.registerValueCallback(callback: TYSensorValueCallback):LongInt;
     var
       val : string;
@@ -11776,21 +10699,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Checks if the sensor is currently able to provide an up-to-date measure.
-  /// <para>
-  ///   Returns false if the device is unreachable, or if the sensor does not have
-  ///   a current measure to transmit. No exception is raised if there is an error
-  ///   while trying to contact the device hosting $THEFUNCTION$.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>true</c> if the sensor can provide an up-to-date measure, and <c>false</c> otherwise
-  /// </returns>
-  ///-
   function TYSensor.isSensorReady():boolean;
     begin
       if not(self.isOnline) then
@@ -11808,21 +10716,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the YDatalogger object of the device hosting the sensor.
-  /// <para>
-  ///   This method returns an object of
-  ///   class YDatalogger that can control global parameters of the data logger. The returned object
-  ///   should not be freed.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an YDataLogger object or null on error.
-  /// </returns>
-  ///-
   function TYSensor.get_dataLogger():TYDataLogger;
     var
       logger : TYDataLogger;
@@ -11838,25 +10731,12 @@ var
           exit;
         end;
       hwid := serial + '.dataLogger';
-      logger  := TYDataLogger.FindDataLogger(hwid);
+      logger := TYDataLogger.FindDataLogger(hwid);
       result := logger;
       exit;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Starts the data logger on the device.
-  /// <para>
-  ///   Note that the data logger
-  ///   will only save the measures on this sensor if the logFrequency
-  ///   is not set to "OFF".
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  ///-
   function TYSensor.startDataLogger():LongInt;
     var
       res : TByteArray;
@@ -11873,16 +10753,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Stops the datalogger on the device.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  ///-
   function TYSensor.stopDataLogger():LongInt;
     var
       res : TByteArray;
@@ -11899,44 +10769,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Retrieves a DataSet object holding historical data for this
-  ///   sensor, for a specified time interval.
-  /// <para>
-  ///   The measures will be
-  ///   retrieved from the data logger, which must have been turned
-  ///   on at the desired time. See the documentation of the DataSet
-  ///   class for information on how to get an overview of the
-  ///   recorded data, and how to load progressively a large set
-  ///   of measures from the data logger.
-  /// </para>
-  /// <para>
-  ///   This function only works if the device uses a recent firmware,
-  ///   as DataSet objects are not supported by firmwares older than
-  ///   version 13000.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="startTime">
-  ///   the start of the desired measure time interval,
-  ///   as a Unix timestamp, i.e. the number of seconds since
-  ///   January 1, 1970 UTC. The special value 0 can be used
-  ///   to include any meaasure, without initial limit.
-  /// </param>
-  /// <param name="endTime">
-  ///   the end of the desired measure time interval,
-  ///   as a Unix timestamp, i.e. the number of seconds since
-  ///   January 1, 1970 UTC. The special value 0 can be used
-  ///   to include any meaasure, without ending limit.
-  /// </param>
-  /// <returns>
-  ///   an instance of YDataSet, providing access to historical
-  ///   data. Past measures can be loaded progressively
-  ///   using methods from the YDataSet object.
-  /// </returns>
-  ///-
   function TYSensor.get_recordedData(startTime: int64; endTime: int64):TYDataSet;
     var
       funcid : string;
@@ -11949,24 +10781,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every periodic timed notification.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and an YMeasure object describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYSensor.registerTimedReportCallback(callback: TYSensorTimedReportCallback):LongInt;
     var
       sensor : TYSensor;
@@ -12000,40 +10814,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Configures error correction data points, in particular to compensate for
-  ///   a possible perturbation of the measure caused by an enclosure.
-  /// <para>
-  ///   It is possible
-  ///   to configure up to five correction points. Correction points must be provided
-  ///   in ascending order, and be in the range of the sensor. The device will automatically
-  ///   perform a linear interpolation of the error correction between specified
-  ///   points. Remember to call the <c>saveToFlash()</c> method of the module if the
-  ///   modification must be kept.
-  /// </para>
-  /// <para>
-  ///   For more information on advanced capabilities to refine the calibration of
-  ///   sensors, please contact support@yoctopuce.com.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="rawValues">
-  ///   array of floating point numbers, corresponding to the raw
-  ///   values returned by the sensor for the correction points.
-  /// </param>
-  /// <param name="refValues">
-  ///   array of floating point numbers, corresponding to the corrected
-  ///   values for the correction points.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSensor.calibrateFromPoints(rawValues: TDoubleArray; refValues: TDoubleArray):LongInt;
     var
       rest_val : string;
@@ -12046,30 +10826,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Retrieves error correction data points previously entered using the method
-  ///   <c>calibrateFromPoints</c>.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="rawValues">
-  ///   array of floating point numbers, that will be filled by the
-  ///   function with the raw sensor values for the correction points.
-  /// </param>
-  /// <param name="refValues">
-  ///   array of floating point numbers, that will be filled by the
-  ///   function with the desired values for the correction points.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSensor.loadCalibrationPoints(var rawValues: TDoubleArray; var refValues: TDoubleArray):LongInt;
     var
       rawValues_pos : LongInt;
@@ -12514,42 +11270,12 @@ var
 
 //--- (generated code: YAPIContext implementation)
 
-  ////
-  /// <summary>
-  ///   Change the time between each forced enumeration of the YoctoHub used.
-  /// <para>
-  ///   By default, the library performs a complete enumeration every 10 seconds.
-  ///   To reduce network traffic it is possible to increase this delay.
-  ///   This is particularly useful when a YoctoHub is connected to a GSM network
-  ///   where the traffic is charged. This setting does not affect modules connected by USB,
-  ///   nor the operation of arrival/removal callbacks.
-  ///   Note: This function must be called after <c>yInitAPI</c>.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="deviceListValidity">
-  ///   number of seconds between each enumeration.
-  /// @noreturn
-  /// </param>
-  ///-
   procedure TYAPIContext.SetDeviceListValidity(deviceListValidity: LongInt);
     begin
       _yapiSetNetDevListValidity(deviceListValidity);
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the time between each forced enumeration of the YoctoHub used.
-  /// <para>
-  ///   Note: This function must be called after <c>yInitAPI</c>.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   the number of seconds between each enumeration.
-  /// </returns>
-  ///-
   function TYAPIContext.GetDeviceListValidity():LongInt;
     var
       res : LongInt;
@@ -12560,48 +11286,12 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Change the validity period of the data loaded by the library.
-  /// <para>
-  ///   By default, when accessing a module, all the attributes of the
-  ///   module functions are automatically kept in cache for the standard
-  ///   duration (5 ms). This method can be used to change this standard duration,
-  ///   for example in order to reduce network or USB traffic. This parameter
-  ///   does not affect value change callbacks
-  ///   Note: This function must be called after <c>yInitAPI</c>.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="cacheValidityMs">
-  ///   an integer corresponding to the validity attributed to the
-  ///   loaded function parameters, in milliseconds.
-  /// @noreturn
-  /// </param>
-  ///-
   procedure TYAPIContext.SetCacheValidity(cacheValidityMs: u64);
     begin
       self._defaultCacheValidity := cacheValidityMs;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the validity period of the data loaded by the library.
-  /// <para>
-  ///   This method returns the cache validity of all attributes
-  ///   module functions.
-  ///   Note: This function must be called after <c>yInitAPI </c>.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the validity attributed to the
-  ///   loaded function parameters, in milliseconds
-  /// </returns>
-  ///-
   function TYAPIContext.GetCacheValidity():u64;
     begin
       result := self._defaultCacheValidity;
@@ -12622,90 +11312,24 @@ var
 
 //--- (generated code: YAPIContext yapiwrapper)
 
-  ////
-  /// <summary>
-  ///   Change the time between each forced enumeration of the YoctoHub used.
-  /// <para>
-  ///   By default, the library performs a complete enumeration every 10 seconds.
-  ///   To reduce network traffic it is possible to increase this delay.
-  ///   This is particularly useful when a YoctoHub is connected to a GSM network
-  ///   where the traffic is charged. This setting does not affect modules connected by USB,
-  ///   nor the operation of arrival/removal callbacks.
-  ///   Note: This function must be called after <c>yInitAPI</c>.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="deviceListValidity">
-  ///   number of seconds between each enumeration.
-  /// @noreturn
-  /// </param>
-  ///-
   procedure ySetDeviceListValidity(deviceListValidity: LongInt);
     begin
         _yapiContext.SetDeviceListValidity(deviceListValidity);
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the time between each forced enumeration of the YoctoHub used.
-  /// <para>
-  ///   Note: This function must be called after <c>yInitAPI</c>.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   the number of seconds between each enumeration.
-  /// </returns>
-  ///-
   function yGetDeviceListValidity():LongInt;
     begin
         result := _yapiContext.GetDeviceListValidity();
     end;
 
 
-  ////
-  /// <summary>
-  ///   Change the validity period of the data loaded by the library.
-  /// <para>
-  ///   By default, when accessing a module, all the attributes of the
-  ///   module functions are automatically kept in cache for the standard
-  ///   duration (5 ms). This method can be used to change this standard duration,
-  ///   for example in order to reduce network or USB traffic. This parameter
-  ///   does not affect value change callbacks
-  ///   Note: This function must be called after <c>yInitAPI</c>.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="cacheValidityMs">
-  ///   an integer corresponding to the validity attributed to the
-  ///   loaded function parameters, in milliseconds.
-  /// @noreturn
-  /// </param>
-  ///-
   procedure ySetCacheValidity(cacheValidityMs: u64);
     begin
         _yapiContext.SetCacheValidity(cacheValidityMs);
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the validity period of the data loaded by the library.
-  /// <para>
-  ///   This method returns the cache validity of all attributes
-  ///   module functions.
-  ///   Note: This function must be called after <c>yInitAPI </c>.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the validity attributed to the
-  ///   loaded function parameters, in milliseconds
-  /// </returns>
-  ///-
   function yGetCacheValidity():u64;
     begin
         result := _yapiContext.GetCacheValidity();
@@ -12820,14 +11444,14 @@ var
                     end
                   else
                     begin
-                      self._progress :=  100;
+                      self._progress := 100;
                       self._progress_msg := 'success';
                     end;
                 end;
             end
           else
             begin
-              self._progress :=  100;
+              self._progress := 100;
               self._progress_msg := 'success';
             end;
         end;
@@ -12836,21 +11460,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns a list of all the modules in "firmware update" mode.
-  /// <para>
-  ///   Only devices
-  ///   connected over USB are listed. For devices connected to a YoctoHub, you
-  ///   must connect yourself to the YoctoHub web interface.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an array of strings containing the serial numbers of devices in "firmware update" mode.
-  /// </returns>
-  ///-
   class function TYFirmwareUpdate.GetAllBootLoaders():TStringArray;
     var
       errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
@@ -12904,33 +11513,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Test if the byn file is valid for this module.
-  /// <para>
-  ///   It is possible to pass a directory instead of a file.
-  ///   In that case, this method returns the path of the most recent appropriate byn file. This method will
-  ///   ignore any firmware older than minrelease.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="serial">
-  ///   the serial number of the module to update
-  /// </param>
-  /// <param name="path">
-  ///   the path of a byn file or a directory that contains byn files
-  /// </param>
-  /// <param name="minrelease">
-  ///   a positive integer
-  /// </param>
-  /// <returns>
-  ///   : the path of the byn file to use, or an empty string if no byn files matches the requirement
-  /// </returns>
-  /// <para>
-  ///   On failure, returns a string that starts with "error:".
-  /// </para>
-  ///-
   class function TYFirmwareUpdate.CheckFirmware(serial: string; path: string; minrelease: LongInt):string;
     var
       errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
@@ -12979,24 +11561,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the progress of the firmware update, on a scale from 0 to 100.
-  /// <para>
-  ///   When the object is
-  ///   instantiated, the progress is zero. The value is updated during the firmware update process until
-  ///   the value of 100 is reached. The 100 value means that the firmware update was completed
-  ///   successfully. If an error occurs during the firmware update, a negative value is returned, and the
-  ///   error message can be retrieved with <c>get_progressMessage</c>.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer in the range 0 to 100 (percentage of completion)
-  ///   or a negative error code in case of failure.
-  /// </returns>
-  ///-
   function TYFirmwareUpdate.get_progress():LongInt;
     begin
       if self._progress >= 0 then
@@ -13008,20 +11572,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the last progress message of the firmware update process.
-  /// <para>
-  ///   If an error occurs during the
-  ///   firmware update process, the error message is returned
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string  with the latest progress message, or the error message.
-  /// </returns>
-  ///-
   function TYFirmwareUpdate.get_progressMessage():string;
     begin
       result := self._progress_msg;
@@ -13029,25 +11579,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Starts the firmware update process.
-  /// <para>
-  ///   This method starts the firmware update process in background. This method
-  ///   returns immediately. You can monitor the progress of the firmware update with the <c>get_progress()</c>
-  ///   and <c>get_progressMessage()</c> methods.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer in the range 0 to 100 (percentage of completion),
-  ///   or a negative error code in case of failure.
-  /// </returns>
-  /// <para>
-  ///   On failure returns a negative error code.
-  /// </para>
-  ///-
   function TYFirmwareUpdate.startUpdate():LongInt;
     var
       err : string;
@@ -13055,7 +11586,7 @@ var
     begin
       err := _ByteToString(self._settings);
       leng := Length(err);
-      if  ( leng >= 6) and(('error:' = Copy(err, 0 + 1, 6))) then
+      if (leng >= 6) and(('error:' = Copy(err, 0 + 1, 6))) then
         begin
           self._progress := -1;
           self._progress_msg := Copy(err,  6 + 1, leng - 6);
@@ -13431,20 +11962,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the run index of the data stream.
-  /// <para>
-  ///   A run can be made of
-  ///   multiple datastreams, for different time intervals.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an unsigned number corresponding to the run index.
-  /// </returns>
-  ///-
   function TYDataStream.get_runIndex():LongInt;
     begin
       result := self._runNo;
@@ -13452,26 +11969,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the relative start time of the data stream, measured in seconds.
-  /// <para>
-  ///   For recent firmwares, the value is relative to the present time,
-  ///   which means the value is always negative.
-  ///   If the device uses a firmware older than version 13000, value is
-  ///   relative to the start of the time the device was powered on, and
-  ///   is always positive.
-  ///   If you need an absolute UTC timestamp, use <c>get_startTimeUTC()</c>.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an unsigned number corresponding to the number of seconds
-  ///   between the start of the run and the beginning of this data
-  ///   stream.
-  /// </returns>
-  ///-
   function TYDataStream.get_startTime():LongInt;
     begin
       result := integer(self._utcStamp - Round((Now()-25569)*86400));
@@ -13479,22 +11976,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the start time of the data stream, relative to the Jan 1, 1970.
-  /// <para>
-  ///   If the UTC time was not set in the datalogger at the time of the recording
-  ///   of this data stream, this method returns 0.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an unsigned number corresponding to the number of seconds
-  ///   between the Jan 1, 1970 and the beginning of this data
-  ///   stream (i.e. Unix time representation of the absolute time).
-  /// </returns>
-  ///-
   function TYDataStream.get_startTimeUTC():int64;
     begin
       result := self._utcStamp;
@@ -13502,22 +11983,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the number of milliseconds between two consecutive
-  ///   rows of this data stream.
-  /// <para>
-  ///   By default, the data logger records one row
-  ///   per second, but the recording frequency can be changed for
-  ///   each device function
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an unsigned number corresponding to a number of milliseconds.
-  /// </returns>
-  ///-
   function TYDataStream.get_dataSamplesIntervalMs():LongInt;
     begin
       result := (3600000 div self._samplesPerHour);
@@ -13532,26 +11997,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the number of data rows present in this stream.
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   If the device uses a firmware older than version 13000,
-  ///   this method fetches the whole data stream from the device
-  ///   if not yet done, which can cause a little delay.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an unsigned number corresponding to the number of rows.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns zero.
-  /// </para>
-  ///-
   function TYDataStream.get_rowCount():LongInt;
     begin
       if (self._nRows <> 0) and self._isClosed then
@@ -13565,28 +12010,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the number of data columns present in this stream.
-  /// <para>
-  ///   The meaning of the values present in each column can be obtained
-  ///   using the method <c>get_columnNames()</c>.
-  /// </para>
-  /// <para>
-  ///   If the device uses a firmware older than version 13000,
-  ///   this method fetches the whole data stream from the device
-  ///   if not yet done, which can cause a little delay.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an unsigned number corresponding to the number of columns.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns zero.
-  /// </para>
-  ///-
   function TYDataStream.get_columnCount():LongInt;
     begin
       if self._nCols <> 0 then
@@ -13600,32 +12023,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the title (or meaning) of each data column present in this stream.
-  /// <para>
-  ///   In most case, the title of the data column is the hardware identifier
-  ///   of the sensor that produced the data. For streams recorded at a lower
-  ///   recording rate, the dataLogger stores the min, average and max value
-  ///   during each measure interval into three columns with suffixes _min,
-  ///   _avg and _max respectively.
-  /// </para>
-  /// <para>
-  ///   If the device uses a firmware older than version 13000,
-  ///   this method fetches the whole data stream from the device
-  ///   if not yet done, which can cause a little delay.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a list containing as many strings as there are columns in the
-  ///   data stream.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns an empty array.
-  /// </para>
-  ///-
   function TYDataStream.get_columnNames():TStringArray;
     begin
       if length(self._columnNames) <> 0 then
@@ -13639,24 +12036,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the smallest measure observed within this stream.
-  /// <para>
-  ///   If the device uses a firmware older than version 13000,
-  ///   this method will always return Y_DATA_INVALID.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating-point number corresponding to the smallest value,
-  ///   or Y_DATA_INVALID if the stream is not yet complete (still recording).
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DATA_INVALID.
-  /// </para>
-  ///-
   function TYDataStream.get_minValue():double;
     begin
       result := self._minVal;
@@ -13664,24 +12043,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the average of all measures observed within this stream.
-  /// <para>
-  ///   If the device uses a firmware older than version 13000,
-  ///   this method will always return Y_DATA_INVALID.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating-point number corresponding to the average value,
-  ///   or Y_DATA_INVALID if the stream is not yet complete (still recording).
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DATA_INVALID.
-  /// </para>
-  ///-
   function TYDataStream.get_averageValue():double;
     begin
       result := self._avgVal;
@@ -13689,24 +12050,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the largest measure observed within this stream.
-  /// <para>
-  ///   If the device uses a firmware older than version 13000,
-  ///   this method will always return Y_DATA_INVALID.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating-point number corresponding to the largest value,
-  ///   or Y_DATA_INVALID if the stream is not yet complete (still recording).
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DATA_INVALID.
-  /// </para>
-  ///-
   function TYDataStream.get_maxValue():double;
     begin
       result := self._maxVal;
@@ -13714,21 +12057,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the approximate duration of this stream, in seconds.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   the number of seconds covered by this stream.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DURATION_INVALID.
-  /// </para>
-  ///-
   function TYDataStream.get_duration():LongInt;
     begin
       if self._isClosed then
@@ -13741,30 +12069,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the whole data set contained in the stream, as a bidimensional
-  ///   table of numbers.
-  /// <para>
-  ///   The meaning of the values present in each column can be obtained
-  ///   using the method <c>get_columnNames()</c>.
-  /// </para>
-  /// <para>
-  ///   This method fetches the whole data stream from the device,
-  ///   if not yet done.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a list containing as many elements as there are rows in the
-  ///   data stream. Each row itself is a list of floating-point
-  ///   numbers.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns an empty array.
-  /// </para>
-  ///-
   function TYDataStream.get_dataRows():TDoubleArrayArray;
     begin
       if (length(self._values) = 0) or not(self._isClosed) then
@@ -13776,34 +12080,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns a single measure from the data stream, specified by its
-  ///   row and column index.
-  /// <para>
-  ///   The meaning of the values present in each column can be obtained
-  ///   using the method get_columnNames().
-  /// </para>
-  /// <para>
-  ///   This method fetches the whole data stream from the device,
-  ///   if not yet done.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="row">
-  ///   row index
-  /// </param>
-  /// <param name="col">
-  ///   column index
-  /// </param>
-  /// <returns>
-  ///   a floating-point number
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DATA_INVALID.
-  /// </para>
-  ///-
   function TYDataStream.get_data(row: LongInt; col: LongInt):double;
     begin
       if (length(self._values) = 0) or not(self._isClosed) then
@@ -13856,22 +12132,6 @@ var
 
 //--- (generated code: YMeasure implementation)
 
-  ////
-  /// <summary>
-  ///   Returns the start time of the measure, relative to the Jan 1, 1970 UTC
-  ///   (Unix timestamp).
-  /// <para>
-  ///   When the recording rate is higher then 1 sample
-  ///   per second, the timestamp may have a fractional part.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an floating point number corresponding to the number of seconds
-  ///   between the Jan 1, 1970 UTC and the beginning of this measure.
-  /// </returns>
-  ///-
   function TYMeasure.get_startTimeUTC():double;
     begin
       result := self._start;
@@ -13879,22 +12139,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the end time of the measure, relative to the Jan 1, 1970 UTC
-  ///   (Unix timestamp).
-  /// <para>
-  ///   When the recording rate is higher than 1 sample
-  ///   per second, the timestamp may have a fractional part.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an floating point number corresponding to the number of seconds
-  ///   between the Jan 1, 1970 UTC and the end of this measure.
-  /// </returns>
-  ///-
   function TYMeasure.get_endTimeUTC():double;
     begin
       result := self._end;
@@ -13902,19 +12146,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the smallest value observed during the time interval
-  ///   covered by this measure.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating-point number corresponding to the smallest value observed.
-  /// </returns>
-  ///-
   function TYMeasure.get_minValue():double;
     begin
       result := self._minVal;
@@ -13922,19 +12153,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the average value observed during the time interval
-  ///   covered by this measure.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating-point number corresponding to the average value observed.
-  /// </returns>
-  ///-
   function TYMeasure.get_averageValue():double;
     begin
       result := self._avgVal;
@@ -13942,19 +12160,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the largest value observed during the time interval
-  ///   covered by this measure.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating-point number corresponding to the largest value observed.
-  /// </returns>
-  ///-
   function TYMeasure.get_maxValue():double;
     begin
       result := self._maxVal;
@@ -14223,25 +12428,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the unique hardware identifier of the function who performed the measures,
-  ///   in the form <c>SERIAL.FUNCTIONID</c>.
-  /// <para>
-  ///   The unique hardware identifier is composed of the
-  ///   device serial number and of the hardware identifier of the function
-  ///   (for example <c>THRMCPL1-123456.temperature1</c>)
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string that uniquely identifies the function (ex: <c>THRMCPL1-123456.temperature1</c>)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns  <c>Y_HARDWAREID_INVALID</c>.
-  /// </para>
-  ///-
   function TYDataSet.get_hardwareId():string;
     var
       mo : TYModule;
@@ -14258,20 +12444,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the hardware identifier of the function that performed the measure,
-  ///   without reference to the module.
-  /// <para>
-  ///   For example <c>temperature1</c>.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string that identifies the function (ex: <c>temperature1</c>)
-  /// </returns>
-  ///-
   function TYDataSet.get_functionId():string;
     begin
       result := self._functionId;
@@ -14279,21 +12451,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the measuring unit for the measured value.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string that represents a physical unit.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns  <c>Y_UNIT_INVALID</c>.
-  /// </para>
-  ///-
   function TYDataSet.get_unit():string;
     begin
       result := self._unit;
@@ -14301,25 +12458,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the start time of the dataset, relative to the Jan 1, 1970.
-  /// <para>
-  ///   When the YDataSet is created, the start time is the value passed
-  ///   in parameter to the <c>get_dataSet()</c> function. After the
-  ///   very first call to <c>loadMore()</c>, the start time is updated
-  ///   to reflect the timestamp of the first measure actually found in the
-  ///   dataLogger within the specified range.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an unsigned number corresponding to the number of seconds
-  ///   between the Jan 1, 1970 and the beginning of this data
-  ///   set (i.e. Unix time representation of the absolute time).
-  /// </returns>
-  ///-
   function TYDataSet.get_startTimeUTC():int64;
     begin
       result := self._startTime;
@@ -14327,25 +12465,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the end time of the dataset, relative to the Jan 1, 1970.
-  /// <para>
-  ///   When the YDataSet is created, the end time is the value passed
-  ///   in parameter to the <c>get_dataSet()</c> function. After the
-  ///   very first call to <c>loadMore()</c>, the end time is updated
-  ///   to reflect the timestamp of the last measure actually found in the
-  ///   dataLogger within the specified range.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an unsigned number corresponding to the number of seconds
-  ///   between the Jan 1, 1970 and the end of this data
-  ///   set (i.e. Unix time representation of the absolute time).
-  /// </returns>
-  ///-
   function TYDataSet.get_endTimeUTC():int64;
     begin
       result := self._endTime;
@@ -14353,22 +12472,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the progress of the downloads of the measures from the data logger,
-  ///   on a scale from 0 to 100.
-  /// <para>
-  ///   When the object is instantiated by <c>get_dataSet</c>,
-  ///   the progress is zero. Each time <c>loadMore()</c> is invoked, the progress
-  ///   is updated, to reach the value 100 only once all measures have been loaded.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer in the range 0 to 100 (percentage of completion).
-  /// </returns>
-  ///-
   function TYDataSet.get_progress():LongInt;
     begin
       if self._progress < 0 then
@@ -14387,23 +12490,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Loads the the next block of measures from the dataLogger, and updates
-  ///   the progress indicator.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer in the range 0 to 100 (percentage of completion),
-  ///   or a negative error code in case of failure.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDataSet.loadMore():LongInt;
     var
       url : string;
@@ -14444,29 +12530,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns an YMeasure object which summarizes the whole
-  ///   DataSet.
-  /// <para>
-  ///   In includes the following information:
-  ///   - the start of a time interval
-  ///   - the end of a time interval
-  ///   - the minimal value observed during the time interval
-  ///   - the average value observed during the time interval
-  ///   - the maximal value observed during the time interval
-  /// </para>
-  /// <para>
-  ///   This summary is available as soon as <c>loadMore()</c> has
-  ///   been called for the first time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an YMeasure object
-  /// </returns>
-  ///-
   function TYDataSet.get_summary():TYMeasure;
     begin
       result := self._summary;
@@ -14474,34 +12537,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns a condensed version of the measures that can
-  ///   retrieved in this YDataSet, as a list of YMeasure
-  ///   objects.
-  /// <para>
-  ///   Each item includes:
-  ///   - the start of a time interval
-  ///   - the end of a time interval
-  ///   - the minimal value observed during the time interval
-  ///   - the average value observed during the time interval
-  ///   - the maximal value observed during the time interval
-  /// </para>
-  /// <para>
-  ///   This preview is available as soon as <c>loadMore()</c> has
-  ///   been called for the first time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a table of records, where each record depicts the
-  ///   measured values during a time interval
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns an empty array.
-  /// </para>
-  ///-
   function TYDataSet.get_preview():TYMeasureArray;
     begin
       result := self._preview;
@@ -14509,28 +12544,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the detailed set of measures for the time interval corresponding
-  ///   to a given condensed measures previously returned by <c>get_preview()</c>.
-  /// <para>
-  ///   The result is provided as a list of YMeasure objects.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="measure">
-  ///   condensed measure from the list previously returned by
-  ///   <c>get_preview()</c>.
-  /// </param>
-  /// <returns>
-  ///   a table of records, where each record depicts the
-  ///   measured values during a time interval
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns an empty array.
-  /// </para>
-  ///-
   function TYDataSet.get_measuresAt(measure: TYMeasure):TYMeasureArray;
     var
       startUtc : int64;
@@ -14607,42 +12620,6 @@ var
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns all measured values currently available for this DataSet,
-  ///   as a list of YMeasure objects.
-  /// <para>
-  ///   Each item includes:
-  ///   - the start of the measure time interval
-  ///   - the end of the measure time interval
-  ///   - the minimal value observed during the time interval
-  ///   - the average value observed during the time interval
-  ///   - the maximal value observed during the time interval
-  /// </para>
-  /// <para>
-  ///   Before calling this method, you should call <c>loadMore()</c>
-  ///   to load data from the device. You may have to call loadMore()
-  ///   several time until all rows are loaded, but you can start
-  ///   looking at available data rows before the load is complete.
-  /// </para>
-  /// <para>
-  ///   The oldest measures are always loaded first, and the most
-  ///   recent measures will be loaded last. As a result, timestamps
-  ///   are normally sorted in ascending order within the measure table,
-  ///   unless there was an unexpected adjustment of the datalogger UTC
-  ///   clock.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a table of records, where each record depicts the
-  ///   measured value for a given time interval
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns an empty array.
-  /// </para>
-  ///-
   function TYDataSet.get_measures():TYMeasureArray;
     begin
       result := self._measures;
@@ -14834,23 +12811,6 @@ const
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the current run number, corresponding to the number of times the module was
-  ///   powered on with the dataLogger enabled at some point.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the current run number, corresponding to the number of times the module was
-  ///   powered on with the dataLogger enabled at some point
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CURRENTRUNINDEX_INVALID.
-  /// </para>
-  ///-
   function TYDataLogger.get_currentRunIndex():LongInt;
     var
       res : LongInt;
@@ -14869,21 +12829,6 @@ const
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the Unix timestamp for current UTC time, if known.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the Unix timestamp for current UTC time, if known
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_TIMEUTC_INVALID.
-  /// </para>
-  ///-
   function TYDataLogger.get_timeUTC():int64;
     var
       res : int64;
@@ -14902,26 +12847,6 @@ const
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the current UTC time reference used for recorded data.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the current UTC time reference used for recorded data
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDataLogger.set_timeUTC(newval:int64):integer;
     var
       rest_val: string;
@@ -14930,22 +12855,6 @@ const
       result := _setAttr('timeUTC',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the current activation state of the data logger.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_RECORDING_OFF, Y_RECORDING_ON and Y_RECORDING_PENDING corresponding to the current
-  ///   activation state of the data logger
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_RECORDING_INVALID.
-  /// </para>
-  ///-
   function TYDataLogger.get_recording():Integer;
     var
       res : Integer;
@@ -14964,27 +12873,6 @@ const
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the activation state of the data logger to start/stop recording data.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a value among Y_RECORDING_OFF, Y_RECORDING_ON and Y_RECORDING_PENDING corresponding to the
-  ///   activation state of the data logger to start/stop recording data
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDataLogger.set_recording(newval:Integer):integer;
     var
       rest_val: string;
@@ -14993,22 +12881,6 @@ const
       result := _setAttr('recording',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the default activation state of the data logger on power up.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the default activation state of the data
-  ///   logger on power up
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_AUTOSTART_INVALID.
-  /// </para>
-  ///-
   function TYDataLogger.get_autoStart():Integer;
     var
       res : Integer;
@@ -15027,29 +12899,6 @@ const
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the default activation state of the data logger on power up.
-  /// <para>
-  ///   Remember to call the saveToFlash() method of the module if the
-  ///   modification must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the default activation state of the data
-  ///   logger on power up
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDataLogger.set_autoStart(newval:Integer):integer;
     var
       rest_val: string;
@@ -15058,22 +12907,6 @@ const
       result := _setAttr('autoStart',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns true if the data logger is synchronised with the localization beacon.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_BEACONDRIVEN_OFF or Y_BEACONDRIVEN_ON, according to true if the data logger is
-  ///   synchronised with the localization beacon
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_BEACONDRIVEN_INVALID.
-  /// </para>
-  ///-
   function TYDataLogger.get_beaconDriven():Integer;
     var
       res : Integer;
@@ -15092,28 +12925,6 @@ const
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the type of synchronisation of the data logger.
-  /// <para>
-  ///   Remember to call the saveToFlash() method of the module if the
-  ///   modification must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_BEACONDRIVEN_OFF or Y_BEACONDRIVEN_ON, according to the type of synchronisation of the data logger
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDataLogger.set_beaconDriven(newval:Integer):integer;
     var
       rest_val: string;
@@ -15148,55 +12959,6 @@ const
       result := _setAttr('clearHistory',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YDataLogger.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YDataLogger</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYDataLogger.FindDataLogger(func: string):TYDataLogger;
     var
       obj : TYDataLogger;
@@ -15212,24 +12974,6 @@ const
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYDataLogger.registerValueCallback(callback: TYDataLoggerValueCallback):LongInt;
     var
       val : string;
@@ -15272,20 +13016,6 @@ const
     end;
 
 
-  ////
-  /// <summary>
-  ///   Clears the data logger memory and discards all recorded data streams.
-  /// <para>
-  ///   This method also resets the current run index to zero.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDataLogger.forgetAllDataStreams():LongInt;
     begin
       result := self.set_clearHistory(Y_CLEARHISTORY_TRUE);
@@ -15293,27 +13023,6 @@ const
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns a list of YDataSet objects that can be used to retrieve
-  ///   all measures stored by the data logger.
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function only works if the device uses a recent firmware,
-  ///   as YDataSet objects are not supported by firmwares older than
-  ///   version 13000.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a list of YDataSet object.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns an empty list.
-  /// </para>
-  ///-
   function TYDataLogger.get_dataSets():TYDataSetArray;
     begin
       result := self.parse_dataSets(self._download('logger.json'));
@@ -15747,6 +13456,7 @@ initialization
   _DataEvents           := TList.create;
   _CalibHandlers        := TStringList.create();
   _CalibHandlers.sorted := true;
+  _moduleCallbackList   := TStringList.create();
 
 finalization
   //--- (generated code: YModule cleanup)

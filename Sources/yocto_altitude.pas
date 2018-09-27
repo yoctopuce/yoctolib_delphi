@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_altitude.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_altitude.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindAltitude(), the high-level API for Altitude functions
  *
@@ -412,28 +412,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Changes the current estimated altitude.
-  /// <para>
-  ///   This allows to compensate for
-  ///   ambient pressure variations and to work in relative mode.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the current estimated altitude
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYAltitude.set_currentValue(newval:double):integer;
     var
       rest_val: string;
@@ -442,30 +420,6 @@ implementation
       result := _setAttr('currentValue',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Changes the barometric pressure adjusted to sea level used to compute
-  ///   the altitude (QNH).
-  /// <para>
-  ///   This enables you to compensate for atmospheric pressure
-  ///   changes due to weather conditions.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the barometric pressure adjusted to sea level used to compute
-  ///   the altitude (QNH)
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYAltitude.set_qnh(newval:double):integer;
     var
       rest_val: string;
@@ -474,23 +428,6 @@ implementation
       result := _setAttr('qnh',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the barometric pressure adjusted to sea level used to compute
-  ///   the altitude (QNH).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the barometric pressure adjusted to sea level used to compute
-  ///   the altitude (QNH)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_QNH_INVALID.
-  /// </para>
-  ///-
   function TYAltitude.get_qnh():double;
     var
       res : double;
@@ -509,24 +446,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the technology used by the sesnor to compute
-  ///   altitude.
-  /// <para>
-  ///   Possibles values are  "barometric" and "gps"
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the technology used by the sesnor to compute
-  ///   altitude
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_TECHNOLOGY_INVALID.
-  /// </para>
-  ///-
   function TYAltitude.get_technology():string;
     var
       res : string;
@@ -545,55 +464,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YAltitude.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YAltitude</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYAltitude.FindAltitude(func: string):TYAltitude;
     var
       obj : TYAltitude;
@@ -609,24 +479,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYAltitude.registerValueCallback(callback: TYAltitudeValueCallback):LongInt;
     var
       val : string;
@@ -669,24 +521,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every periodic timed notification.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and an YMeasure object describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYAltitude.registerTimedReportCallback(callback: TYAltitudeTimedReportCallback):LongInt;
     var
       sensor : TYSensor;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_realtimeclock.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_realtimeclock.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
@@ -433,21 +433,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the current time in Unix format (number of elapsed seconds since Jan 1st, 1970).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the current time in Unix format (number of elapsed seconds since Jan 1st, 1970)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_UNIXTIME_INVALID.
-  /// </para>
-  ///-
   function TYRealTimeClock.get_unixTime():int64;
     var
       res : int64;
@@ -466,27 +451,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the current time.
-  /// <para>
-  ///   Time is specifid in Unix format (number of elapsed seconds since Jan 1st, 1970).
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the current time
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYRealTimeClock.set_unixTime(newval:int64):integer;
     var
       rest_val: string;
@@ -495,21 +459,6 @@ implementation
       result := _setAttr('unixTime',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the current time in the form "YYYY/MM/DD hh:mm:ss".
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the current time in the form "YYYY/MM/DD hh:mm:ss"
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DATETIME_INVALID.
-  /// </para>
-  ///-
   function TYRealTimeClock.get_dateTime():string;
     var
       res : string;
@@ -528,21 +477,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the number of seconds between current time and UTC time (time zone).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of seconds between current time and UTC time (time zone)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_UTCOFFSET_INVALID.
-  /// </para>
-  ///-
   function TYRealTimeClock.get_utcOffset():LongInt;
     var
       res : LongInt;
@@ -561,27 +495,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the number of seconds between current time and UTC time (time zone).
-  /// <para>
-  ///   The timezone is automatically rounded to the nearest multiple of 15 minutes.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the number of seconds between current time and UTC time (time zone)
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYRealTimeClock.set_utcOffset(newval:LongInt):integer;
     var
       rest_val: string;
@@ -590,21 +503,6 @@ implementation
       result := _setAttr('utcOffset',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns true if the clock has been set, and false otherwise.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_TIMESET_FALSE or Y_TIMESET_TRUE, according to true if the clock has been set, and false otherwise
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_TIMESET_INVALID.
-  /// </para>
-  ///-
   function TYRealTimeClock.get_timeSet():Integer;
     var
       res : Integer;
@@ -623,55 +521,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YRealTimeClock.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YRealTimeClock</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYRealTimeClock.FindRealTimeClock(func: string):TYRealTimeClock;
     var
       obj : TYRealTimeClock;
@@ -687,24 +536,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYRealTimeClock.registerValueCallback(callback: TYRealTimeClockValueCallback):LongInt;
     var
       val : string;

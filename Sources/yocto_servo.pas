@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_servo.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_servo.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindServo(), the high-level API for Servo functions
  *
@@ -652,21 +652,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the current servo position.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the current servo position
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_POSITION_INVALID.
-  /// </para>
-  ///-
   function TYServo.get_position():LongInt;
     var
       res : LongInt;
@@ -685,26 +670,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes immediately the servo driving position.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to immediately the servo driving position
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYServo.set_position(newval:LongInt):integer;
     var
       rest_val: string;
@@ -713,21 +678,6 @@ implementation
       result := _setAttr('position',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the state of the servos.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the state of the servos
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_ENABLED_INVALID.
-  /// </para>
-  ///-
   function TYServo.get_enabled():Integer;
     var
       res : Integer;
@@ -746,26 +696,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Stops or starts the servo.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_ENABLED_FALSE or Y_ENABLED_TRUE
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYServo.set_enabled(newval:Integer):integer;
     var
       rest_val: string;
@@ -774,21 +704,6 @@ implementation
       result := _setAttr('enabled',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the current range of use of the servo.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the current range of use of the servo
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_RANGE_INVALID.
-  /// </para>
-  ///-
   function TYServo.get_range():LongInt;
     var
       res : LongInt;
@@ -807,32 +722,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the range of use of the servo, specified in per cents.
-  /// <para>
-  ///   A range of 100% corresponds to a standard control signal, that varies
-  ///   from 1 [ms] to 2 [ms], When using a servo that supports a double range,
-  ///   from 0.5 [ms] to 2.5 [ms], you can select a range of 200%.
-  ///   Be aware that using a range higher than what is supported by the servo
-  ///   is likely to damage the servo. Remember to call the matching module
-  ///   saveToFlash() method, otherwise this call will have no effect.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the range of use of the servo, specified in per cents
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYServo.set_range(newval:LongInt):integer;
     var
       rest_val: string;
@@ -841,21 +730,6 @@ implementation
       result := _setAttr('range',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the duration in microseconds of a neutral pulse for the servo.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the duration in microseconds of a neutral pulse for the servo
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_NEUTRAL_INVALID.
-  /// </para>
-  ///-
   function TYServo.get_neutral():LongInt;
     var
       res : LongInt;
@@ -874,31 +748,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the duration of the pulse corresponding to the neutral position of the servo.
-  /// <para>
-  ///   The duration is specified in microseconds, and the standard value is 1500 [us].
-  ///   This setting makes it possible to shift the range of use of the servo.
-  ///   Be aware that using a range higher than what is supported by the servo is
-  ///   likely to damage the servo. Remember to call the matching module
-  ///   saveToFlash() method, otherwise this call will have no effect.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the duration of the pulse corresponding to the neutral position of the servo
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYServo.set_neutral(newval:LongInt):integer;
     var
       rest_val: string;
@@ -964,21 +813,6 @@ implementation
       result := _setAttr('move', rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the servo position at device power up.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the servo position at device power up
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_POSITIONATPOWERON_INVALID.
-  /// </para>
-  ///-
   function TYServo.get_positionAtPowerOn():LongInt;
     var
       res : LongInt;
@@ -997,28 +831,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Configure the servo position at device power up.
-  /// <para>
-  ///   Remember to call the matching
-  ///   module saveToFlash() method, otherwise this call will have no effect.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYServo.set_positionAtPowerOn(newval:LongInt):integer;
     var
       rest_val: string;
@@ -1027,22 +839,6 @@ implementation
       result := _setAttr('positionAtPowerOn',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the servo signal generator state at power up.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE, according to the servo signal generator
-  ///   state at power up
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_ENABLEDATPOWERON_INVALID.
-  /// </para>
-  ///-
   function TYServo.get_enabledAtPowerOn():Integer;
     var
       res : Integer;
@@ -1061,28 +857,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Configure the servo signal generator state at power up.
-  /// <para>
-  ///   Remember to call the matching module saveToFlash()
-  ///   method, otherwise this call will have no effect.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYServo.set_enabledAtPowerOn(newval:Integer):integer;
     var
       rest_val: string;
@@ -1091,55 +865,6 @@ implementation
       result := _setAttr('enabledAtPowerOn',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YServo.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YServo</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYServo.FindServo(func: string):TYServo;
     var
       obj : TYServo;
@@ -1155,24 +880,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYServo.registerValueCallback(callback: TYServoValueCallback):LongInt;
     var
       val : string;

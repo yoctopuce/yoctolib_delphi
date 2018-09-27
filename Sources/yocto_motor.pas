@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_motor.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_motor.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindMotor(), the high-level API for Motor functions
  *
@@ -793,35 +793,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Return the controller state.
-  /// <para>
-  ///   Possible states are:
-  ///   IDLE   when the motor is stopped/in free wheel, ready to start;
-  ///   FORWD  when the controller is driving the motor forward;
-  ///   BACKWD when the controller is driving the motor backward;
-  ///   BRAKE  when the controller is braking;
-  ///   LOVOLT when the controller has detected a low voltage condition;
-  ///   HICURR when the controller has detected an overcurrent condition;
-  ///   HIHEAT when the controller has detected an overheat condition;
-  ///   FAILSF when the controller switched on the failsafe security.
-  /// </para>
-  /// <para>
-  ///   When an error condition occurred (LOVOLT, HICURR, HIHEAT, FAILSF), the controller
-  ///   status must be explicitly reset using the resetStatus function.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_MOTORSTATUS_IDLE, Y_MOTORSTATUS_BRAKE, Y_MOTORSTATUS_FORWD, Y_MOTORSTATUS_BACKWD,
-  ///   Y_MOTORSTATUS_LOVOLT, Y_MOTORSTATUS_HICURR, Y_MOTORSTATUS_HIHEAT and Y_MOTORSTATUS_FAILSF
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_MOTORSTATUS_INVALID.
-  /// </para>
-  ///-
   function TYMotor.get_motorStatus():Integer;
     var
       res : Integer;
@@ -848,31 +819,6 @@ implementation
       result := _setAttr('motorStatus',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Changes immediately the power sent to the motor.
-  /// <para>
-  ///   The value is a percentage between -100%
-  ///   to 100%. If you want go easy on your mechanics and avoid excessive current consumption,
-  ///   try to avoid brutal power changes. For example, immediate transition from forward full power
-  ///   to reverse full power is a very bad idea. Each time the driving power is modified, the
-  ///   braking power is set to zero.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to immediately the power sent to the motor
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMotor.set_drivingForce(newval:double):integer;
     var
       rest_val: string;
@@ -881,21 +827,6 @@ implementation
       result := _setAttr('drivingForce',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the power sent to the motor, as a percentage between -100% and +100%.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the power sent to the motor, as a percentage between -100% and +100%
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DRIVINGFORCE_INVALID.
-  /// </para>
-  ///-
   function TYMotor.get_drivingForce():double;
     var
       res : double;
@@ -914,28 +845,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes immediately the braking force applied to the motor (in percents).
-  /// <para>
-  ///   The value 0 corresponds to no braking (free wheel). When the braking force
-  ///   is changed, the driving power is set to zero. The value is a percentage.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to immediately the braking force applied to the motor (in percents)
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMotor.set_brakingForce(newval:double):integer;
     var
       rest_val: string;
@@ -944,22 +853,6 @@ implementation
       result := _setAttr('brakingForce',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the braking force applied to the motor, as a percentage.
-  /// <para>
-  ///   The value 0 corresponds to no braking (free wheel).
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the braking force applied to the motor, as a percentage
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_BRAKINGFORCE_INVALID.
-  /// </para>
-  ///-
   function TYMotor.get_brakingForce():double;
     var
       res : double;
@@ -978,33 +871,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the threshold voltage under which the controller automatically switches to error state
-  ///   and prevents further current draw.
-  /// <para>
-  ///   This setting prevent damage to a battery that can
-  ///   occur when drawing current from an "empty" battery.
-  ///   Note that whatever the cutoff threshold, the controller switches to undervoltage
-  ///   error state if the power supply goes under 3V, even for a very brief time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the threshold voltage under which the controller
-  ///   automatically switches to error state
-  ///   and prevents further current draw
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMotor.set_cutOffVoltage(newval:double):integer;
     var
       rest_val: string;
@@ -1013,26 +879,6 @@ implementation
       result := _setAttr('cutOffVoltage',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the threshold voltage under which the controller automatically switches to error state
-  ///   and prevents further current draw.
-  /// <para>
-  ///   This setting prevents damage to a battery that can
-  ///   occur when drawing current from an "empty" battery.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the threshold voltage under which the controller
-  ///   automatically switches to error state
-  ///   and prevents further current draw
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CUTOFFVOLTAGE_INVALID.
-  /// </para>
-  ///-
   function TYMotor.get_cutOffVoltage():double;
     var
       res : double;
@@ -1051,24 +897,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the current threshold (in mA) above which the controller automatically
-  ///   switches to error state.
-  /// <para>
-  ///   A zero value means that there is no limit.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the current threshold (in mA) above which the controller automatically
-  ///   switches to error state
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_OVERCURRENTLIMIT_INVALID.
-  /// </para>
-  ///-
   function TYMotor.get_overCurrentLimit():LongInt;
     var
       res : LongInt;
@@ -1087,31 +915,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the current threshold (in mA) above which the controller automatically
-  ///   switches to error state.
-  /// <para>
-  ///   A zero value means that there is no limit. Note that whatever the
-  ///   current limit is, the controller switches to OVERCURRENT status if the current
-  ///   goes above 32A, even for a very brief time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the current threshold (in mA) above which the controller automatically
-  ///   switches to error state
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMotor.set_overCurrentLimit(newval:LongInt):integer;
     var
       rest_val: string;
@@ -1120,30 +923,6 @@ implementation
       result := _setAttr('overCurrentLimit',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Changes the PWM frequency used to control the motor.
-  /// <para>
-  ///   Low frequency is usually
-  ///   more efficient and may help the motor to start, but an audible noise might be
-  ///   generated. A higher frequency reduces the noise, but more energy is converted
-  ///   into heat.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the PWM frequency used to control the motor
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMotor.set_frequency(newval:double):integer;
     var
       rest_val: string;
@@ -1152,21 +931,6 @@ implementation
       result := _setAttr('frequency',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the PWM frequency used to control the motor.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the PWM frequency used to control the motor
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_FREQUENCY_INVALID.
-  /// </para>
-  ///-
   function TYMotor.get_frequency():double;
     var
       res : double;
@@ -1185,23 +949,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the duration (in ms) during which the motor is driven at low frequency to help
-  ///   it start up.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the duration (in ms) during which the motor is driven at low frequency to help
-  ///   it start up
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_STARTERTIME_INVALID.
-  /// </para>
-  ///-
   function TYMotor.get_starterTime():LongInt;
     var
       res : LongInt;
@@ -1220,28 +967,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the duration (in ms) during which the motor is driven at low frequency to help
-  ///   it start up.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the duration (in ms) during which the motor is driven at low frequency to help
-  ///   it start up
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMotor.set_starterTime(newval:LongInt):integer;
     var
       rest_val: string;
@@ -1250,26 +975,6 @@ implementation
       result := _setAttr('starterTime',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the delay in milliseconds allowed for the controller to run autonomously without
-  ///   receiving any instruction from the control process.
-  /// <para>
-  ///   When this delay has elapsed,
-  ///   the controller automatically stops the motor and switches to FAILSAFE error.
-  ///   Failsafe security is disabled when the value is zero.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the delay in milliseconds allowed for the controller to run autonomously without
-  ///   receiving any instruction from the control process
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_FAILSAFETIMEOUT_INVALID.
-  /// </para>
-  ///-
   function TYMotor.get_failSafeTimeout():LongInt;
     var
       res : LongInt;
@@ -1288,31 +993,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the delay in milliseconds allowed for the controller to run autonomously without
-  ///   receiving any instruction from the control process.
-  /// <para>
-  ///   When this delay has elapsed,
-  ///   the controller automatically stops the motor and switches to FAILSAFE error.
-  ///   Failsafe security is disabled when the value is zero.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the delay in milliseconds allowed for the controller to run autonomously without
-  ///   receiving any instruction from the control process
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMotor.set_failSafeTimeout(newval:LongInt):integer;
     var
       rest_val: string;
@@ -1347,55 +1027,6 @@ implementation
       result := _setAttr('command',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YMotor.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YMotor</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYMotor.FindMotor(func: string):TYMotor;
     var
       obj : TYMotor;
@@ -1411,24 +1042,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYMotor.registerValueCallback(callback: TYMotorValueCallback):LongInt;
     var
       val : string;
@@ -1471,17 +1084,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Rearms the controller failsafe timer.
-  /// <para>
-  ///   When the motor is running and the failsafe feature
-  ///   is active, this function should be called periodically to prove that the control process
-  ///   is running properly. Otherwise, the motor is automatically stopped after the specified
-  ///   timeout. Calling a motor <i>set</i> function implicitely rearms the failsafe timer.
-  /// </para>
-  /// </summary>
-  ///-
   function TYMotor.keepALive():LongInt;
     begin
       result := self.set_command('K');
@@ -1489,15 +1091,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Reset the controller state to IDLE.
-  /// <para>
-  ///   This function must be invoked explicitely
-  ///   after any error condition is signaled.
-  /// </para>
-  /// </summary>
-  ///-
   function TYMotor.resetStatus():LongInt;
     begin
       result := self.set_motorStatus(Y_MOTORSTATUS_IDLE);
@@ -1505,25 +1098,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes progressively the power sent to the moteur for a specific duration.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="targetPower">
-  ///   desired motor power, in percents (between -100% and +100%)
-  /// </param>
-  /// <param name="delay">
-  ///   duration (in ms) of the transition
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMotor.drivingForceMove(targetPower: double; delay: LongInt):LongInt;
     begin
       result := self.set_command('P'+inttostr(round(targetPower*10))+','+inttostr(delay));
@@ -1531,25 +1105,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes progressively the braking force applied to the motor for a specific duration.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="targetPower">
-  ///   desired braking force, in percents
-  /// </param>
-  /// <param name="delay">
-  ///   duration (in ms) of the transition
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMotor.brakingForceMove(targetPower: double; delay: LongInt):LongInt;
     begin
       result := self.set_command('B'+inttostr(round(targetPower*10))+','+inttostr(delay));

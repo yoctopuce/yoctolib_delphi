@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_files.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -491,21 +491,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the number of files currently loaded in the filesystem.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of files currently loaded in the filesystem
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_FILESCOUNT_INVALID.
-  /// </para>
-  ///-
   function TYFiles.get_filesCount():LongInt;
     var
       res : LongInt;
@@ -524,21 +509,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the free space for uploading new files to the filesystem, in bytes.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the free space for uploading new files to the filesystem, in bytes
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_FREESPACE_INVALID.
-  /// </para>
-  ///-
   function TYFiles.get_freeSpace():LongInt;
     var
       res : LongInt;
@@ -557,55 +527,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YFiles.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YFiles</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYFiles.FindFiles(func: string):TYFiles;
     var
       obj : TYFiles;
@@ -621,24 +542,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYFiles.registerValueCallback(callback: TYFilesValueCallback):LongInt;
     var
       val : string;
@@ -692,20 +595,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Reinitialize the filesystem to its clean, unfragmented, empty state.
-  /// <para>
-  ///   All files previously uploaded are permanently lost.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYFiles.format_fs():LongInt;
     var
       json : TByteArray;
@@ -724,26 +613,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns a list of YFileRecord objects that describe files currently loaded
-  ///   in the filesystem.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="pattern">
-  ///   an optional filter pattern, using star and question marks
-  ///   as wildcards. When an empty pattern is provided, all file records
-  ///   are returned.
-  /// </param>
-  /// <returns>
-  ///   a list of <c>YFileRecord</c> objects, containing the file path
-  ///   and name, byte size and 32-bit CRC of the file content.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns an empty list.
-  /// </para>
-  ///-
   function TYFiles.get_list(pattern: string):TYFileRecordArray;
     var
       json : TByteArray;
@@ -767,22 +636,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Test if a file exist on the filesystem of the module.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="filename">
-  ///   the file name to test.
-  /// </param>
-  /// <returns>
-  ///   a true if the file existe, false ortherwise.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception.
-  /// </para>
-  ///-
   function TYFiles.fileExist(filename: string):boolean;
     var
       json : TByteArray;
@@ -806,22 +659,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Downloads the requested file and returns a binary buffer with its content.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="pathname">
-  ///   path and name of the file to download
-  /// </param>
-  /// <returns>
-  ///   a binary buffer with the file content
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns an empty content.
-  /// </para>
-  ///-
   function TYFiles.download(pathname: string):TByteArray;
     begin
       result := self._download(pathname);
@@ -829,26 +666,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Uploads a file to the filesystem, to the specified full path name.
-  /// <para>
-  ///   If a file already exists with the same path name, its content is overwritten.
-  /// </para>
-  /// </summary>
-  /// <param name="pathname">
-  ///   path and name of the new file to create
-  /// </param>
-  /// <param name="content">
-  ///   binary buffer with the content to set
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYFiles.upload(pathname: string; content: TByteArray):LongInt;
     begin
       result := self._upload(pathname, content);
@@ -856,27 +673,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Deletes a file, given by its full path name, from the filesystem.
-  /// <para>
-  ///   Because of filesystem fragmentation, deleting a file may not always
-  ///   free up the whole space used by the file. However, rewriting a file
-  ///   with the same path name will always reuse any space not freed previously.
-  ///   If you need to ensure that no space is taken by previously deleted files,
-  ///   you can use <c>format_fs</c> to fully reinitialize the filesystem.
-  /// </para>
-  /// </summary>
-  /// <param name="pathname">
-  ///   path and name of the file to remove.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYFiles.remove(pathname: string):LongInt;
     var
       json : TByteArray;

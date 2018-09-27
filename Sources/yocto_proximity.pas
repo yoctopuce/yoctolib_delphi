@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_proximity.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_proximity.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindProximity(), the high-level API for Proximity functions
  *
@@ -758,21 +758,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the current value of signal measured by the proximity sensor.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the current value of signal measured by the proximity sensor
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_SIGNALVALUE_INVALID.
-  /// </para>
-  ///-
   function TYProximity.get_signalValue():double;
     var
       res : double;
@@ -791,24 +776,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the threshold used to determine the logical state of the proximity sensor, when considered
-  ///   as a binary input (on/off).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the threshold used to determine the logical state of the proximity
-  ///   sensor, when considered
-  ///   as a binary input (on/off)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DETECTIONTHRESHOLD_INVALID.
-  /// </para>
-  ///-
   function TYProximity.get_detectionThreshold():LongInt;
     var
       res : LongInt;
@@ -827,29 +794,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the threshold used to determine the logical state of the proximity sensor, when considered
-  ///   as a binary input (on/off).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the threshold used to determine the logical state of the proximity
-  ///   sensor, when considered
-  ///   as a binary input (on/off)
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYProximity.set_detectionThreshold(newval:LongInt):integer;
     var
       rest_val: string;
@@ -858,24 +802,6 @@ implementation
       result := _setAttr('detectionThreshold',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the hysteresis used to determine the logical state of the proximity sensor, when considered
-  ///   as a binary input (on/off).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the hysteresis used to determine the logical state of the proximity
-  ///   sensor, when considered
-  ///   as a binary input (on/off)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DETECTIONHYSTERESIS_INVALID.
-  /// </para>
-  ///-
   function TYProximity.get_detectionHysteresis():LongInt;
     var
       res : LongInt;
@@ -894,29 +820,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the hysteresis used to determine the logical state of the proximity sensor, when considered
-  ///   as a binary input (on/off).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the hysteresis used to determine the logical state of the proximity
-  ///   sensor, when considered
-  ///   as a binary input (on/off)
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYProximity.set_detectionHysteresis(newval:LongInt):integer;
     var
       rest_val: string;
@@ -925,23 +828,6 @@ implementation
       result := _setAttr('detectionHysteresis',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the minimal detection duration before signaling a presence event.
-  /// <para>
-  ///   Any shorter detection is
-  ///   considered as noise or bounce (false positive) and filtered out.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the minimal detection duration before signaling a presence event
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PRESENCEMINTIME_INVALID.
-  /// </para>
-  ///-
   function TYProximity.get_presenceMinTime():LongInt;
     var
       res : LongInt;
@@ -960,28 +846,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the minimal detection duration before signaling a presence event.
-  /// <para>
-  ///   Any shorter detection is
-  ///   considered as noise or bounce (false positive) and filtered out.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the minimal detection duration before signaling a presence event
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYProximity.set_presenceMinTime(newval:LongInt):integer;
     var
       rest_val: string;
@@ -990,23 +854,6 @@ implementation
       result := _setAttr('presenceMinTime',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the minimal detection duration before signaling a removal event.
-  /// <para>
-  ///   Any shorter detection is
-  ///   considered as noise or bounce (false positive) and filtered out.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the minimal detection duration before signaling a removal event
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_REMOVALMINTIME_INVALID.
-  /// </para>
-  ///-
   function TYProximity.get_removalMinTime():LongInt;
     var
       res : LongInt;
@@ -1025,28 +872,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the minimal detection duration before signaling a removal event.
-  /// <para>
-  ///   Any shorter detection is
-  ///   considered as noise or bounce (false positive) and filtered out.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the minimal detection duration before signaling a removal event
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYProximity.set_removalMinTime(newval:LongInt):integer;
     var
       rest_val: string;
@@ -1055,22 +880,6 @@ implementation
       result := _setAttr('removalMinTime',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns true if the input (considered as binary) is active (detection value is smaller than the specified threshold), and false otherwise.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_ISPRESENT_FALSE or Y_ISPRESENT_TRUE, according to true if the input (considered as binary)
-  ///   is active (detection value is smaller than the specified threshold), and false otherwise
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_ISPRESENT_INVALID.
-  /// </para>
-  ///-
   function TYProximity.get_isPresent():Integer;
     var
       res : Integer;
@@ -1089,23 +898,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the number of elapsed milliseconds between the module power on and the last observed
-  ///   detection (the input contact transitioned from absent to present).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of elapsed milliseconds between the module power on and the last observed
-  ///   detection (the input contact transitioned from absent to present)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LASTTIMEAPPROACHED_INVALID.
-  /// </para>
-  ///-
   function TYProximity.get_lastTimeApproached():int64;
     var
       res : int64;
@@ -1124,23 +916,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the number of elapsed milliseconds between the module power on and the last observed
-  ///   detection (the input contact transitioned from present to absent).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of elapsed milliseconds between the module power on and the last observed
-  ///   detection (the input contact transitioned from present to absent)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LASTTIMEREMOVED_INVALID.
-  /// </para>
-  ///-
   function TYProximity.get_lastTimeRemoved():int64;
     var
       res : int64;
@@ -1159,24 +934,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the pulse counter value.
-  /// <para>
-  ///   The value is a 32 bit integer. In case
-  ///   of overflow (>=2^32), the counter will wrap. To reset the counter, just
-  ///   call the resetCounter() method.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the pulse counter value
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PULSECOUNTER_INVALID.
-  /// </para>
-  ///-
   function TYProximity.get_pulseCounter():int64;
     var
       res : int64;
@@ -1203,21 +960,6 @@ implementation
       result := _setAttr('pulseCounter',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the timer of the pulse counter (ms).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the timer of the pulse counter (ms)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PULSETIMER_INVALID.
-  /// </para>
-  ///-
   function TYProximity.get_pulseTimer():int64;
     var
       res : int64;
@@ -1236,23 +978,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the parameter (sensor value, presence or pulse count) returned by the get_currentValue function and callbacks.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_PROXIMITYREPORTMODE_NUMERIC, Y_PROXIMITYREPORTMODE_PRESENCE and
-  ///   Y_PROXIMITYREPORTMODE_PULSECOUNT corresponding to the parameter (sensor value, presence or pulse
-  ///   count) returned by the get_currentValue function and callbacks
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PROXIMITYREPORTMODE_INVALID.
-  /// </para>
-  ///-
   function TYProximity.get_proximityReportMode():Integer;
     var
       res : Integer;
@@ -1271,30 +996,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the  parameter  type (sensor value, presence or pulse count) returned by the get_currentValue function and callbacks.
-  /// <para>
-  ///   The edge count value is limited to the 6 lowest digits. For values greater than one million, use
-  ///   get_pulseCounter().
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a value among Y_PROXIMITYREPORTMODE_NUMERIC, Y_PROXIMITYREPORTMODE_PRESENCE and
-  ///   Y_PROXIMITYREPORTMODE_PULSECOUNT corresponding to the  parameter  type (sensor value, presence or
-  ///   pulse count) returned by the get_currentValue function and callbacks
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYProximity.set_proximityReportMode(newval:Integer):integer;
     var
       rest_val: string;
@@ -1303,55 +1004,6 @@ implementation
       result := _setAttr('proximityReportMode',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YProximity.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YProximity</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYProximity.FindProximity(func: string):TYProximity;
     var
       obj : TYProximity;
@@ -1367,24 +1019,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYProximity.registerValueCallback(callback: TYProximityValueCallback):LongInt;
     var
       val : string;
@@ -1427,24 +1061,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every periodic timed notification.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and an YMeasure object describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYProximity.registerTimedReportCallback(callback: TYProximityTimedReportCallback):LongInt;
     var
       sensor : TYSensor;
@@ -1479,19 +1095,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Resets the pulse counter value as well as its timer.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYProximity.resetCounter():LongInt;
     begin
       result := self.set_pulseCounter(0);

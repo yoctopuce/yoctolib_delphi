@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_serialport.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -1519,21 +1519,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the total number of bytes received since last reset.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the total number of bytes received since last reset
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_RXCOUNT_INVALID.
-  /// </para>
-  ///-
   function TYSerialPort.get_rxCount():LongInt;
     var
       res : LongInt;
@@ -1552,21 +1537,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the total number of bytes transmitted since last reset.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the total number of bytes transmitted since last reset
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_TXCOUNT_INVALID.
-  /// </para>
-  ///-
   function TYSerialPort.get_txCount():LongInt;
     var
       res : LongInt;
@@ -1585,21 +1555,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the total number of communication errors detected since last reset.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the total number of communication errors detected since last reset
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_ERRCOUNT_INVALID.
-  /// </para>
-  ///-
   function TYSerialPort.get_errCount():LongInt;
     var
       res : LongInt;
@@ -1618,21 +1573,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the total number of messages received since last reset.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the total number of messages received since last reset
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_RXMSGCOUNT_INVALID.
-  /// </para>
-  ///-
   function TYSerialPort.get_rxMsgCount():LongInt;
     var
       res : LongInt;
@@ -1651,21 +1591,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the total number of messages send since last reset.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the total number of messages send since last reset
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_TXMSGCOUNT_INVALID.
-  /// </para>
-  ///-
   function TYSerialPort.get_txMsgCount():LongInt;
     var
       res : LongInt;
@@ -1684,21 +1609,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the latest message fully received (for Line, Frame and Modbus protocols).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the latest message fully received (for Line, Frame and Modbus protocols)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LASTMSG_INVALID.
-  /// </para>
-  ///-
   function TYSerialPort.get_lastMsg():string;
     var
       res : string;
@@ -1717,21 +1627,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the name of the job file currently in use.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the name of the job file currently in use
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CURRENTJOB_INVALID.
-  /// </para>
-  ///-
   function TYSerialPort.get_currentJob():string;
     var
       res : string;
@@ -1750,28 +1645,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the job to use when the device is powered on.
-  /// <para>
-  ///   Remember to call the saveToFlash() method of the module if the
-  ///   modification must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the job to use when the device is powered on
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.set_currentJob(newval:string):integer;
     var
       rest_val: string;
@@ -1780,21 +1653,6 @@ implementation
       result := _setAttr('currentJob',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the job file to use when the device is powered on.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the job file to use when the device is powered on
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_STARTUPJOB_INVALID.
-  /// </para>
-  ///-
   function TYSerialPort.get_startupJob():string;
     var
       res : string;
@@ -1813,28 +1671,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the job to use when the device is powered on.
-  /// <para>
-  ///   Remember to call the saveToFlash() method of the module if the
-  ///   modification must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the job to use when the device is powered on
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.set_startupJob(newval:string):integer;
     var
       rest_val: string;
@@ -1869,23 +1705,6 @@ implementation
       result := _setAttr('command',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the voltage level used on the serial line.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
-  ///   Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232 and Y_VOLTAGELEVEL_RS485
-  ///   corresponding to the voltage level used on the serial line
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_VOLTAGELEVEL_INVALID.
-  /// </para>
-  ///-
   function TYSerialPort.get_voltageLevel():Integer;
     var
       res : Integer;
@@ -1904,33 +1723,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the voltage type used on the serial line.
-  /// <para>
-  ///   Valid
-  ///   values  will depend on the Yoctopuce device model featuring
-  ///   the serial port feature.  Check your device documentation
-  ///   to find out which values are valid for that specific model.
-  ///   Trying to set an invalid value will have no effect.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a value among Y_VOLTAGELEVEL_OFF, Y_VOLTAGELEVEL_TTL3V, Y_VOLTAGELEVEL_TTL3VR,
-  ///   Y_VOLTAGELEVEL_TTL5V, Y_VOLTAGELEVEL_TTL5VR, Y_VOLTAGELEVEL_RS232 and Y_VOLTAGELEVEL_RS485
-  ///   corresponding to the voltage type used on the serial line
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.set_voltageLevel(newval:Integer):integer;
     var
       rest_val: string;
@@ -1939,29 +1731,6 @@ implementation
       result := _setAttr('voltageLevel',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the type of protocol used over the serial line, as a string.
-  /// <para>
-  ///   Possible values are "Line" for ASCII messages separated by CR and/or LF,
-  ///   "Frame:[timeout]ms" for binary messages separated by a delay time,
-  ///   "Modbus-ASCII" for MODBUS messages in ASCII mode,
-  ///   "Modbus-RTU" for MODBUS messages in RTU mode,
-  ///   "Wiegand-ASCII" for Wiegand messages in ASCII mode,
-  ///   "Wiegand-26","Wiegand-34", etc for Wiegand messages in byte mode,
-  ///   "Char" for a continuous ASCII stream or
-  ///   "Byte" for a continuous binary stream.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the type of protocol used over the serial line, as a string
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PROTOCOL_INVALID.
-  /// </para>
-  ///-
   function TYSerialPort.get_protocol():string;
     var
       res : string;
@@ -1980,36 +1749,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the type of protocol used over the serial line.
-  /// <para>
-  ///   Possible values are "Line" for ASCII messages separated by CR and/or LF,
-  ///   "Frame:[timeout]ms" for binary messages separated by a delay time,
-  ///   "Modbus-ASCII" for MODBUS messages in ASCII mode,
-  ///   "Modbus-RTU" for MODBUS messages in RTU mode,
-  ///   "Wiegand-ASCII" for Wiegand messages in ASCII mode,
-  ///   "Wiegand-26","Wiegand-34", etc for Wiegand messages in byte mode,
-  ///   "Char" for a continuous ASCII stream or
-  ///   "Byte" for a continuous binary stream.
-  ///   The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
-  ///   is always at lest the specified number of milliseconds between each bytes sent.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the type of protocol used over the serial line
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.set_protocol(newval:string):integer;
     var
       rest_val: string;
@@ -2018,28 +1757,6 @@ implementation
       result := _setAttr('protocol',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the serial port communication parameters, as a string such as
-  ///   "9600,8N1".
-  /// <para>
-  ///   The string includes the baud rate, the number of data bits,
-  ///   the parity, and the number of stop bits. An optional suffix is included
-  ///   if flow control is active: "CtsRts" for hardware handshake, "XOnXOff"
-  ///   for logical flow control and "Simplex" for acquiring a shared bus using
-  ///   the RTS line (as used by some RS485 adapters for instance).
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the serial port communication parameters, as a string such as
-  ///   "9600,8N1"
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_SERIALMODE_INVALID.
-  /// </para>
-  ///-
   function TYSerialPort.get_serialMode():string;
     var
       res : string;
@@ -2058,33 +1775,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the serial port communication parameters, with a string such as
-  ///   "9600,8N1".
-  /// <para>
-  ///   The string includes the baud rate, the number of data bits,
-  ///   the parity, and the number of stop bits. An optional suffix can be added
-  ///   to enable flow control: "CtsRts" for hardware handshake, "XOnXOff"
-  ///   for logical flow control and "Simplex" for acquiring a shared bus using
-  ///   the RTS line (as used by some RS485 adapters for instance).
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the serial port communication parameters, with a string such as
-  ///   "9600,8N1"
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.set_serialMode(newval:string):integer;
     var
       rest_val: string;
@@ -2093,55 +1783,6 @@ implementation
       result := _setAttr('serialMode',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YSerialPort.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YSerialPort</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYSerialPort.FindSerialPort(func: string):TYSerialPort;
     var
       obj : TYSerialPort;
@@ -2157,24 +1798,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYSerialPort.registerValueCallback(callback: TYSerialPortValueCallback):LongInt;
     var
       val : string;
@@ -2224,21 +1847,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Clears the serial port buffer and resets counters to zero.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.reset():LongInt;
     begin
       self._rxptr := 0;
@@ -2250,22 +1858,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sends a single byte to the serial port.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="code">
-  ///   the byte to send
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.writeByte(code: LongInt):LongInt;
     begin
       result := self.sendCommand('$'+AnsiUpperCase(inttohex(code,02)));
@@ -2273,22 +1865,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sends an ASCII string to the serial port, as is.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="text">
-  ///   the text string to send
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.writeStr(text: string):LongInt;
     var
       buff : TByteArray;
@@ -2327,22 +1903,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sends a binary buffer to the serial port, as is.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="buff">
-  ///   the binary buffer to send
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.writeBin(buff: TByteArray):LongInt;
     begin
       result := self._upload('txdata', buff);
@@ -2350,22 +1910,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sends a byte sequence (provided as a list of bytes) to the serial port.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="byteList">
-  ///   a list of byte codes
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.writeArray(byteList: TLongIntArray):LongInt;
     var
       buff : TByteArray;
@@ -2390,22 +1934,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sends a byte sequence (provided as a hexadecimal string) to the serial port.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="hexString">
-  ///   a string of hexadecimal byte codes
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.writeHex(hexString: string):LongInt;
     var
       buff : TByteArray;
@@ -2436,22 +1964,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sends an ASCII string to the serial port, followed by a line break (CR LF).
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="text">
-  ///   the text string to send
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.writeLine(text: string):LongInt;
     var
       buff : TByteArray;
@@ -2490,21 +2002,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Reads one byte from the receive buffer, starting at current stream position.
-  /// <para>
-  ///   If data at current stream position is not available anymore in the receive buffer,
-  ///   or if there is no data available yet, the function returns YAPI_NO_MORE_DATA.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   the next byte
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.readByte():LongInt;
     var
       currpos : LongInt;
@@ -2576,24 +2073,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Reads data from the receive buffer as a string, starting at current stream position.
-  /// <para>
-  ///   If data at current stream position is not available anymore in the receive buffer, the
-  ///   function performs a short read.
-  /// </para>
-  /// </summary>
-  /// <param name="nChars">
-  ///   the maximum number of characters to read
-  /// </param>
-  /// <returns>
-  ///   a string with receive buffer contents
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.readStr(nChars: LongInt):string;
     var
       buff : TByteArray;
@@ -2624,24 +2103,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Reads data from the receive buffer as a binary buffer, starting at current stream position.
-  /// <para>
-  ///   If data at current stream position is not available anymore in the receive buffer, the
-  ///   function performs a short read.
-  /// </para>
-  /// </summary>
-  /// <param name="nChars">
-  ///   the maximum number of bytes to read
-  /// </param>
-  /// <returns>
-  ///   a binary object with receive buffer contents
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.readBin(nChars: LongInt):TByteArray;
     var
       buff : TByteArray;
@@ -2679,24 +2140,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Reads data from the receive buffer as a list of bytes, starting at current stream position.
-  /// <para>
-  ///   If data at current stream position is not available anymore in the receive buffer, the
-  ///   function performs a short read.
-  /// </para>
-  /// </summary>
-  /// <param name="nChars">
-  ///   the maximum number of bytes to read
-  /// </param>
-  /// <returns>
-  ///   a sequence of bytes with receive buffer contents
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.readArray(nChars: LongInt):TLongIntArray;
     var
       buff : TByteArray;
@@ -2740,24 +2183,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Reads data from the receive buffer as a hexadecimal string, starting at current stream position.
-  /// <para>
-  ///   If data at current stream position is not available anymore in the receive buffer, the
-  ///   function performs a short read.
-  /// </para>
-  /// </summary>
-  /// <param name="nBytes">
-  ///   the maximum number of bytes to read
-  /// </param>
-  /// <returns>
-  ///   a string with receive buffer contents, encoded in hexadecimal
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.readHex(nBytes: LongInt):string;
     var
       buff : TByteArray;
@@ -2800,26 +2225,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Reads a single line (or message) from the receive buffer, starting at current stream position.
-  /// <para>
-  ///   This function is intended to be used when the serial port is configured for a message protocol,
-  ///   such as 'Line' mode or frame protocols.
-  /// </para>
-  /// <para>
-  ///   If data at current stream position is not available anymore in the receive buffer,
-  ///   the function returns the oldest available line and moves the stream position just after.
-  ///   If no new full line is received, the function returns an empty line.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string with a single line of text
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.readLine():string;
     var
       url : string;
@@ -2853,38 +2258,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Searches for incoming messages in the serial port receive buffer matching a given pattern,
-  ///   starting at current position.
-  /// <para>
-  ///   This function will only compare and return printable characters
-  ///   in the message strings. Binary protocols are handled as hexadecimal strings.
-  /// </para>
-  /// <para>
-  ///   The search returns all messages matching the expression provided as argument in the buffer.
-  ///   If no matching message is found, the search waits for one up to the specified maximum timeout
-  ///   (in milliseconds).
-  /// </para>
-  /// </summary>
-  /// <param name="pattern">
-  ///   a limited regular expression describing the expected message format,
-  ///   or an empty string if all messages should be returned (no filtering).
-  ///   When using binary protocols, the format applies to the hexadecimal
-  ///   representation of the message.
-  /// </param>
-  /// <param name="maxWait">
-  ///   the maximum number of milliseconds to wait for a message if none is found
-  ///   in the receive buffer.
-  /// </param>
-  /// <returns>
-  ///   an array of strings containing the messages found, if any.
-  ///   Binary messages are converted to hexadecimal representation.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns an empty array.
-  /// </para>
-  ///-
   function TYSerialPort.readMessages(pattern: string; maxWait: LongInt):TStringArray;
     var
       url : string;
@@ -2925,22 +2298,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the current internal stream position to the specified value.
-  /// <para>
-  ///   This function
-  ///   does not affect the device, it only changes the value stored in the API object
-  ///   for the next read operations.
-  /// </para>
-  /// </summary>
-  /// <param name="absPos">
-  ///   the absolute position index for next read operations.
-  /// </param>
-  /// <returns>
-  ///   nothing.
-  /// </returns>
-  ///-
   function TYSerialPort.read_seek(absPos: LongInt):LongInt;
     begin
       self._rxptr := absPos;
@@ -2949,16 +2306,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the current absolute stream position pointer of the API object.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   the absolute position index for next read operations.
-  /// </returns>
-  ///-
   function TYSerialPort.read_tell():LongInt;
     begin
       result := self._rxptr;
@@ -2966,17 +2313,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the number of bytes available to read in the input buffer starting from the
-  ///   current absolute stream position pointer of the API object.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   the number of bytes available to read
-  /// </returns>
-  ///-
   function TYSerialPort.read_avail():LongInt;
     var
       buff : TByteArray;
@@ -2995,27 +2331,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sends a text line query to the serial port, and reads the reply, if any.
-  /// <para>
-  ///   This function is intended to be used when the serial port is configured for 'Line' protocol.
-  /// </para>
-  /// </summary>
-  /// <param name="query">
-  ///   the line query to send (without CR/LF)
-  /// </param>
-  /// <param name="maxWait">
-  ///   the maximum number of milliseconds to wait for a reply.
-  /// </param>
-  /// <returns>
-  ///   the next text line received after sending the text query, as a string.
-  ///   Additional lines can be obtained by calling readLine or readMessages.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns an empty array.
-  /// </para>
-  ///-
   function TYSerialPort.queryLine(query: string; maxWait: LongInt):string;
     var
       url : string;
@@ -3049,26 +2364,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Saves the job definition string (JSON data) into a job file.
-  /// <para>
-  ///   The job file can be later enabled using <c>selectJob()</c>.
-  /// </para>
-  /// </summary>
-  /// <param name="jobfile">
-  ///   name of the job file to save on the device filesystem
-  /// </param>
-  /// <param name="jsonDef">
-  ///   a string containing a JSON definition of the job
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.uploadJob(jobfile: string; jsonDef: string):LongInt;
     begin
       self._upload(jobfile, _StrToByte(jsonDef));
@@ -3077,27 +2372,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Load and start processing the specified job file.
-  /// <para>
-  ///   The file must have
-  ///   been previously created using the user interface or uploaded on the
-  ///   device filesystem using the <c>uploadJob()</c> function.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="jobfile">
-  ///   name of the job file (on the device filesystem)
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.selectJob(jobfile: string):LongInt;
     begin
       result := self.set_currentJob(jobfile);
@@ -3105,26 +2379,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Manually sets the state of the RTS line.
-  /// <para>
-  ///   This function has no effect when
-  ///   hardware handshake is enabled, as the RTS line is driven automatically.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="val">
-  ///   1 to turn RTS on, 0 to turn RTS off
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.set_RTS(val: LongInt):LongInt;
     begin
       result := self.sendCommand('R'+inttostr(val));
@@ -3132,23 +2386,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Reads the level of the CTS line.
-  /// <para>
-  ///   The CTS line is usually driven by
-  ///   the RTS signal of the connected serial device.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   1 if the CTS line is high, 0 if the CTS line is low.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.get_CTS():LongInt;
     var
       buff : TByteArray;
@@ -3167,30 +2404,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Retrieves messages (both direction) in the serial port buffer, starting at current position.
-  /// <para>
-  ///   This function will only compare and return printable characters in the message strings.
-  ///   Binary protocols are handled as hexadecimal strings.
-  /// </para>
-  /// <para>
-  ///   If no message is found, the search waits for one up to the specified maximum timeout
-  ///   (in milliseconds).
-  /// </para>
-  /// </summary>
-  /// <param name="maxWait">
-  ///   the maximum number of milliseconds to wait for a message if none is found
-  ///   in the receive buffer.
-  /// </param>
-  /// <returns>
-  ///   an array of YSnoopingRecord objects containing the messages found, if any.
-  ///   Binary messages are converted to hexadecimal representation.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns an empty array.
-  /// </para>
-  ///-
   function TYSerialPort.snoopMessages(maxWait: LongInt):TYSnoopingRecordArray;
     var
       url : string;
@@ -3230,24 +2443,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sends a MODBUS message (provided as a hexadecimal string) to the serial port.
-  /// <para>
-  ///   The message must start with the slave address. The MODBUS CRC/LRC is
-  ///   automatically added by the function. This function does not wait for a reply.
-  /// </para>
-  /// </summary>
-  /// <param name="hexString">
-  ///   a hexadecimal message string, including device address but no CRC/LRC
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYSerialPort.writeMODBUS(hexString: string):LongInt;
     begin
       result := self.sendCommand(':'+hexString);
@@ -3255,28 +2450,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sends a message to a specified MODBUS slave connected to the serial port, and reads the
-  ///   reply, if any.
-  /// <para>
-  ///   The message is the PDU, provided as a vector of bytes.
-  /// </para>
-  /// </summary>
-  /// <param name="slaveNo">
-  ///   the address of the slave MODBUS device to query
-  /// </param>
-  /// <param name="pduBytes">
-  ///   the message to send (PDU), as a vector of bytes. The first byte of the
-  ///   PDU is the MODBUS function code.
-  /// </param>
-  /// <returns>
-  ///   the received reply, as a vector of bytes.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns an empty array (or a MODBUS error reply).
-  /// </para>
-  ///-
   function TYSerialPort.queryMODBUS(slaveNo: LongInt; pduBytes: TLongIntArray):TLongIntArray;
     var
       funCode : LongInt;
@@ -3363,29 +2536,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Reads one or more contiguous internal bits (or coil status) from a MODBUS serial device.
-  /// <para>
-  ///   This method uses the MODBUS function code 0x01 (Read Coils).
-  /// </para>
-  /// </summary>
-  /// <param name="slaveNo">
-  ///   the address of the slave MODBUS device to query
-  /// </param>
-  /// <param name="pduAddr">
-  ///   the relative address of the first bit/coil to read (zero-based)
-  /// </param>
-  /// <param name="nBits">
-  ///   the number of bits/coils to read
-  /// </param>
-  /// <returns>
-  ///   a vector of integers, each corresponding to one bit.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns an empty array.
-  /// </para>
-  ///-
   function TYSerialPort.modbusReadBits(slaveNo: LongInt; pduAddr: LongInt; nBits: LongInt):TLongIntArray;
     var
       pdu : TLongIntArray;
@@ -3459,29 +2609,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Reads one or more contiguous input bits (or discrete inputs) from a MODBUS serial device.
-  /// <para>
-  ///   This method uses the MODBUS function code 0x02 (Read Discrete Inputs).
-  /// </para>
-  /// </summary>
-  /// <param name="slaveNo">
-  ///   the address of the slave MODBUS device to query
-  /// </param>
-  /// <param name="pduAddr">
-  ///   the relative address of the first bit/input to read (zero-based)
-  /// </param>
-  /// <param name="nBits">
-  ///   the number of bits/inputs to read
-  /// </param>
-  /// <returns>
-  ///   a vector of integers, each corresponding to one bit.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns an empty array.
-  /// </para>
-  ///-
   function TYSerialPort.modbusReadInputBits(slaveNo: LongInt; pduAddr: LongInt; nBits: LongInt):TLongIntArray;
     var
       pdu : TLongIntArray;
@@ -3555,29 +2682,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Reads one or more contiguous internal registers (holding registers) from a MODBUS serial device.
-  /// <para>
-  ///   This method uses the MODBUS function code 0x03 (Read Holding Registers).
-  /// </para>
-  /// </summary>
-  /// <param name="slaveNo">
-  ///   the address of the slave MODBUS device to query
-  /// </param>
-  /// <param name="pduAddr">
-  ///   the relative address of the first holding register to read (zero-based)
-  /// </param>
-  /// <param name="nWords">
-  ///   the number of holding registers to read
-  /// </param>
-  /// <returns>
-  ///   a vector of integers, each corresponding to one 16-bit register value.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns an empty array.
-  /// </para>
-  ///-
   function TYSerialPort.modbusReadRegisters(slaveNo: LongInt; pduAddr: LongInt; nWords: LongInt):TLongIntArray;
     var
       pdu : TLongIntArray;
@@ -3634,29 +2738,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Reads one or more contiguous input registers (read-only registers) from a MODBUS serial device.
-  /// <para>
-  ///   This method uses the MODBUS function code 0x04 (Read Input Registers).
-  /// </para>
-  /// </summary>
-  /// <param name="slaveNo">
-  ///   the address of the slave MODBUS device to query
-  /// </param>
-  /// <param name="pduAddr">
-  ///   the relative address of the first input register to read (zero-based)
-  /// </param>
-  /// <param name="nWords">
-  ///   the number of input registers to read
-  /// </param>
-  /// <returns>
-  ///   a vector of integers, each corresponding to one 16-bit input value.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns an empty array.
-  /// </para>
-  ///-
   function TYSerialPort.modbusReadInputRegisters(slaveNo: LongInt; pduAddr: LongInt; nWords: LongInt):TLongIntArray;
     var
       pdu : TLongIntArray;
@@ -3713,29 +2794,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sets a single internal bit (or coil) on a MODBUS serial device.
-  /// <para>
-  ///   This method uses the MODBUS function code 0x05 (Write Single Coil).
-  /// </para>
-  /// </summary>
-  /// <param name="slaveNo">
-  ///   the address of the slave MODBUS device to drive
-  /// </param>
-  /// <param name="pduAddr">
-  ///   the relative address of the bit/coil to set (zero-based)
-  /// </param>
-  /// <param name="value">
-  ///   the value to set (0 for OFF state, non-zero for ON state)
-  /// </param>
-  /// <returns>
-  ///   the number of bits/coils affected on the device (1)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns zero.
-  /// </para>
-  ///-
   function TYSerialPort.modbusWriteBit(slaveNo: LongInt; pduAddr: LongInt; value: LongInt):LongInt;
     var
       pdu : TLongIntArray;
@@ -3779,29 +2837,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sets several contiguous internal bits (or coils) on a MODBUS serial device.
-  /// <para>
-  ///   This method uses the MODBUS function code 0x0f (Write Multiple Coils).
-  /// </para>
-  /// </summary>
-  /// <param name="slaveNo">
-  ///   the address of the slave MODBUS device to drive
-  /// </param>
-  /// <param name="pduAddr">
-  ///   the relative address of the first bit/coil to set (zero-based)
-  /// </param>
-  /// <param name="bits">
-  ///   the vector of bits to be set (one integer per bit)
-  /// </param>
-  /// <returns>
-  ///   the number of bits/coils affected on the device
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns zero.
-  /// </para>
-  ///-
   function TYSerialPort.modbusWriteBits(slaveNo: LongInt; pduAddr: LongInt; bits: TLongIntArray):LongInt;
     var
       nBits : LongInt;
@@ -3878,29 +2913,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sets a single internal register (or holding register) on a MODBUS serial device.
-  /// <para>
-  ///   This method uses the MODBUS function code 0x06 (Write Single Register).
-  /// </para>
-  /// </summary>
-  /// <param name="slaveNo">
-  ///   the address of the slave MODBUS device to drive
-  /// </param>
-  /// <param name="pduAddr">
-  ///   the relative address of the register to set (zero-based)
-  /// </param>
-  /// <param name="value">
-  ///   the 16 bit value to set
-  /// </param>
-  /// <returns>
-  ///   the number of registers affected on the device (1)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns zero.
-  /// </para>
-  ///-
   function TYSerialPort.modbusWriteRegister(slaveNo: LongInt; pduAddr: LongInt; value: LongInt):LongInt;
     var
       pdu : TLongIntArray;
@@ -3940,29 +2952,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sets several contiguous internal registers (or holding registers) on a MODBUS serial device.
-  /// <para>
-  ///   This method uses the MODBUS function code 0x10 (Write Multiple Registers).
-  /// </para>
-  /// </summary>
-  /// <param name="slaveNo">
-  ///   the address of the slave MODBUS device to drive
-  /// </param>
-  /// <param name="pduAddr">
-  ///   the relative address of the first internal register to set (zero-based)
-  /// </param>
-  /// <param name="values">
-  ///   the vector of 16 bit values to set
-  /// </param>
-  /// <returns>
-  ///   the number of registers affected on the device
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns zero.
-  /// </para>
-  ///-
   function TYSerialPort.modbusWriteRegisters(slaveNo: LongInt; pduAddr: LongInt; values: TLongIntArray):LongInt;
     var
       nWords : LongInt;
@@ -4021,36 +3010,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sets several contiguous internal registers (holding registers) on a MODBUS serial device,
-  ///   then performs a contiguous read of a set of (possibly different) internal registers.
-  /// <para>
-  ///   This method uses the MODBUS function code 0x17 (Read/Write Multiple Registers).
-  /// </para>
-  /// </summary>
-  /// <param name="slaveNo">
-  ///   the address of the slave MODBUS device to drive
-  /// </param>
-  /// <param name="pduWriteAddr">
-  ///   the relative address of the first internal register to set (zero-based)
-  /// </param>
-  /// <param name="values">
-  ///   the vector of 16 bit values to set
-  /// </param>
-  /// <param name="pduReadAddr">
-  ///   the relative address of the first internal register to read (zero-based)
-  /// </param>
-  /// <param name="nReadWords">
-  ///   the number of 16 bit values to read
-  /// </param>
-  /// <returns>
-  ///   a vector of integers, each corresponding to one 16-bit register value read.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns an empty array.
-  /// </para>
-  ///-
   function TYSerialPort.modbusWriteAndReadRegisters(slaveNo: LongInt; pduWriteAddr: LongInt; values: TLongIntArray; pduReadAddr: LongInt; nReadWords: LongInt):TLongIntArray;
     var
       nWriteWords : LongInt;

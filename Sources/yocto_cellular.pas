@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_cellular.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -1092,21 +1092,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the link quality, expressed in percent.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the link quality, expressed in percent
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LINKQUALITY_INVALID.
-  /// </para>
-  ///-
   function TYCellular.get_linkQuality():LongInt;
     var
       res : LongInt;
@@ -1125,21 +1110,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the name of the cell operator currently in use.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the name of the cell operator currently in use
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CELLOPERATOR_INVALID.
-  /// </para>
-  ///-
   function TYCellular.get_cellOperator():string;
     var
       res : string;
@@ -1158,21 +1128,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the unique identifier of the cellular antenna in use: MCC, MNC, LAC and Cell ID.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the unique identifier of the cellular antenna in use: MCC, MNC, LAC and Cell ID
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CELLIDENTIFIER_INVALID.
-  /// </para>
-  ///-
   function TYCellular.get_cellIdentifier():string;
     var
       res : string;
@@ -1191,22 +1146,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Active cellular connection type.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_CELLTYPE_GPRS, Y_CELLTYPE_EGPRS, Y_CELLTYPE_WCDMA, Y_CELLTYPE_HSDPA,
-  ///   Y_CELLTYPE_NONE and Y_CELLTYPE_CDMA
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CELLTYPE_INVALID.
-  /// </para>
-  ///-
   function TYCellular.get_cellType():Integer;
     var
       res : Integer;
@@ -1225,25 +1164,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns an opaque string if a PIN code has been configured in the device to access
-  ///   the SIM card, or an empty string if none has been configured or if the code provided
-  ///   was rejected by the SIM card.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to an opaque string if a PIN code has been configured in the device to access
-  ///   the SIM card, or an empty string if none has been configured or if the code provided
-  ///   was rejected by the SIM card
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_IMSI_INVALID.
-  /// </para>
-  ///-
   function TYCellular.get_imsi():string;
     var
       res : string;
@@ -1262,21 +1182,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the latest status message from the wireless interface.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the latest status message from the wireless interface
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_MESSAGE_INVALID.
-  /// </para>
-  ///-
   function TYCellular.get_message():string;
     var
       res : string;
@@ -1295,25 +1200,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns an opaque string if a PIN code has been configured in the device to access
-  ///   the SIM card, or an empty string if none has been configured or if the code provided
-  ///   was rejected by the SIM card.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to an opaque string if a PIN code has been configured in the device to access
-  ///   the SIM card, or an empty string if none has been configured or if the code provided
-  ///   was rejected by the SIM card
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PIN_INVALID.
-  /// </para>
-  ///-
   function TYCellular.get_pin():string;
     var
       res : string;
@@ -1332,37 +1218,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the PIN code used by the module to access the SIM card.
-  /// <para>
-  ///   This function does not change the code on the SIM card itself, but only changes
-  ///   the parameter used by the device to try to get access to it. If the SIM code
-  ///   does not work immediately on first try, it will be automatically forgotten
-  ///   and the message will be set to "Enter SIM PIN". The method should then be
-  ///   invoked again with right correct PIN code. After three failed attempts in a row,
-  ///   the message is changed to "Enter SIM PUK" and the SIM card PUK code must be
-  ///   provided using method sendPUK.
-  /// </para>
-  /// <para>
-  ///   Remember to call the saveToFlash() method of the module to save the
-  ///   new value in the device flash.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the PIN code used by the module to access the SIM card
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYCellular.set_pin(newval:string):integer;
     var
       rest_val: string;
@@ -1371,25 +1226,6 @@ implementation
       result := _setAttr('pin',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the name of the only cell operator to use if automatic choice is disabled,
-  ///   or an empty string if the SIM card will automatically choose among available
-  ///   cell operators.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the name of the only cell operator to use if automatic choice is disabled,
-  ///   or an empty string if the SIM card will automatically choose among available
-  ///   cell operators
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LOCKEDOPERATOR_INVALID.
-  /// </para>
-  ///-
   function TYCellular.get_lockedOperator():string;
     var
       res : string;
@@ -1408,29 +1244,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the name of the cell operator to be used.
-  /// <para>
-  ///   If the name is an empty
-  ///   string, the choice will be made automatically based on the SIM card. Otherwise,
-  ///   the selected operator is the only one that will be used.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the name of the cell operator to be used
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYCellular.set_lockedOperator(newval:string):integer;
     var
       rest_val: string;
@@ -1439,22 +1252,6 @@ implementation
       result := _setAttr('lockedOperator',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns true if the airplane mode is active (radio turned off).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_AIRPLANEMODE_OFF or Y_AIRPLANEMODE_ON, according to true if the airplane mode is active
-  ///   (radio turned off)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_AIRPLANEMODE_INVALID.
-  /// </para>
-  ///-
   function TYCellular.get_airplaneMode():Integer;
     var
       res : Integer;
@@ -1473,27 +1270,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the activation state of airplane mode (radio turned off).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_AIRPLANEMODE_OFF or Y_AIRPLANEMODE_ON, according to the activation state of airplane mode
-  ///   (radio turned off)
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYCellular.set_airplaneMode(newval:Integer):integer;
     var
       rest_val: string;
@@ -1502,23 +1278,6 @@ implementation
       result := _setAttr('airplaneMode',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the condition for enabling IP data services (GPRS).
-  /// <para>
-  ///   When data services are disabled, SMS are the only mean of communication.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_ENABLEDATA_HOMENETWORK, Y_ENABLEDATA_ROAMING, Y_ENABLEDATA_NEVER and
-  ///   Y_ENABLEDATA_NEUTRALITY corresponding to the condition for enabling IP data services (GPRS)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_ENABLEDATA_INVALID.
-  /// </para>
-  ///-
   function TYCellular.get_enableData():Integer;
     var
       res : Integer;
@@ -1537,33 +1296,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the condition for enabling IP data services (GPRS).
-  /// <para>
-  ///   The service can be either fully deactivated, or limited to the SIM home network,
-  ///   or enabled for all partner networks (roaming). Caution: enabling data services
-  ///   on roaming networks may cause prohibitive communication costs !
-  /// </para>
-  /// <para>
-  ///   When data services are disabled, SMS are the only mean of communication.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a value among Y_ENABLEDATA_HOMENETWORK, Y_ENABLEDATA_ROAMING, Y_ENABLEDATA_NEVER and
-  ///   Y_ENABLEDATA_NEUTRALITY corresponding to the condition for enabling IP data services (GPRS)
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYCellular.set_enableData(newval:Integer):integer;
     var
       rest_val: string;
@@ -1572,22 +1304,6 @@ implementation
       result := _setAttr('enableData',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the Access Point Name (APN) to be used, if needed.
-  /// <para>
-  ///   When left blank, the APN suggested by the cell operator will be used.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the Access Point Name (APN) to be used, if needed
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_APN_INVALID.
-  /// </para>
-  ///-
   function TYCellular.get_apn():string;
     var
       res : string;
@@ -1606,27 +1322,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the Access Point Name (APN) to be used, if needed.
-  /// <para>
-  ///   When left blank, the APN suggested by the cell operator will be used.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYCellular.set_apn(newval:string):integer;
     var
       rest_val: string;
@@ -1635,24 +1330,6 @@ implementation
       result := _setAttr('apn',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns an opaque string if APN authentication parameters have been configured
-  ///   in the device, or an empty string otherwise.
-  /// <para>
-  ///   To configure these parameters, use set_apnAuth().
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to an opaque string if APN authentication parameters have been configured
-  ///   in the device, or an empty string otherwise
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_APNSECRET_INVALID.
-  /// </para>
-  ///-
   function TYCellular.get_apnSecret():string;
     var
       res : string;
@@ -1679,21 +1356,6 @@ implementation
       result := _setAttr('apnSecret',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the automated connectivity check interval, in seconds.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the automated connectivity check interval, in seconds
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PINGINTERVAL_INVALID.
-  /// </para>
-  ///-
   function TYCellular.get_pingInterval():LongInt;
     var
       res : LongInt;
@@ -1712,26 +1374,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the automated connectivity check interval, in seconds.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the automated connectivity check interval, in seconds
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYCellular.set_pingInterval(newval:LongInt):integer;
     var
       rest_val: string;
@@ -1740,21 +1382,6 @@ implementation
       result := _setAttr('pingInterval',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the number of bytes sent so far.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of bytes sent so far
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DATASENT_INVALID.
-  /// </para>
-  ///-
   function TYCellular.get_dataSent():LongInt;
     var
       res : LongInt;
@@ -1773,26 +1400,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the value of the outgoing data counter.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the value of the outgoing data counter
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYCellular.set_dataSent(newval:LongInt):integer;
     var
       rest_val: string;
@@ -1801,21 +1408,6 @@ implementation
       result := _setAttr('dataSent',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the number of bytes received so far.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of bytes received so far
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DATARECEIVED_INVALID.
-  /// </para>
-  ///-
   function TYCellular.get_dataReceived():LongInt;
     var
       res : LongInt;
@@ -1834,26 +1426,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the value of the incoming data counter.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the value of the incoming data counter
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYCellular.set_dataReceived(newval:LongInt):integer;
     var
       rest_val: string;
@@ -1888,55 +1460,6 @@ implementation
       result := _setAttr('command',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YCellular.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YCellular</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYCellular.FindCellular(func: string):TYCellular;
     var
       obj : TYCellular;
@@ -1952,24 +1475,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYCellular.registerValueCallback(callback: TYCellularValueCallback):LongInt;
     var
       val : string;
@@ -2012,32 +1517,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sends a PUK code to unlock the SIM card after three failed PIN code attempts, and
-  ///   setup a new PIN into the SIM card.
-  /// <para>
-  ///   Only ten consecutives tentatives are permitted:
-  ///   after that, the SIM card will be blocked permanently without any mean of recovery
-  ///   to use it again. Note that after calling this method, you have usually to invoke
-  ///   method <c>set_pin()</c> to tell the YoctoHub which PIN to use in the future.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="puk">
-  ///   the SIM PUK code
-  /// </param>
-  /// <param name="newPin">
-  ///   new PIN code to configure into the SIM card
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYCellular.sendPUK(puk: string; newPin: string):LongInt;
     var
       gsmMsg : string;
@@ -2060,29 +1539,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Configure authentication parameters to connect to the APN.
-  /// <para>
-  ///   Both
-  ///   PAP and CHAP authentication are supported.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="username">
-  ///   APN username
-  /// </param>
-  /// <param name="password">
-  ///   APN password
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYCellular.set_apnAuth(username: string; password: string):LongInt;
     begin
       result := self.set_apnSecret(''+username+','+password);
@@ -2090,19 +1546,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Clear the transmitted data counters.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYCellular.clearDataCounters():LongInt;
     var
       retcode : LongInt;
@@ -2119,25 +1562,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sends an AT command to the GSM module and returns the command output.
-  /// <para>
-  ///   The command will only execute when the GSM module is in standard
-  ///   command state, and should leave it in the exact same state.
-  ///   Use this function with great care !
-  /// </para>
-  /// </summary>
-  /// <param name="cmd">
-  ///   the AT command to execute, like for instance: "+CCLK?".
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   a string with the result of the commands. Empty lines are
-  ///   automatically removed from the output.
-  /// </returns>
-  ///-
   function TYCellular._AT(cmd: string):string;
     var
       chrPos : LongInt;
@@ -2208,20 +1632,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the list detected cell operators in the neighborhood.
-  /// <para>
-  ///   This function will typically take between 30 seconds to 1 minute to
-  ///   return. Note that any SIM card can usually only connect to specific
-  ///   operators. All networks returned by this function might therefore
-  ///   not be available for connection.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a list of string (cell operator names).
-  /// </returns>
-  ///-
   function TYCellular.get_availableOperators():TStringArray;
     var
       cops : string;
@@ -2261,20 +1671,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns a list of nearby cellular antennas, as required for quick
-  ///   geolocation of the device.
-  /// <para>
-  ///   The first cell listed is the serving
-  ///   cell, and the next ones are the neighboor cells reported by the
-  ///   serving cell.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a list of YCellRecords.
-  /// </returns>
-  ///-
   function TYCellular.quickCellSurvey():TYCellRecordArray;
     var
       moni : string;

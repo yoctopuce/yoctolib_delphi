@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_multicellweighscale.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_multicellweighscale.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
  *
@@ -727,28 +727,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Changes the measuring unit for the weight.
-  /// <para>
-  ///   Remember to call the saveToFlash() method of the module if the
-  ///   modification must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the measuring unit for the weight
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMultiCellWeighScale.set_unit(newval:string):integer;
     var
       rest_val: string;
@@ -757,21 +735,6 @@ implementation
       result := _setAttr('unit',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the number of load cells in use.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of load cells in use
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CELLCOUNT_INVALID.
-  /// </para>
-  ///-
   function TYMultiCellWeighScale.get_cellCount():LongInt;
     var
       res : LongInt;
@@ -790,26 +753,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the number of load cells in use.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the number of load cells in use
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMultiCellWeighScale.set_cellCount(newval:LongInt):integer;
     var
       rest_val: string;
@@ -818,22 +761,6 @@ implementation
       result := _setAttr('cellCount',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the current load cell bridge excitation method.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_EXCITATION_OFF, Y_EXCITATION_DC and Y_EXCITATION_AC corresponding to the current
-  ///   load cell bridge excitation method
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_EXCITATION_INVALID.
-  /// </para>
-  ///-
   function TYMultiCellWeighScale.get_excitation():Integer;
     var
       res : Integer;
@@ -852,27 +779,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the current load cell bridge excitation method.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a value among Y_EXCITATION_OFF, Y_EXCITATION_DC and Y_EXCITATION_AC corresponding to the current
-  ///   load cell bridge excitation method
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMultiCellWeighScale.set_excitation(newval:Integer):integer;
     var
       rest_val: string;
@@ -881,30 +787,6 @@ implementation
       result := _setAttr('excitation',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Changes the averaged temperature update rate, in per mille.
-  /// <para>
-  ///   The purpose of this adaptation ratio is to model the thermal inertia of the load cell.
-  ///   The averaged temperature is updated every 10 seconds, by applying this adaptation rate
-  ///   to the difference between the measures ambiant temperature and the current compensation
-  ///   temperature. The standard rate is 0.2 per mille, and the maximal rate is 65 per mille.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the averaged temperature update rate, in per mille
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMultiCellWeighScale.set_tempAvgAdaptRatio(newval:double):integer;
     var
       rest_val: string;
@@ -913,25 +795,6 @@ implementation
       result := _setAttr('tempAvgAdaptRatio',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the averaged temperature update rate, in per mille.
-  /// <para>
-  ///   The purpose of this adaptation ratio is to model the thermal inertia of the load cell.
-  ///   The averaged temperature is updated every 10 seconds, by applying this adaptation rate
-  ///   to the difference between the measures ambiant temperature and the current compensation
-  ///   temperature. The standard rate is 0.2 per mille, and the maximal rate is 65 per mille.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the averaged temperature update rate, in per mille
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_TEMPAVGADAPTRATIO_INVALID.
-  /// </para>
-  ///-
   function TYMultiCellWeighScale.get_tempAvgAdaptRatio():double;
     var
       res : double;
@@ -950,29 +813,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the temperature change update rate, in per mille.
-  /// <para>
-  ///   The temperature change is updated every 10 seconds, by applying this adaptation rate
-  ///   to the difference between the measures ambiant temperature and the current temperature used for
-  ///   change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the temperature change update rate, in per mille
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMultiCellWeighScale.set_tempChgAdaptRatio(newval:double):integer;
     var
       rest_val: string;
@@ -981,24 +821,6 @@ implementation
       result := _setAttr('tempChgAdaptRatio',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the temperature change update rate, in per mille.
-  /// <para>
-  ///   The temperature change is updated every 10 seconds, by applying this adaptation rate
-  ///   to the difference between the measures ambiant temperature and the current temperature used for
-  ///   change compensation. The standard rate is 0.6 per mille, and the maximal rate is 65 pour mille.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the temperature change update rate, in per mille
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_TEMPCHGADAPTRATIO_INVALID.
-  /// </para>
-  ///-
   function TYMultiCellWeighScale.get_tempChgAdaptRatio():double;
     var
       res : double;
@@ -1017,21 +839,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the current averaged temperature, used for thermal compensation.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the current averaged temperature, used for thermal compensation
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_COMPTEMPAVG_INVALID.
-  /// </para>
-  ///-
   function TYMultiCellWeighScale.get_compTempAvg():double;
     var
       res : double;
@@ -1050,21 +857,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the current temperature variation, used for thermal compensation.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the current temperature variation, used for thermal compensation
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_COMPTEMPCHG_INVALID.
-  /// </para>
-  ///-
   function TYMultiCellWeighScale.get_compTempChg():double;
     var
       res : double;
@@ -1083,21 +875,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the current current thermal compensation value.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the current current thermal compensation value
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_COMPENSATION_INVALID.
-  /// </para>
-  ///-
   function TYMultiCellWeighScale.get_compensation():double;
     var
       res : double;
@@ -1116,29 +893,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the zero tracking threshold value.
-  /// <para>
-  ///   When this threshold is larger than
-  ///   zero, any measure under the threshold will automatically be ignored and the
-  ///   zero compensation will be updated.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the zero tracking threshold value
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMultiCellWeighScale.set_zeroTracking(newval:double):integer;
     var
       rest_val: string;
@@ -1147,24 +901,6 @@ implementation
       result := _setAttr('zeroTracking',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the zero tracking threshold value.
-  /// <para>
-  ///   When this threshold is larger than
-  ///   zero, any measure under the threshold will automatically be ignored and the
-  ///   zero compensation will be updated.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the zero tracking threshold value
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_ZEROTRACKING_INVALID.
-  /// </para>
-  ///-
   function TYMultiCellWeighScale.get_zeroTracking():double;
     var
       res : double;
@@ -1209,55 +945,6 @@ implementation
       result := _setAttr('command',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YMultiCellWeighScale.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YMultiCellWeighScale</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYMultiCellWeighScale.FindMultiCellWeighScale(func: string):TYMultiCellWeighScale;
     var
       obj : TYMultiCellWeighScale;
@@ -1273,24 +960,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYMultiCellWeighScale.registerValueCallback(callback: TYMultiCellWeighScaleValueCallback):LongInt;
     var
       val : string;
@@ -1333,24 +1002,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every periodic timed notification.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and an YMeasure object describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYMultiCellWeighScale.registerTimedReportCallback(callback: TYMultiCellWeighScaleTimedReportCallback):LongInt;
     var
       sensor : TYSensor;
@@ -1385,22 +1036,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Adapts the load cell signal bias (stored in the corresponding genericSensor)
-  ///   so that the current signal corresponds to a zero weight.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMultiCellWeighScale.tare():LongInt;
     begin
       result := self.set_command('T');
@@ -1408,28 +1043,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Configures the load cells span parameters (stored in the corresponding genericSensors)
-  ///   so that the current signal corresponds to the specified reference weight.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="currWeight">
-  ///   reference weight presently on the load cell.
-  /// </param>
-  /// <param name="maxWeight">
-  ///   maximum weight to be expectect on the load cell.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMultiCellWeighScale.setupSpan(currWeight: double; maxWeight: double):LongInt;
     begin
       result := self.set_command('S'+inttostr( round(1000*currWeight))+':'+inttostr(round(1000*maxWeight)));

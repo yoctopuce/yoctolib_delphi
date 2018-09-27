@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_power.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_power.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindPower(), the high-level API for Power functions
  *
@@ -403,23 +403,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the power factor (the ratio between the real power consumed,
-  ///   measured in W, and the apparent power provided, measured in VA).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the power factor (the ratio between the real power consumed,
-  ///   measured in W, and the apparent power provided, measured in VA)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_COSPHI_INVALID.
-  /// </para>
-  ///-
   function TYPower.get_cosPhi():double;
     var
       res : double;
@@ -446,23 +429,6 @@ implementation
       result := _setAttr('meter',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time.
-  /// <para>
-  ///   Note that this counter is reset at each start of the device.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the energy counter, maintained by the wattmeter by
-  ///   integrating the power consumption over time
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_METER_INVALID.
-  /// </para>
-  ///-
   function TYPower.get_meter():double;
     var
       res : double;
@@ -481,21 +447,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the elapsed time since last energy counter reset, in seconds.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the elapsed time since last energy counter reset, in seconds
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_METERTIMER_INVALID.
-  /// </para>
-  ///-
   function TYPower.get_meterTimer():LongInt;
     var
       res : LongInt;
@@ -514,55 +465,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YPower.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YPower</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYPower.FindPower(func: string):TYPower;
     var
       obj : TYPower;
@@ -578,24 +480,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYPower.registerValueCallback(callback: TYPowerValueCallback):LongInt;
     var
       val : string;
@@ -638,24 +522,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every periodic timed notification.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and an YMeasure object describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYPower.registerTimedReportCallback(callback: TYPowerTimedReportCallback):LongInt;
     var
       sensor : TYSensor;
@@ -690,19 +556,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Resets the energy counter.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPower.reset():LongInt;
     begin
       result := self.set_meter(0);

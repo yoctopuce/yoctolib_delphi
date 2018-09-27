@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_voltageoutput.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_voltageoutput.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindVoltageOutput(), the high-level API for VoltageOutput functions
  *
@@ -410,27 +410,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Changes the output voltage, in V.
-  /// <para>
-  ///   Valid range is from 0 to 10V.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the output voltage, in V
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYVoltageOutput.set_currentVoltage(newval:double):integer;
     var
       rest_val: string;
@@ -439,21 +418,6 @@ implementation
       result := _setAttr('currentVoltage',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the output voltage set point, in V.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the output voltage set point, in V
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CURRENTVOLTAGE_INVALID.
-  /// </para>
-  ///-
   function TYVoltageOutput.get_currentVoltage():double;
     var
       res : double;
@@ -498,28 +462,6 @@ implementation
       result := _setAttr('voltageTransition',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Changes the output voltage at device start up.
-  /// <para>
-  ///   Remember to call the matching
-  ///   module saveToFlash() method, otherwise this call has no effect.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the output voltage at device start up
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYVoltageOutput.set_voltageAtStartUp(newval:double):integer;
     var
       rest_val: string;
@@ -528,21 +470,6 @@ implementation
       result := _setAttr('voltageAtStartUp',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the selected voltage output at device startup, in V.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the selected voltage output at device startup, in V
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_VOLTAGEATSTARTUP_INVALID.
-  /// </para>
-  ///-
   function TYVoltageOutput.get_voltageAtStartUp():double;
     var
       res : double;
@@ -561,55 +488,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YVoltageOutput.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YVoltageOutput</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYVoltageOutput.FindVoltageOutput(func: string):TYVoltageOutput;
     var
       obj : TYVoltageOutput;
@@ -625,24 +503,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYVoltageOutput.registerValueCallback(callback: TYVoltageOutputValueCallback):LongInt;
     var
       val : string;
@@ -685,25 +545,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Performs a smooth transistion of output voltage.
-  /// <para>
-  ///   Any explicit voltage
-  ///   change cancels any ongoing transition process.
-  /// </para>
-  /// </summary>
-  /// <param name="V_target">
-  ///   new output voltage value at the end of the transition
-  ///   (floating-point number, representing the end voltage in V)
-  /// </param>
-  /// <param name="ms_duration">
-  ///   total duration of the transition, in milliseconds
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  ///-
   function TYVoltageOutput.voltageMove(V_target: double; ms_duration: LongInt):LongInt;
     var
       newval : string;

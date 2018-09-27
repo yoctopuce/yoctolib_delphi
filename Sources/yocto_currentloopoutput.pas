@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_currentloopoutput.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_currentloopoutput.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
  *
@@ -446,29 +446,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Changes the current loop, the valid range is from 3 to 21mA.
-  /// <para>
-  ///   If the loop is
-  ///   not propely powered, the  target current is not reached and
-  ///   loopPower is set to LOWPWR.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the current loop, the valid range is from 3 to 21mA
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYCurrentLoopOutput.set_current(newval:double):integer;
     var
       rest_val: string;
@@ -477,21 +454,6 @@ implementation
       result := _setAttr('current',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the loop current set point in mA.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the loop current set point in mA
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CURRENT_INVALID.
-  /// </para>
-  ///-
   function TYCurrentLoopOutput.get_current():double;
     var
       res : double;
@@ -536,28 +498,6 @@ implementation
       result := _setAttr('currentTransition',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Changes the loop current at device start up.
-  /// <para>
-  ///   Remember to call the matching
-  ///   module saveToFlash() method, otherwise this call has no effect.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the loop current at device start up
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYCurrentLoopOutput.set_currentAtStartUp(newval:double):integer;
     var
       rest_val: string;
@@ -566,21 +506,6 @@ implementation
       result := _setAttr('currentAtStartUp',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the current in the loop at device startup, in mA.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the current in the loop at device startup, in mA
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CURRENTATSTARTUP_INVALID.
-  /// </para>
-  ///-
   function TYCurrentLoopOutput.get_currentAtStartUp():double;
     var
       res : double;
@@ -599,24 +524,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the loop powerstate.
-  /// <para>
-  ///   POWEROK: the loop
-  ///   is powered. NOPWR: the loop in not powered. LOWPWR: the loop is not
-  ///   powered enough to maintain the current required (insufficient voltage).
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_LOOPPOWER_NOPWR, Y_LOOPPOWER_LOWPWR and Y_LOOPPOWER_POWEROK corresponding to the loop powerstate
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LOOPPOWER_INVALID.
-  /// </para>
-  ///-
   function TYCurrentLoopOutput.get_loopPower():Integer;
     var
       res : Integer;
@@ -635,55 +542,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YCurrentLoopOutput.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YCurrentLoopOutput</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYCurrentLoopOutput.FindCurrentLoopOutput(func: string):TYCurrentLoopOutput;
     var
       obj : TYCurrentLoopOutput;
@@ -699,24 +557,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYCurrentLoopOutput.registerValueCallback(callback: TYCurrentLoopOutputValueCallback):LongInt;
     var
       val : string;
@@ -759,25 +599,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Performs a smooth transistion of current flowing in the loop.
-  /// <para>
-  ///   Any current explicit
-  ///   change cancels any ongoing transition process.
-  /// </para>
-  /// </summary>
-  /// <param name="mA_target">
-  ///   new current value at the end of the transition
-  ///   (floating-point number, representing the end current in mA)
-  /// </param>
-  /// <param name="ms_duration">
-  ///   total duration of the transition, in milliseconds
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  ///-
   function TYCurrentLoopOutput.currentMove(mA_target: double; ms_duration: LongInt):LongInt;
     var
       newval : string;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_anbutton.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_anbutton.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindAnButton(), the high-level API for AnButton functions
  *
@@ -702,21 +702,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the current calibrated input value (between 0 and 1000, included).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the current calibrated input value (between 0 and 1000, included)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CALIBRATEDVALUE_INVALID.
-  /// </para>
-  ///-
   function TYAnButton.get_calibratedValue():LongInt;
     var
       res : LongInt;
@@ -735,21 +720,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the current measured input value as-is (between 0 and 4095, included).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the current measured input value as-is (between 0 and 4095, included)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_RAWVALUE_INVALID.
-  /// </para>
-  ///-
   function TYAnButton.get_rawValue():LongInt;
     var
       res : LongInt;
@@ -768,21 +738,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Tells if a calibration process is currently ongoing.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_ANALOGCALIBRATION_OFF or Y_ANALOGCALIBRATION_ON
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_ANALOGCALIBRATION_INVALID.
-  /// </para>
-  ///-
   function TYAnButton.get_analogCalibration():Integer;
     var
       res : Integer;
@@ -801,28 +756,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Starts or stops the calibration process.
-  /// <para>
-  ///   Remember to call the saveToFlash()
-  ///   method of the module at the end of the calibration if the modification must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_ANALOGCALIBRATION_OFF or Y_ANALOGCALIBRATION_ON
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYAnButton.set_analogCalibration(newval:Integer):integer;
     var
       rest_val: string;
@@ -831,21 +764,6 @@ implementation
       result := _setAttr('analogCalibration',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the maximal value measured during the calibration (between 0 and 4095, included).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the maximal value measured during the calibration (between 0 and 4095, included)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CALIBRATIONMAX_INVALID.
-  /// </para>
-  ///-
   function TYAnButton.get_calibrationMax():LongInt;
     var
       res : LongInt;
@@ -864,31 +782,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the maximal calibration value for the input (between 0 and 4095, included), without actually
-  ///   starting the automated calibration.
-  /// <para>
-  ///   Remember to call the saveToFlash()
-  ///   method of the module if the modification must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the maximal calibration value for the input (between 0 and 4095,
-  ///   included), without actually
-  ///   starting the automated calibration
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYAnButton.set_calibrationMax(newval:LongInt):integer;
     var
       rest_val: string;
@@ -897,21 +790,6 @@ implementation
       result := _setAttr('calibrationMax',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the minimal value measured during the calibration (between 0 and 4095, included).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the minimal value measured during the calibration (between 0 and 4095, included)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CALIBRATIONMIN_INVALID.
-  /// </para>
-  ///-
   function TYAnButton.get_calibrationMin():LongInt;
     var
       res : LongInt;
@@ -930,31 +808,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the minimal calibration value for the input (between 0 and 4095, included), without actually
-  ///   starting the automated calibration.
-  /// <para>
-  ///   Remember to call the saveToFlash()
-  ///   method of the module if the modification must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the minimal calibration value for the input (between 0 and 4095,
-  ///   included), without actually
-  ///   starting the automated calibration
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYAnButton.set_calibrationMin(newval:LongInt):integer;
     var
       rest_val: string;
@@ -963,21 +816,6 @@ implementation
       result := _setAttr('calibrationMin',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the sensibility for the input (between 1 and 1000) for triggering user callbacks.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the sensibility for the input (between 1 and 1000) for triggering user callbacks
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_SENSITIVITY_INVALID.
-  /// </para>
-  ///-
   function TYAnButton.get_sensitivity():LongInt;
     var
       res : LongInt;
@@ -996,31 +834,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the sensibility for the input (between 1 and 1000) for triggering user callbacks.
-  /// <para>
-  ///   The sensibility is used to filter variations around a fixed value, but does not preclude the
-  ///   transmission of events when the input value evolves constantly in the same direction.
-  ///   Special case: when the value 1000 is used, the callback will only be thrown when the logical state
-  ///   of the input switches from pressed to released and back.
-  ///   Remember to call the saveToFlash() method of the module if the modification must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the sensibility for the input (between 1 and 1000) for triggering user callbacks
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYAnButton.set_sensitivity(newval:LongInt):integer;
     var
       rest_val: string;
@@ -1029,22 +842,6 @@ implementation
       result := _setAttr('sensitivity',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns true if the input (considered as binary) is active (closed contact), and false otherwise.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_ISPRESSED_FALSE or Y_ISPRESSED_TRUE, according to true if the input (considered as binary)
-  ///   is active (closed contact), and false otherwise
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_ISPRESSED_INVALID.
-  /// </para>
-  ///-
   function TYAnButton.get_isPressed():Integer;
     var
       res : Integer;
@@ -1063,23 +860,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the number of elapsed milliseconds between the module power on and the last time
-  ///   the input button was pressed (the input contact transitioned from open to closed).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of elapsed milliseconds between the module power on and the last time
-  ///   the input button was pressed (the input contact transitioned from open to closed)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LASTTIMEPRESSED_INVALID.
-  /// </para>
-  ///-
   function TYAnButton.get_lastTimePressed():int64;
     var
       res : int64;
@@ -1098,23 +878,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the number of elapsed milliseconds between the module power on and the last time
-  ///   the input button was released (the input contact transitioned from closed to open).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of elapsed milliseconds between the module power on and the last time
-  ///   the input button was released (the input contact transitioned from closed to open)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LASTTIMERELEASED_INVALID.
-  /// </para>
-  ///-
   function TYAnButton.get_lastTimeReleased():int64;
     var
       res : int64;
@@ -1133,24 +896,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the pulse counter value.
-  /// <para>
-  ///   The value is a 32 bit integer. In case
-  ///   of overflow (>=2^32), the counter will wrap. To reset the counter, just
-  ///   call the resetCounter() method.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the pulse counter value
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PULSECOUNTER_INVALID.
-  /// </para>
-  ///-
   function TYAnButton.get_pulseCounter():int64;
     var
       res : int64;
@@ -1177,21 +922,6 @@ implementation
       result := _setAttr('pulseCounter',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the timer of the pulses counter (ms).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the timer of the pulses counter (ms)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PULSETIMER_INVALID.
-  /// </para>
-  ///-
   function TYAnButton.get_pulseTimer():int64;
     var
       res : int64;
@@ -1210,55 +940,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YAnButton.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YAnButton</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYAnButton.FindAnButton(func: string):TYAnButton;
     var
       obj : TYAnButton;
@@ -1274,24 +955,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYAnButton.registerValueCallback(callback: TYAnButtonValueCallback):LongInt;
     var
       val : string;
@@ -1334,19 +997,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the pulse counter value as well as its timer.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYAnButton.resetCounter():LongInt;
     begin
       result := self.set_pulseCounter(0);

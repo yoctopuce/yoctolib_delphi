@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwminput.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_pwminput.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindPwmInput(), the high-level API for PwmInput functions
  *
@@ -604,21 +604,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the PWM duty cycle, in per cents.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the PWM duty cycle, in per cents
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DUTYCYCLE_INVALID.
-  /// </para>
-  ///-
   function TYPwmInput.get_dutyCycle():double;
     var
       res : double;
@@ -637,21 +622,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the PWM pulse length in milliseconds, as a floating point number.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the PWM pulse length in milliseconds, as a floating point number
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PULSEDURATION_INVALID.
-  /// </para>
-  ///-
   function TYPwmInput.get_pulseDuration():double;
     var
       res : double;
@@ -670,21 +640,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the PWM frequency in Hz.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the PWM frequency in Hz
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_FREQUENCY_INVALID.
-  /// </para>
-  ///-
   function TYPwmInput.get_frequency():double;
     var
       res : double;
@@ -703,21 +658,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the PWM period in milliseconds.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the PWM period in milliseconds
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PERIOD_INVALID.
-  /// </para>
-  ///-
   function TYPwmInput.get_period():double;
     var
       res : double;
@@ -736,24 +676,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the pulse counter value.
-  /// <para>
-  ///   Actually that
-  ///   counter is incremented twice per period. That counter is
-  ///   limited  to 1 billion.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the pulse counter value
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PULSECOUNTER_INVALID.
-  /// </para>
-  ///-
   function TYPwmInput.get_pulseCounter():int64;
     var
       res : int64;
@@ -780,21 +702,6 @@ implementation
       result := _setAttr('pulseCounter',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the timer of the pulses counter (ms).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the timer of the pulses counter (ms)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PULSETIMER_INVALID.
-  /// </para>
-  ///-
   function TYPwmInput.get_pulseTimer():int64;
     var
       res : int64;
@@ -813,26 +720,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the parameter (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue function and callbacks.
-  /// <para>
-  ///   Attention
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
-  ///   Y_PWMREPORTMODE_PWM_PULSEDURATION, Y_PWMREPORTMODE_PWM_EDGECOUNT, Y_PWMREPORTMODE_PWM_PULSECOUNT,
-  ///   Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM, Y_PWMREPORTMODE_PWM_STATE,
-  ///   Y_PWMREPORTMODE_PWM_FREQ_CPS and Y_PWMREPORTMODE_PWM_FREQ_CPM corresponding to the parameter
-  ///   (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue function and callbacks
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PWMREPORTMODE_INVALID.
-  /// </para>
-  ///-
   function TYPwmInput.get_pwmReportMode():Integer;
     var
       res : Integer;
@@ -851,32 +738,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the  parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the get_currentValue function and callbacks.
-  /// <para>
-  ///   The edge count value is limited to the 6 lowest digits. For values greater than one million, use
-  ///   get_pulseCounter().
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a value among Y_PWMREPORTMODE_PWM_DUTYCYCLE, Y_PWMREPORTMODE_PWM_FREQUENCY,
-  ///   Y_PWMREPORTMODE_PWM_PULSEDURATION, Y_PWMREPORTMODE_PWM_EDGECOUNT, Y_PWMREPORTMODE_PWM_PULSECOUNT,
-  ///   Y_PWMREPORTMODE_PWM_CPS, Y_PWMREPORTMODE_PWM_CPM, Y_PWMREPORTMODE_PWM_STATE,
-  ///   Y_PWMREPORTMODE_PWM_FREQ_CPS and Y_PWMREPORTMODE_PWM_FREQ_CPM corresponding to the  parameter  type
-  ///   (frequency/duty cycle, pulse width, or edge count) returned by the get_currentValue function and callbacks
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPwmInput.set_pwmReportMode(newval:Integer):integer;
     var
       rest_val: string;
@@ -885,22 +746,6 @@ implementation
       result := _setAttr('pwmReportMode',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the shortest expected pulse duration, in ms.
-  /// <para>
-  ///   Any shorter pulse will be automatically ignored (debounce).
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the shortest expected pulse duration, in ms
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DEBOUNCEPERIOD_INVALID.
-  /// </para>
-  ///-
   function TYPwmInput.get_debouncePeriod():LongInt;
     var
       res : LongInt;
@@ -919,27 +764,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the shortest expected pulse duration, in ms.
-  /// <para>
-  ///   Any shorter pulse will be automatically ignored (debounce).
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the shortest expected pulse duration, in ms
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPwmInput.set_debouncePeriod(newval:LongInt):integer;
     var
       rest_val: string;
@@ -948,55 +772,6 @@ implementation
       result := _setAttr('debouncePeriod',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YPwmInput.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YPwmInput</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYPwmInput.FindPwmInput(func: string):TYPwmInput;
     var
       obj : TYPwmInput;
@@ -1012,24 +787,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYPwmInput.registerValueCallback(callback: TYPwmInputValueCallback):LongInt;
     var
       val : string;
@@ -1072,24 +829,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every periodic timed notification.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and an YMeasure object describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYPwmInput.registerTimedReportCallback(callback: TYPwmInputTimedReportCallback):LongInt;
     var
       sensor : TYSensor;
@@ -1124,19 +863,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the pulse counter value as well as its timer.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPwmInput.resetCounter():LongInt;
     begin
       result := self.set_pulseCounter(0);

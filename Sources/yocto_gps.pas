@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_gps.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_gps.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindGps(), the high-level API for Gps functions
  *
@@ -668,21 +668,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns TRUE if the receiver has found enough satellites to work.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_ISFIXED_FALSE or Y_ISFIXED_TRUE, according to TRUE if the receiver has found enough satellites to work
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_ISFIXED_INVALID.
-  /// </para>
-  ///-
   function TYGps.get_isFixed():Integer;
     var
       res : Integer;
@@ -701,21 +686,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the count of visible satellites.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the count of visible satellites
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_SATCOUNT_INVALID.
-  /// </para>
-  ///-
   function TYGps.get_satCount():int64;
     var
       res : int64;
@@ -734,22 +704,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the representation system used for positioning data.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_COORDSYSTEM_GPS_DMS, Y_COORDSYSTEM_GPS_DM and Y_COORDSYSTEM_GPS_D corresponding to
-  ///   the representation system used for positioning data
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_COORDSYSTEM_INVALID.
-  /// </para>
-  ///-
   function TYGps.get_coordSystem():Integer;
     var
       res : Integer;
@@ -768,27 +722,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the representation system used for positioning data.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a value among Y_COORDSYSTEM_GPS_DMS, Y_COORDSYSTEM_GPS_DM and Y_COORDSYSTEM_GPS_D corresponding to
-  ///   the representation system used for positioning data
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYGps.set_coordSystem(newval:Integer):integer;
     var
       rest_val: string;
@@ -797,21 +730,6 @@ implementation
       result := _setAttr('coordSystem',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the current latitude.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the current latitude
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LATITUDE_INVALID.
-  /// </para>
-  ///-
   function TYGps.get_latitude():string;
     var
       res : string;
@@ -830,21 +748,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the current longitude.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the current longitude
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LONGITUDE_INVALID.
-  /// </para>
-  ///-
   function TYGps.get_longitude():string;
     var
       res : string;
@@ -863,23 +766,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the current horizontal dilution of precision,
-  ///   the smaller that number is, the better .
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the current horizontal dilution of precision,
-  ///   the smaller that number is, the better
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DILUTION_INVALID.
-  /// </para>
-  ///-
   function TYGps.get_dilution():double;
     var
       res : double;
@@ -898,23 +784,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the current altitude.
-  /// <para>
-  ///   Beware:  GPS technology
-  ///   is very inaccurate regarding altitude.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the current altitude
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_ALTITUDE_INVALID.
-  /// </para>
-  ///-
   function TYGps.get_altitude():double;
     var
       res : double;
@@ -933,21 +802,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the current ground speed in Km/h.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the current ground speed in Km/h
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_GROUNDSPEED_INVALID.
-  /// </para>
-  ///-
   function TYGps.get_groundSpeed():double;
     var
       res : double;
@@ -966,23 +820,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the current move bearing in degrees, zero
-  ///   is the true (geographic) north.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the current move bearing in degrees, zero
-  ///   is the true (geographic) north
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DIRECTION_INVALID.
-  /// </para>
-  ///-
   function TYGps.get_direction():double;
     var
       res : double;
@@ -1001,23 +838,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the current time in Unix format (number of
-  ///   seconds elapsed since Jan 1st, 1970).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the current time in Unix format (number of
-  ///   seconds elapsed since Jan 1st, 1970)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_UNIXTIME_INVALID.
-  /// </para>
-  ///-
   function TYGps.get_unixTime():int64;
     var
       res : int64;
@@ -1036,21 +856,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the current time in the form "YYYY/MM/DD hh:mm:ss".
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the current time in the form "YYYY/MM/DD hh:mm:ss"
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DATETIME_INVALID.
-  /// </para>
-  ///-
   function TYGps.get_dateTime():string;
     var
       res : string;
@@ -1069,21 +874,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the number of seconds between current time and UTC time (time zone).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of seconds between current time and UTC time (time zone)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_UTCOFFSET_INVALID.
-  /// </para>
-  ///-
   function TYGps.get_utcOffset():LongInt;
     var
       res : LongInt;
@@ -1102,28 +892,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the number of seconds between current time and UTC time (time zone).
-  /// <para>
-  ///   The timezone is automatically rounded to the nearest multiple of 15 minutes.
-  ///   If current UTC time is known, the current time is automatically be updated according to the selected time zone.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the number of seconds between current time and UTC time (time zone)
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYGps.set_utcOffset(newval:LongInt):integer;
     var
       rest_val: string;
@@ -1158,55 +926,6 @@ implementation
       result := _setAttr('command',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YGps.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YGps</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYGps.FindGps(func: string):TYGps;
     var
       obj : TYGps;
@@ -1222,24 +941,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYGps.registerValueCallback(callback: TYGpsValueCallback):LongInt;
     var
       val : string;

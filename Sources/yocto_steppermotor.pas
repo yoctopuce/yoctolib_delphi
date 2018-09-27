@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_steppermotor.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_steppermotor.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindStepperMotor(), the high-level API for StepperMotor functions
  *
@@ -1051,22 +1051,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the motor working state.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_MOTORSTATE_ABSENT, Y_MOTORSTATE_ALERT, Y_MOTORSTATE_HI_Z, Y_MOTORSTATE_STOP,
-  ///   Y_MOTORSTATE_RUN and Y_MOTORSTATE_BATCH corresponding to the motor working state
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_MOTORSTATE_INVALID.
-  /// </para>
-  ///-
   function TYStepperMotor.get_motorState():Integer;
     var
       res : Integer;
@@ -1085,21 +1069,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the stepper motor controller diagnostics, as a bitmap.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the stepper motor controller diagnostics, as a bitmap
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DIAGS_INVALID.
-  /// </para>
-  ///-
   function TYStepperMotor.get_diags():LongInt;
     var
       res : LongInt;
@@ -1118,31 +1087,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the current logical motor position, measured in steps.
-  /// <para>
-  ///   This command does not cause any motor move, as its purpose is only to setup
-  ///   the origin of the position counter. The fractional part of the position,
-  ///   that corresponds to the physical position of the rotor, is not changed.
-  ///   To trigger a motor move, use methods moveTo() or moveRel()
-  ///   instead.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the current logical motor position, measured in steps
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYStepperMotor.set_stepPos(newval:double):integer;
     var
       rest_val: string;
@@ -1151,22 +1095,6 @@ implementation
       result := _setAttr('stepPos',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the current logical motor position, measured in steps.
-  /// <para>
-  ///   The value may include a fractional part when micro-stepping is in use.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the current logical motor position, measured in steps
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_STEPPOS_INVALID.
-  /// </para>
-  ///-
   function TYStepperMotor.get_stepPos():double;
     var
       res : double;
@@ -1185,22 +1113,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns current motor speed, measured in steps per second.
-  /// <para>
-  ///   To change speed, use method changeSpeed().
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to current motor speed, measured in steps per second
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_SPEED_INVALID.
-  /// </para>
-  ///-
   function TYStepperMotor.get_speed():double;
     var
       res : double;
@@ -1219,27 +1131,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the motor speed immediately reachable from stop state, measured in steps per second.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the motor speed immediately reachable from stop state,
-  ///   measured in steps per second
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYStepperMotor.set_pullinSpeed(newval:double):integer;
     var
       rest_val: string;
@@ -1248,22 +1139,6 @@ implementation
       result := _setAttr('pullinSpeed',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the motor speed immediately reachable from stop state, measured in steps per second.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the motor speed immediately reachable from stop state,
-  ///   measured in steps per second
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PULLINSPEED_INVALID.
-  /// </para>
-  ///-
   function TYStepperMotor.get_pullinSpeed():double;
     var
       res : double;
@@ -1282,26 +1157,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the maximal motor acceleration, measured in steps per second^2.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the maximal motor acceleration, measured in steps per second^2
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYStepperMotor.set_maxAccel(newval:double):integer;
     var
       rest_val: string;
@@ -1310,21 +1165,6 @@ implementation
       result := _setAttr('maxAccel',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the maximal motor acceleration, measured in steps per second^2.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the maximal motor acceleration, measured in steps per second^2
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_MAXACCEL_INVALID.
-  /// </para>
-  ///-
   function TYStepperMotor.get_maxAccel():double;
     var
       res : double;
@@ -1343,26 +1183,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the maximal motor speed, measured in steps per second.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the maximal motor speed, measured in steps per second
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYStepperMotor.set_maxSpeed(newval:double):integer;
     var
       rest_val: string;
@@ -1371,21 +1191,6 @@ implementation
       result := _setAttr('maxSpeed',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the maximal motor speed, measured in steps per second.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the maximal motor speed, measured in steps per second
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_MAXSPEED_INVALID.
-  /// </para>
-  ///-
   function TYStepperMotor.get_maxSpeed():double;
     var
       res : double;
@@ -1404,22 +1209,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the stepping mode used to drive the motor.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_STEPPING_MICROSTEP16, Y_STEPPING_MICROSTEP8, Y_STEPPING_MICROSTEP4,
-  ///   Y_STEPPING_HALFSTEP and Y_STEPPING_FULLSTEP corresponding to the stepping mode used to drive the motor
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_STEPPING_INVALID.
-  /// </para>
-  ///-
   function TYStepperMotor.get_stepping():Integer;
     var
       res : Integer;
@@ -1438,27 +1227,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the stepping mode used to drive the motor.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a value among Y_STEPPING_MICROSTEP16, Y_STEPPING_MICROSTEP8, Y_STEPPING_MICROSTEP4,
-  ///   Y_STEPPING_HALFSTEP and Y_STEPPING_FULLSTEP corresponding to the stepping mode used to drive the motor
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYStepperMotor.set_stepping(newval:Integer):integer;
     var
       rest_val: string;
@@ -1467,21 +1235,6 @@ implementation
       result := _setAttr('stepping',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the overcurrent alert and emergency stop threshold, measured in mA.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the overcurrent alert and emergency stop threshold, measured in mA
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_OVERCURRENT_INVALID.
-  /// </para>
-  ///-
   function TYStepperMotor.get_overcurrent():LongInt;
     var
       res : LongInt;
@@ -1500,26 +1253,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the overcurrent alert and emergency stop threshold, measured in mA.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the overcurrent alert and emergency stop threshold, measured in mA
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYStepperMotor.set_overcurrent(newval:LongInt):integer;
     var
       rest_val: string;
@@ -1528,21 +1261,6 @@ implementation
       result := _setAttr('overcurrent',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the torque regulation current when the motor is stopped, measured in mA.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the torque regulation current when the motor is stopped, measured in mA
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_TCURRSTOP_INVALID.
-  /// </para>
-  ///-
   function TYStepperMotor.get_tCurrStop():LongInt;
     var
       res : LongInt;
@@ -1561,26 +1279,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the torque regulation current when the motor is stopped, measured in mA.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the torque regulation current when the motor is stopped, measured in mA
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYStepperMotor.set_tCurrStop(newval:LongInt):integer;
     var
       rest_val: string;
@@ -1589,21 +1287,6 @@ implementation
       result := _setAttr('tCurrStop',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the torque regulation current when the motor is running, measured in mA.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the torque regulation current when the motor is running, measured in mA
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_TCURRRUN_INVALID.
-  /// </para>
-  ///-
   function TYStepperMotor.get_tCurrRun():LongInt;
     var
       res : LongInt;
@@ -1622,26 +1305,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the torque regulation current when the motor is running, measured in mA.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the torque regulation current when the motor is running, measured in mA
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYStepperMotor.set_tCurrRun(newval:LongInt):integer;
     var
       rest_val: string;
@@ -1702,21 +1365,6 @@ implementation
       result := _setAttr('auxMode',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the current value of the signal generated on the auxiliary output.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the current value of the signal generated on the auxiliary output
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_AUXSIGNAL_INVALID.
-  /// </para>
-  ///-
   function TYStepperMotor.get_auxSignal():LongInt;
     var
       res : LongInt;
@@ -1735,27 +1383,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the value of the signal generated on the auxiliary output.
-  /// <para>
-  ///   Acceptable values depend on the auxiliary output signal type configured.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the value of the signal generated on the auxiliary output
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYStepperMotor.set_auxSignal(newval:LongInt):integer;
     var
       rest_val: string;
@@ -1790,55 +1417,6 @@ implementation
       result := _setAttr('command',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YStepperMotor.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YStepperMotor</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYStepperMotor.FindStepperMotor(func: string):TYStepperMotor;
     var
       obj : TYStepperMotor;
@@ -1854,24 +1432,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYStepperMotor.registerValueCallback(callback: TYStepperMotorValueCallback):LongInt;
     var
       val : string;
@@ -1950,17 +1510,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Reinitialize the controller and clear all alert flags.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYStepperMotor.reset():LongInt;
     begin
       result := self.set_command('Z');
@@ -1968,20 +1517,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Starts the motor backward at the specified speed, to search for the motor home position.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="speed">
-  ///   desired speed, in steps per second.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYStepperMotor.findHomePosition(speed: double):LongInt;
     begin
       result := self.sendCommand('H'+inttostr(round(1000*speed)));
@@ -1989,23 +1524,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Starts the motor at a given speed.
-  /// <para>
-  ///   The time needed to reach the requested speed
-  ///   will depend on the acceleration parameters configured for the motor.
-  /// </para>
-  /// </summary>
-  /// <param name="speed">
-  ///   desired speed, in steps per second. The minimal non-zero speed
-  ///   is 0.001 pulse per second.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYStepperMotor.changeSpeed(speed: double):LongInt;
     begin
       result := self.sendCommand('R'+inttostr(round(1000*speed)));
@@ -2013,23 +1531,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Starts the motor to reach a given absolute position.
-  /// <para>
-  ///   The time needed to reach the requested
-  ///   position will depend on the acceleration and max speed parameters configured for
-  ///   the motor.
-  /// </para>
-  /// </summary>
-  /// <param name="absPos">
-  ///   absolute position, measured in steps from the origin.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYStepperMotor.moveTo(absPos: double):LongInt;
     begin
       result := self.sendCommand('M'+inttostr(round(16*absPos)));
@@ -2037,23 +1538,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Starts the motor to reach a given relative position.
-  /// <para>
-  ///   The time needed to reach the requested
-  ///   position will depend on the acceleration and max speed parameters configured for
-  ///   the motor.
-  /// </para>
-  /// </summary>
-  /// <param name="relPos">
-  ///   relative position, measured in steps from the current position.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYStepperMotor.moveRel(relPos: double):LongInt;
     begin
       result := self.sendCommand('m'+inttostr(round(16*relPos)));
@@ -2061,26 +1545,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Starts the motor to reach a given relative position, keeping the speed under the
-  ///   specified limit.
-  /// <para>
-  ///   The time needed to reach the requested position will depend on
-  ///   the acceleration parameters configured for the motor.
-  /// </para>
-  /// </summary>
-  /// <param name="relPos">
-  ///   relative position, measured in steps from the current position.
-  /// </param>
-  /// <param name="maxSpeed">
-  ///   limit speed, in steps per second.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYStepperMotor.moveRelSlow(relPos: double; maxSpeed: double):LongInt;
     begin
       result := self.sendCommand('m'+inttostr(round(16*relPos))+'@'+inttostr(round(1000*maxSpeed)));
@@ -2088,20 +1552,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Keep the motor in the same state for the specified amount of time, before processing next command.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="waitMs">
-  ///   wait time, specified in milliseconds.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYStepperMotor.pause(waitMs: LongInt):LongInt;
     begin
       result := self.sendCommand('_'+inttostr(waitMs));
@@ -2109,17 +1559,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Stops the motor with an emergency alert, without taking any additional precaution.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYStepperMotor.emergencyStop():LongInt;
     begin
       result := self.set_command('!');
@@ -2127,19 +1566,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Move one step in the direction opposite the direction set when the most recent alert was raised.
-  /// <para>
-  ///   The move occures even if the system is still in alert mode (end switch depressed). Caution.
-  ///   use this function with great care as it may cause mechanical damages !
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYStepperMotor.alertStepOut():LongInt;
     begin
       result := self.set_command('.');
@@ -2147,22 +1573,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Move one single step in the selected direction without regards to end switches.
-  /// <para>
-  ///   The move occures even if the system is still in alert mode (end switch depressed). Caution.
-  ///   use this function with great care as it may cause mechanical damages !
-  /// </para>
-  /// </summary>
-  /// <param name="dir">
-  ///   Value +1 ou -1, according to the desired direction of the move
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYStepperMotor.alertStepDir(dir: LongInt):LongInt;
     begin
       if not(dir <> 0) then
@@ -2181,17 +1591,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Stops the motor smoothly as soon as possible, without waiting for ongoing move completion.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYStepperMotor.abortAndBrake():LongInt;
     begin
       result := self.set_command('B');
@@ -2199,17 +1598,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Turn the controller into Hi-Z mode immediately, without waiting for ongoing move completion.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYStepperMotor.abortAndHiZ():LongInt;
     begin
       result := self.set_command('z');

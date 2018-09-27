@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_dualpower.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_dualpower.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindDualPower(), the high-level API for DualPower functions
  *
@@ -394,22 +394,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the current power source for module functions that require lots of current.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_POWERSTATE_OFF, Y_POWERSTATE_FROM_USB and Y_POWERSTATE_FROM_EXT corresponding to
-  ///   the current power source for module functions that require lots of current
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_POWERSTATE_INVALID.
-  /// </para>
-  ///-
   function TYDualPower.get_powerState():Integer;
     var
       res : Integer;
@@ -428,22 +412,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the selected power source for module functions that require lots of current.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_POWERCONTROL_AUTO, Y_POWERCONTROL_FROM_USB, Y_POWERCONTROL_FROM_EXT and
-  ///   Y_POWERCONTROL_OFF corresponding to the selected power source for module functions that require lots of current
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_POWERCONTROL_INVALID.
-  /// </para>
-  ///-
   function TYDualPower.get_powerControl():Integer;
     var
       res : Integer;
@@ -462,27 +430,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the selected power source for module functions that require lots of current.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a value among Y_POWERCONTROL_AUTO, Y_POWERCONTROL_FROM_USB, Y_POWERCONTROL_FROM_EXT and
-  ///   Y_POWERCONTROL_OFF corresponding to the selected power source for module functions that require lots of current
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDualPower.set_powerControl(newval:Integer):integer;
     var
       rest_val: string;
@@ -491,21 +438,6 @@ implementation
       result := _setAttr('powerControl',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the measured voltage on the external power source, in millivolts.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the measured voltage on the external power source, in millivolts
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_EXTVOLTAGE_INVALID.
-  /// </para>
-  ///-
   function TYDualPower.get_extVoltage():LongInt;
     var
       res : LongInt;
@@ -524,55 +456,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YDualPower.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YDualPower</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYDualPower.FindDualPower(func: string):TYDualPower;
     var
       obj : TYDualPower;
@@ -588,24 +471,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYDualPower.registerValueCallback(callback: TYDualPowerValueCallback):LongInt;
     var
       val : string;

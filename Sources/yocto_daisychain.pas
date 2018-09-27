@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_daisychain.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_daisychain.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindDaisyChain(), the high-level API for DaisyChain functions
  *
@@ -389,23 +389,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the state of the daisy-link between modules.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_DAISYSTATE_READY, Y_DAISYSTATE_IS_CHILD, Y_DAISYSTATE_FIRMWARE_MISMATCH,
-  ///   Y_DAISYSTATE_CHILD_MISSING and Y_DAISYSTATE_CHILD_LOST corresponding to the state of the daisy-link
-  ///   between modules
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DAISYSTATE_INVALID.
-  /// </para>
-  ///-
   function TYDaisyChain.get_daisyState():Integer;
     var
       res : Integer;
@@ -424,21 +407,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the number of child nodes currently detected.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of child nodes currently detected
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CHILDCOUNT_INVALID.
-  /// </para>
-  ///-
   function TYDaisyChain.get_childCount():LongInt;
     var
       res : LongInt;
@@ -457,21 +425,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the number of child nodes expected in normal conditions.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of child nodes expected in normal conditions
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_REQUIREDCHILDCOUNT_INVALID.
-  /// </para>
-  ///-
   function TYDaisyChain.get_requiredChildCount():LongInt;
     var
       res : LongInt;
@@ -490,29 +443,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the number of child nodes expected in normal conditions.
-  /// <para>
-  ///   If the value is zero, no check is performed. If it is non-zero, the number
-  ///   child nodes is checked on startup and the status will change to error if
-  ///   the count does not match.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the number of child nodes expected in normal conditions
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDaisyChain.set_requiredChildCount(newval:LongInt):integer;
     var
       rest_val: string;
@@ -521,55 +451,6 @@ implementation
       result := _setAttr('requiredChildCount',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YDaisyChain.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YDaisyChain</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYDaisyChain.FindDaisyChain(func: string):TYDaisyChain;
     var
       obj : TYDaisyChain;
@@ -585,24 +466,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYDaisyChain.registerValueCallback(callback: TYDaisyChainValueCallback):LongInt;
     var
       val : string;

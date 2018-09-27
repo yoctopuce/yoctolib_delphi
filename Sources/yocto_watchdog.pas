@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_watchdog.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_watchdog.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindWatchdog(), the high-level API for Watchdog functions
  *
@@ -910,22 +910,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the state of the watchdog (A for the idle position, B for the active position).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_STATE_A or Y_STATE_B, according to the state of the watchdog (A for the idle position, B
-  ///   for the active position)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_STATE_INVALID.
-  /// </para>
-  ///-
   function TYWatchdog.get_state():Integer;
     var
       res : Integer;
@@ -944,27 +928,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the state of the watchdog (A for the idle position, B for the active position).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_STATE_A or Y_STATE_B, according to the state of the watchdog (A for the idle position, B
-  ///   for the active position)
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWatchdog.set_state(newval:Integer):integer;
     var
       rest_val: string;
@@ -973,23 +936,6 @@ implementation
       result := _setAttr('state',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the state of the watchdog at device startup (A for the idle position, B for the active position, UNCHANGED for no change).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B corresponding
-  ///   to the state of the watchdog at device startup (A for the idle position, B for the active position,
-  ///   UNCHANGED for no change)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_STATEATPOWERON_INVALID.
-  /// </para>
-  ///-
   function TYWatchdog.get_stateAtPowerOn():Integer;
     var
       res : Integer;
@@ -1008,29 +954,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Preset the state of the watchdog at device startup (A for the idle position,
-  ///   B for the active position, UNCHANGED for no modification).
-  /// <para>
-  ///   Remember to call the matching module saveToFlash()
-  ///   method, otherwise this call will have no effect.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a value among Y_STATEATPOWERON_UNCHANGED, Y_STATEATPOWERON_A and Y_STATEATPOWERON_B
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWatchdog.set_stateAtPowerOn(newval:Integer):integer;
     var
       rest_val: string;
@@ -1039,22 +962,6 @@ implementation
       result := _setAttr('stateAtPowerOn',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically switching back in to B state.
-  /// <para>
-  ///   Zero means no maximum time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_MAXTIMEONSTATEA_INVALID.
-  /// </para>
-  ///-
   function TYWatchdog.get_maxTimeOnStateA():int64;
     var
       res : int64;
@@ -1073,27 +980,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically switching back in to B state.
-  /// <para>
-  ///   Use zero for no maximum time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWatchdog.set_maxTimeOnStateA(newval:int64):integer;
     var
       rest_val: string;
@@ -1102,22 +988,6 @@ implementation
       result := _setAttr('maxTimeOnStateA',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically switching back in to A state.
-  /// <para>
-  ///   Zero means no maximum time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_MAXTIMEONSTATEB_INVALID.
-  /// </para>
-  ///-
   function TYWatchdog.get_maxTimeOnStateB():int64;
     var
       res : int64;
@@ -1136,27 +1006,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically switching back in to A state.
-  /// <para>
-  ///   Use zero for no maximum time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWatchdog.set_maxTimeOnStateB(newval:int64):integer;
     var
       rest_val: string;
@@ -1165,22 +1014,6 @@ implementation
       result := _setAttr('maxTimeOnStateB',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the output state of the watchdog, when used as a simple switch (single throw).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_OUTPUT_OFF or Y_OUTPUT_ON, according to the output state of the watchdog, when used as a
-  ///   simple switch (single throw)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_OUTPUT_INVALID.
-  /// </para>
-  ///-
   function TYWatchdog.get_output():Integer;
     var
       res : Integer;
@@ -1199,27 +1032,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the output state of the watchdog, when used as a simple switch (single throw).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_OUTPUT_OFF or Y_OUTPUT_ON, according to the output state of the watchdog, when used as a
-  ///   simple switch (single throw)
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWatchdog.set_output(newval:Integer):integer;
     var
       rest_val: string;
@@ -1228,25 +1040,6 @@ implementation
       result := _setAttr('output',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the number of milliseconds remaining before the watchdog is returned to idle position
-  ///   (state A), during a measured pulse generation.
-  /// <para>
-  ///   When there is no ongoing pulse, returns zero.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of milliseconds remaining before the watchdog is returned to
-  ///   idle position
-  ///   (state A), during a measured pulse generation
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PULSETIMER_INVALID.
-  /// </para>
-  ///-
   function TYWatchdog.get_pulseTimer():int64;
     var
       res : int64;
@@ -1359,23 +1152,6 @@ implementation
       result := _setAttr('delayedPulseTimer', rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the number of milliseconds remaining before a pulse (delayedPulse() call)
-  ///   When there is no scheduled pulse, returns zero.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of milliseconds remaining before a pulse (delayedPulse() call)
-  ///   When there is no scheduled pulse, returns zero
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_COUNTDOWN_INVALID.
-  /// </para>
-  ///-
   function TYWatchdog.get_countdown():int64;
     var
       res : int64;
@@ -1394,21 +1170,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the watchdog runing state at module power on.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the watchdog runing state at module power on
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_AUTOSTART_INVALID.
-  /// </para>
-  ///-
   function TYWatchdog.get_autoStart():Integer;
     var
       res : Integer;
@@ -1427,28 +1188,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the watchdog runningsttae at module power on.
-  /// <para>
-  ///   Remember to call the
-  ///   saveToFlash() method and then to reboot the module to apply this setting.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_AUTOSTART_OFF or Y_AUTOSTART_ON, according to the watchdog runningsttae at module power on
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWatchdog.set_autoStart(newval:Integer):integer;
     var
       rest_val: string;
@@ -1457,21 +1196,6 @@ implementation
       result := _setAttr('autoStart',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the watchdog running state.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_RUNNING_OFF or Y_RUNNING_ON, according to the watchdog running state
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_RUNNING_INVALID.
-  /// </para>
-  ///-
   function TYWatchdog.get_running():Integer;
     var
       res : Integer;
@@ -1490,26 +1214,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the running state of the watchdog.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_RUNNING_OFF or Y_RUNNING_ON, according to the running state of the watchdog
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWatchdog.set_running(newval:Integer):integer;
     var
       rest_val: string;
@@ -1544,22 +1248,6 @@ implementation
       result := _setAttr('running', rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns  the waiting duration before a reset is automatically triggered by the watchdog, in milliseconds.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to  the waiting duration before a reset is automatically triggered by the
-  ///   watchdog, in milliseconds
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_TRIGGERDELAY_INVALID.
-  /// </para>
-  ///-
   function TYWatchdog.get_triggerDelay():int64;
     var
       res : int64;
@@ -1578,26 +1266,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the waiting delay before a reset is triggered by the watchdog, in milliseconds.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the waiting delay before a reset is triggered by the watchdog, in milliseconds
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWatchdog.set_triggerDelay(newval:int64):integer;
     var
       rest_val: string;
@@ -1606,21 +1274,6 @@ implementation
       result := _setAttr('triggerDelay',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the duration of resets caused by the watchdog, in milliseconds.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the duration of resets caused by the watchdog, in milliseconds
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_TRIGGERDURATION_INVALID.
-  /// </para>
-  ///-
   function TYWatchdog.get_triggerDuration():int64;
     var
       res : int64;
@@ -1639,26 +1292,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the duration of resets caused by the watchdog, in milliseconds.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the duration of resets caused by the watchdog, in milliseconds
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWatchdog.set_triggerDuration(newval:int64):integer;
     var
       rest_val: string;
@@ -1667,55 +1300,6 @@ implementation
       result := _setAttr('triggerDuration',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YWatchdog.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YWatchdog</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYWatchdog.FindWatchdog(func: string):TYWatchdog;
     var
       obj : TYWatchdog;
@@ -1731,24 +1315,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYWatchdog.registerValueCallback(callback: TYWatchdogValueCallback):LongInt;
     var
       val : string;

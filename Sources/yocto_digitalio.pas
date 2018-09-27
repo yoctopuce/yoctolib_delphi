@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_digitalio.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_digitalio.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindDigitalIO(), the high-level API for DigitalIO functions
  *
@@ -841,21 +841,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the digital IO port state: bit 0 represents input 0, and so on.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the digital IO port state: bit 0 represents input 0, and so on
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PORTSTATE_INVALID.
-  /// </para>
-  ///-
   function TYDigitalIO.get_portState():LongInt;
     var
       res : LongInt;
@@ -874,28 +859,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the digital IO port state: bit 0 represents input 0, and so on.
-  /// <para>
-  ///   This function has no effect
-  ///   on bits configured as input in portDirection.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the digital IO port state: bit 0 represents input 0, and so on
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDigitalIO.set_portState(newval:LongInt):integer;
     var
       rest_val: string;
@@ -904,22 +867,6 @@ implementation
       result := _setAttr('portState',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the IO direction of all bits of the port: 0 makes a bit an input, 1 makes it an output.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the IO direction of all bits of the port: 0 makes a bit an input, 1
-  ///   makes it an output
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PORTDIRECTION_INVALID.
-  /// </para>
-  ///-
   function TYDigitalIO.get_portDirection():LongInt;
     var
       res : LongInt;
@@ -938,28 +885,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the IO direction of all bits of the port: 0 makes a bit an input, 1 makes it an output.
-  /// <para>
-  ///   Remember to call the saveToFlash() method  to make sure the setting is kept after a reboot.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the IO direction of all bits of the port: 0 makes a bit an input, 1
-  ///   makes it an output
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDigitalIO.set_portDirection(newval:LongInt):integer;
     var
       rest_val: string;
@@ -968,23 +893,6 @@ implementation
       result := _setAttr('portDirection',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the electrical interface for each bit of the port.
-  /// <para>
-  ///   For each bit set to 0  the matching I/O works in the regular,
-  ///   intuitive way, for each bit set to 1, the I/O works in reverse mode.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the electrical interface for each bit of the port
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PORTOPENDRAIN_INVALID.
-  /// </para>
-  ///-
   function TYDigitalIO.get_portOpenDrain():LongInt;
     var
       res : LongInt;
@@ -1003,29 +911,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the electrical interface for each bit of the port.
-  /// <para>
-  ///   0 makes a bit a regular input/output, 1 makes
-  ///   it an open-drain (open-collector) input/output. Remember to call the
-  ///   saveToFlash() method  to make sure the setting is kept after a reboot.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the electrical interface for each bit of the port
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDigitalIO.set_portOpenDrain(newval:LongInt):integer;
     var
       rest_val: string;
@@ -1034,23 +919,6 @@ implementation
       result := _setAttr('portOpenDrain',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the polarity of all the bits of the port.
-  /// <para>
-  ///   For each bit set to 0, the matching I/O works the regular,
-  ///   intuitive way; for each bit set to 1, the I/O works in reverse mode.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the polarity of all the bits of the port
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PORTPOLARITY_INVALID.
-  /// </para>
-  ///-
   function TYDigitalIO.get_portPolarity():LongInt;
     var
       res : LongInt;
@@ -1069,30 +937,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the polarity of all the bits of the port: For each bit set to 0, the matching I/O works the regular,
-  ///   intuitive way; for each bit set to 1, the I/O works in reverse mode.
-  /// <para>
-  ///   Remember to call the saveToFlash() method  to make sure the setting will be kept after a reboot.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the polarity of all the bits of the port: For each bit set to 0, the
-  ///   matching I/O works the regular,
-  ///   intuitive way; for each bit set to 1, the I/O works in reverse mode
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDigitalIO.set_portPolarity(newval:LongInt):integer;
     var
       rest_val: string;
@@ -1101,24 +945,6 @@ implementation
       result := _setAttr('portPolarity',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the port state diagnostics (Yocto-IO and Yocto-MaxiIO-V2 only).
-  /// <para>
-  ///   Bit 0 indicates a shortcut on
-  ///   output 0, etc. Bit 8 indicates a power failure, and bit 9 signals overheating (overcurrent).
-  ///   During normal use, all diagnostic bits should stay clear.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the port state diagnostics (Yocto-IO and Yocto-MaxiIO-V2 only)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PORTDIAGS_INVALID.
-  /// </para>
-  ///-
   function TYDigitalIO.get_portDiags():LongInt;
     var
       res : LongInt;
@@ -1137,21 +963,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the number of bits implemented in the I/O port.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of bits implemented in the I/O port
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PORTSIZE_INVALID.
-  /// </para>
-  ///-
   function TYDigitalIO.get_portSize():LongInt;
     var
       res : LongInt;
@@ -1170,22 +981,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the voltage source used to drive output bits.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_OUTPUTVOLTAGE_USB_5V, Y_OUTPUTVOLTAGE_USB_3V and Y_OUTPUTVOLTAGE_EXT_V
-  ///   corresponding to the voltage source used to drive output bits
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_OUTPUTVOLTAGE_INVALID.
-  /// </para>
-  ///-
   function TYDigitalIO.get_outputVoltage():Integer;
     var
       res : Integer;
@@ -1204,28 +999,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the voltage source used to drive output bits.
-  /// <para>
-  ///   Remember to call the saveToFlash() method  to make sure the setting is kept after a reboot.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a value among Y_OUTPUTVOLTAGE_USB_5V, Y_OUTPUTVOLTAGE_USB_3V and Y_OUTPUTVOLTAGE_EXT_V
-  ///   corresponding to the voltage source used to drive output bits
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDigitalIO.set_outputVoltage(newval:Integer):integer;
     var
       rest_val: string;
@@ -1260,55 +1033,6 @@ implementation
       result := _setAttr('command',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YDigitalIO.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YDigitalIO</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYDigitalIO.FindDigitalIO(func: string):TYDigitalIO;
     var
       obj : TYDigitalIO;
@@ -1324,24 +1048,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYDigitalIO.registerValueCallback(callback: TYDigitalIOValueCallback):LongInt;
     var
       val : string;
@@ -1384,25 +1090,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sets a single bit of the I/O port.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="bitno">
-  ///   the bit number; lowest bit has index 0
-  /// </param>
-  /// <param name="bitstate">
-  ///   the state of the bit (1 or 0)
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDigitalIO.set_bitState(bitno: LongInt; bitstate: LongInt):LongInt;
     begin
       if not(bitstate >= 0) then
@@ -1422,22 +1109,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the state of a single bit of the I/O port.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="bitno">
-  ///   the bit number; lowest bit has index 0
-  /// </param>
-  /// <returns>
-  ///   the bit state (0 or 1)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDigitalIO.get_bitState(bitno: LongInt):LongInt;
     var
       portVal : LongInt;
@@ -1448,22 +1119,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Reverts a single bit of the I/O port.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="bitno">
-  ///   the bit number; lowest bit has index 0
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDigitalIO.toggle_bitState(bitno: LongInt):LongInt;
     begin
       result := self.set_command('T'+inttostr(bitno));
@@ -1471,26 +1126,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes  the direction of a single bit from the I/O port.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="bitno">
-  ///   the bit number; lowest bit has index 0
-  /// </param>
-  /// <param name="bitdirection">
-  ///   direction to set, 0 makes the bit an input, 1 makes it an output.
-  ///   Remember to call the   <c>saveToFlash()</c> method to make sure the setting is kept after a reboot.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDigitalIO.set_bitDirection(bitno: LongInt; bitdirection: LongInt):LongInt;
     begin
       if not(bitdirection >= 0) then
@@ -1510,22 +1145,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the direction of a single bit from the I/O port (0 means the bit is an input, 1  an output).
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="bitno">
-  ///   the bit number; lowest bit has index 0
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDigitalIO.get_bitDirection(bitno: LongInt):LongInt;
     var
       portDir : LongInt;
@@ -1536,26 +1155,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the polarity of a single bit from the I/O port.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="bitno">
-  ///   the bit number; lowest bit has index 0.
-  /// </param>
-  /// <param name="bitpolarity">
-  ///   polarity to set, 0 makes the I/O work in regular mode, 1 makes the I/O  works in reverse mode.
-  ///   Remember to call the   <c>saveToFlash()</c> method to make sure the setting is kept after a reboot.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDigitalIO.set_bitPolarity(bitno: LongInt; bitpolarity: LongInt):LongInt;
     begin
       if not(bitpolarity >= 0) then
@@ -1575,22 +1174,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the polarity of a single bit from the I/O port (0 means the I/O works in regular mode, 1 means the I/O  works in reverse mode).
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="bitno">
-  ///   the bit number; lowest bit has index 0
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDigitalIO.get_bitPolarity(bitno: LongInt):LongInt;
     var
       portPol : LongInt;
@@ -1601,27 +1184,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes  the electrical interface of a single bit from the I/O port.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="bitno">
-  ///   the bit number; lowest bit has index 0
-  /// </param>
-  /// <param name="opendrain">
-  ///   0 makes a bit a regular input/output, 1 makes
-  ///   it an open-drain (open-collector) input/output. Remember to call the
-  ///   <c>saveToFlash()</c> method to make sure the setting is kept after a reboot.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDigitalIO.set_bitOpenDrain(bitno: LongInt; opendrain: LongInt):LongInt;
     begin
       if not(opendrain >= 0) then
@@ -1641,24 +1203,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the type of electrical interface of a single bit from the I/O port.
-  /// <para>
-  ///   (0 means the bit is an input, 1  an output).
-  /// </para>
-  /// </summary>
-  /// <param name="bitno">
-  ///   the bit number; lowest bit has index 0
-  /// </param>
-  /// <returns>
-  ///   0 means the a bit is a regular input/output, 1 means the bit is an open-drain
-  ///   (open-collector) input/output.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDigitalIO.get_bitOpenDrain(bitno: LongInt):LongInt;
     var
       portOpenDrain : LongInt;
@@ -1669,28 +1213,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Triggers a pulse on a single bit for a specified duration.
-  /// <para>
-  ///   The specified bit
-  ///   will be turned to 1, and then back to 0 after the given duration.
-  /// </para>
-  /// </summary>
-  /// <param name="bitno">
-  ///   the bit number; lowest bit has index 0
-  /// </param>
-  /// <param name="ms_duration">
-  ///   desired pulse duration in milliseconds. Be aware that the device time
-  ///   resolution is not guaranteed up to the millisecond.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDigitalIO.pulse(bitno: LongInt; ms_duration: LongInt):LongInt;
     begin
       result := self.set_command('Z'+inttostr( bitno)+',0,'+inttostr(ms_duration));
@@ -1698,31 +1220,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Schedules a pulse on a single bit for a specified duration.
-  /// <para>
-  ///   The specified bit
-  ///   will be turned to 1, and then back to 0 after the given duration.
-  /// </para>
-  /// </summary>
-  /// <param name="bitno">
-  ///   the bit number; lowest bit has index 0
-  /// </param>
-  /// <param name="ms_delay">
-  ///   waiting time before the pulse, in milliseconds
-  /// </param>
-  /// <param name="ms_duration">
-  ///   desired pulse duration in milliseconds. Be aware that the device time
-  ///   resolution is not guaranteed up to the millisecond.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDigitalIO.delayedPulse(bitno: LongInt; ms_delay: LongInt; ms_duration: LongInt):LongInt;
     begin
       result := self.set_command('Z'+inttostr(bitno)+','+inttostr(ms_delay)+','+inttostr(ms_duration));

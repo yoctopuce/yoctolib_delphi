@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_pwmoutput.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_pwmoutput.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindPwmOutput(), the high-level API for PwmOutput functions
  *
@@ -806,21 +806,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the state of the PWMs.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the state of the PWMs
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_ENABLED_INVALID.
-  /// </para>
-  ///-
   function TYPwmOutput.get_enabled():Integer;
     var
       res : Integer;
@@ -839,26 +824,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Stops or starts the PWM.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_ENABLED_FALSE or Y_ENABLED_TRUE
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPwmOutput.set_enabled(newval:Integer):integer;
     var
       rest_val: string;
@@ -867,28 +832,6 @@ implementation
       result := _setAttr('enabled',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Changes the PWM frequency.
-  /// <para>
-  ///   The duty cycle is kept unchanged thanks to an
-  ///   automatic pulse width change.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the PWM frequency
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPwmOutput.set_frequency(newval:double):integer;
     var
       rest_val: string;
@@ -897,21 +840,6 @@ implementation
       result := _setAttr('frequency',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the PWM frequency in Hz.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the PWM frequency in Hz
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_FREQUENCY_INVALID.
-  /// </para>
-  ///-
   function TYPwmOutput.get_frequency():double;
     var
       res : double;
@@ -930,26 +858,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the PWM period in milliseconds.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the PWM period in milliseconds
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPwmOutput.set_period(newval:double):integer;
     var
       rest_val: string;
@@ -958,21 +866,6 @@ implementation
       result := _setAttr('period',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the PWM period in milliseconds.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the PWM period in milliseconds
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PERIOD_INVALID.
-  /// </para>
-  ///-
   function TYPwmOutput.get_period():double;
     var
       res : double;
@@ -991,26 +884,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the PWM duty cycle, in per cents.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the PWM duty cycle, in per cents
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPwmOutput.set_dutyCycle(newval:double):integer;
     var
       rest_val: string;
@@ -1019,21 +892,6 @@ implementation
       result := _setAttr('dutyCycle',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the PWM duty cycle, in per cents.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the PWM duty cycle, in per cents
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DUTYCYCLE_INVALID.
-  /// </para>
-  ///-
   function TYPwmOutput.get_dutyCycle():double;
     var
       res : double;
@@ -1052,27 +910,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the PWM pulse length, in milliseconds.
-  /// <para>
-  ///   A pulse length cannot be longer than period, otherwise it is truncated.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the PWM pulse length, in milliseconds
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPwmOutput.set_pulseDuration(newval:double):integer;
     var
       rest_val: string;
@@ -1081,21 +918,6 @@ implementation
       result := _setAttr('pulseDuration',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the PWM pulse length in milliseconds, as a floating point number.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the PWM pulse length in milliseconds, as a floating point number
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PULSEDURATION_INVALID.
-  /// </para>
-  ///-
   function TYPwmOutput.get_pulseDuration():double;
     var
       res : double;
@@ -1140,21 +962,6 @@ implementation
       result := _setAttr('pwmTransition',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the state of the PWM at device power on.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE, according to the state of the PWM at device power on
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_ENABLEDATPOWERON_INVALID.
-  /// </para>
-  ///-
   function TYPwmOutput.get_enabledAtPowerOn():Integer;
     var
       res : Integer;
@@ -1173,28 +980,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the state of the PWM at device power on.
-  /// <para>
-  ///   Remember to call the matching module saveToFlash()
-  ///   method, otherwise this call will have no effect.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_ENABLEDATPOWERON_FALSE or Y_ENABLEDATPOWERON_TRUE, according to the state of the PWM at device power on
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPwmOutput.set_enabledAtPowerOn(newval:Integer):integer;
     var
       rest_val: string;
@@ -1203,28 +988,6 @@ implementation
       result := _setAttr('enabledAtPowerOn',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Changes the PWM duty cycle at device power on.
-  /// <para>
-  ///   Remember to call the matching
-  ///   module saveToFlash() method, otherwise this call will have no effect.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the PWM duty cycle at device power on
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPwmOutput.set_dutyCycleAtPowerOn(newval:double):integer;
     var
       rest_val: string;
@@ -1233,22 +996,6 @@ implementation
       result := _setAttr('dutyCycleAtPowerOn',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the PWMs duty cycle at device power on as a floating point number between 0 and 100.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the PWMs duty cycle at device power on as a floating point
-  ///   number between 0 and 100
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DUTYCYCLEATPOWERON_INVALID.
-  /// </para>
-  ///-
   function TYPwmOutput.get_dutyCycleAtPowerOn():double;
     var
       res : double;
@@ -1267,55 +1014,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YPwmOutput.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YPwmOutput</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYPwmOutput.FindPwmOutput(func: string):TYPwmOutput;
     var
       obj : TYPwmOutput;
@@ -1331,24 +1029,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYPwmOutput.registerValueCallback(callback: TYPwmOutputValueCallback):LongInt;
     var
       val : string;
@@ -1391,27 +1071,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Performs a smooth transistion of the pulse duration toward a given value.
-  /// <para>
-  ///   Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
-  /// </para>
-  /// </summary>
-  /// <param name="ms_target">
-  ///   new pulse duration at the end of the transition
-  ///   (floating-point number, representing the pulse duration in milliseconds)
-  /// </param>
-  /// <param name="ms_duration">
-  ///   total duration of the transition, in milliseconds
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPwmOutput.pulseDurationMove(ms_target: double; ms_duration: LongInt):LongInt;
     var
       newval : string;
@@ -1426,27 +1085,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Performs a smooth change of the duty cycle toward a given value.
-  /// <para>
-  ///   Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
-  /// </para>
-  /// </summary>
-  /// <param name="target">
-  ///   new duty cycle at the end of the transition
-  ///   (percentage, floating-point number between 0 and 100)
-  /// </param>
-  /// <param name="ms_duration">
-  ///   total duration of the transition, in milliseconds
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPwmOutput.dutyCycleMove(target: double; ms_duration: LongInt):LongInt;
     var
       newval : string;
@@ -1465,26 +1103,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Performs a smooth frequency change toward a given value.
-  /// <para>
-  ///   Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
-  /// </para>
-  /// </summary>
-  /// <param name="target">
-  ///   new freuency at the end of the transition (floating-point number)
-  /// </param>
-  /// <param name="ms_duration">
-  ///   total duration of the transition, in milliseconds
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPwmOutput.frequencyMove(target: double; ms_duration: LongInt):LongInt;
     var
       newval : string;
@@ -1499,30 +1117,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Performs a smooth transition toward a specified value of the phase shift between this channel
-  ///   and the other channel.
-  /// <para>
-  ///   The phase shift is executed by slightly changing the frequency
-  ///   temporarily during the specified duration. This function only makes sense when both channels
-  ///   are running, either at the same frequency, or at a multiple of the channel frequency.
-  ///   Any period, frequency, duty cycle or pulse width change will cancel any ongoing transition process.
-  /// </para>
-  /// </summary>
-  /// <param name="target">
-  ///   phase shift at the end of the transition, in milliseconds (floating-point number)
-  /// </param>
-  /// <param name="ms_duration">
-  ///   total duration of the transition, in milliseconds
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPwmOutput.phaseMove(target: double; ms_duration: LongInt):LongInt;
     var
       newval : string;
@@ -1533,27 +1127,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Trigger a given number of pulses of specified duration, at current frequency.
-  /// <para>
-  ///   At the end of the pulse train, revert to the original state of the PWM generator.
-  /// </para>
-  /// </summary>
-  /// <param name="ms_target">
-  ///   desired pulse duration
-  ///   (floating-point number, representing the pulse duration in milliseconds)
-  /// </param>
-  /// <param name="n_pulses">
-  ///   desired pulse count
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPwmOutput.triggerPulsesByDuration(ms_target: double; n_pulses: LongInt):LongInt;
     var
       newval : string;
@@ -1568,27 +1141,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Trigger a given number of pulses of specified duration, at current frequency.
-  /// <para>
-  ///   At the end of the pulse train, revert to the original state of the PWM generator.
-  /// </para>
-  /// </summary>
-  /// <param name="target">
-  ///   desired duty cycle for the generated pulses
-  ///   (percentage, floating-point number between 0 and 100)
-  /// </param>
-  /// <param name="n_pulses">
-  ///   desired pulse count
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPwmOutput.triggerPulsesByDutyCycle(target: double; n_pulses: LongInt):LongInt;
     var
       newval : string;
@@ -1607,26 +1159,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Trigger a given number of pulses at the specified frequency, using current duty cycle.
-  /// <para>
-  ///   At the end of the pulse train, revert to the original state of the PWM generator.
-  /// </para>
-  /// </summary>
-  /// <param name="target">
-  ///   desired frequency for the generated pulses (floating-point number)
-  /// </param>
-  /// <param name="n_pulses">
-  ///   desired pulse count
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPwmOutput.triggerPulsesByFrequency(target: double; n_pulses: LongInt):LongInt;
     var
       newval : string;

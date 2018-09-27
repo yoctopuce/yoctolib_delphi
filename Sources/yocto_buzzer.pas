@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_buzzer.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_buzzer.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindBuzzer(), the high-level API for Buzzer functions
  *
@@ -696,27 +696,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Changes the frequency of the signal sent to the buzzer.
-  /// <para>
-  ///   A zero value stops the buzzer.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the frequency of the signal sent to the buzzer
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYBuzzer.set_frequency(newval:double):integer;
     var
       rest_val: string;
@@ -725,21 +704,6 @@ implementation
       result := _setAttr('frequency',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the  frequency of the signal sent to the buzzer/speaker.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the  frequency of the signal sent to the buzzer/speaker
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_FREQUENCY_INVALID.
-  /// </para>
-  ///-
   function TYBuzzer.get_frequency():double;
     var
       res : double;
@@ -758,21 +722,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the volume of the signal sent to the buzzer/speaker.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the volume of the signal sent to the buzzer/speaker
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_VOLUME_INVALID.
-  /// </para>
-  ///-
   function TYBuzzer.get_volume():LongInt;
     var
       res : LongInt;
@@ -791,26 +740,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the volume of the signal sent to the buzzer/speaker.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the volume of the signal sent to the buzzer/speaker
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYBuzzer.set_volume(newval:LongInt):integer;
     var
       rest_val: string;
@@ -819,21 +748,6 @@ implementation
       result := _setAttr('volume',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the current length of the playing sequence.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the current length of the playing sequence
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PLAYSEQSIZE_INVALID.
-  /// </para>
-  ///-
   function TYBuzzer.get_playSeqSize():LongInt;
     var
       res : LongInt;
@@ -852,21 +766,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the maximum length of the playing sequence.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the maximum length of the playing sequence
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PLAYSEQMAXSIZE_INVALID.
-  /// </para>
-  ///-
   function TYBuzzer.get_playSeqMaxSize():LongInt;
     var
       res : LongInt;
@@ -885,25 +784,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the playing sequence signature.
-  /// <para>
-  ///   As playing
-  ///   sequences cannot be read from the device, this can be used
-  ///   to detect if a specific playing sequence is already
-  ///   programmed.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the playing sequence signature
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PLAYSEQSIGNATURE_INVALID.
-  /// </para>
-  ///-
   function TYBuzzer.get_playSeqSignature():LongInt;
     var
       res : LongInt;
@@ -948,55 +828,6 @@ implementation
       result := _setAttr('command',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YBuzzer.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YBuzzer</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYBuzzer.FindBuzzer(func: string):TYBuzzer;
     var
       obj : TYBuzzer;
@@ -1012,24 +843,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYBuzzer.registerValueCallback(callback: TYBuzzerValueCallback):LongInt;
     var
       val : string;
@@ -1079,23 +892,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Adds a new frequency transition to the playing sequence.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="freq">
-  ///   desired frequency when the transition is completed, in Hz
-  /// </param>
-  /// <param name="msDelay">
-  ///   duration of the frequency transition, in milliseconds.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYBuzzer.addFreqMoveToPlaySeq(freq: LongInt; msDelay: LongInt):LongInt;
     begin
       result := self.sendCommand('A'+inttostr(freq)+','+inttostr(msDelay));
@@ -1103,23 +899,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Adds a pulse to the playing sequence.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="freq">
-  ///   pulse frequency, in Hz
-  /// </param>
-  /// <param name="msDuration">
-  ///   pulse duration, in milliseconds.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYBuzzer.addPulseToPlaySeq(freq: LongInt; msDuration: LongInt):LongInt;
     begin
       result := self.sendCommand('B'+inttostr(freq)+','+inttostr(msDuration));
@@ -1127,27 +906,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Adds a new volume transition to the playing sequence.
-  /// <para>
-  ///   Frequency stays untouched:
-  ///   if frequency is at zero, the transition has no effect.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="volume">
-  ///   desired volume when the transition is completed, as a percentage.
-  /// </param>
-  /// <param name="msDuration">
-  ///   duration of the volume transition, in milliseconds.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYBuzzer.addVolMoveToPlaySeq(volume: LongInt; msDuration: LongInt):LongInt;
     begin
       result := self.sendCommand('C'+inttostr(volume)+','+inttostr(msDuration));
@@ -1155,26 +913,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Adds notes to the playing sequence.
-  /// <para>
-  ///   Notes are provided as text words, separated by
-  ///   spaces. The pitch is specified using the usual letter from A to G. The duration is
-  ///   specified as the divisor of a whole note: 4 for a fourth, 8 for an eight note, etc.
-  ///   Some modifiers are supported: <c>#</c> and <c>b</c> to alter a note pitch,
-  ///   <c>'</c> and <c>,</c> to move to the upper/lower octave, <c>.</c> to enlarge
-  ///   the note duration.
-  /// </para>
-  /// </summary>
-  /// <param name="notes">
-  ///   notes to be played, as a text string.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYBuzzer.addNotesToPlaySeq(notes: string):LongInt;
     var
       tempo : LongInt;
@@ -1374,20 +1112,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Starts the preprogrammed playing sequence.
-  /// <para>
-  ///   The sequence
-  ///   runs in loop until it is stopped by stopPlaySeq or an explicit
-  ///   change. To play the sequence only once, use <c>oncePlaySeq()</c>.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYBuzzer.startPlaySeq():LongInt;
     begin
       result := self.sendCommand('S');
@@ -1395,17 +1119,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Stops the preprogrammed playing sequence and sets the frequency to zero.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYBuzzer.stopPlaySeq():LongInt;
     begin
       result := self.sendCommand('X');
@@ -1413,17 +1126,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Resets the preprogrammed playing sequence and sets the frequency to zero.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYBuzzer.resetPlaySeq():LongInt;
     begin
       result := self.sendCommand('Z');
@@ -1431,17 +1133,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Starts the preprogrammed playing sequence and run it once only.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYBuzzer.oncePlaySeq():LongInt;
     begin
       result := self.sendCommand('s');
@@ -1449,25 +1140,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Activates the buzzer for a short duration.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="frequency">
-  ///   pulse frequency, in hertz
-  /// </param>
-  /// <param name="duration">
-  ///   pulse duration in millseconds
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYBuzzer.pulse(frequency: LongInt; duration: LongInt):LongInt;
     begin
       result := self.set_command('P'+inttostr(frequency)+','+inttostr(duration));
@@ -1475,25 +1147,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Makes the buzzer frequency change over a period of time.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="frequency">
-  ///   frequency to reach, in hertz. A frequency under 25Hz stops the buzzer.
-  /// </param>
-  /// <param name="duration">
-  ///   pulse duration in millseconds
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYBuzzer.freqMove(frequency: LongInt; duration: LongInt):LongInt;
     begin
       result := self.set_command('F'+inttostr(frequency)+','+inttostr(duration));
@@ -1501,25 +1154,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Makes the buzzer volume change over a period of time, frequency  stays untouched.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="volume">
-  ///   volume to reach in %
-  /// </param>
-  /// <param name="duration">
-  ///   change duration in millseconds
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYBuzzer.volumeMove(volume: LongInt; duration: LongInt):LongInt;
     begin
       result := self.set_command('V'+inttostr(volume)+','+inttostr(duration));
@@ -1527,26 +1161,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Immediately play a note sequence.
-  /// <para>
-  ///   Notes are provided as text words, separated by
-  ///   spaces. The pitch is specified using the usual letter from A to G. The duration is
-  ///   specified as the divisor of a whole note: 4 for a fourth, 8 for an eight note, etc.
-  ///   Some modifiers are supported: <c>#</c> and <c>b</c> to alter a note pitch,
-  ///   <c>'</c> and <c>,</c> to move to the upper/lower octave, <c>.</c> to enlarge
-  ///   the note duration.
-  /// </para>
-  /// </summary>
-  /// <param name="notes">
-  ///   notes to be played, as a text string.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYBuzzer.playNotes(notes: string):LongInt;
     begin
       self.resetPlaySeq;

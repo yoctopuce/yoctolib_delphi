@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_display.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -1632,21 +1632,6 @@ destructor TYDisplay.destroy();
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns true if the screen is powered, false otherwise.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to true if the screen is powered, false otherwise
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_ENABLED_INVALID.
-  /// </para>
-  ///-
   function TYDisplay.get_enabled():Integer;
     var
       res : Integer;
@@ -1665,26 +1650,6 @@ destructor TYDisplay.destroy();
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the power state of the display.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the power state of the display
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplay.set_enabled(newval:Integer):integer;
     var
       rest_val: string;
@@ -1693,21 +1658,6 @@ destructor TYDisplay.destroy();
       result := _setAttr('enabled',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the name of the sequence to play when the displayed is powered on.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the name of the sequence to play when the displayed is powered on
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_STARTUPSEQ_INVALID.
-  /// </para>
-  ///-
   function TYDisplay.get_startupSeq():string;
     var
       res : string;
@@ -1726,28 +1676,6 @@ destructor TYDisplay.destroy();
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the name of the sequence to play when the displayed is powered on.
-  /// <para>
-  ///   Remember to call the saveToFlash() method of the module if the
-  ///   modification must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the name of the sequence to play when the displayed is powered on
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplay.set_startupSeq(newval:string):integer;
     var
       rest_val: string;
@@ -1756,21 +1684,6 @@ destructor TYDisplay.destroy();
       result := _setAttr('startupSeq',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the luminosity of the  module informative leds (from 0 to 100).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the luminosity of the  module informative leds (from 0 to 100)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_BRIGHTNESS_INVALID.
-  /// </para>
-  ///-
   function TYDisplay.get_brightness():LongInt;
     var
       res : LongInt;
@@ -1789,29 +1702,6 @@ destructor TYDisplay.destroy();
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the brightness of the display.
-  /// <para>
-  ///   The parameter is a value between 0 and
-  ///   100. Remember to call the saveToFlash() method of the module if the
-  ///   modification must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the brightness of the display
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplay.set_brightness(newval:LongInt):integer;
     var
       rest_val: string;
@@ -1820,22 +1710,6 @@ destructor TYDisplay.destroy();
       result := _setAttr('brightness',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the currently selected display orientation.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_ORIENTATION_LEFT, Y_ORIENTATION_UP, Y_ORIENTATION_RIGHT and Y_ORIENTATION_DOWN
-  ///   corresponding to the currently selected display orientation
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_ORIENTATION_INVALID.
-  /// </para>
-  ///-
   function TYDisplay.get_orientation():Integer;
     var
       res : Integer;
@@ -1854,29 +1728,6 @@ destructor TYDisplay.destroy();
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the display orientation.
-  /// <para>
-  ///   Remember to call the saveToFlash()
-  ///   method of the module if the modification must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a value among Y_ORIENTATION_LEFT, Y_ORIENTATION_UP, Y_ORIENTATION_RIGHT and Y_ORIENTATION_DOWN
-  ///   corresponding to the display orientation
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplay.set_orientation(newval:Integer):integer;
     var
       rest_val: string;
@@ -1885,21 +1736,6 @@ destructor TYDisplay.destroy();
       result := _setAttr('orientation',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the display width, in pixels.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the display width, in pixels
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DISPLAYWIDTH_INVALID.
-  /// </para>
-  ///-
   function TYDisplay.get_displayWidth():LongInt;
     var
       res : LongInt;
@@ -1918,21 +1754,6 @@ destructor TYDisplay.destroy();
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the display height, in pixels.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the display height, in pixels
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DISPLAYHEIGHT_INVALID.
-  /// </para>
-  ///-
   function TYDisplay.get_displayHeight():LongInt;
     var
       res : LongInt;
@@ -1951,22 +1772,6 @@ destructor TYDisplay.destroy();
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the display type: monochrome, gray levels or full color.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_DISPLAYTYPE_MONO, Y_DISPLAYTYPE_GRAY and Y_DISPLAYTYPE_RGB corresponding to the
-  ///   display type: monochrome, gray levels or full color
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DISPLAYTYPE_INVALID.
-  /// </para>
-  ///-
   function TYDisplay.get_displayType():Integer;
     var
       res : Integer;
@@ -1985,21 +1790,6 @@ destructor TYDisplay.destroy();
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the width of the layers to draw on, in pixels.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the width of the layers to draw on, in pixels
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LAYERWIDTH_INVALID.
-  /// </para>
-  ///-
   function TYDisplay.get_layerWidth():LongInt;
     var
       res : LongInt;
@@ -2018,21 +1808,6 @@ destructor TYDisplay.destroy();
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the height of the layers to draw on, in pixels.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the height of the layers to draw on, in pixels
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LAYERHEIGHT_INVALID.
-  /// </para>
-  ///-
   function TYDisplay.get_layerHeight():LongInt;
     var
       res : LongInt;
@@ -2051,21 +1826,6 @@ destructor TYDisplay.destroy();
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the number of available layers to draw on.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of available layers to draw on
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LAYERCOUNT_INVALID.
-  /// </para>
-  ///-
   function TYDisplay.get_layerCount():LongInt;
     var
       res : LongInt;
@@ -2110,55 +1870,6 @@ destructor TYDisplay.destroy();
       result := _setAttr('command',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YDisplay.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YDisplay</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYDisplay.FindDisplay(func: string):TYDisplay;
     var
       obj : TYDisplay;
@@ -2174,24 +1885,6 @@ destructor TYDisplay.destroy();
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYDisplay.registerValueCallback(callback: TYDisplayValueCallback):LongInt;
     var
       val : string;
@@ -2234,23 +1927,6 @@ destructor TYDisplay.destroy();
     end;
 
 
-  ////
-  /// <summary>
-  ///   Clears the display screen and resets all display layers to their default state.
-  /// <para>
-  ///   Using this function in a sequence will kill the sequence play-back. Don't use that
-  ///   function to reset the display at sequence start-up.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplay.resetAll():LongInt;
     begin
       self.flushLayers;
@@ -2260,26 +1936,6 @@ destructor TYDisplay.destroy();
     end;
 
 
-  ////
-  /// <summary>
-  ///   Smoothly changes the brightness of the screen to produce a fade-in or fade-out
-  ///   effect.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="brightness">
-  ///   the new screen brightness
-  /// </param>
-  /// <param name="duration">
-  ///   duration of the brightness transition, in milliseconds.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplay.fade(brightness: LongInt; duration: LongInt):LongInt;
     begin
       self.flushLayers;
@@ -2288,21 +1944,6 @@ destructor TYDisplay.destroy();
     end;
 
 
-  ////
-  /// <summary>
-  ///   Starts to record all display commands into a sequence, for later replay.
-  /// <para>
-  ///   The name used to store the sequence is specified when calling
-  ///   <c>saveSequence()</c>, once the recording is complete.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplay.newSequence():LongInt;
     begin
       self.flushLayers;
@@ -2313,25 +1954,6 @@ destructor TYDisplay.destroy();
     end;
 
 
-  ////
-  /// <summary>
-  ///   Stops recording display commands and saves the sequence into the specified
-  ///   file on the display internal memory.
-  /// <para>
-  ///   The sequence can be later replayed
-  ///   using <c>playSequence()</c>.
-  /// </para>
-  /// </summary>
-  /// <param name="sequenceName">
-  ///   the name of the newly created sequence
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplay.saveSequence(sequenceName: string):LongInt;
     begin
       self.flushLayers;
@@ -2344,23 +1966,6 @@ destructor TYDisplay.destroy();
     end;
 
 
-  ////
-  /// <summary>
-  ///   Replays a display sequence previously recorded using
-  ///   <c>newSequence()</c> and <c>saveSequence()</c>.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="sequenceName">
-  ///   the name of the newly created sequence
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplay.playSequence(sequenceName: string):LongInt;
     begin
       self.flushLayers;
@@ -2369,28 +1974,6 @@ destructor TYDisplay.destroy();
     end;
 
 
-  ////
-  /// <summary>
-  ///   Waits for a specified delay (in milliseconds) before playing next
-  ///   commands in current sequence.
-  /// <para>
-  ///   This method can be used while
-  ///   recording a display sequence, to insert a timed wait in the sequence
-  ///   (without any immediate effect). It can also be used dynamically while
-  ///   playing a pre-recorded sequence, to suspend or resume the execution of
-  ///   the sequence. To cancel a delay, call the same method with a zero delay.
-  /// </para>
-  /// </summary>
-  /// <param name="delay_ms">
-  ///   the duration to wait, in milliseconds
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplay.pauseSequence(delay_ms: LongInt):LongInt;
     begin
       self.flushLayers;
@@ -2399,20 +1982,6 @@ destructor TYDisplay.destroy();
     end;
 
 
-  ////
-  /// <summary>
-  ///   Stops immediately any ongoing sequence replay.
-  /// <para>
-  ///   The display is left as is.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplay.stopSequence():LongInt;
     begin
       self.flushLayers;
@@ -2421,28 +1990,6 @@ destructor TYDisplay.destroy();
     end;
 
 
-  ////
-  /// <summary>
-  ///   Uploads an arbitrary file (for instance a GIF file) to the display, to the
-  ///   specified full path name.
-  /// <para>
-  ///   If a file already exists with the same path name,
-  ///   its content is overwritten.
-  /// </para>
-  /// </summary>
-  /// <param name="pathname">
-  ///   path and name of the new file to create
-  /// </param>
-  /// <param name="content">
-  ///   binary buffer with the content to set
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplay.upload(pathname: string; content: TByteArray):LongInt;
     begin
       result := self._upload(pathname, content);
@@ -2450,30 +1997,6 @@ destructor TYDisplay.destroy();
     end;
 
 
-  ////
-  /// <summary>
-  ///   Copies the whole content of a layer to another layer.
-  /// <para>
-  ///   The color and transparency
-  ///   of all the pixels from the destination layer are set to match the source pixels.
-  ///   This method only affects the displayed content, but does not change any
-  ///   property of the layer object.
-  ///   Note that layer 0 has no transparency support (it is always completely opaque).
-  /// </para>
-  /// </summary>
-  /// <param name="srcLayerId">
-  ///   the identifier of the source layer (a number in range 0..layerCount-1)
-  /// </param>
-  /// <param name="dstLayerId">
-  ///   the identifier of the destination layer (a number in range 0..layerCount-1)
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplay.copyLayerContent(srcLayerId: LongInt; dstLayerId: LongInt):LongInt;
     begin
       self.flushLayers;
@@ -2482,31 +2005,6 @@ destructor TYDisplay.destroy();
     end;
 
 
-  ////
-  /// <summary>
-  ///   Swaps the whole content of two layers.
-  /// <para>
-  ///   The color and transparency of all the pixels from
-  ///   the two layers are swapped. This method only affects the displayed content, but does
-  ///   not change any property of the layer objects. In particular, the visibility of each
-  ///   layer stays unchanged. When used between onae hidden layer and a visible layer,
-  ///   this method makes it possible to easily implement double-buffering.
-  ///   Note that layer 0 has no transparency support (it is always completely opaque).
-  /// </para>
-  /// </summary>
-  /// <param name="layerIdA">
-  ///   the first layer (a number in range 0..layerCount-1)
-  /// </param>
-  /// <param name="layerIdB">
-  ///   the second layer (a number in range 0..layerCount-1)
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplay.swapLayerContent(layerIdA: LongInt; layerIdB: LongInt):LongInt;
     begin
       self.flushLayers;
@@ -2711,22 +2209,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
 
 //--- (generated code: YDisplayLayer implementation)
 
-  ////
-  /// <summary>
-  ///   Reverts the layer to its initial state (fully transparent, default settings).
-  /// <para>
-  ///   Reinitializes the drawing pointer to the upper left position,
-  ///   and selects the most visible pen color. If you only want to erase the layer
-  ///   content, use the method <c>clear()</c> instead.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.reset():LongInt;
     begin
       self._hidden := false;
@@ -2735,22 +2217,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Erases the whole content of the layer (makes it fully transparent).
-  /// <para>
-  ///   This method does not change any other attribute of the layer.
-  ///   To reinitialize the layer attributes to defaults settings, use the method
-  ///   <c>reset()</c> instead.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.clear():LongInt;
     begin
       result := self.command_flush('x');
@@ -2758,26 +2224,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Selects the pen color for all subsequent drawing functions,
-  ///   including text drawing.
-  /// <para>
-  ///   The pen color is provided as an RGB value.
-  ///   For grayscale or monochrome displays, the value is
-  ///   automatically converted to the proper range.
-  /// </para>
-  /// </summary>
-  /// <param name="color">
-  ///   the desired pen color, as a 24-bit RGB value
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.selectColorPen(color: LongInt):LongInt;
     begin
       result := self.command_push('c'+AnsiLowerCase(inttohex(color,06)));
@@ -2785,28 +2231,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Selects the pen gray level for all subsequent drawing functions,
-  ///   including text drawing.
-  /// <para>
-  ///   The gray level is provided as a number between
-  ///   0 (black) and 255 (white, or whichever the lighest color is).
-  ///   For monochrome displays (without gray levels), any value
-  ///   lower than 128 is rendered as black, and any value equal
-  ///   or above to 128 is non-black.
-  /// </para>
-  /// </summary>
-  /// <param name="graylevel">
-  ///   the desired gray level, from 0 to 255
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.selectGrayPen(graylevel: LongInt):LongInt;
     begin
       result := self.command_push('g'+inttostr(graylevel));
@@ -2814,23 +2238,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Selects an eraser instead of a pen for all subsequent drawing functions,
-  ///   except for bitmap copy functions.
-  /// <para>
-  ///   Any point drawn using the eraser
-  ///   becomes transparent (as when the layer is empty), showing the other
-  ///   layers beneath it.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.selectEraser():LongInt;
     begin
       result := self.command_push('e');
@@ -2838,29 +2245,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Enables or disables anti-aliasing for drawing oblique lines and circles.
-  /// <para>
-  ///   Anti-aliasing provides a smoother aspect when looked from far enough,
-  ///   but it can add fuzzyness when the display is looked from very close.
-  ///   At the end of the day, it is your personal choice.
-  ///   Anti-aliasing is enabled by default on grayscale and color displays,
-  ///   but you can disable it if you prefer. This setting has no effect
-  ///   on monochrome displays.
-  /// </para>
-  /// </summary>
-  /// <param name="mode">
-  ///   <c>true</c> to enable antialiasing, <c>false</c> to
-  ///   disable it.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.setAntialiasingMode(mode: boolean):LongInt;
     begin
       result := self.command_push('a'+_yapiBoolToStr(mode));
@@ -2868,25 +2252,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Draws a single pixel at the specified position.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="x">
-  ///   the distance from left of layer, in pixels
-  /// </param>
-  /// <param name="y">
-  ///   the distance from top of layer, in pixels
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.drawPixel(x: LongInt; y: LongInt):LongInt;
     begin
       result := self.command_flush('P'+inttostr(x)+','+inttostr(y));
@@ -2894,31 +2259,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Draws an empty rectangle at a specified position.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="x1">
-  ///   the distance from left of layer to the left border of the rectangle, in pixels
-  /// </param>
-  /// <param name="y1">
-  ///   the distance from top of layer to the top border of the rectangle, in pixels
-  /// </param>
-  /// <param name="x2">
-  ///   the distance from left of layer to the right border of the rectangle, in pixels
-  /// </param>
-  /// <param name="y2">
-  ///   the distance from top of layer to the bottom border of the rectangle, in pixels
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.drawRect(x1: LongInt; y1: LongInt; x2: LongInt; y2: LongInt):LongInt;
     begin
       result := self.command_flush('R'+inttostr(x1)+','+inttostr(y1)+','+inttostr(x2)+','+inttostr(y2));
@@ -2926,31 +2266,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Draws a filled rectangular bar at a specified position.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="x1">
-  ///   the distance from left of layer to the left border of the rectangle, in pixels
-  /// </param>
-  /// <param name="y1">
-  ///   the distance from top of layer to the top border of the rectangle, in pixels
-  /// </param>
-  /// <param name="x2">
-  ///   the distance from left of layer to the right border of the rectangle, in pixels
-  /// </param>
-  /// <param name="y2">
-  ///   the distance from top of layer to the bottom border of the rectangle, in pixels
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.drawBar(x1: LongInt; y1: LongInt; x2: LongInt; y2: LongInt):LongInt;
     begin
       result := self.command_flush('B'+inttostr(x1)+','+inttostr(y1)+','+inttostr(x2)+','+inttostr(y2));
@@ -2958,28 +2273,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Draws an empty circle at a specified position.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="x">
-  ///   the distance from left of layer to the center of the circle, in pixels
-  /// </param>
-  /// <param name="y">
-  ///   the distance from top of layer to the center of the circle, in pixels
-  /// </param>
-  /// <param name="r">
-  ///   the radius of the circle, in pixels
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.drawCircle(x: LongInt; y: LongInt; r: LongInt):LongInt;
     begin
       result := self.command_flush('C'+inttostr(x)+','+inttostr(y)+','+inttostr(r));
@@ -2987,28 +2280,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Draws a filled disc at a given position.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="x">
-  ///   the distance from left of layer to the center of the disc, in pixels
-  /// </param>
-  /// <param name="y">
-  ///   the distance from top of layer to the center of the disc, in pixels
-  /// </param>
-  /// <param name="r">
-  ///   the radius of the disc, in pixels
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.drawDisc(x: LongInt; y: LongInt; r: LongInt):LongInt;
     begin
       result := self.command_flush('D'+inttostr(x)+','+inttostr(y)+','+inttostr(r));
@@ -3016,27 +2287,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Selects a font to use for the next text drawing functions, by providing the name of the
-  ///   font file.
-  /// <para>
-  ///   You can use a built-in font as well as a font file that you have previously
-  ///   uploaded to the device built-in memory. If you experience problems selecting a font
-  ///   file, check the device logs for any error message such as missing font file or bad font
-  ///   file format.
-  /// </para>
-  /// </summary>
-  /// <param name="fontname">
-  ///   the font file name
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.selectFont(fontname: string):LongInt;
     begin
       result := self.command_push('&'+fontname+''+chr(27));
@@ -3044,42 +2294,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Draws a text string at the specified position.
-  /// <para>
-  ///   The point of the text that is aligned
-  ///   to the specified pixel position is called the anchor point, and can be chosen among
-  ///   several options. Text is rendered from left to right, without implicit wrapping.
-  /// </para>
-  /// </summary>
-  /// <param name="x">
-  ///   the distance from left of layer to the text anchor point, in pixels
-  /// </param>
-  /// <param name="y">
-  ///   the distance from top of layer to the text anchor point, in pixels
-  /// </param>
-  /// <param name="anchor">
-  ///   the text anchor point, chosen among the <c>Y_ALIGN</c> enumeration:
-  ///   <c>Y_ALIGN_TOP_LEFT</c>,    <c>Y_ALIGN_CENTER_LEFT</c>,    <c>Y_ALIGN_BASELINE_LEFT</c>,   
-  ///   <c>Y_ALIGN_BOTTOM_LEFT</c>,
-  ///   <c>Y_ALIGN_TOP_CENTER</c>,  <c>Y_ALIGN_CENTER</c>,         <c>Y_ALIGN_BASELINE_CENTER</c>, 
-  ///   <c>Y_ALIGN_BOTTOM_CENTER</c>,
-  ///   <c>Y_ALIGN_TOP_DECIMAL</c>, <c>Y_ALIGN_CENTER_DECIMAL</c>, <c>Y_ALIGN_BASELINE_DECIMAL</c>,
-  ///   <c>Y_ALIGN_BOTTOM_DECIMAL</c>,
-  ///   <c>Y_ALIGN_TOP_RIGHT</c>,   <c>Y_ALIGN_CENTER_RIGHT</c>,   <c>Y_ALIGN_BASELINE_RIGHT</c>,  
-  ///   <c>Y_ALIGN_BOTTOM_RIGHT</c>.
-  /// </param>
-  /// <param name="text">
-  ///   the text string to draw
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.drawText(x: LongInt; y: LongInt; anchor: TYALIGN; text: string):LongInt;
     begin
       result := self.command_flush('T'+inttostr(x)+','+inttostr(y)+','+inttostr(ord(anchor))+','+text+''+chr(27));
@@ -3087,32 +2301,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Draws a GIF image at the specified position.
-  /// <para>
-  ///   The GIF image must have been previously
-  ///   uploaded to the device built-in memory. If you experience problems using an image
-  ///   file, check the device logs for any error message such as missing image file or bad
-  ///   image file format.
-  /// </para>
-  /// </summary>
-  /// <param name="x">
-  ///   the distance from left of layer to the left of the image, in pixels
-  /// </param>
-  /// <param name="y">
-  ///   the distance from top of layer to the top of the image, in pixels
-  /// </param>
-  /// <param name="imagename">
-  ///   the GIF file name
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.drawImage(x: LongInt; y: LongInt; imagename: string):LongInt;
     begin
       result := self.command_flush('*'+inttostr(x)+','+inttostr(y)+','+imagename+''+chr(27));
@@ -3120,42 +2308,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Draws a bitmap at the specified position.
-  /// <para>
-  ///   The bitmap is provided as a binary object,
-  ///   where each pixel maps to a bit, from left to right and from top to bottom.
-  ///   The most significant bit of each byte maps to the leftmost pixel, and the least
-  ///   significant bit maps to the rightmost pixel. Bits set to 1 are drawn using the
-  ///   layer selected pen color. Bits set to 0 are drawn using the specified background
-  ///   gray level, unless -1 is specified, in which case they are not drawn at all
-  ///   (as if transparent).
-  /// </para>
-  /// </summary>
-  /// <param name="x">
-  ///   the distance from left of layer to the left of the bitmap, in pixels
-  /// </param>
-  /// <param name="y">
-  ///   the distance from top of layer to the top of the bitmap, in pixels
-  /// </param>
-  /// <param name="w">
-  ///   the width of the bitmap, in pixels
-  /// </param>
-  /// <param name="bitmap">
-  ///   a binary object
-  /// </param>
-  /// <param name="bgcol">
-  ///   the background gray level to use for zero bits (0 = black,
-  ///   255 = white), or -1 to leave the pixels unchanged
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.drawBitmap(x: LongInt; y: LongInt; w: LongInt; bitmap: TByteArray; bgcol: LongInt):LongInt;
     var
       destname : string;
@@ -3166,25 +2318,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Moves the drawing pointer of this layer to the specified position.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="x">
-  ///   the distance from left of layer, in pixels
-  /// </param>
-  /// <param name="y">
-  ///   the distance from top of layer, in pixels
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.moveTo(x: LongInt; y: LongInt):LongInt;
     begin
       result := self.command_push('@'+inttostr(x)+','+inttostr(y));
@@ -3192,27 +2325,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Draws a line from current drawing pointer position to the specified position.
-  /// <para>
-  ///   The specified destination pixel is included in the line. The pointer position
-  ///   is then moved to the end point of the line.
-  /// </para>
-  /// </summary>
-  /// <param name="x">
-  ///   the distance from left of layer to the end point of the line, in pixels
-  /// </param>
-  /// <param name="y">
-  ///   the distance from top of layer to the end point of the line, in pixels
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.lineTo(x: LongInt; y: LongInt):LongInt;
     begin
       result := self.command_flush('-'+inttostr(x)+','+inttostr(y));
@@ -3220,26 +2332,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Outputs a message in the console area, and advances the console pointer accordingly.
-  /// <para>
-  ///   The console pointer position is automatically moved to the beginning
-  ///   of the next line when a newline character is met, or when the right margin
-  ///   is hit. When the new text to display extends below the lower margin, the
-  ///   console area is automatically scrolled up.
-  /// </para>
-  /// </summary>
-  /// <param name="text">
-  ///   the message to display
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.consoleOut(text: string):LongInt;
     begin
       result := self.command_flush('!'+text+''+chr(27));
@@ -3247,31 +2339,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sets up display margins for the <c>consoleOut</c> function.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="x1">
-  ///   the distance from left of layer to the left margin, in pixels
-  /// </param>
-  /// <param name="y1">
-  ///   the distance from top of layer to the top margin, in pixels
-  /// </param>
-  /// <param name="x2">
-  ///   the distance from left of layer to the right margin, in pixels
-  /// </param>
-  /// <param name="y2">
-  ///   the distance from top of layer to the bottom margin, in pixels
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.setConsoleMargins(x1: LongInt; y1: LongInt; x2: LongInt; y2: LongInt):LongInt;
     begin
       result := self.command_push('m'+inttostr(x1)+','+inttostr(y1)+','+inttostr(x2)+','+inttostr(y2));
@@ -3279,24 +2346,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sets up the background color used by the <c>clearConsole</c> function and by
-  ///   the console scrolling feature.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="bgcol">
-  ///   the background gray level to use when scrolling (0 = black,
-  ///   255 = white), or -1 for transparent
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.setConsoleBackground(bgcol: LongInt):LongInt;
     begin
       result := self.command_push('b'+inttostr(bgcol));
@@ -3304,23 +2353,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sets up the wrapping behaviour used by the <c>consoleOut</c> function.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="wordwrap">
-  ///   <c>true</c> to wrap only between words,
-  ///   <c>false</c> to wrap on the last column anyway.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.setConsoleWordWrap(wordwrap: boolean):LongInt;
     begin
       result := self.command_push('w'+_yapiBoolToStr(wordwrap));
@@ -3328,20 +2360,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Blanks the console area within console margins, and resets the console pointer
-  ///   to the upper left corner of the console.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.clearConsole():LongInt;
     begin
       result := self.command_flush('^');
@@ -3349,31 +2367,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sets the position of the layer relative to the display upper left corner.
-  /// <para>
-  ///   When smooth scrolling is used, the display offset of the layer is
-  ///   automatically updated during the next milliseconds to animate the move of the layer.
-  /// </para>
-  /// </summary>
-  /// <param name="x">
-  ///   the distance from left of display to the upper left corner of the layer
-  /// </param>
-  /// <param name="y">
-  ///   the distance from top of display to the upper left corner of the layer
-  /// </param>
-  /// <param name="scrollTime">
-  ///   number of milliseconds to use for smooth scrolling, or
-  ///   0 if the scrolling should be immediate.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.setLayerPosition(x: LongInt; y: LongInt; scrollTime: LongInt):LongInt;
     begin
       result := self.command_flush('#'+inttostr(x)+','+inttostr(y)+','+inttostr(scrollTime));
@@ -3381,23 +2374,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Hides the layer.
-  /// <para>
-  ///   The state of the layer is perserved but the layer is not displayed
-  ///   on the screen until the next call to <c>unhide()</c>. Hiding the layer can positively
-  ///   affect the drawing speed, since it postpones the rendering until all operations are
-  ///   completed (double-buffering).
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.hide():LongInt;
     begin
       self.command_push('h');
@@ -3407,20 +2383,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Shows the layer.
-  /// <para>
-  ///   Shows the layer again after a hide command.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYDisplayLayer.unhide():LongInt;
     begin
       self._hidden := false;
@@ -3429,17 +2391,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Gets parent YDisplay.
-  /// <para>
-  ///   Returns the parent YDisplay object of the current YDisplayLayer.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an <c>YDisplay</c> object
-  /// </returns>
-  ///-
   function TYDisplayLayer.get_display():TYDisplay;
     begin
       result := self._display;
@@ -3447,19 +2398,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the display width, in pixels.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the display width, in pixels
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DISPLAYWIDTH_INVALID.
-  /// </para>
-  ///-
   function TYDisplayLayer.get_displayWidth():LongInt;
     begin
       result := self._display.get_displayWidth();
@@ -3467,19 +2405,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the display height, in pixels.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the display height, in pixels
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DISPLAYHEIGHT_INVALID.
-  /// </para>
-  ///-
   function TYDisplayLayer.get_displayHeight():LongInt;
     begin
       result := self._display.get_displayHeight();
@@ -3487,19 +2412,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the width of the layers to draw on, in pixels.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the width of the layers to draw on, in pixels
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LAYERWIDTH_INVALID.
-  /// </para>
-  ///-
   function TYDisplayLayer.get_layerWidth():LongInt;
     begin
       result := self._display.get_layerWidth();
@@ -3507,19 +2419,6 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the height of the layers to draw on, in pixels.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the height of the layers to draw on, in pixels
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LAYERHEIGHT_INVALID.
-  /// </para>
-  ///-
   function TYDisplayLayer.get_layerHeight():LongInt;
     begin
       result := self._display.get_layerHeight();

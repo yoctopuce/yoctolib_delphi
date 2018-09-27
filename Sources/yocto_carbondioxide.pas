@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_carbondioxide.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_carbondioxide.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
@@ -426,23 +426,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the Automatic Baseline Calibration period, in hours.
-  /// <para>
-  ///   A negative value
-  ///   means that automatic baseline calibration is disabled.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the Automatic Baseline Calibration period, in hours
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_ABCPERIOD_INVALID.
-  /// </para>
-  ///-
   function TYCarbonDioxide.get_abcPeriod():LongInt;
     var
       res : LongInt;
@@ -461,31 +444,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes Automatic Baseline Calibration period, in hours.
-  /// <para>
-  ///   If you need
-  ///   to disable automatic baseline calibration (for instance when using the
-  ///   sensor in an environment that is constantly above 400ppm CO2), set the
-  ///   period to -1. Remember to call the saveToFlash() method of the
-  ///   module if the modification must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to Automatic Baseline Calibration period, in hours
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYCarbonDioxide.set_abcPeriod(newval:LongInt):integer;
     var
       rest_val: string;
@@ -520,55 +478,6 @@ implementation
       result := _setAttr('command',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YCarbonDioxide.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YCarbonDioxide</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYCarbonDioxide.FindCarbonDioxide(func: string):TYCarbonDioxide;
     var
       obj : TYCarbonDioxide;
@@ -584,24 +493,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYCarbonDioxide.registerValueCallback(callback: TYCarbonDioxideValueCallback):LongInt;
     var
       val : string;
@@ -644,24 +535,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every periodic timed notification.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and an YMeasure object describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYCarbonDioxide.registerTimedReportCallback(callback: TYCarbonDioxideTimedReportCallback):LongInt;
     var
       sensor : TYSensor;
@@ -696,28 +569,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Triggers a baseline calibration at standard CO2 ambiant level (400ppm).
-  /// <para>
-  ///   It is normally not necessary to manually calibrate the sensor, because
-  ///   the built-in automatic baseline calibration procedure will automatically
-  ///   fix any long-term drift based on the lowest level of CO2 observed over the
-  ///   automatic calibration period. However, if you disable automatic baseline
-  ///   calibration, you may want to manually trigger a calibration from time to
-  ///   time. Before starting a baseline calibration, make sure to put the sensor
-  ///   in a standard environment (e.g. outside in fresh air) at around 400ppm.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYCarbonDioxide.triggerBaselineCalibration():LongInt;
     begin
       result := self.set_command('BC');
@@ -732,30 +583,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Triggers a zero calibration of the sensor on carbon dioxide-free air.
-  /// <para>
-  ///   It is normally not necessary to manually calibrate the sensor, because
-  ///   the built-in automatic baseline calibration procedure will automatically
-  ///   fix any long-term drift based on the lowest level of CO2 observed over the
-  ///   automatic calibration period. However, if you disable automatic baseline
-  ///   calibration, you may want to manually trigger a calibration from time to
-  ///   time. Before starting a zero calibration, you should circulate carbon
-  ///   dioxide-free air within the sensor for a minute or two, using a small pipe
-  ///   connected to the sensor. Please contact support@yoctopuce.com for more details
-  ///   on the zero calibration procedure.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYCarbonDioxide.triggerZeroCalibration():LongInt;
     begin
       result := self.set_command('ZC');

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_colorled.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_colorled.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindColorLed(), the high-level API for ColorLed functions
  *
@@ -721,21 +721,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the current RGB color of the LED.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the current RGB color of the LED
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_RGBCOLOR_INVALID.
-  /// </para>
-  ///-
   function TYColorLed.get_rgbColor():LongInt;
     var
       res : LongInt;
@@ -754,27 +739,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the current color of the LED, using an RGB color.
-  /// <para>
-  ///   Encoding is done as follows: 0xRRGGBB.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the current color of the LED, using an RGB color
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYColorLed.set_rgbColor(newval:LongInt):integer;
     var
       rest_val: string;
@@ -783,21 +747,6 @@ implementation
       result := _setAttr('rgbColor',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the current HSL color of the LED.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the current HSL color of the LED
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_HSLCOLOR_INVALID.
-  /// </para>
-  ///-
   function TYColorLed.get_hslColor():LongInt;
     var
       res : LongInt;
@@ -816,27 +765,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the current color of the LED, using a color HSL.
-  /// <para>
-  ///   Encoding is done as follows: 0xHHSSLL.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the current color of the LED, using a color HSL
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYColorLed.set_hslColor(newval:LongInt):integer;
     var
       rest_val: string;
@@ -959,21 +887,6 @@ implementation
       result := _setAttr('hslMove', rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the configured color to be displayed when the module is turned on.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the configured color to be displayed when the module is turned on
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_RGBCOLORATPOWERON_INVALID.
-  /// </para>
-  ///-
   function TYColorLed.get_rgbColorAtPowerOn():LongInt;
     var
       res : LongInt;
@@ -992,26 +905,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the color that the LED will display by default when the module is turned on.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the color that the LED will display by default when the module is turned on
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYColorLed.set_rgbColorAtPowerOn(newval:LongInt):integer;
     var
       rest_val: string;
@@ -1020,21 +913,6 @@ implementation
       result := _setAttr('rgbColorAtPowerOn',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the current length of the blinking sequence.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the current length of the blinking sequence
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_BLINKSEQSIZE_INVALID.
-  /// </para>
-  ///-
   function TYColorLed.get_blinkSeqSize():LongInt;
     var
       res : LongInt;
@@ -1053,21 +931,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the maximum length of the blinking sequence.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the maximum length of the blinking sequence
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_BLINKSEQMAXSIZE_INVALID.
-  /// </para>
-  ///-
   function TYColorLed.get_blinkSeqMaxSize():LongInt;
     var
       res : LongInt;
@@ -1086,25 +949,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Return the blinking sequence signature.
-  /// <para>
-  ///   Since blinking
-  ///   sequences cannot be read from the device, this can be used
-  ///   to detect if a specific blinking sequence is already
-  ///   programmed.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_BLINKSEQSIGNATURE_INVALID.
-  /// </para>
-  ///-
   function TYColorLed.get_blinkSeqSignature():LongInt;
     var
       res : LongInt;
@@ -1149,55 +993,6 @@ implementation
       result := _setAttr('command',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YColorLed.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YColorLed</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYColorLed.FindColorLed(func: string):TYColorLed;
     var
       obj : TYColorLed;
@@ -1213,24 +1008,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYColorLed.registerValueCallback(callback: TYColorLedValueCallback):LongInt;
     var
       val : string;
@@ -1280,24 +1057,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Add a new transition to the blinking sequence, the move will
-  ///   be performed in the HSL space.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="HSLcolor">
-  ///   desired HSL color when the traisntion is completed
-  /// </param>
-  /// <param name="msDelay">
-  ///   duration of the color transition, in milliseconds.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYColorLed.addHslMoveToBlinkSeq(HSLcolor: LongInt; msDelay: LongInt):LongInt;
     begin
       result := self.sendCommand('H'+inttostr(HSLcolor)+','+inttostr(msDelay));
@@ -1305,24 +1064,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Adds a new transition to the blinking sequence, the move is
-  ///   performed in the RGB space.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="RGBcolor">
-  ///   desired RGB color when the transition is completed
-  /// </param>
-  /// <param name="msDelay">
-  ///   duration of the color transition, in milliseconds.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYColorLed.addRgbMoveToBlinkSeq(RGBcolor: LongInt; msDelay: LongInt):LongInt;
     begin
       result := self.sendCommand('R'+inttostr(RGBcolor)+','+inttostr(msDelay));
@@ -1330,20 +1071,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Starts the preprogrammed blinking sequence.
-  /// <para>
-  ///   The sequence is
-  ///   run in a loop until it is stopped by stopBlinkSeq or an explicit
-  ///   change.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYColorLed.startBlinkSeq():LongInt;
     begin
       result := self.sendCommand('S');
@@ -1351,17 +1078,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Stops the preprogrammed blinking sequence.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYColorLed.stopBlinkSeq():LongInt;
     begin
       result := self.sendCommand('X');
@@ -1369,17 +1085,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Resets the preprogrammed blinking sequence.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYColorLed.resetBlinkSeq():LongInt;
     begin
       result := self.sendCommand('Z');

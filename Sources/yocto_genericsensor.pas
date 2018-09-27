@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_genericsensor.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_genericsensor.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -616,28 +616,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Changes the measuring unit for the measured value.
-  /// <para>
-  ///   Remember to call the saveToFlash() method of the module if the
-  ///   modification must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the measuring unit for the measured value
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYGenericSensor.set_unit(newval:string):integer;
     var
       rest_val: string;
@@ -646,21 +624,6 @@ implementation
       result := _setAttr('unit',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the current value of the electrical signal measured by the sensor.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the current value of the electrical signal measured by the sensor
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_SIGNALVALUE_INVALID.
-  /// </para>
-  ///-
   function TYGenericSensor.get_signalValue():double;
     var
       res : double;
@@ -679,21 +642,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the measuring unit of the electrical signal used by the sensor.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the measuring unit of the electrical signal used by the sensor
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_SIGNALUNIT_INVALID.
-  /// </para>
-  ///-
   function TYGenericSensor.get_signalUnit():string;
     var
       res : string;
@@ -712,21 +660,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the electric signal range used by the sensor.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the electric signal range used by the sensor
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_SIGNALRANGE_INVALID.
-  /// </para>
-  ///-
   function TYGenericSensor.get_signalRange():string;
     var
       res : string;
@@ -745,27 +678,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the electric signal range used by the sensor.
-  /// <para>
-  ///   Default value is "-999999.999...999999.999".
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the electric signal range used by the sensor
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYGenericSensor.set_signalRange(newval:string):integer;
     var
       rest_val: string;
@@ -774,21 +686,6 @@ implementation
       result := _setAttr('signalRange',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the physical value range measured by the sensor.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the physical value range measured by the sensor
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_VALUERANGE_INVALID.
-  /// </para>
-  ///-
   function TYGenericSensor.get_valueRange():string;
     var
       res : string;
@@ -807,28 +704,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the physical value range measured by the sensor.
-  /// <para>
-  ///   As a side effect, the range modification may
-  ///   automatically modify the display resolution. Default value is "-999999.999...999999.999".
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the physical value range measured by the sensor
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYGenericSensor.set_valueRange(newval:string):integer;
     var
       rest_val: string;
@@ -837,28 +712,6 @@ implementation
       result := _setAttr('valueRange',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Changes the electric signal bias for zero shift adjustment.
-  /// <para>
-  ///   If your electric signal reads positif when it should be zero, setup
-  ///   a positive signalBias of the same value to fix the zero shift.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the electric signal bias for zero shift adjustment
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYGenericSensor.set_signalBias(newval:double):integer;
     var
       rest_val: string;
@@ -867,23 +720,6 @@ implementation
       result := _setAttr('signalBias',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the electric signal bias for zero shift adjustment.
-  /// <para>
-  ///   A positive bias means that the signal is over-reporting the measure,
-  ///   while a negative bias means that the signal is underreporting the measure.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the electric signal bias for zero shift adjustment
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_SIGNALBIAS_INVALID.
-  /// </para>
-  ///-
   function TYGenericSensor.get_signalBias():double;
     var
       res : double;
@@ -902,28 +738,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the electric signal sampling method to use.
-  /// <para>
-  ///   The HIGH_RATE method uses the highest sampling frequency, without any filtering.
-  ///   The HIGH_RATE_FILTERED method adds a windowed 7-sample median filter.
-  ///   The LOW_NOISE method uses a reduced acquisition frequency to reduce noise.
-  ///   The LOW_NOISE_FILTERED method combines a reduced frequency with the median filter
-  ///   to get measures as stable as possible when working on a noisy signal.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_SIGNALSAMPLING_HIGH_RATE, Y_SIGNALSAMPLING_HIGH_RATE_FILTERED,
-  ///   Y_SIGNALSAMPLING_LOW_NOISE and Y_SIGNALSAMPLING_LOW_NOISE_FILTERED corresponding to the electric
-  ///   signal sampling method to use
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_SIGNALSAMPLING_INVALID.
-  /// </para>
-  ///-
   function TYGenericSensor.get_signalSampling():Integer;
     var
       res : Integer;
@@ -942,33 +756,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the electric signal sampling method to use.
-  /// <para>
-  ///   The HIGH_RATE method uses the highest sampling frequency, without any filtering.
-  ///   The HIGH_RATE_FILTERED method adds a windowed 7-sample median filter.
-  ///   The LOW_NOISE method uses a reduced acquisition frequency to reduce noise.
-  ///   The LOW_NOISE_FILTERED method combines a reduced frequency with the median filter
-  ///   to get measures as stable as possible when working on a noisy signal.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a value among Y_SIGNALSAMPLING_HIGH_RATE, Y_SIGNALSAMPLING_HIGH_RATE_FILTERED,
-  ///   Y_SIGNALSAMPLING_LOW_NOISE and Y_SIGNALSAMPLING_LOW_NOISE_FILTERED corresponding to the electric
-  ///   signal sampling method to use
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYGenericSensor.set_signalSampling(newval:Integer):integer;
     var
       rest_val: string;
@@ -977,55 +764,6 @@ implementation
       result := _setAttr('signalSampling',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YGenericSensor.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YGenericSensor</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYGenericSensor.FindGenericSensor(func: string):TYGenericSensor;
     var
       obj : TYGenericSensor;
@@ -1041,24 +779,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYGenericSensor.registerValueCallback(callback: TYGenericSensorValueCallback):LongInt;
     var
       val : string;
@@ -1101,24 +821,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every periodic timed notification.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and an YMeasure object describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYGenericSensor.registerTimedReportCallback(callback: TYGenericSensorTimedReportCallback):LongInt;
     var
       sensor : TYSensor;
@@ -1153,22 +855,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Adjusts the signal bias so that the current signal value is need
-  ///   precisely as zero.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYGenericSensor.zeroAdjust():LongInt;
     var
       currSignal : double;

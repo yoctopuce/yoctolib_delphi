@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_hubport.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_hubport.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindHubPort(), the high-level API for HubPort functions
  *
@@ -393,21 +393,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns true if the Yocto-hub port is powered, false otherwise.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to true if the Yocto-hub port is powered, false otherwise
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_ENABLED_INVALID.
-  /// </para>
-  ///-
   function TYHubPort.get_enabled():Integer;
     var
       res : Integer;
@@ -426,28 +411,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the activation of the Yocto-hub port.
-  /// <para>
-  ///   If the port is enabled, the
-  ///   connected module is powered. Otherwise, port power is shut down.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_ENABLED_FALSE or Y_ENABLED_TRUE, according to the activation of the Yocto-hub port
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYHubPort.set_enabled(newval:Integer):integer;
     var
       rest_val: string;
@@ -456,22 +419,6 @@ implementation
       result := _setAttr('enabled',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the current state of the Yocto-hub port.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_PORTSTATE_OFF, Y_PORTSTATE_OVRLD, Y_PORTSTATE_ON, Y_PORTSTATE_RUN and
-  ///   Y_PORTSTATE_PROG corresponding to the current state of the Yocto-hub port
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PORTSTATE_INVALID.
-  /// </para>
-  ///-
   function TYHubPort.get_portState():Integer;
     var
       res : Integer;
@@ -490,23 +437,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the current baud rate used by this Yocto-hub port, in kbps.
-  /// <para>
-  ///   The default value is 1000 kbps, but a slower rate may be used if communication
-  ///   problems are encountered.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the current baud rate used by this Yocto-hub port, in kbps
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_BAUDRATE_INVALID.
-  /// </para>
-  ///-
   function TYHubPort.get_baudRate():LongInt;
     var
       res : LongInt;
@@ -525,55 +455,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YHubPort.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YHubPort</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYHubPort.FindHubPort(func: string):TYHubPort;
     var
       obj : TYHubPort;
@@ -589,24 +470,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYHubPort.registerValueCallback(callback: TYHubPortValueCallback):LongInt;
     var
       val : string;

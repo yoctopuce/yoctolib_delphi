@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_network.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_network.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindNetwork(), the high-level API for Network functions
  *
@@ -1569,35 +1569,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the current established working mode of the network interface.
-  /// <para>
-  ///   Level zero (DOWN_0) means that no hardware link has been detected. Either there is no signal
-  ///   on the network cable, or the selected wireless access point cannot be detected.
-  ///   Level 1 (LIVE_1) is reached when the network is detected, but is not yet connected.
-  ///   For a wireless network, this shows that the requested SSID is present.
-  ///   Level 2 (LINK_2) is reached when the hardware connection is established.
-  ///   For a wired network connection, level 2 means that the cable is attached at both ends.
-  ///   For a connection to a wireless access point, it shows that the security parameters
-  ///   are properly configured. For an ad-hoc wireless connection, it means that there is
-  ///   at least one other device connected on the ad-hoc network.
-  ///   Level 3 (DHCP_3) is reached when an IP address has been obtained using DHCP.
-  ///   Level 4 (DNS_4) is reached when the DNS server is reachable on the network.
-  ///   Level 5 (WWW_5) is reached when global connectivity is demonstrated by properly loading the
-  ///   current time from an NTP server.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_READINESS_DOWN, Y_READINESS_EXISTS, Y_READINESS_LINKED, Y_READINESS_LAN_OK and
-  ///   Y_READINESS_WWW_OK corresponding to the current established working mode of the network interface
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_READINESS_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_readiness():Integer;
     var
       res : Integer;
@@ -1616,23 +1587,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the MAC address of the network interface.
-  /// <para>
-  ///   The MAC address is also available on a sticker
-  ///   on the module, in both numeric and barcode forms.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the MAC address of the network interface
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_MACADDRESS_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_macAddress():string;
     var
       res : string;
@@ -1651,23 +1605,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the IP address currently in use by the device.
-  /// <para>
-  ///   The address may have been configured
-  ///   statically, or provided by a DHCP server.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the IP address currently in use by the device
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_IPADDRESS_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_ipAddress():string;
     var
       res : string;
@@ -1686,21 +1623,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the subnet mask currently used by the device.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the subnet mask currently used by the device
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_SUBNETMASK_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_subnetMask():string;
     var
       res : string;
@@ -1719,21 +1641,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the IP address of the router on the device subnet (default gateway).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the IP address of the router on the device subnet (default gateway)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_ROUTER_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_router():string;
     var
       res : string;
@@ -1752,35 +1659,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the IP configuration of the network interface.
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   If the network interface is setup to use a static IP address, the string starts with "STATIC:" and
-  ///   is followed by three
-  ///   parameters, separated by "/". The first is the device IP address, followed by the subnet mask
-  ///   length, and finally the
-  ///   router IP address (default gateway). For instance: "STATIC:192.168.1.14/16/192.168.1.1"
-  /// </para>
-  /// <para>
-  ///   If the network interface is configured to receive its IP from a DHCP server, the string start with
-  ///   "DHCP:" and is followed by
-  ///   three parameters separated by "/". The first is the fallback IP address, then the fallback subnet
-  ///   mask length and finally the
-  ///   fallback router IP address. These three parameters are used when no DHCP reply is received.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the IP configuration of the network interface
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_IPCONFIG_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_ipConfig():string;
     var
       res : string;
@@ -1807,21 +1685,6 @@ implementation
       result := _setAttr('ipConfig',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the IP address of the primary name server to be used by the module.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the IP address of the primary name server to be used by the module
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PRIMARYDNS_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_primaryDNS():string;
     var
       res : string;
@@ -1840,28 +1703,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the IP address of the primary name server to be used by the module.
-  /// <para>
-  ///   When using DHCP, if a value is specified, it overrides the value received from the DHCP server.
-  ///   Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the IP address of the primary name server to be used by the module
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.set_primaryDNS(newval:string):integer;
     var
       rest_val: string;
@@ -1870,21 +1711,6 @@ implementation
       result := _setAttr('primaryDNS',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the IP address of the secondary name server to be used by the module.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the IP address of the secondary name server to be used by the module
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_SECONDARYDNS_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_secondaryDNS():string;
     var
       res : string;
@@ -1903,28 +1729,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the IP address of the secondary name server to be used by the module.
-  /// <para>
-  ///   When using DHCP, if a value is specified, it overrides the value received from the DHCP server.
-  ///   Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the IP address of the secondary name server to be used by the module
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.set_secondaryDNS(newval:string):integer;
     var
       rest_val: string;
@@ -1933,21 +1737,6 @@ implementation
       result := _setAttr('secondaryDNS',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the IP address of the NTP server to be used by the device.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the IP address of the NTP server to be used by the device
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_NTPSERVER_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_ntpServer():string;
     var
       res : string;
@@ -1966,27 +1755,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the IP address of the NTP server to be used by the module.
-  /// <para>
-  ///   Remember to call the saveToFlash() method and then to reboot the module to apply this setting.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the IP address of the NTP server to be used by the module
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.set_ntpServer(newval:string):integer;
     var
       rest_val: string;
@@ -1995,23 +1763,6 @@ implementation
       result := _setAttr('ntpServer',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns a hash string if a password has been set for "user" user,
-  ///   or an empty string otherwise.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to a hash string if a password has been set for "user" user,
-  ///   or an empty string otherwise
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_USERPASSWORD_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_userPassword():string;
     var
       res : string;
@@ -2030,31 +1781,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the password for the "user" user.
-  /// <para>
-  ///   This password becomes instantly required
-  ///   to perform any use of the module. If the specified value is an
-  ///   empty string, a password is not required anymore.
-  ///   Remember to call the saveToFlash() method of the module if the
-  ///   modification must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the password for the "user" user
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.set_userPassword(newval:string):integer;
     var
       rest_val: string;
@@ -2069,23 +1795,6 @@ implementation
       result := _setAttr('userPassword',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns a hash string if a password has been set for user "admin",
-  ///   or an empty string otherwise.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to a hash string if a password has been set for user "admin",
-  ///   or an empty string otherwise
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_ADMINPASSWORD_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_adminPassword():string;
     var
       res : string;
@@ -2104,31 +1813,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the password for the "admin" user.
-  /// <para>
-  ///   This password becomes instantly required
-  ///   to perform any change of the module state. If the specified value is an
-  ///   empty string, a password is not required anymore.
-  ///   Remember to call the saveToFlash() method of the module if the
-  ///   modification must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the password for the "admin" user
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.set_adminPassword(newval:string):integer;
     var
       rest_val: string;
@@ -2143,21 +1827,6 @@ implementation
       result := _setAttr('adminPassword',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the HTML page to serve for the URL "/"" of the hub.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the HTML page to serve for the URL "/"" of the hub
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_HTTPPORT_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_httpPort():LongInt;
     var
       res : LongInt;
@@ -2176,29 +1845,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the default HTML page returned by the hub.
-  /// <para>
-  ///   If not value are set the hub return
-  ///   "index.html" which is the web interface of the hub. It is possible de change this page
-  ///   for file that has been uploaded on the hub.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the default HTML page returned by the hub
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.set_httpPort(newval:LongInt):integer;
     var
       rest_val: string;
@@ -2207,21 +1853,6 @@ implementation
       result := _setAttr('httpPort',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the HTML page to serve for the URL "/"" of the hub.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the HTML page to serve for the URL "/"" of the hub
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DEFAULTPAGE_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_defaultPage():string;
     var
       res : string;
@@ -2240,29 +1871,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the default HTML page returned by the hub.
-  /// <para>
-  ///   If not value are set the hub return
-  ///   "index.html" which is the web interface of the hub. It is possible de change this page
-  ///   for file that has been uploaded on the hub.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the default HTML page returned by the hub
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.set_defaultPage(newval:string):integer;
     var
       rest_val: string;
@@ -2271,24 +1879,6 @@ implementation
       result := _setAttr('defaultPage',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the activation state of the multicast announce protocols to allow easy
-  ///   discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_DISCOVERABLE_FALSE or Y_DISCOVERABLE_TRUE, according to the activation state of the
-  ///   multicast announce protocols to allow easy
-  ///   discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_DISCOVERABLE_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_discoverable():Integer;
     var
       res : Integer;
@@ -2307,29 +1897,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the activation state of the multicast announce protocols to allow easy
-  ///   discovery of the module in the network neighborhood (uPnP/Bonjour protocol).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_DISCOVERABLE_FALSE or Y_DISCOVERABLE_TRUE, according to the activation state of the
-  ///   multicast announce protocols to allow easy
-  ///   discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.set_discoverable(newval:Integer):integer;
     var
       rest_val: string;
@@ -2338,25 +1905,6 @@ implementation
       result := _setAttr('discoverable',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the allowed downtime of the WWW link (in seconds) before triggering an automated
-  ///   reboot to try to recover Internet connectivity.
-  /// <para>
-  ///   A zero value disables automated reboot
-  ///   in case of Internet connectivity loss.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the allowed downtime of the WWW link (in seconds) before triggering an automated
-  ///   reboot to try to recover Internet connectivity
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_WWWWATCHDOGDELAY_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_wwwWatchdogDelay():LongInt;
     var
       res : LongInt;
@@ -2375,31 +1923,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the allowed downtime of the WWW link (in seconds) before triggering an automated
-  ///   reboot to try to recover Internet connectivity.
-  /// <para>
-  ///   A zero value disables automated reboot
-  ///   in case of Internet connectivity loss. The smallest valid non-zero timeout is
-  ///   90 seconds.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the allowed downtime of the WWW link (in seconds) before triggering an automated
-  ///   reboot to try to recover Internet connectivity
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.set_wwwWatchdogDelay(newval:LongInt):integer;
     var
       rest_val: string;
@@ -2408,21 +1931,6 @@ implementation
       result := _setAttr('wwwWatchdogDelay',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the callback URL to notify of significant state changes.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the callback URL to notify of significant state changes
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CALLBACKURL_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_callbackUrl():string;
     var
       res : string;
@@ -2441,28 +1949,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the callback URL to notify significant state changes.
-  /// <para>
-  ///   Remember to call the
-  ///   saveToFlash() method of the module if the modification must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the callback URL to notify significant state changes
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.set_callbackUrl(newval:string):integer;
     var
       rest_val: string;
@@ -2471,22 +1957,6 @@ implementation
       result := _setAttr('callbackUrl',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the HTTP method used to notify callbacks for significant state changes.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_CALLBACKMETHOD_POST, Y_CALLBACKMETHOD_GET and Y_CALLBACKMETHOD_PUT corresponding to
-  ///   the HTTP method used to notify callbacks for significant state changes
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CALLBACKMETHOD_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_callbackMethod():Integer;
     var
       res : Integer;
@@ -2505,27 +1975,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the HTTP method used to notify callbacks for significant state changes.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a value among Y_CALLBACKMETHOD_POST, Y_CALLBACKMETHOD_GET and Y_CALLBACKMETHOD_PUT corresponding to
-  ///   the HTTP method used to notify callbacks for significant state changes
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.set_callbackMethod(newval:Integer):integer;
     var
       rest_val: string;
@@ -2534,25 +1983,6 @@ implementation
       result := _setAttr('callbackMethod',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the encoding standard to use for representing notification values.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON, Y_CALLBACKENCODING_JSON_ARRAY,
-  ///   Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API, Y_CALLBACKENCODING_JSON_NUM,
-  ///   Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE, Y_CALLBACKENCODING_INFLUXDB,
-  ///   Y_CALLBACKENCODING_MQTT, Y_CALLBACKENCODING_YOCTO_API_JZON and Y_CALLBACKENCODING_PRTG
-  ///   corresponding to the encoding standard to use for representing notification values
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CALLBACKENCODING_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_callbackEncoding():Integer;
     var
       res : Integer;
@@ -2571,30 +2001,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the encoding standard to use for representing notification values.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a value among Y_CALLBACKENCODING_FORM, Y_CALLBACKENCODING_JSON, Y_CALLBACKENCODING_JSON_ARRAY,
-  ///   Y_CALLBACKENCODING_CSV, Y_CALLBACKENCODING_YOCTO_API, Y_CALLBACKENCODING_JSON_NUM,
-  ///   Y_CALLBACKENCODING_EMONCMS, Y_CALLBACKENCODING_AZURE, Y_CALLBACKENCODING_INFLUXDB,
-  ///   Y_CALLBACKENCODING_MQTT, Y_CALLBACKENCODING_YOCTO_API_JZON and Y_CALLBACKENCODING_PRTG
-  ///   corresponding to the encoding standard to use for representing notification values
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.set_callbackEncoding(newval:Integer):integer;
     var
       rest_val: string;
@@ -2603,23 +2009,6 @@ implementation
       result := _setAttr('callbackEncoding',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns a hashed version of the notification callback credentials if set,
-  ///   or an empty string otherwise.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to a hashed version of the notification callback credentials if set,
-  ///   or an empty string otherwise
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CALLBACKCREDENTIALS_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_callbackCredentials():string;
     var
       res : string;
@@ -2638,35 +2027,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the credentials required to connect to the callback address.
-  /// <para>
-  ///   The credentials
-  ///   must be provided as returned by function get_callbackCredentials,
-  ///   in the form username:hash. The method used to compute the hash varies according
-  ///   to the the authentication scheme implemented by the callback, For Basic authentication,
-  ///   the hash is the MD5 of the string username:password. For Digest authentication,
-  ///   the hash is the MD5 of the string username:realm:password. For a simpler
-  ///   way to configure callback credentials, use function callbackLogin instead.
-  ///   Remember to call the saveToFlash() method of the module if the
-  ///   modification must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the credentials required to connect to the callback address
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.set_callbackCredentials(newval:string):integer;
     var
       rest_val: string;
@@ -2710,21 +2070,6 @@ implementation
       result := _setAttr('callbackCredentials', rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the initial waiting time before first callback notifications, in seconds.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the initial waiting time before first callback notifications, in seconds
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CALLBACKINITIALDELAY_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_callbackInitialDelay():LongInt;
     var
       res : LongInt;
@@ -2743,26 +2088,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the initial waiting time before first callback notifications, in seconds.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the initial waiting time before first callback notifications, in seconds
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.set_callbackInitialDelay(newval:LongInt):integer;
     var
       rest_val: string;
@@ -2771,21 +2096,6 @@ implementation
       result := _setAttr('callbackInitialDelay',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the HTTP callback schedule strategy, as a text string.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the HTTP callback schedule strategy, as a text string
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CALLBACKSCHEDULE_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_callbackSchedule():string;
     var
       res : string;
@@ -2804,26 +2114,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the HTTP callback schedule strategy, as a text string.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the HTTP callback schedule strategy, as a text string
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.set_callbackSchedule(newval:string):integer;
     var
       rest_val: string;
@@ -2832,21 +2122,6 @@ implementation
       result := _setAttr('callbackSchedule',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the minimum waiting time between two HTTP callbacks, in seconds.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the minimum waiting time between two HTTP callbacks, in seconds
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CALLBACKMINDELAY_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_callbackMinDelay():LongInt;
     var
       res : LongInt;
@@ -2865,26 +2140,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the minimum waiting time between two HTTP callbacks, in seconds.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the minimum waiting time between two HTTP callbacks, in seconds
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.set_callbackMinDelay(newval:LongInt):integer;
     var
       rest_val: string;
@@ -2893,21 +2148,6 @@ implementation
       result := _setAttr('callbackMinDelay',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the waiting time between two HTTP callbacks when there is nothing new.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the waiting time between two HTTP callbacks when there is nothing new
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CALLBACKMAXDELAY_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_callbackMaxDelay():LongInt;
     var
       res : LongInt;
@@ -2926,26 +2166,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the waiting time between two HTTP callbacks when there is nothing new.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the waiting time between two HTTP callbacks when there is nothing new
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.set_callbackMaxDelay(newval:LongInt):integer;
     var
       rest_val: string;
@@ -2954,23 +2174,6 @@ implementation
       result := _setAttr('callbackMaxDelay',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the current consumed by the module from Power-over-Ethernet (PoE), in milli-amps.
-  /// <para>
-  ///   The current consumption is measured after converting PoE source to 5 Volt, and should
-  ///   never exceed 1800 mA.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the current consumed by the module from Power-over-Ethernet (PoE), in milli-amps
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_POECURRENT_INVALID.
-  /// </para>
-  ///-
   function TYNetwork.get_poeCurrent():LongInt;
     var
       res : LongInt;
@@ -2989,55 +2192,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YNetwork.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YNetwork</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYNetwork.FindNetwork(func: string):TYNetwork;
     var
       obj : TYNetwork;
@@ -3053,24 +2207,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYNetwork.registerValueCallback(callback: TYNetworkValueCallback):LongInt;
     var
       val : string;
@@ -3113,33 +2249,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the configuration of the network interface to enable the use of an
-  ///   IP address received from a DHCP server.
-  /// <para>
-  ///   Until an address is received from a DHCP
-  ///   server, the module uses the IP parameters specified to this function.
-  ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
-  /// </para>
-  /// </summary>
-  /// <param name="fallbackIpAddr">
-  ///   fallback IP address, to be used when no DHCP reply is received
-  /// </param>
-  /// <param name="fallbackSubnetMaskLen">
-  ///   fallback subnet mask length when no DHCP reply is received, as an
-  ///   integer (eg. 24 means 255.255.255.0)
-  /// </param>
-  /// <param name="fallbackRouter">
-  ///   fallback router IP address, to be used when no DHCP reply is received
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.useDHCP(fallbackIpAddr: string; fallbackSubnetMaskLen: LongInt; fallbackRouter: string):LongInt;
     begin
       result := self.set_ipConfig('DHCP:'+ fallbackIpAddr+'/'+inttostr( fallbackSubnetMaskLen)+'/'+fallbackRouter);
@@ -3147,23 +2256,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the configuration of the network interface to enable the use of an
-  ///   IP address received from a DHCP server.
-  /// <para>
-  ///   Until an address is received from a DHCP
-  ///   server, the module uses an IP of the network 169.254.0.0/16 (APIPA).
-  ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.useDHCPauto():LongInt;
     begin
       result := self.set_ipConfig('DHCP:');
@@ -3171,29 +2263,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the configuration of the network interface to use a static IP address.
-  /// <para>
-  ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
-  /// </para>
-  /// </summary>
-  /// <param name="ipAddress">
-  ///   device IP address
-  /// </param>
-  /// <param name="subnetMaskLen">
-  ///   subnet mask length, as an integer (eg. 24 means 255.255.255.0)
-  /// </param>
-  /// <param name="router">
-  ///   router IP address (default gateway)
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.useStaticIP(ipAddress: string; subnetMaskLen: LongInt; router: string):LongInt;
     begin
       result := self.set_ipConfig('STATIC:'+ ipAddress+'/'+inttostr( subnetMaskLen)+'/'+router);
@@ -3201,24 +2270,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Pings host to test the network connectivity.
-  /// <para>
-  ///   Sends four ICMP ECHO_REQUEST requests from the
-  ///   module to the target host. This method returns a string with the result of the
-  ///   4 ICMP ECHO_REQUEST requests.
-  /// </para>
-  /// </summary>
-  /// <param name="host">
-  ///   the hostname or the IP address of the target
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   a string with the result of the ping.
-  /// </returns>
-  ///-
   function TYNetwork.ping(host: string):string;
     var
       content : TByteArray;
@@ -3229,23 +2280,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Trigger an HTTP callback quickly.
-  /// <para>
-  ///   This function can even be called within
-  ///   an HTTP callback, in which case the next callback will be triggered 5 seconds
-  ///   after the end of the current callback, regardless if the minimum time between
-  ///   callbacks configured in the device.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.triggerCallback():LongInt;
     begin
       result := self.set_callbackMethod(self.get_callbackMethod);
@@ -3253,28 +2287,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Setup periodic HTTP callbacks (simplifed function).
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="interval">
-  ///   a string representing the callback periodicity, expressed in
-  ///   seconds, minutes or hours, eg. "60s", "5m", "1h", "48h".
-  /// </param>
-  /// <param name="offset">
-  ///   an integer representing the time offset relative to the period
-  ///   when the callback should occur. For instance, if the periodicity is
-  ///   24h, an offset of 7 will make the callback occur each day at 7AM.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYNetwork.set_periodicCallbackSchedule(interval: string; offset: LongInt):LongInt;
     begin
       result := self.set_callbackSchedule('every '+interval+'+'+inttostr(offset));

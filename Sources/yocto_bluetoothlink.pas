@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_bluetoothlink.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_bluetoothlink.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindBluetoothLink(), the high-level API for BluetoothLink functions
  *
@@ -689,22 +689,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the MAC-48 address of the bluetooth interface, which is unique on the bluetooth network.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the MAC-48 address of the bluetooth interface, which is unique on the
-  ///   bluetooth network
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_OWNADDRESS_INVALID.
-  /// </para>
-  ///-
   function TYBluetoothLink.get_ownAddress():string;
     var
       res : string;
@@ -723,25 +707,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns an opaque string if a PIN code has been configured in the device to access
-  ///   the SIM card, or an empty string if none has been configured or if the code provided
-  ///   was rejected by the SIM card.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to an opaque string if a PIN code has been configured in the device to access
-  ///   the SIM card, or an empty string if none has been configured or if the code provided
-  ///   was rejected by the SIM card
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PAIRINGPIN_INVALID.
-  /// </para>
-  ///-
   function TYBluetoothLink.get_pairingPin():string;
     var
       res : string;
@@ -760,28 +725,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the PIN code used by the module for bluetooth pairing.
-  /// <para>
-  ///   Remember to call the saveToFlash() method of the module to save the
-  ///   new value in the device flash.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the PIN code used by the module for bluetooth pairing
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYBluetoothLink.set_pairingPin(newval:string):integer;
     var
       rest_val: string;
@@ -790,21 +733,6 @@ implementation
       result := _setAttr('pairingPin',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the MAC-48 address of the remote device to connect to.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the MAC-48 address of the remote device to connect to
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_REMOTEADDRESS_INVALID.
-  /// </para>
-  ///-
   function TYBluetoothLink.get_remoteAddress():string;
     var
       res : string;
@@ -823,26 +751,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the MAC-48 address defining which remote device to connect to.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a string corresponding to the MAC-48 address defining which remote device to connect to
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYBluetoothLink.set_remoteAddress(newval:string):integer;
     var
       rest_val: string;
@@ -851,21 +759,6 @@ implementation
       result := _setAttr('remoteAddress',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the bluetooth name the remote device, if found on the bluetooth network.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the bluetooth name the remote device, if found on the bluetooth network
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_REMOTENAME_INVALID.
-  /// </para>
-  ///-
   function TYBluetoothLink.get_remoteName():string;
     var
       res : string;
@@ -884,21 +777,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the state of the mute function.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_MUTE_FALSE or Y_MUTE_TRUE, according to the state of the mute function
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_MUTE_INVALID.
-  /// </para>
-  ///-
   function TYBluetoothLink.get_mute():Integer;
     var
       res : Integer;
@@ -917,28 +795,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the state of the mute function.
-  /// <para>
-  ///   Remember to call the matching module
-  ///   saveToFlash() method to save the setting permanently.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_MUTE_FALSE or Y_MUTE_TRUE, according to the state of the mute function
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYBluetoothLink.set_mute(newval:Integer):integer;
     var
       rest_val: string;
@@ -947,21 +803,6 @@ implementation
       result := _setAttr('mute',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the audio pre-amplifier volume, in per cents.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the audio pre-amplifier volume, in per cents
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PREAMPLIFIER_INVALID.
-  /// </para>
-  ///-
   function TYBluetoothLink.get_preAmplifier():LongInt;
     var
       res : LongInt;
@@ -980,26 +821,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the audio pre-amplifier volume, in per cents.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the audio pre-amplifier volume, in per cents
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYBluetoothLink.set_preAmplifier(newval:LongInt):integer;
     var
       rest_val: string;
@@ -1008,21 +829,6 @@ implementation
       result := _setAttr('preAmplifier',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the connected headset volume, in per cents.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the connected headset volume, in per cents
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_VOLUME_INVALID.
-  /// </para>
-  ///-
   function TYBluetoothLink.get_volume():LongInt;
     var
       res : LongInt;
@@ -1041,26 +847,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the connected headset volume, in per cents.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the connected headset volume, in per cents
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYBluetoothLink.set_volume(newval:LongInt):integer;
     var
       rest_val: string;
@@ -1069,22 +855,6 @@ implementation
       result := _setAttr('volume',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the bluetooth link state.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_LINKSTATE_DOWN, Y_LINKSTATE_FREE, Y_LINKSTATE_SEARCH, Y_LINKSTATE_EXISTS,
-  ///   Y_LINKSTATE_LINKED and Y_LINKSTATE_PLAY corresponding to the bluetooth link state
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LINKSTATE_INVALID.
-  /// </para>
-  ///-
   function TYBluetoothLink.get_linkState():Integer;
     var
       res : Integer;
@@ -1103,22 +873,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the bluetooth receiver signal strength, in pourcents, or 0 if no connection is established.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the bluetooth receiver signal strength, in pourcents, or 0 if no
-  ///   connection is established
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LINKQUALITY_INVALID.
-  /// </para>
-  ///-
   function TYBluetoothLink.get_linkQuality():LongInt;
     var
       res : LongInt;
@@ -1163,55 +917,6 @@ implementation
       result := _setAttr('command',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YBluetoothLink.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YBluetoothLink</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYBluetoothLink.FindBluetoothLink(func: string):TYBluetoothLink;
     var
       obj : TYBluetoothLink;
@@ -1227,24 +932,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYBluetoothLink.registerValueCallback(callback: TYBluetoothLinkValueCallback):LongInt;
     var
       val : string;
@@ -1287,21 +974,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Attempt to connect to the previously selected remote device.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYBluetoothLink.connect():LongInt;
     begin
       result := self.set_command('C');
@@ -1309,21 +981,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Disconnect from the previously selected remote device.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYBluetoothLink.disconnect():LongInt;
     begin
       result := self.set_command('D');

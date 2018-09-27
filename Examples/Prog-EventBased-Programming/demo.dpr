@@ -23,6 +23,12 @@ uses
     writeln(m.get_serialNumber() + ' : config changed');
    end;
 
+  Procedure beaconCallback(m:TYModule; beacon:Integer);
+   begin
+    writeln(m.get_serialNumber() + ' : beacon changed to '+ IntToStr(beacon));
+   end;
+
+
   Procedure deviceArrival(m:TYModule);
    var
      serial     : string;
@@ -35,6 +41,7 @@ uses
      serial := m.get_serialNumber();
      writeln('Device arrival : ' + serial);
      m.registerConfigChangeCallback(configChangeCallback);
+     m.registerBeaconCallback(beaconCallback);
 
      // First solution: look for a specific type of function (eg. anButton)
      fctcount := m.functionCount();

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_messagebox.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *
@@ -737,21 +737,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the number of message storage slots currently in use.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of message storage slots currently in use
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_SLOTSINUSE_INVALID.
-  /// </para>
-  ///-
   function TYMessageBox.get_slotsInUse():LongInt;
     var
       res : LongInt;
@@ -770,21 +755,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the total number of message storage slots on the SIM card.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the total number of message storage slots on the SIM card
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_SLOTSCOUNT_INVALID.
-  /// </para>
-  ///-
   function TYMessageBox.get_slotsCount():LongInt;
     var
       res : LongInt;
@@ -821,21 +791,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the number of SMS units sent so far.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of SMS units sent so far
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PDUSENT_INVALID.
-  /// </para>
-  ///-
   function TYMessageBox.get_pduSent():LongInt;
     var
       res : LongInt;
@@ -854,26 +809,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the value of the outgoing SMS units counter.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the value of the outgoing SMS units counter
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMessageBox.set_pduSent(newval:LongInt):integer;
     var
       rest_val: string;
@@ -882,21 +817,6 @@ implementation
       result := _setAttr('pduSent',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the number of SMS units received so far.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of SMS units received so far
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_PDURECEIVED_INVALID.
-  /// </para>
-  ///-
   function TYMessageBox.get_pduReceived():LongInt;
     var
       res : LongInt;
@@ -915,26 +835,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the value of the incoming SMS units counter.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the value of the incoming SMS units counter
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMessageBox.set_pduReceived(newval:LongInt):integer;
     var
       rest_val: string;
@@ -969,55 +869,6 @@ implementation
       result := _setAttr('command',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YMessageBox.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YMessageBox</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYMessageBox.FindMessageBox(func: string):TYMessageBox;
     var
       obj : TYMessageBox;
@@ -1033,24 +884,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYMessageBox.registerValueCallback(callback: TYMessageBoxValueCallback):LongInt;
     var
       val : string;
@@ -1823,19 +1656,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Clear the SMS units counters.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMessageBox.clearPduCounters():LongInt;
     var
       retcode : LongInt;
@@ -1852,31 +1672,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sends a regular text SMS, with standard parameters.
-  /// <para>
-  ///   This function can send messages
-  ///   of more than 160 characters, using SMS concatenation. ISO-latin accented characters
-  ///   are supported. For sending messages with special unicode characters such as asian
-  ///   characters and emoticons, use <c>newMessage</c> to create a new message and define
-  ///   the content of using methods <c>addText</c> and <c>addUnicodeData</c>.
-  /// </para>
-  /// </summary>
-  /// <param name="recipient">
-  ///   a text string with the recipient phone number, either as a
-  ///   national number, or in international format starting with a plus sign
-  /// </param>
-  /// <param name="message">
-  ///   the text to be sent in the message
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMessageBox.sendTextMessage(recipient: string; message: string):LongInt;
     var
       sms : TYSms;
@@ -1889,32 +1684,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Sends a Flash SMS (class 0 message).
-  /// <para>
-  ///   Flash messages are displayed on the handset
-  ///   immediately and are usually not saved on the SIM card. This function can send messages
-  ///   of more than 160 characters, using SMS concatenation. ISO-latin accented characters
-  ///   are supported. For sending messages with special unicode characters such as asian
-  ///   characters and emoticons, use <c>newMessage</c> to create a new message and define
-  ///   the content of using methods <c>addText</c> et <c>addUnicodeData</c>.
-  /// </para>
-  /// </summary>
-  /// <param name="recipient">
-  ///   a text string with the recipient phone number, either as a
-  ///   national number, or in international format starting with a plus sign
-  /// </param>
-  /// <param name="message">
-  ///   the text to be sent in the message
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMessageBox.sendFlashMessage(recipient: string; message: string):LongInt;
     var
       sms : TYSms;
@@ -1928,23 +1697,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Creates a new empty SMS message, to be configured and sent later on.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="recipient">
-  ///   a text string with the recipient phone number, either as a
-  ///   national number, or in international format starting with a plus sign
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMessageBox.newMessage(recipient: string):TYSms;
     var
       sms : TYSms;
@@ -1956,21 +1708,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the list of messages received and not deleted.
-  /// <para>
-  ///   This function
-  ///   will automatically decode concatenated SMS.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an YSms object list.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns an empty list.
-  /// </para>
-  ///-
   function TYMessageBox.get_messages():TYSmsArray;
     begin
       self.checkNewMessages;

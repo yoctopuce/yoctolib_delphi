@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wakeupschedule.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_wakeupschedule.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
@@ -620,21 +620,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the minutes in the 00-29 interval of each hour scheduled for wake up.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the minutes in the 00-29 interval of each hour scheduled for wake up
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_MINUTESA_INVALID.
-  /// </para>
-  ///-
   function TYWakeUpSchedule.get_minutesA():LongInt;
     var
       res : LongInt;
@@ -653,26 +638,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the minutes in the 00-29 interval when a wake up must take place.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the minutes in the 00-29 interval when a wake up must take place
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWakeUpSchedule.set_minutesA(newval:LongInt):integer;
     var
       rest_val: string;
@@ -681,21 +646,6 @@ implementation
       result := _setAttr('minutesA',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the minutes in the 30-59 intervalof each hour scheduled for wake up.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the minutes in the 30-59 intervalof each hour scheduled for wake up
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_MINUTESB_INVALID.
-  /// </para>
-  ///-
   function TYWakeUpSchedule.get_minutesB():LongInt;
     var
       res : LongInt;
@@ -714,26 +664,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the minutes in the 30-59 interval when a wake up must take place.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the minutes in the 30-59 interval when a wake up must take place
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWakeUpSchedule.set_minutesB(newval:LongInt):integer;
     var
       rest_val: string;
@@ -742,21 +672,6 @@ implementation
       result := _setAttr('minutesB',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the hours scheduled for wake up.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the hours scheduled for wake up
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_HOURS_INVALID.
-  /// </para>
-  ///-
   function TYWakeUpSchedule.get_hours():LongInt;
     var
       res : LongInt;
@@ -775,26 +690,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the hours when a wake up must take place.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the hours when a wake up must take place
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWakeUpSchedule.set_hours(newval:LongInt):integer;
     var
       rest_val: string;
@@ -803,21 +698,6 @@ implementation
       result := _setAttr('hours',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the days of the week scheduled for wake up.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the days of the week scheduled for wake up
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_WEEKDAYS_INVALID.
-  /// </para>
-  ///-
   function TYWakeUpSchedule.get_weekDays():LongInt;
     var
       res : LongInt;
@@ -836,26 +716,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the days of the week when a wake up must take place.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the days of the week when a wake up must take place
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWakeUpSchedule.set_weekDays(newval:LongInt):integer;
     var
       rest_val: string;
@@ -864,21 +724,6 @@ implementation
       result := _setAttr('weekDays',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the days of the month scheduled for wake up.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the days of the month scheduled for wake up
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_MONTHDAYS_INVALID.
-  /// </para>
-  ///-
   function TYWakeUpSchedule.get_monthDays():LongInt;
     var
       res : LongInt;
@@ -897,26 +742,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the days of the month when a wake up must take place.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the days of the month when a wake up must take place
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWakeUpSchedule.set_monthDays(newval:LongInt):integer;
     var
       rest_val: string;
@@ -925,21 +750,6 @@ implementation
       result := _setAttr('monthDays',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the months scheduled for wake up.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the months scheduled for wake up
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_MONTHS_INVALID.
-  /// </para>
-  ///-
   function TYWakeUpSchedule.get_months():LongInt;
     var
       res : LongInt;
@@ -958,26 +768,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the months when a wake up must take place.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the months when a wake up must take place
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWakeUpSchedule.set_months(newval:LongInt):integer;
     var
       rest_val: string;
@@ -986,21 +776,6 @@ implementation
       result := _setAttr('months',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the date/time (seconds) of the next wake up occurence.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the date/time (seconds) of the next wake up occurence
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_NEXTOCCURENCE_INVALID.
-  /// </para>
-  ///-
   function TYWakeUpSchedule.get_nextOccurence():int64;
     var
       res : int64;
@@ -1019,55 +794,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YWakeUpSchedule.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YWakeUpSchedule</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYWakeUpSchedule.FindWakeUpSchedule(func: string):TYWakeUpSchedule;
     var
       obj : TYWakeUpSchedule;
@@ -1083,24 +809,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYWakeUpSchedule.registerValueCallback(callback: TYWakeUpScheduleValueCallback):LongInt;
     var
       val : string;
@@ -1143,13 +851,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns all the minutes of each hour that are scheduled for wake up.
-  /// <para>
-  /// </para>
-  /// </summary>
-  ///-
   function TYWakeUpSchedule.get_minutes():int64;
     var
       res : int64;
@@ -1162,22 +863,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes all the minutes where a wake up must take place.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="bitmap">
-  ///   Minutes 00-59 of each hour scheduled for wake up.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWakeUpSchedule.set_minutes(bitmap: int64):LongInt;
     begin
       self.set_minutesA(integer(((bitmap) and ($03fffffff))));

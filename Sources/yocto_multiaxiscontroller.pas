@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_multiaxiscontroller.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_multiaxiscontroller.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
  *
@@ -496,21 +496,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the number of synchronized controllers.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of synchronized controllers
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_NAXIS_INVALID.
-  /// </para>
-  ///-
   function TYMultiAxisController.get_nAxis():LongInt;
     var
       res : LongInt;
@@ -529,26 +514,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the number of synchronized controllers.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the number of synchronized controllers
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYMultiAxisController.set_nAxis(newval:LongInt):integer;
     var
       rest_val: string;
@@ -557,22 +522,6 @@ implementation
       result := _setAttr('nAxis',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the stepper motor set overall state.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_GLOBALSTATE_ABSENT, Y_GLOBALSTATE_ALERT, Y_GLOBALSTATE_HI_Z, Y_GLOBALSTATE_STOP,
-  ///   Y_GLOBALSTATE_RUN and Y_GLOBALSTATE_BATCH corresponding to the stepper motor set overall state
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_GLOBALSTATE_INVALID.
-  /// </para>
-  ///-
   function TYMultiAxisController.get_globalState():Integer;
     var
       res : Integer;
@@ -617,55 +566,6 @@ implementation
       result := _setAttr('command',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YMultiAxisController.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YMultiAxisController</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYMultiAxisController.FindMultiAxisController(func: string):TYMultiAxisController;
     var
       obj : TYMultiAxisController;
@@ -681,24 +581,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYMultiAxisController.registerValueCallback(callback: TYMultiAxisControllerValueCallback):LongInt;
     var
       val : string;
@@ -774,17 +656,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Reinitialize all controllers and clear all alert flags.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYMultiAxisController.reset():LongInt;
     begin
       result := self.set_command('Z');
@@ -792,20 +663,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Starts all motors backward at the specified speeds, to search for the motor home position.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="speed">
-  ///   desired speed for all axis, in steps per second.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYMultiAxisController.findHomePosition(speed: TDoubleArray):LongInt;
     var
       cmd : string;
@@ -825,23 +682,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Starts all motors synchronously to reach a given absolute position.
-  /// <para>
-  ///   The time needed to reach the requested position will depend on the lowest
-  ///   acceleration and max speed parameters configured for all motors.
-  ///   The final position will be reached on all axis at the same time.
-  /// </para>
-  /// </summary>
-  /// <param name="absPos">
-  ///   absolute position, measured in steps from each origin.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYMultiAxisController.moveTo(absPos: TDoubleArray):LongInt;
     var
       cmd : string;
@@ -861,23 +701,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Starts all motors synchronously to reach a given relative position.
-  /// <para>
-  ///   The time needed to reach the requested position will depend on the lowest
-  ///   acceleration and max speed parameters configured for all motors.
-  ///   The final position will be reached on all axis at the same time.
-  /// </para>
-  /// </summary>
-  /// <param name="relPos">
-  ///   relative position, measured in steps from the current position.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYMultiAxisController.moveRel(relPos: TDoubleArray):LongInt;
     var
       cmd : string;
@@ -897,20 +720,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Keep the motor in the same state for the specified amount of time, before processing next command.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="waitMs">
-  ///   wait time, specified in milliseconds.
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYMultiAxisController.pause(waitMs: LongInt):LongInt;
     begin
       result := self.sendCommand('_'+inttostr(waitMs));
@@ -918,17 +727,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Stops the motor with an emergency alert, without taking any additional precaution.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYMultiAxisController.emergencyStop():LongInt;
     begin
       result := self.set_command('!');
@@ -936,17 +734,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Stops the motor smoothly as soon as possible, without waiting for ongoing move completion.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYMultiAxisController.abortAndBrake():LongInt;
     begin
       result := self.set_command('B');
@@ -954,17 +741,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Turn the controller into Hi-Z mode immediately, without waiting for ongoing move completion.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYMultiAxisController.abortAndHiZ():LongInt;
     begin
       result := self.set_command('z');

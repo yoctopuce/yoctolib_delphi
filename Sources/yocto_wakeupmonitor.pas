@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wakeupmonitor.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_wakeupmonitor.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -589,21 +589,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the maximal wake up time (in seconds) before automatically going to sleep.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the maximal wake up time (in seconds) before automatically going to sleep
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_POWERDURATION_INVALID.
-  /// </para>
-  ///-
   function TYWakeUpMonitor.get_powerDuration():LongInt;
     var
       res : LongInt;
@@ -622,26 +607,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the maximal wake up time (seconds) before automatically going to sleep.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the maximal wake up time (seconds) before automatically going to sleep
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWakeUpMonitor.set_powerDuration(newval:LongInt):integer;
     var
       rest_val: string;
@@ -650,21 +615,6 @@ implementation
       result := _setAttr('powerDuration',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the delay before the  next sleep period.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the delay before the  next sleep period
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_SLEEPCOUNTDOWN_INVALID.
-  /// </para>
-  ///-
   function TYWakeUpMonitor.get_sleepCountdown():LongInt;
     var
       res : LongInt;
@@ -683,26 +633,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the delay before the next sleep period.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the delay before the next sleep period
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWakeUpMonitor.set_sleepCountdown(newval:LongInt):integer;
     var
       rest_val: string;
@@ -711,21 +641,6 @@ implementation
       result := _setAttr('sleepCountdown',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the next scheduled wake up date/time (UNIX format).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the next scheduled wake up date/time (UNIX format)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_NEXTWAKEUP_INVALID.
-  /// </para>
-  ///-
   function TYWakeUpMonitor.get_nextWakeUp():int64;
     var
       res : int64;
@@ -744,26 +659,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the days of the week when a wake up must take place.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the days of the week when a wake up must take place
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWakeUpMonitor.set_nextWakeUp(newval:int64):integer;
     var
       rest_val: string;
@@ -772,23 +667,6 @@ implementation
       result := _setAttr('nextWakeUp',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the latest wake up reason.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_WAKEUPREASON_USBPOWER, Y_WAKEUPREASON_EXTPOWER, Y_WAKEUPREASON_ENDOFSLEEP,
-  ///   Y_WAKEUPREASON_EXTSIG1, Y_WAKEUPREASON_SCHEDULE1 and Y_WAKEUPREASON_SCHEDULE2 corresponding to the
-  ///   latest wake up reason
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_WAKEUPREASON_INVALID.
-  /// </para>
-  ///-
   function TYWakeUpMonitor.get_wakeUpReason():Integer;
     var
       res : Integer;
@@ -807,21 +685,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns  the current state of the monitor.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_WAKEUPSTATE_SLEEPING or Y_WAKEUPSTATE_AWAKE, according to  the current state of the monitor
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_WAKEUPSTATE_INVALID.
-  /// </para>
-  ///-
   function TYWakeUpMonitor.get_wakeUpState():Integer;
     var
       res : Integer;
@@ -866,55 +729,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YWakeUpMonitor.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YWakeUpMonitor</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYWakeUpMonitor.FindWakeUpMonitor(func: string):TYWakeUpMonitor;
     var
       obj : TYWakeUpMonitor;
@@ -930,24 +744,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYWakeUpMonitor.registerValueCallback(callback: TYWakeUpMonitorValueCallback):LongInt;
     var
       val : string;
@@ -990,13 +786,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Forces a wake up.
-  /// <para>
-  /// </para>
-  /// </summary>
-  ///-
   function TYWakeUpMonitor.wakeUp():LongInt;
     begin
       result := self.set_wakeUpState(Y_WAKEUPSTATE_AWAKE);
@@ -1004,23 +793,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Goes to sleep until the next wake up condition is met,  the
-  ///   RTC time must have been set before calling this function.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="secBeforeSleep">
-  ///   number of seconds before going into sleep mode,
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWakeUpMonitor.sleep(secBeforeSleep: LongInt):LongInt;
     var
       currTime : LongInt;
@@ -1039,28 +811,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Goes to sleep for a specific duration or until the next wake up condition is met, the
-  ///   RTC time must have been set before calling this function.
-  /// <para>
-  ///   The count down before sleep
-  ///   can be canceled with resetSleepCountDown.
-  /// </para>
-  /// </summary>
-  /// <param name="secUntilWakeUp">
-  ///   number of seconds before next wake up
-  /// </param>
-  /// <param name="secBeforeSleep">
-  ///   number of seconds before going into sleep mode
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWakeUpMonitor.sleepFor(secUntilWakeUp: LongInt; secBeforeSleep: LongInt):LongInt;
     var
       currTime : LongInt;
@@ -1079,28 +829,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Go to sleep until a specific date is reached or until the next wake up condition is met, the
-  ///   RTC time must have been set before calling this function.
-  /// <para>
-  ///   The count down before sleep
-  ///   can be canceled with resetSleepCountDown.
-  /// </para>
-  /// </summary>
-  /// <param name="wakeUpTime">
-  ///   wake-up datetime (UNIX format)
-  /// </param>
-  /// <param name="secBeforeSleep">
-  ///   number of seconds before going into sleep mode
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWakeUpMonitor.sleepUntil(wakeUpTime: LongInt; secBeforeSleep: LongInt):LongInt;
     var
       currTime : LongInt;
@@ -1119,17 +847,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Resets the sleep countdown.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </returns>
-  ///-
   function TYWakeUpMonitor.resetSleepCountDown():LongInt;
     begin
       self.set_sleepCountdown(0);

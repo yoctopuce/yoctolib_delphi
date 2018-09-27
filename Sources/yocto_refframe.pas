@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_refframe.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_refframe.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -728,43 +728,6 @@ implementation
       result := _setAttr('mountPos',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Changes the reference bearing used by the compass.
-  /// <para>
-  ///   The relative bearing
-  ///   indicated by the compass is the difference between the measured magnetic
-  ///   heading and the reference bearing indicated here.
-  /// </para>
-  /// <para>
-  ///   For instance, if you setup as reference bearing the value of the earth
-  ///   magnetic declination, the compass will provide the orientation relative
-  ///   to the geographic North.
-  /// </para>
-  /// <para>
-  ///   Similarly, when the sensor is not mounted along the standard directions
-  ///   because it has an additional yaw angle, you can set this angle in the reference
-  ///   bearing so that the compass provides the expected natural direction.
-  /// </para>
-  /// <para>
-  ///   Remember to call the saveToFlash()
-  ///   method of the module if the modification must be kept.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the reference bearing used by the compass
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYRefFrame.set_bearing(newval:double):integer;
     var
       rest_val: string;
@@ -773,24 +736,6 @@ implementation
       result := _setAttr('bearing',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the reference bearing used by the compass.
-  /// <para>
-  ///   The relative bearing
-  ///   indicated by the compass is the difference between the measured magnetic
-  ///   heading and the reference bearing indicated here.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the reference bearing used by the compass
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_BEARING_INVALID.
-  /// </para>
-  ///-
   function TYRefFrame.get_bearing():double;
     var
       res : double;
@@ -861,55 +806,6 @@ implementation
       result := _setAttr('fusionMode',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YRefFrame.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YRefFrame</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYRefFrame.FindRefFrame(func: string):TYRefFrame;
     var
       obj : TYRefFrame;
@@ -925,24 +821,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYRefFrame.registerValueCallback(callback: TYRefFrameValueCallback):LongInt;
     var
       val : string;
@@ -985,27 +863,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the installation position of the device, as configured
-  ///   in order to define the reference frame for the compass and the
-  ///   pitch/roll tilt sensors.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among the <c>Y_MOUNTPOSITION</c> enumeration
-  ///   (<c>Y_MOUNTPOSITION_BOTTOM</c>,   <c>Y_MOUNTPOSITION_TOP</c>,
-  ///   <c>Y_MOUNTPOSITION_FRONT</c>,    <c>Y_MOUNTPOSITION_RIGHT</c>,
-  ///   <c>Y_MOUNTPOSITION_REAR</c>,     <c>Y_MOUNTPOSITION_LEFT</c>),
-  ///   corresponding to the installation in a box, on one of the six faces.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_MOUNTPOSITION_INVALID.
-  /// </para>
-  ///-
   function TYRefFrame.get_mountPosition():TYMOUNTPOSITION;
     var
       position : LongInt;
@@ -1020,29 +877,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the installation orientation of the device, as configured
-  ///   in order to define the reference frame for the compass and the
-  ///   pitch/roll tilt sensors.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among the enumeration <c>Y_MOUNTORIENTATION</c>
-  ///   (<c>Y_MOUNTORIENTATION_TWELVE</c>, <c>Y_MOUNTORIENTATION_THREE</c>,
-  ///   <c>Y_MOUNTORIENTATION_SIX</c>,     <c>Y_MOUNTORIENTATION_NINE</c>)
-  ///   corresponding to the orientation of the "X" arrow on the device,
-  ///   as on a clock dial seen from an observer in the center of the box.
-  ///   On the bottom face, the 12H orientation points to the front, while
-  ///   on the top face, the 12H orientation points to the rear.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_MOUNTORIENTATION_INVALID.
-  /// </para>
-  ///-
   function TYRefFrame.get_mountOrientation():TYMOUNTORIENTATION;
     var
       position : LongInt;
@@ -1057,43 +891,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the compass and tilt sensor frame of reference.
-  /// <para>
-  ///   The magnetic compass
-  ///   and the tilt sensors (pitch and roll) naturally work in the plane
-  ///   parallel to the earth surface. In case the device is not installed upright
-  ///   and horizontally, you must select its reference orientation (parallel to
-  ///   the earth surface) so that the measures are made relative to this position.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="position">
-  ///   a value among the <c>Y_MOUNTPOSITION</c> enumeration
-  ///   (<c>Y_MOUNTPOSITION_BOTTOM</c>,   <c>Y_MOUNTPOSITION_TOP</c>,
-  ///   <c>Y_MOUNTPOSITION_FRONT</c>,    <c>Y_MOUNTPOSITION_RIGHT</c>,
-  ///   <c>Y_MOUNTPOSITION_REAR</c>,     <c>Y_MOUNTPOSITION_LEFT</c>),
-  ///   corresponding to the installation in a box, on one of the six faces.
-  /// </param>
-  /// <param name="orientation">
-  ///   a value among the enumeration <c>Y_MOUNTORIENTATION</c>
-  ///   (<c>Y_MOUNTORIENTATION_TWELVE</c>, <c>Y_MOUNTORIENTATION_THREE</c>,
-  ///   <c>Y_MOUNTORIENTATION_SIX</c>,     <c>Y_MOUNTORIENTATION_NINE</c>)
-  ///   corresponding to the orientation of the "X" arrow on the device,
-  ///   as on a clock dial seen from an observer in the center of the box.
-  ///   On the bottom face, the 12H orientation points to the front, while
-  ///   on the top face, the 12H orientation points to the rear.
-  /// </param>
-  /// <para>
-  ///   Remember to call the <c>saveToFlash()</c>
-  ///   method of the module if the modification must be kept.
-  /// </para>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYRefFrame.set_mountPosition(position: TYMOUNTPOSITION; orientation: TYMOUNTORIENTATION):LongInt;
     var
       mixedPos : LongInt;
@@ -1103,27 +900,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the 3D sensor calibration state (Yocto-3D-V2 only).
-  /// <para>
-  ///   This function returns
-  ///   an integer representing the calibration state of the 3 inertial sensors of
-  ///   the BNO055 chip, found in the Yocto-3D-V2. Hundredths show the calibration state
-  ///   of the accelerometer, tenths show the calibration state of the magnetometer while
-  ///   units show the calibration state of the gyroscope. For each sensor, the value 0
-  ///   means no calibration and the value 3 means full calibration.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer representing the calibration state of Yocto-3D-V2:
-  ///   333 when fully calibrated, 0 when not calibrated at all.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  ///   For the Yocto-3D (V1), this function always return -3 (unsupported function).
-  /// </para>
-  ///-
   function TYRefFrame.get_calibrationState():LongInt;
     var
       calibParam : string;
@@ -1145,26 +921,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns estimated quality of the orientation (Yocto-3D-V2 only).
-  /// <para>
-  ///   This function returns
-  ///   an integer between 0 and 3 representing the degree of confidence of the position
-  ///   estimate. When the value is 3, the estimation is reliable. Below 3, one should
-  ///   expect sudden corrections, in particular for heading (<c>compass</c> function).
-  ///   The most frequent causes for values below 3 are magnetic interferences, and
-  ///   accelerations or rotations beyond the sensor range.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer between 0 and 3 (3 when the measure is reliable)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  ///   For the Yocto-3D (V1), this function always return -3 (unsupported function).
-  /// </para>
-  ///-
   function TYRefFrame.get_measureQuality():LongInt;
     var
       calibParam : string;
@@ -1234,28 +990,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Initiates the sensors tridimensional calibration process.
-  /// <para>
-  ///   This calibration is used at low level for inertial position estimation
-  ///   and to enhance the precision of the tilt sensors.
-  /// </para>
-  /// <para>
-  ///   After calling this method, the device should be moved according to the
-  ///   instructions provided by method <c>get_3DCalibrationHint</c>,
-  ///   and <c>more3DCalibration</c> should be invoked about 5 times per second.
-  ///   The calibration procedure is completed when the method
-  ///   <c>get_3DCalibrationProgress</c> returns 100. At this point,
-  ///   the computed calibration parameters can be applied using method
-  ///   <c>save3DCalibration</c>. The calibration process can be canceled
-  ///   at any time using method <c>cancel3DCalibration</c>.
-  /// </para>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  /// </summary>
-  ///-
   function TYRefFrame.start3DCalibration():LongInt;
     var
       calibOrient_pos : LongInt;
@@ -1298,21 +1032,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Continues the sensors tridimensional calibration process previously
-  ///   initiated using method <c>start3DCalibration</c>.
-  /// <para>
-  ///   This method should be called approximately 5 times per second, while
-  ///   positioning the device according to the instructions provided by method
-  ///   <c>get_3DCalibrationHint</c>. Note that the instructions change during
-  ///   the calibration process.
-  /// </para>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  /// </summary>
-  ///-
   function TYRefFrame.more3DCalibration():LongInt;
     begin
       if self._calibV2 then
@@ -1665,17 +1384,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns instructions to proceed to the tridimensional calibration initiated with
-  ///   method <c>start3DCalibration</c>.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a character string.
-  /// </returns>
-  ///-
   function TYRefFrame.get_3DCalibrationHint():string;
     begin
       result := self._calibStageHint;
@@ -1683,17 +1391,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the global process indicator for the tridimensional calibration
-  ///   initiated with method <c>start3DCalibration</c>.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer between 0 (not started) and 100 (stage completed).
-  /// </returns>
-  ///-
   function TYRefFrame.get_3DCalibrationProgress():LongInt;
     begin
       result := self._calibProgress;
@@ -1701,17 +1398,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns index of the current stage of the calibration
-  ///   initiated with method <c>start3DCalibration</c>.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer, growing each time a calibration stage is completed.
-  /// </returns>
-  ///-
   function TYRefFrame.get_3DCalibrationStage():LongInt;
     begin
       result := self._calibStage;
@@ -1719,17 +1405,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the process indicator for the current stage of the calibration
-  ///   initiated with method <c>start3DCalibration</c>.
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer between 0 (not started) and 100 (stage completed).
-  /// </returns>
-  ///-
   function TYRefFrame.get_3DCalibrationStageProgress():LongInt;
     begin
       result := self._calibStageProgress;
@@ -1737,17 +1412,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the latest log message from the calibration process.
-  /// <para>
-  ///   When no new message is available, returns an empty string.
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a character string.
-  /// </returns>
-  ///-
   function TYRefFrame.get_3DCalibrationLogMsg():string;
     var
       msg : string;
@@ -1759,18 +1423,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Applies the sensors tridimensional calibration parameters that have just been computed.
-  /// <para>
-  ///   Remember to call the <c>saveToFlash()</c>  method of the module if the changes
-  ///   must be kept when the device is restarted.
-  /// </para>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  /// </summary>
-  ///-
   function TYRefFrame.save3DCalibration():LongInt;
     begin
       if self._calibV2 then
@@ -1877,16 +1529,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Aborts the sensors tridimensional calibration process et restores normal settings.
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  /// </summary>
-  ///-
   function TYRefFrame.cancel3DCalibration():LongInt;
     begin
       if self._calibStage = 0 then

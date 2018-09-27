@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_powersupply.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_powersupply.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindPowerSupply(), the high-level API for PowerSupply functions
  *
@@ -751,26 +751,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Changes the voltage set point, in V.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the voltage set point, in V
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPowerSupply.set_voltageSetPoint(newval:double):integer;
     var
       rest_val: string;
@@ -779,21 +759,6 @@ implementation
       result := _setAttr('voltageSetPoint',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the voltage set point, in V.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the voltage set point, in V
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_VOLTAGESETPOINT_INVALID.
-  /// </para>
-  ///-
   function TYPowerSupply.get_voltageSetPoint():double;
     var
       res : double;
@@ -812,26 +777,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the current limit, in mA.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the current limit, in mA
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPowerSupply.set_currentLimit(newval:double):integer;
     var
       rest_val: string;
@@ -840,21 +785,6 @@ implementation
       result := _setAttr('currentLimit',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the current limit, in mA.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the current limit, in mA
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CURRENTLIMIT_INVALID.
-  /// </para>
-  ///-
   function TYPowerSupply.get_currentLimit():double;
     var
       res : double;
@@ -873,21 +803,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the power supply output switch state.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_POWEROUTPUT_OFF or Y_POWEROUTPUT_ON, according to the power supply output switch state
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_POWEROUTPUT_INVALID.
-  /// </para>
-  ///-
   function TYPowerSupply.get_powerOutput():Integer;
     var
       res : Integer;
@@ -906,26 +821,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the power supply output switch state.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_POWEROUTPUT_OFF or Y_POWEROUTPUT_ON, according to the power supply output switch state
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPowerSupply.set_powerOutput(newval:Integer):integer;
     var
       rest_val: string;
@@ -934,21 +829,6 @@ implementation
       result := _setAttr('powerOutput',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the output voltage control point.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_VOLTAGESENSE_INT or Y_VOLTAGESENSE_EXT, according to the output voltage control point
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_VOLTAGESENSE_INVALID.
-  /// </para>
-  ///-
   function TYPowerSupply.get_voltageSense():Integer;
     var
       res : Integer;
@@ -967,26 +847,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the voltage control point.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_VOLTAGESENSE_INT or Y_VOLTAGESENSE_EXT, according to the voltage control point
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPowerSupply.set_voltageSense(newval:Integer):integer;
     var
       rest_val: string;
@@ -995,21 +855,6 @@ implementation
       result := _setAttr('voltageSense',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the measured output voltage, in V.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the measured output voltage, in V
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_MEASUREDVOLTAGE_INVALID.
-  /// </para>
-  ///-
   function TYPowerSupply.get_measuredVoltage():double;
     var
       res : double;
@@ -1028,21 +873,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the measured output current, in mA.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the measured output current, in mA
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_MEASUREDCURRENT_INVALID.
-  /// </para>
-  ///-
   function TYPowerSupply.get_measuredCurrent():double;
     var
       res : double;
@@ -1061,21 +891,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the measured input voltage, in V.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the measured input voltage, in V
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_INPUTVOLTAGE_INVALID.
-  /// </para>
-  ///-
   function TYPowerSupply.get_inputVoltage():double;
     var
       res : double;
@@ -1094,21 +909,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the internal voltage, in V.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the internal voltage, in V
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_VINT_INVALID.
-  /// </para>
-  ///-
   function TYPowerSupply.get_vInt():double;
     var
       res : double;
@@ -1127,21 +927,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the LDO temperature, in Celsius.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the LDO temperature, in Celsius
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LDOTEMPERATURE_INVALID.
-  /// </para>
-  ///-
   function TYPowerSupply.get_ldoTemperature():double;
     var
       res : double;
@@ -1186,28 +971,6 @@ implementation
       result := _setAttr('voltageTransition',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Changes the voltage set point at device start up.
-  /// <para>
-  ///   Remember to call the matching
-  ///   module saveToFlash() method, otherwise this call has no effect.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the voltage set point at device start up
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPowerSupply.set_voltageAtStartUp(newval:double):integer;
     var
       rest_val: string;
@@ -1216,21 +979,6 @@ implementation
       result := _setAttr('voltageAtStartUp',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the selected voltage set point at device startup, in V.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the selected voltage set point at device startup, in V
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_VOLTAGEATSTARTUP_INVALID.
-  /// </para>
-  ///-
   function TYPowerSupply.get_voltageAtStartUp():double;
     var
       res : double;
@@ -1249,28 +997,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the current limit at device start up.
-  /// <para>
-  ///   Remember to call the matching
-  ///   module saveToFlash() method, otherwise this call has no effect.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   a floating point number corresponding to the current limit at device start up
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYPowerSupply.set_currentAtStartUp(newval:double):integer;
     var
       rest_val: string;
@@ -1279,21 +1005,6 @@ implementation
       result := _setAttr('currentAtStartUp',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the selected current limit at device startup, in mA.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the selected current limit at device startup, in mA
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CURRENTATSTARTUP_INVALID.
-  /// </para>
-  ///-
   function TYPowerSupply.get_currentAtStartUp():double;
     var
       res : double;
@@ -1338,55 +1049,6 @@ implementation
       result := _setAttr('command',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YPowerSupply.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YPowerSupply</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYPowerSupply.FindPowerSupply(func: string):TYPowerSupply;
     var
       obj : TYPowerSupply;
@@ -1402,24 +1064,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYPowerSupply.registerValueCallback(callback: TYPowerSupplyValueCallback):LongInt;
     var
       val : string;
@@ -1462,25 +1106,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Performs a smooth transistion of output voltage.
-  /// <para>
-  ///   Any explicit voltage
-  ///   change cancels any ongoing transition process.
-  /// </para>
-  /// </summary>
-  /// <param name="V_target">
-  ///   new output voltage value at the end of the transition
-  ///   (floating-point number, representing the end voltage in V)
-  /// </param>
-  /// <param name="ms_duration">
-  ///   total duration of the transition, in milliseconds
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  ///-
   function TYPowerSupply.voltageMove(V_target: double; ms_duration: LongInt):LongInt;
     var
       newval : string;

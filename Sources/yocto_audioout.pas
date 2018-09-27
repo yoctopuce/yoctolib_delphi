@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_audioout.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_audioout.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindAudioOut(), the high-level API for AudioOut functions
  *
@@ -459,21 +459,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns audio output volume, in per cents.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to audio output volume, in per cents
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_VOLUME_INVALID.
-  /// </para>
-  ///-
   function TYAudioOut.get_volume():LongInt;
     var
       res : LongInt;
@@ -492,26 +477,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes audio output volume, in per cents.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to audio output volume, in per cents
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYAudioOut.set_volume(newval:LongInt):integer;
     var
       rest_val: string;
@@ -520,21 +485,6 @@ implementation
       result := _setAttr('volume',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the state of the mute function.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   either Y_MUTE_FALSE or Y_MUTE_TRUE, according to the state of the mute function
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_MUTE_INVALID.
-  /// </para>
-  ///-
   function TYAudioOut.get_mute():Integer;
     var
       res : Integer;
@@ -553,28 +503,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the state of the mute function.
-  /// <para>
-  ///   Remember to call the matching module
-  ///   saveToFlash() method to save the setting permanently.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   either Y_MUTE_FALSE or Y_MUTE_TRUE, according to the state of the mute function
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYAudioOut.set_mute(newval:Integer):integer;
     var
       rest_val: string;
@@ -583,25 +511,6 @@ implementation
       result := _setAttr('mute',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the supported volume range.
-  /// <para>
-  ///   The low value of the
-  ///   range corresponds to the minimal audible value. To
-  ///   completely mute the sound, use set_mute()
-  ///   instead of the set_volume().
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the supported volume range
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_VOLUMERANGE_INVALID.
-  /// </para>
-  ///-
   function TYAudioOut.get_volumeRange():string;
     var
       res : string;
@@ -620,21 +529,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the detected output current level.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the detected output current level
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_SIGNAL_INVALID.
-  /// </para>
-  ///-
   function TYAudioOut.get_signal():LongInt;
     var
       res : LongInt;
@@ -653,21 +547,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the number of seconds elapsed without detecting a signal.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the number of seconds elapsed without detecting a signal
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_NOSIGNALFOR_INVALID.
-  /// </para>
-  ///-
   function TYAudioOut.get_noSignalFor():LongInt;
     var
       res : LongInt;
@@ -686,55 +565,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YAudioOut.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YAudioOut</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYAudioOut.FindAudioOut(func: string):TYAudioOut;
     var
       obj : TYAudioOut;
@@ -750,24 +580,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYAudioOut.registerValueCallback(callback: TYAudioOutValueCallback):LongInt;
     var
       val : string;

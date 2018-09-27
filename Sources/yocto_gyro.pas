@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_gyro.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_gyro.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindGyro(), the high-level API for Gyro functions
  *
@@ -847,55 +847,6 @@ constructor TYQt.Create(func:string);
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YQt.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YQt</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYQt.FindQt(func: string):TYQt;
     var
       obj : TYQt;
@@ -911,24 +862,6 @@ constructor TYQt.Create(func:string);
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYQt.registerValueCallback(callback: TYQtValueCallback):LongInt;
     var
       val : string;
@@ -971,24 +904,6 @@ constructor TYQt.Create(func:string);
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every periodic timed notification.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and an YMeasure object describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYQt.registerTimedReportCallback(callback: TYQtTimedReportCallback):LongInt;
     var
       sensor : TYSensor;
@@ -1156,21 +1071,6 @@ constructor TYQt.Create(func:string);
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_BANDWIDTH_INVALID.
-  /// </para>
-  ///-
   function TYGyro.get_bandwidth():LongInt;
     var
       res : LongInt;
@@ -1189,28 +1089,6 @@ constructor TYQt.Create(func:string);
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only).
-  /// <para>
-  ///   When the
-  ///   frequency is lower, the device performs averaging.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="newval">
-  ///   an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
-  /// </param>
-  /// <para>
-  /// </para>
-  /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYGyro.set_bandwidth(newval:LongInt):integer;
     var
       rest_val: string;
@@ -1219,22 +1097,6 @@ constructor TYQt.Create(func:string);
       result := _setAttr('bandwidth',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the angular velocity around the X axis of the device, as a floating point number.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the angular velocity around the X axis of the device, as a
-  ///   floating point number
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_XVALUE_INVALID.
-  /// </para>
-  ///-
   function TYGyro.get_xValue():double;
     var
       res : double;
@@ -1253,22 +1115,6 @@ constructor TYQt.Create(func:string);
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the angular velocity around the Y axis of the device, as a floating point number.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the angular velocity around the Y axis of the device, as a
-  ///   floating point number
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_YVALUE_INVALID.
-  /// </para>
-  ///-
   function TYGyro.get_yValue():double;
     var
       res : double;
@@ -1287,22 +1133,6 @@ constructor TYQt.Create(func:string);
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the angular velocity around the Z axis of the device, as a floating point number.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating point number corresponding to the angular velocity around the Z axis of the device, as a
-  ///   floating point number
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_ZVALUE_INVALID.
-  /// </para>
-  ///-
   function TYGyro.get_zValue():double;
     var
       res : double;
@@ -1321,55 +1151,6 @@ constructor TYQt.Create(func:string);
     end;
 
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YGyro.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YGyro</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYGyro.FindGyro(func: string):TYGyro;
     var
       obj : TYGyro;
@@ -1385,24 +1166,6 @@ constructor TYQt.Create(func:string);
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYGyro.registerValueCallback(callback: TYGyroValueCallback):LongInt;
     var
       val : string;
@@ -1445,24 +1208,6 @@ constructor TYQt.Create(func:string);
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every periodic timed notification.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and an YMeasure object describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYGyro.registerTimedReportCallback(callback: TYGyroTimedReportCallback):LongInt;
     var
       sensor : TYSensor;
@@ -1599,24 +1344,6 @@ constructor TYQt.Create(func:string);
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the estimated roll angle, based on the integration of
-  ///   gyroscopic measures combined with acceleration and
-  ///   magnetic field measurements.
-  /// <para>
-  ///   The axis corresponding to the roll angle can be mapped to any
-  ///   of the device X, Y or Z physical directions using methods of
-  ///   the class <c>YRefFrame</c>.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating-point number corresponding to roll angle
-  ///   in degrees, between -180 and +180.
-  /// </returns>
-  ///-
   function TYGyro.get_roll():double;
     begin
       self._loadAngles;
@@ -1625,24 +1352,6 @@ constructor TYQt.Create(func:string);
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the estimated pitch angle, based on the integration of
-  ///   gyroscopic measures combined with acceleration and
-  ///   magnetic field measurements.
-  /// <para>
-  ///   The axis corresponding to the pitch angle can be mapped to any
-  ///   of the device X, Y or Z physical directions using methods of
-  ///   the class <c>YRefFrame</c>.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating-point number corresponding to pitch angle
-  ///   in degrees, between -90 and +90.
-  /// </returns>
-  ///-
   function TYGyro.get_pitch():double;
     begin
       self._loadAngles;
@@ -1651,24 +1360,6 @@ constructor TYQt.Create(func:string);
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the estimated heading angle, based on the integration of
-  ///   gyroscopic measures combined with acceleration and
-  ///   magnetic field measurements.
-  /// <para>
-  ///   The axis corresponding to the heading can be mapped to any
-  ///   of the device X, Y or Z physical directions using methods of
-  ///   the class <c>YRefFrame</c>.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating-point number corresponding to heading
-  ///   in degrees, between 0 and 360.
-  /// </returns>
-  ///-
   function TYGyro.get_heading():double;
     begin
       self._loadAngles;
@@ -1677,22 +1368,6 @@ constructor TYQt.Create(func:string);
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the <c>w</c> component (real part) of the quaternion
-  ///   describing the device estimated orientation, based on the
-  ///   integration of gyroscopic measures combined with acceleration and
-  ///   magnetic field measurements.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating-point number corresponding to the <c>w</c>
-  ///   component of the quaternion.
-  /// </returns>
-  ///-
   function TYGyro.get_quaternionW():double;
     begin
       self._loadQuaternion;
@@ -1701,24 +1376,6 @@ constructor TYQt.Create(func:string);
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the <c>x</c> component of the quaternion
-  ///   describing the device estimated orientation, based on the
-  ///   integration of gyroscopic measures combined with acceleration and
-  ///   magnetic field measurements.
-  /// <para>
-  ///   The <c>x</c> component is
-  ///   mostly correlated with rotations on the roll axis.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating-point number corresponding to the <c>x</c>
-  ///   component of the quaternion.
-  /// </returns>
-  ///-
   function TYGyro.get_quaternionX():double;
     begin
       self._loadQuaternion;
@@ -1727,24 +1384,6 @@ constructor TYQt.Create(func:string);
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the <c>y</c> component of the quaternion
-  ///   describing the device estimated orientation, based on the
-  ///   integration of gyroscopic measures combined with acceleration and
-  ///   magnetic field measurements.
-  /// <para>
-  ///   The <c>y</c> component is
-  ///   mostly correlated with rotations on the pitch axis.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating-point number corresponding to the <c>y</c>
-  ///   component of the quaternion.
-  /// </returns>
-  ///-
   function TYGyro.get_quaternionY():double;
     begin
       self._loadQuaternion;
@@ -1753,24 +1392,6 @@ constructor TYQt.Create(func:string);
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the <c>x</c> component of the quaternion
-  ///   describing the device estimated orientation, based on the
-  ///   integration of gyroscopic measures combined with acceleration and
-  ///   magnetic field measurements.
-  /// <para>
-  ///   The <c>x</c> component is
-  ///   mostly correlated with changes of heading.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a floating-point number corresponding to the <c>z</c>
-  ///   component of the quaternion.
-  /// </returns>
-  ///-
   function TYGyro.get_quaternionZ():double;
     begin
       self._loadQuaternion;
@@ -1779,29 +1400,6 @@ constructor TYQt.Create(func:string);
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers a callback function that will be invoked each time that the estimated
-  ///   device orientation has changed.
-  /// <para>
-  ///   The call frequency is typically around 95Hz during a move.
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered.
-  ///   For good responsiveness, remember to call one of these two functions periodically.
-  ///   To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to invoke, or a null pointer.
-  ///   The callback function should take five arguments:
-  ///   the YGyro object of the turning device, and the floating
-  ///   point values of the four components w, x, y and z
-  ///   (as floating-point numbers).
-  /// @noreturn
-  /// </param>
-  ///-
   function TYGyro.registerQuaternionCallback(callback: TYQuatCallback):LongInt;
     begin
       self._quatCallback := callback;
@@ -1836,29 +1434,6 @@ constructor TYQt.Create(func:string);
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers a callback function that will be invoked each time that the estimated
-  ///   device orientation has changed.
-  /// <para>
-  ///   The call frequency is typically around 95Hz during a move.
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered.
-  ///   For good responsiveness, remember to call one of these two functions periodically.
-  ///   To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to invoke, or a null pointer.
-  ///   The callback function should take four arguments:
-  ///   the YGyro object of the turning device, and the floating
-  ///   point values of the three angles roll, pitch and heading
-  ///   in degrees (as floating-point numbers).
-  /// @noreturn
-  /// </param>
-  ///-
   function TYGyro.registerAnglesCallback(callback: TYAnglesCallback):LongInt;
     begin
       self._anglesCallback := callback;

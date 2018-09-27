@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 31386 2018-07-31 12:26:57Z seb $
+ * $Id: yocto_wireless.pas 32348 2018-09-25 13:28:40Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -637,21 +637,6 @@ implementation
     end;
 {$HINTS ON}
 
-  ////
-  /// <summary>
-  ///   Returns the link quality, expressed in percent.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the link quality, expressed in percent
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_LINKQUALITY_INVALID.
-  /// </para>
-  ///-
   function TYWireless.get_linkQuality():LongInt;
     var
       res : LongInt;
@@ -670,21 +655,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the wireless network name (SSID).
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the wireless network name (SSID)
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_SSID_INVALID.
-  /// </para>
-  ///-
   function TYWireless.get_ssid():string;
     var
       res : string;
@@ -703,21 +673,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the 802.11 channel currently used, or 0 when the selected network has not been found.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   an integer corresponding to the 802.11 channel currently used, or 0 when the selected network has not been found
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_CHANNEL_INVALID.
-  /// </para>
-  ///-
   function TYWireless.get_channel():LongInt;
     var
       res : LongInt;
@@ -736,22 +691,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the security algorithm used by the selected wireless network.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_SECURITY_UNKNOWN, Y_SECURITY_OPEN, Y_SECURITY_WEP, Y_SECURITY_WPA and
-  ///   Y_SECURITY_WPA2 corresponding to the security algorithm used by the selected wireless network
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_SECURITY_INVALID.
-  /// </para>
-  ///-
   function TYWireless.get_security():Integer;
     var
       res : Integer;
@@ -770,21 +709,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns the latest status message from the wireless interface.
-  /// <para>
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a string corresponding to the latest status message from the wireless interface
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_MESSAGE_INVALID.
-  /// </para>
-  ///-
   function TYWireless.get_message():string;
     var
       res : string;
@@ -829,35 +753,6 @@ implementation
       result := _setAttr('wlanConfig',rest_val);
     end;
 
-  ////
-  /// <summary>
-  ///   Returns the current state of the wireless interface.
-  /// <para>
-  ///   The state Y_WLANSTATE_DOWN means that the network interface is
-  ///   not connected to a network. The state Y_WLANSTATE_SCANNING means that the network interface is
-  ///   scanning available
-  ///   frequencies. During this stage, the device is not reachable, and the network settings are not yet
-  ///   applied. The state
-  ///   Y_WLANSTATE_CONNECTED means that the network settings have been successfully applied ant that the
-  ///   device is reachable
-  ///   from the wireless network. If the device is configured to use ad-hoc or Soft AP mode, it means that
-  ///   the wireless network
-  ///   is up and that other devices can join the network. The state Y_WLANSTATE_REJECTED means that the
-  ///   network interface has
-  ///   not been able to join the requested network. The description of the error can be obtain with the
-  ///   get_message() method.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a value among Y_WLANSTATE_DOWN, Y_WLANSTATE_SCANNING, Y_WLANSTATE_CONNECTED and
-  ///   Y_WLANSTATE_REJECTED corresponding to the current state of the wireless interface
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns Y_WLANSTATE_INVALID.
-  /// </para>
-  ///-
   function TYWireless.get_wlanState():Integer;
     var
       res : Integer;
@@ -876,55 +771,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Retrieves $AFUNCTION$ for a given identifier.
-  /// <para>
-  ///   The identifier can be specified using several formats:
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   - FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleSerialNumber.FunctionLogicalName
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionIdentifier
-  /// </para>
-  /// <para>
-  ///   - ModuleLogicalName.FunctionLogicalName
-  /// </para>
-  /// <para>
-  /// </para>
-  /// <para>
-  ///   This function does not require that $THEFUNCTION$ is online at the time
-  ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YWireless.isOnline()</c> to test if $THEFUNCTION$ is
-  ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   $AFUNCTION$ by logical name, no error is notified: the first instance
-  ///   found is returned. The search is performed first by hardware name,
-  ///   then by logical name.
-  /// </para>
-  /// <para>
-  ///   If a call to this object's is_online() method returns FALSE although
-  ///   you are certain that the matching device is plugged, make sure that you did
-  ///   call registerHub() at application initialization time.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="func">
-  ///   a string that uniquely characterizes $THEFUNCTION$
-  /// </param>
-  /// <returns>
-  ///   a <c>YWireless</c> object allowing you to drive $THEFUNCTION$.
-  /// </returns>
-  ///-
   class function TYWireless.FindWireless(func: string):TYWireless;
     var
       obj : TYWireless;
@@ -940,24 +786,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Registers the callback function that is invoked on every change of advertised value.
-  /// <para>
-  ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-  ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-  ///   one of these two functions periodically. To unregister a callback, pass a null pointer as argument.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <param name="callback">
-  ///   the callback function to call, or a null pointer. The callback function should take two
-  ///   arguments: the function object of which the value has changed, and the character string describing
-  ///   the new advertised value.
-  /// @noreturn
-  /// </param>
-  ///-
   function TYWireless.registerValueCallback(callback: TYWirelessValueCallback):LongInt;
     var
       val : string;
@@ -1000,21 +828,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Triggers a scan of the wireless frequency and builds the list of available networks.
-  /// <para>
-  ///   The scan forces a disconnection from the current network. At then end of the process, the
-  ///   the network interface attempts to reconnect to the previous network. During the scan, the <c>wlanState</c>
-  ///   switches to <c>Y_WLANSTATE_DOWN</c>, then to <c>Y_WLANSTATE_SCANNING</c>. When the scan is completed,
-  ///   <c>get_wlanState()</c> returns either <c>Y_WLANSTATE_DOWN</c> or <c>Y_WLANSTATE_SCANNING</c>. At this
-  ///   point, the list of detected network can be retrieved with the <c>get_detectedWlans()</c> method.
-  /// </para>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  /// </summary>
-  ///-
   function TYWireless.startWlanScan():LongInt;
     var
       config : string;
@@ -1026,27 +839,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the configuration of the wireless lan interface to connect to an existing
-  ///   access point (infrastructure mode).
-  /// <para>
-  ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
-  /// </para>
-  /// </summary>
-  /// <param name="ssid">
-  ///   the name of the network to connect to
-  /// </param>
-  /// <param name="securityKey">
-  ///   the network key, as a character string
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWireless.joinNetwork(ssid: string; securityKey: string):LongInt;
     begin
       result := self.set_wlanConfig('INFRA:'+ ssid+'\'+securityKey);
@@ -1054,37 +846,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the configuration of the wireless lan interface to create an ad-hoc
-  ///   wireless network, without using an access point.
-  /// <para>
-  ///   On the YoctoHub-Wireless-g,
-  ///   it is best to use softAPNetworkInstead(), which emulates an access point
-  ///   (Soft AP) which is more efficient and more widely supported than ad-hoc networks.
-  /// </para>
-  /// <para>
-  ///   When a security key is specified for an ad-hoc network, the network is protected
-  ///   by a WEP40 key (5 characters or 10 hexadecimal digits) or WEP128 key (13 characters
-  ///   or 26 hexadecimal digits). It is recommended to use a well-randomized WEP128 key
-  ///   using 26 hexadecimal digits to maximize security.
-  ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module
-  ///   to apply this setting.
-  /// </para>
-  /// </summary>
-  /// <param name="ssid">
-  ///   the name of the network to connect to
-  /// </param>
-  /// <param name="securityKey">
-  ///   the network key, as a character string
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWireless.adhocNetwork(ssid: string; securityKey: string):LongInt;
     begin
       result := self.set_wlanConfig('ADHOC:'+ ssid+'\'+securityKey);
@@ -1092,35 +853,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Changes the configuration of the wireless lan interface to create a new wireless
-  ///   network by emulating a WiFi access point (Soft AP).
-  /// <para>
-  ///   This function can only be
-  ///   used with the YoctoHub-Wireless-g.
-  /// </para>
-  /// <para>
-  ///   When a security key is specified for a SoftAP network, the network is protected
-  ///   by a WEP40 key (5 characters or 10 hexadecimal digits) or WEP128 key (13 characters
-  ///   or 26 hexadecimal digits). It is recommended to use a well-randomized WEP128 key
-  ///   using 26 hexadecimal digits to maximize security.
-  ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
-  /// </para>
-  /// </summary>
-  /// <param name="ssid">
-  ///   the name of the network to connect to
-  /// </param>
-  /// <param name="securityKey">
-  ///   the network key, as a character string
-  /// </param>
-  /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
-  /// </para>
-  ///-
   function TYWireless.softAPNetwork(ssid: string; securityKey: string):LongInt;
     begin
       result := self.set_wlanConfig('SOFTAP:'+ ssid+'\'+securityKey);
@@ -1128,25 +860,6 @@ implementation
     end;
 
 
-  ////
-  /// <summary>
-  ///   Returns a list of YWlanRecord objects that describe detected Wireless networks.
-  /// <para>
-  ///   This list is not updated when the module is already connected to an acces point (infrastructure mode).
-  ///   To force an update of this list, <c>startWlanScan()</c> must be called.
-  ///   Note that an languages without garbage collections, the returned list must be freed by the caller.
-  /// </para>
-  /// <para>
-  /// </para>
-  /// </summary>
-  /// <returns>
-  ///   a list of <c>YWlanRecord</c> objects, containing the SSID, channel,
-  ///   link quality and the type of security of the wireless network.
-  /// </returns>
-  /// <para>
-  ///   On failure, throws an exception or returns an empty list.
-  /// </para>
-  ///-
   function TYWireless.get_detectedWlans():TYWlanRecordArray;
     var
       json : TByteArray;
