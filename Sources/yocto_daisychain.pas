@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_daisychain.pas 32348 2018-09-25 13:28:40Z seb $
+ *  $Id: yocto_daisychain.pas 32610 2018-10-10 06:52:20Z seb $
  *
- * Implements yFindDaisyChain(), the high-level API for DaisyChain functions
+ *  Implements yFindDaisyChain(), the high-level API for DaisyChain functions
  *
- * - - - - - - - - - License information: - - - - - - - - -
+ *  - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *

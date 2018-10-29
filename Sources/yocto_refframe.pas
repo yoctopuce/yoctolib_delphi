@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_refframe.pas 32348 2018-09-25 13:28:40Z seb $
+ *  $Id: yocto_refframe.pas 32610 2018-10-10 06:52:20Z seb $
  *
- * Implements yFindRefFrame(), the high-level API for RefFrame functions
+ *  Implements yFindRefFrame(), the high-level API for RefFrame functions
  *
- * - - - - - - - - - License information: - - - - - - - - -
+ *  - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *

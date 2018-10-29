@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_voltage.pas 32348 2018-09-25 13:28:40Z seb $
+ *  $Id: yocto_voltage.pas 32610 2018-10-10 06:52:20Z seb $
  *
- * Implements yFindVoltage(), the high-level API for Voltage functions
+ *  Implements yFindVoltage(), the high-level API for Voltage functions
  *
- * - - - - - - - - - License information: - - - - - - - - -
+ *  - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *

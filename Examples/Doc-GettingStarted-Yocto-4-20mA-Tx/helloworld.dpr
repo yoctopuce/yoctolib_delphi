@@ -1,3 +1,17 @@
+{*********************************************************************
+ *
+ *  $Id: helloworld.dpr 32621 2018-10-10 13:10:25Z seb $
+ *
+ *  An example that show how to use a  Yocto-4-20mA-Tx
+ *
+ *  You can find more information on our web site:
+ *   Yocto-4-20mA-Tx documentation:
+ *      https://www.yoctopuce.com/EN/products/yocto-4-20ma-tx/doc.html
+ *   Delphi API Reference:
+ *      https://www.yoctopuce.com/EN/doc/reference/yoctolib-delphi-EN.html
+ *
+ *********************************************************************}
+
 program helloworld;
 {$APPTYPE CONSOLE}
 uses

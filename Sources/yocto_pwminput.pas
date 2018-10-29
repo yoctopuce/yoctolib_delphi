@@ -1,10 +1,10 @@
 {*********************************************************************
  *
- * $Id: yocto_pwminput.pas 32348 2018-09-25 13:28:40Z seb $
+ *  $Id: yocto_pwminput.pas 32610 2018-10-10 06:52:20Z seb $
  *
- * Implements yFindPwmInput(), the high-level API for PwmInput functions
+ *  Implements yFindPwmInput(), the high-level API for PwmInput functions
  *
- * - - - - - - - - - License information: - - - - - - - - -
+ *  - - - - - - - - - License information: - - - - - - - - -
  *
  *  Copyright (C) 2011 and beyond by Yoctopuce Sarl, Switzerland.
  *
@@ -112,6 +112,32 @@ type
   public
     //--- (YPwmInput accessors declaration)
     constructor Create(func:string);
+
+    ////
+    /// <summary>
+    ///   Changes the measuring unit for the measured quantity.
+    /// <para>
+    ///   That unit
+    ///   is just a string which is automatically initialized each time
+    ///   the measurement mode is changed. But is can be set to an
+    ///   arbitrary value.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a string corresponding to the measuring unit for the measured quantity
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_unit(newval:string):integer;
 
     ////
     /// <summary>
@@ -603,6 +629,14 @@ implementation
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
+
+  function TYPwmInput.set_unit(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('unit',rest_val);
+    end;
 
   function TYPwmInput.get_dutyCycle():double;
     var

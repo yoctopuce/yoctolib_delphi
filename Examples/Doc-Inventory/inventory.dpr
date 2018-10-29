@@ -1,3 +1,15 @@
+{*********************************************************************
+ *
+ *  $Id: svn_id $
+ *
+ *  Doc-Inventory example
+ *
+ *  You can find more information on our web site:
+ *   Delphi API Reference:
+ *      https://www.yoctopuce.com/EN/doc/reference/yoctolib-delphi-EN.html
+ *
+ *********************************************************************}
+
 program inventory;
 {$APPTYPE CONSOLE}
 uses

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 32376 2018-09-27 07:57:07Z seb $
+ * $Id: yocto_api.pas 32521 2018-10-05 08:29:03Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -114,7 +114,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '32391';
+  YOCTO_API_BUILD_NO        = '32759';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -493,7 +493,7 @@ type
     /// <returns>
     ///   return a string that uniquely identifies the function
     /// </returns>
-    function get_hardwareId():string;
+    function get_hardwareId():string; virtual;
 
     ///
     /// <summary>
@@ -1766,6 +1766,22 @@ type
     /// </para>
     ///-
     function set_allSettings(settings: TByteArray):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the unique hardware identifier of the module.
+    /// <para>
+    ///   The unique hardware identifier is made of the device serial
+    ///   number followed by string ".module".
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string that uniquely identifies the module
+    /// </returns>
+    ///-
+    function get_hardwareId():string; override;
 
     ////
     /// <summary>
@@ -9851,6 +9867,16 @@ var
         end;
       self.clearCache;
       result := YAPI_SUCCESS;
+      exit;
+    end;
+
+
+  function TYModule.get_hardwareId():string;
+    var
+      serial : string;
+    begin
+      serial := self.get_serialNumber;
+      result := serial + '.module';
       exit;
     end;
 
