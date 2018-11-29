@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_colorledcluster.pas 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_colorledcluster.pas 32903 2018-11-02 10:14:32Z seb $
  *
  *  Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -1248,6 +1248,9 @@ type
     /// <summary>
     ///   Continues the enumeration of RGB LED clusters started using <c>yFirstColorLedCluster()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned RGB LED clusters order.
+    ///   If you want to find a specific a RGB LED cluster, use <c>ColorLedCluster.findColorLedCluster()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>

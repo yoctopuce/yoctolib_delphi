@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_gyro.pas 32348 2018-09-25 13:28:40Z seb $
+ * $Id: yocto_gyro.pas 32903 2018-11-02 10:14:32Z seb $
  *
  * Implements yFindGyro(), the high-level API for Gyro functions
  *
@@ -193,6 +193,9 @@ type
     /// <summary>
     ///   Continues the enumeration of quaternion components started using <c>yFirstQt()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned quaternion components order.
+    ///   If you want to find a specific a quaternion component, use <c>Qt.findQt()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>
@@ -732,6 +735,9 @@ type
     /// <summary>
     ///   Continues the enumeration of gyroscopes started using <c>yFirstGyro()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned gyroscopes order.
+    ///   If you want to find a specific a gyroscope, use <c>Gyro.findGyro()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>

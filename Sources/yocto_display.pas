@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 32348 2018-09-25 13:28:40Z seb $
+ * $Id: yocto_display.pas 32903 2018-11-02 10:14:32Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -699,6 +699,9 @@ public
     /// <summary>
     ///   Continues the enumeration of displays started using <c>yFirstDisplay()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned displays order.
+    ///   If you want to find a specific a display, use <c>Display.findDisplay()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>

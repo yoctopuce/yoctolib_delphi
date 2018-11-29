@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 32521 2018-10-05 08:29:03Z seb $
+ * $Id: yocto_api.pas 33400 2018-11-27 07:58:29Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -114,7 +114,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '32759';
+  YOCTO_API_BUILD_NO        = '33423';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -1094,16 +1094,7 @@ type
 
     procedure setImmutableAttributes(var infos : yDeviceSt);
 
-
-    ///
-    ///
-    ///
-    function registerLogCallback(callback : TYModuleLogCallback): integer;
-
-    function get_logCallback(): TYModuleLogCallback;
-
     class procedure _updateModuleCallbackList(modul : TYModule; add : boolean);
-
 
     //--- (generated code: YModule accessors declaration)
     constructor Create(func:string);
@@ -1535,6 +1526,28 @@ type
     ///-
     function triggerFirmwareUpdate(secBeforeReboot: LongInt):LongInt; overload; virtual;
 
+    procedure _startStopDevLog(serial: string; start: boolean); overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Registers a device log callback function.
+    /// <para>
+    ///   This callback will be called each time
+    ///   that a module sends a new log message. Mostly useful to debug a Yoctopuce module.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="callback">
+    ///   the callback function to call, or a NIL pointer. The callback function should take two
+    ///   arguments: the module object that emitted the log message, and the character string containing the log.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </param>
+    ///-
+    function registerLogCallback(callback: TYModuleLogCallback):LongInt; overload; virtual;
+
+    function get_logCallback():TYModuleLogCallback; overload; virtual;
+
     ////
     /// <summary>
     ///   Register a callback function, to be called when a persistent settings in
@@ -1903,6 +1916,9 @@ type
     /// <summary>
     ///   Continues the module enumeration started using <c>yFirstModule()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned modules order.
+    ///   If you want to find a specific module, use <c>Module.findModule()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>
@@ -1967,8 +1983,6 @@ end;
     _offset                   : double;
     _scale                    : double;
     _decexp                   : double;
-    _isScal                   : boolean;
-    _isScal32                 : boolean;
     _caltyp                   : LongInt;
     _calpar                   : TLongIntArray;
     _calraw                   : TDoubleArray;
@@ -2494,7 +2508,7 @@ end;
     ///   using methods from the YDataSet object.
     /// </returns>
     ///-
-    function get_recordedData(startTime: int64; endTime: int64):TYDataSet; overload; virtual;
+    function get_recordedData(startTime: double; endTime: double):TYDataSet; overload; virtual;
 
     ////
     /// <summary>
@@ -2584,7 +2598,7 @@ end;
 
     function _applyCalibration(rawValue: double):double; overload; virtual;
 
-    function _decodeTimedReport(timestamp: double; report: TLongIntArray):TYMeasure; overload; virtual;
+    function _decodeTimedReport(timestamp: double; duration: double; report: TLongIntArray):TYMeasure; overload; virtual;
 
     function _decodeVal(w: LongInt):double; overload; virtual;
 
@@ -2595,6 +2609,9 @@ end;
     /// <summary>
     ///   Continues the enumeration of sensors started using <c>yFirstSensor()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned sensors order.
+    ///   If you want to find a specific a sensor, use <c>Sensor.findSensor()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>
@@ -2884,21 +2901,17 @@ end;
     _utcStamp                 : int64;
     _nCols                    : LongInt;
     _nRows                    : LongInt;
-    _duration                 : LongInt;
+    _startTime                : double;
+    _duration                 : double;
+    _dataSamplesInterval      : double;
+    _firstMeasureDuration     : double;
     _columnNames              : TStringArray;
     _functionId               : string;
     _isClosed                 : boolean;
     _isAvg                    : boolean;
-    _isScal                   : boolean;
-    _isScal32                 : boolean;
-    _decimals                 : LongInt;
-    _offset                   : double;
-    _scale                    : double;
-    _samplesPerHour           : LongInt;
     _minVal                   : double;
     _avgVal                   : double;
     _maxVal                   : double;
-    _decexp                   : double;
     _caltyp                   : LongInt;
     _calpar                   : TLongIntArray;
     _calraw                   : TDoubleArray;
@@ -2952,7 +2965,10 @@ end;
     ///   If the device uses a firmware older than version 13000, value is
     ///   relative to the start of the time the device was powered on, and
     ///   is always positive.
-    ///   If you need an absolute UTC timestamp, use <c>get_startTimeUTC()</c>.
+    ///   If you need an absolute UTC timestamp, use <c>get_realStartTimeUTC()</c>.
+    /// </para>
+    /// <para>
+    ///   <b>DEPRECATED</b>: This method has been replaced by <c>get_realStartTimeUTC()</c>.
     /// </para>
     /// <para>
     /// </para>
@@ -2973,6 +2989,9 @@ end;
     ///   of this data stream, this method returns 0.
     /// </para>
     /// <para>
+    ///   <b>DEPRECATED</b>: This method has been replaced by <c>get_realStartTimeUTC()</c>.
+    /// </para>
+    /// <para>
     /// </para>
     /// </summary>
     /// <returns>
@@ -2982,6 +3001,24 @@ end;
     /// </returns>
     ///-
     function get_startTimeUTC():int64; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the start time of the data stream, relative to the Jan 1, 1970.
+    /// <para>
+    ///   If the UTC time was not set in the datalogger at the time of the recording
+    ///   of this data stream, this method returns 0.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a floating-point number  corresponding to the number of seconds
+    ///   between the Jan 1, 1970 and the beginning of this data
+    ///   stream (i.e. Unix time representation of the absolute time).
+    /// </returns>
+    ///-
+    function get_realStartTimeUTC():double; overload; virtual;
 
     ////
     /// <summary>
@@ -3002,6 +3039,8 @@ end;
     function get_dataSamplesIntervalMs():LongInt; overload; virtual;
 
     function get_dataSamplesInterval():double; overload; virtual;
+
+    function get_firstDataSamplesInterval():double; overload; virtual;
 
     ////
     /// <summary>
@@ -3137,22 +3176,7 @@ end;
     ///-
     function get_maxValue():double; overload; virtual;
 
-    ////
-    /// <summary>
-    ///   Returns the approximate duration of this stream, in seconds.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   the number of seconds covered by this stream.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns Y_DURATION_INVALID.
-    /// </para>
-    ///-
-    function get_duration():LongInt; overload; virtual;
+    function get_realDuration():double; overload; virtual;
 
     ////
     /// <summary>
@@ -3368,8 +3392,8 @@ end;
     _hardwareId               : string;
     _functionId               : string;
     _unit                     : string;
-    _startTime                : int64;
-    _endTime                  : int64;
+    _startTime                : double;
+    _endTime                  : double;
     _progress                 : LongInt;
     _calib                    : TLongIntArray;
     _streams                  : TYDataStreamArray;
@@ -3382,7 +3406,7 @@ end;
 
   public
 
-    constructor Create(parent:TYFunction; functionId,func_unit:string; startTime,endTime: LongWord); Overload;
+    constructor Create(parent:TYFunction; functionId,func_unit:string; startTime,endTime: double); Overload;
 
     constructor Create(parent:TYFunction); Overload;
 
@@ -3462,6 +3486,10 @@ end;
     ///   dataLogger within the specified range.
     /// </para>
     /// <para>
+    ///   <b>DEPRECATED</b>: This method has been replaced by <c>get_summary()</c>
+    ///   which contain more precise informations on the YDataSet.
+    /// </para>
+    /// <para>
     /// </para>
     /// </summary>
     /// <returns>
@@ -3471,6 +3499,8 @@ end;
     /// </returns>
     ///-
     function get_startTimeUTC():int64; overload; virtual;
+
+    function imm_get_startTimeUTC():int64; overload; virtual;
 
     ////
     /// <summary>
@@ -3483,6 +3513,12 @@ end;
     ///   dataLogger within the specified range.
     /// </para>
     /// <para>
+    ///   <b>DEPRECATED</b>: This method has been replaced by <c>get_summary()</c>
+    ///   which contain more precise informations on the YDataSet.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// <para>
     /// </para>
     /// </summary>
     /// <returns>
@@ -3492,6 +3528,8 @@ end;
     /// </returns>
     ///-
     function get_endTimeUTC():int64; overload; virtual;
+
+    function imm_get_endTimeUTC():int64; overload; virtual;
 
     ////
     /// <summary>
@@ -4091,6 +4129,9 @@ end;
     /// <summary>
     ///   Continues the enumeration of data loggers started using <c>yFirstDataLogger()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned data loggers order.
+    ///   If you want to find a specific a data logger, use <c>DataLogger.findDataLogger()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>
@@ -4793,6 +4834,8 @@ type
   ///   then by logical name.
   /// </para>
   /// <para>
+  /// </para>
+  /// <para>
   ///   If a call to this object's is_online() method returns FALSE although
   ///   you are certain that the device is plugged, make sure that you did
   ///   call registerHub() at application initialization time.
@@ -4981,7 +5024,7 @@ type
   _yapiDeviceUpdateFunc   = procedure (dev:YDEV_DESCR);cdecl;
   _yapiFunctionUpdateFunc = procedure (func:YFUN_DESCR; value:pansichar);cdecl;
   _yapiBeaconFunc         = procedure (dev:YDEV_DESCR; beacon:integer);cdecl;
-  _yapiTimedReportFunc    = procedure (func:YFUN_DESCR; timestamp:double; bytes:pansichar; len:integer);cdecl;
+  _yapiTimedReportFunc    = procedure (func:YFUN_DESCR; timestamp:double; bytes:pansichar; len:integer; duration:double);cdecl;
   _yapiHubDiscoveryCallback = procedure (serial:pansichar; url:pansichar);cdecl;
   _yapiDeviceLogCallback  = procedure (dev:YDEV_DESCR; line:pansichar);cdecl;
 
@@ -5130,7 +5173,6 @@ const
   procedure _yapiFreeAPI();cdecl;  external dllfile name 'yapiFreeAPI';
   procedure _yapiRegisterLogFunction(fct:_yapiLogFunc); cdecl; external dllfile name 'yapiRegisterLogFunction';
   procedure _yapiRegisterDeviceLogCallback(fct:_yapiDeviceLogCallback); cdecl; external dllfile name 'yapiRegisterDeviceLogCallback';
-  procedure _yapiStartStopDeviceLogCallback(serial:pansichar; startstop:integer); cdecl; external dllfile name 'yapiStartStopDeviceLogCallback';
   procedure _yapiRegisterDeviceArrivalCallback(fct:_yapiDeviceUpdateFunc); cdecl; external dllfile name 'yapiRegisterDeviceArrivalCallback';
   procedure _yapiRegisterDeviceRemovalCallback(fct:_yapiDeviceUpdateFunc); cdecl; external dllfile name 'yapiRegisterDeviceRemovalCallback';
   procedure _yapiRegisterDeviceChangeCallback(fct:_yapiDeviceUpdateFunc); cdecl; external dllfile name 'yapiRegisterDeviceChangeCallback';
@@ -5190,6 +5232,7 @@ const
   procedure _yapiSetNetDevListValidity(sValidity:integer); cdecl; external dllfile name 'yapiSetNetDevListValidity';
   function _yapiGetNetDevListValidity():integer; cdecl; external dllfile name 'yapiGetNetDevListValidity';
   procedure _yapiRegisterBeaconCallback(beaconCallback:_yapiBeaconFunc); cdecl; external dllfile name 'yapiRegisterBeaconCallback';
+  procedure _yapiStartStopDeviceLogCallback(serial:pansichar; start:integer); cdecl; external dllfile name 'yapiStartStopDeviceLogCallback';
 //--- (end of generated code: YFunction dlldef)
 
 
@@ -5197,8 +5240,6 @@ const
     begin
       YISERR:= (retcode<0);
     end;
-
-
 
   procedure yDisableExceptions();
     begin
@@ -5209,7 +5250,6 @@ const
     begin
       YAPI_ExceptionsDisabled :=false;
     end;
-
 
   procedure native_yLogFunction (log:pansichar;loglen:u32);cdecl;
     begin
@@ -5252,6 +5292,7 @@ type
     fun_descr: YFUN_DESCR;
     value    : string[YOCTO_PUBVAL_LEN];
     timestamp: double;
+    duration : double;
     data     : array[0..18] of byte;
     data_len : integer;
     serial   : string[YOCTO_SERIAL_LEN];
@@ -5348,16 +5389,16 @@ var
       infos  : yDeviceSt;
       errmsg : string;
       event  : PyapiEvent;
-      key    : string;
+      hwid   : string;
       index  : integer;
       modul  : TYModule;
     begin
       if(yapiGetDeviceInfo(d, infos, errmsg) <> YAPI_SUCCESS) then exit;
-      modul := yFindModule(string(infos.serial)+'.module');
-      key := modul.get_hardwareId();
-      index := _moduleCallbackList.indexof(key);
+      hwid := string(infos.serial)+'.module';
+      index := _moduleCallbackList.indexof(hwid);
       if (index > 0) and (Integer(_moduleCallbackList.Objects[index]) > 1) then
       begin
+        modul := yFindModule(hwid);
         event := _yapiGetMem(sizeof(TyapiEvent));
         event^.eventtype    := YAPI_DEV_CONFIGCHANGE;
         event^.module := modul;
@@ -5370,23 +5411,23 @@ var
       infos  : yDeviceSt;
       errmsg : string;
       event  : PyapiEvent;
-      key    : string;
+      hwid   : string;
       index  : integer;
       modul  : TYModule;
     begin
       if(yapiGetDeviceInfo(d, infos, errmsg) <> YAPI_SUCCESS) then exit;
-      modul := yFindModule(string(infos.serial)+'.module');
-      key := modul.get_hardwareId();
-      index := _moduleCallbackList.indexof(key);
+      hwid := string(infos.serial)+'.module';
+      index := _moduleCallbackList.indexof(hwid);
       if (index >= 0) and (Integer(_moduleCallbackList.Objects[index]) > 1) then
       begin
+        modul := yFindModule(hwid);
         event := _yapiGetMem(sizeof(TyapiEvent));
         event^.eventtype    := YAPI_BEACON_CHANGE;
         event^.module := modul;
         event^.beacon := beacon;
         _DataEvents.add(event);
       end;
-    end;
+   end;
 
 
   procedure yRegisterDeviceChangeCallback(callback: yDeviceUpdateFunc);
@@ -5429,7 +5470,7 @@ var
     end;
 
 
-  procedure native_yTimedReportCallback (f:YFUN_DESCR; timestamp:double; bytes:pansichar; len:integer);cdecl;
+  procedure native_yTimedReportCallback (f:YFUN_DESCR; timestamp:double; bytes:pansichar; len:integer; duration:double);cdecl;
     var
       event  : PyapiEvent;
     begin
@@ -5437,6 +5478,7 @@ var
       event^.fun_descr:=f;
       event^.eventtype := YAPI_FUN_TIMEDREPORT;
       event^.timestamp := timestamp;
+      event^.duration := duration;
       move(bytes^,event^.data[0],len);
       event^.data_len := len;
       _DataEvents.add(event)
@@ -6138,7 +6180,7 @@ var
                           SetLength(report, p^.data_len);
                           for j := 0 To p^.data_len-1 do report[j] := p^.data[j];
                           sensor := TYSensor(_TimedReportCallbackList.items[i]);
-                          measure := sensor._decodeTimedReport(p^.timestamp, report);
+                          measure := sensor._decodeTimedReport(p^.timestamp, p^.duration, report);
                           sensor._invokeTimedReportCallback(measure);
                           measure.free();
                         end;
@@ -7169,6 +7211,7 @@ const
       index : integer;
       key : string;
       newDataStream : TYDataStream;
+      words : TLongIntArray;
     begin
       key := dataset.get_functionId() + ':' + def;
       if _dataStreams.Find(key, index) then
@@ -7176,7 +7219,14 @@ const
           result := TYDataStream(_dataStreams.objects[index]);
           exit;
         end;
-      newDataStream := TYDataStream.Create(self, dataset, _decodeWords(def));
+      words := _decodeWords(def);
+      if length(words) < 14 then
+        begin
+          self._throw(YAPI_VERSION_MISMATCH, 'device firmware is too old');
+          result := NIL;
+          exit;
+        end;
+      newDataStream := TYDataStream.Create(self, dataset, words);
       _dataStreams.addObject(key, newDataStream);
       result :=newDataStream;
   end;
@@ -7857,26 +7907,6 @@ const
       _productId    := infos.deviceid;
       self._cacheExpiration := yGetTickCount;
     end;
-
-    function TYModule.registerLogCallback(callback : TYModuleLogCallback): integer;
-      begin
-        _logCallback := callback;
-        if (addr(_logCallback) = nil) then
-          begin
-            _yapiStartStopDeviceLogCallback(pansiChar(ansistring(_serialNumber)), 0)
-          end
-        else
-          begin
-            _yapiStartStopDeviceLogCallback(pansiChar(ansistring(_serialNumber)), 1)
-          end;
-        result := YAPI_SUCCESS;
-      end;
-
-    function TYModule.get_logCallback(): TYModuleLogCallback;
-      begin
-        result := _logCallback;
-      end;
-
 
   // Return the properties of the nth function of our device
   function TYModule._getFunction(idx:integer; var serial,funcId,baseType,funcName,funcVal,errmsg:string):YRETCODE;
@@ -8735,6 +8765,47 @@ var
     end;
 
 
+  procedure TYModule._startStopDevLog(serial: string; start: boolean);
+    var
+      i_start : LongInt;
+    begin
+      if start then
+        begin
+          i_start := 1;
+        end
+      else
+        begin
+          i_start := 0;
+        end;
+
+      _yapiStartStopDeviceLogCallback(pansichar(ansistring(serial)), i_start);
+    end;
+
+
+  function TYModule.registerLogCallback(callback: TYModuleLogCallback):LongInt;
+    var
+      serial : string;
+    begin
+      serial := self.get_serialNumber;
+      if (serial = YAPI_INVALID_STRING) then
+        begin
+          result := YAPI_DEVICE_NOT_FOUND;
+          exit;
+        end;
+      self._logCallback := callback;
+      self._startStopDevLog(serial, (addr(callback) <> nil));
+      result := 0;
+      exit;
+    end;
+
+
+  function TYModule.get_logCallback():TYModuleLogCallback;
+    begin
+      result := self._logCallback;
+      exit;
+    end;
+
+
   function TYModule.registerConfigChangeCallback(callback: TYModuleConfigChangeCallback):LongInt;
     begin
       if (addr(callback) <> nil) then
@@ -9032,6 +9103,8 @@ var
               self._upload(name, _hexStrToBin(data));
             end;
         end;
+      // Apply settings a second time for file-dependent settings and dynamic sensor nodes
+      self.set_allSettings(_StrToByte(json_api));
       result := YAPI_SUCCESS;
       exit;
     end;
@@ -10536,7 +10609,6 @@ var
     begin
       self._caltyp := -1;
       self._scale := -1;
-      self._isScal32 := false;
       SetLength(self._calpar, 0);
       SetLength(self._calraw, 0);
       SetLength(self._calref, 0);
@@ -10581,8 +10653,6 @@ var
                 end;
             end;
           // New 32bit text format
-          self._isScal := true;
-          self._isScal32 := true;
           self._offset := 0;
           self._scale := 1000;
           maxpos := length(iCalib);
@@ -10628,28 +10698,14 @@ var
               exit;
             end;
           // Save variable format (scale for scalar, or decimal exponent)
-          self._isScal := (iCalib[1] > 0);
-          if self._isScal then
+          self._offset := 0;
+          self._scale := 1;
+          self._decexp := 1.0;
+          position := iCalib[0];
+          while position > 0 do
             begin
-              self._offset := iCalib[0];
-              if self._offset > 32767 then
-                begin
-                  self._offset := self._offset - 65536;
-                end;
-              self._scale := iCalib[1];
-              self._decexp := 0;
-            end
-          else
-            begin
-              self._offset := 0;
-              self._scale := 1;
-              self._decexp := 1.0;
-              position := iCalib[0];
-              while position > 0 do
-                begin
-                  self._decexp := self._decexp * 10;
-                  position := position - 1;
-                end;
+              self._decexp := self._decexp * 10;
+              position := position - 1;
             end;
           // Shortcut when there is no calibration parameter
           if length(iCalib) = 2 then
@@ -10696,24 +10752,10 @@ var
               inc(calpar_pos);
               self._calpar[calpar_pos] := iRef;
               inc(calpar_pos);
-              if self._isScal then
-                begin
-                  fRaw := iRaw;
-                  fRaw := (fRaw - self._offset) / self._scale;
-                  fRef := iRef;
-                  fRef := (fRef - self._offset) / self._scale;
-                  self._calraw[calraw_pos] := fRaw;
-                  inc(calraw_pos);
-                  self._calref[calref_pos] := fRef;
-                  inc(calref_pos);
-                end
-              else
-                begin
-                  self._calraw[calraw_pos] := _decimalToDouble(iRaw);
-                  inc(calraw_pos);
-                  self._calref[calref_pos] := _decimalToDouble(iRef);
-                  inc(calref_pos);
-                end;
+              self._calraw[calraw_pos] := _decimalToDouble(iRaw);
+              inc(calraw_pos);
+              self._calref[calref_pos] := _decimalToDouble(iRef);
+              inc(calref_pos);
               position := position + 2;
             end;
           SetLength(self._calpar, calpar_pos);
@@ -10795,7 +10837,7 @@ var
     end;
 
 
-  function TYSensor.get_recordedData(startTime: int64; endTime: int64):TYDataSet;
+  function TYSensor.get_recordedData(startTime: double; endTime: double):TYDataSet;
     var
       funcid : string;
       funit : string;
@@ -10900,8 +10942,6 @@ var
       res : string;
       npt : LongInt;
       idx : LongInt;
-      iRaw : LongInt;
-      iRef : LongInt;
     begin
       npt := length(rawValues);
       if npt <> length(refValues) then
@@ -10933,45 +10973,13 @@ var
           result := '0';
           exit;
         end;
-      if self._isScal32 then
+      // 32-bit fixed-point encoding
+      res := ''+inttostr(YOCTO_CALIB_TYPE_OFS);
+      idx := 0;
+      while idx < npt do
         begin
-          // 32-bit fixed-point encoding
-          res := ''+inttostr(YOCTO_CALIB_TYPE_OFS);
-          idx := 0;
-          while idx < npt do
-            begin
-              res := ''+ res+','+_yapiFloatToStr( rawValues[idx])+','+_yapiFloatToStr(refValues[idx]);
-              idx := idx + 1;
-            end;
-        end
-      else
-        begin
-          if self._isScal then
-            begin
-              // 16-bit fixed-point encoding
-              res := ''+inttostr(npt);
-              idx := 0;
-              while idx < npt do
-                begin
-                  iRaw := round(rawValues[idx] * self._scale + self._offset);
-                  iRef := round(refValues[idx] * self._scale + self._offset);
-                  res := ''+ res+','+inttostr( iRaw)+','+inttostr(iRef);
-                  idx := idx + 1;
-                end;
-            end
-          else
-            begin
-              // 16-bit floating-point decimal encoding
-              res := ''+inttostr(10 + npt);
-              idx := 0;
-              while idx < npt do
-                begin
-                  iRaw := _doubleToDecimal(rawValues[idx]);
-                  iRef := _doubleToDecimal(refValues[idx]);
-                  res := ''+ res+','+inttostr( iRaw)+','+inttostr(iRef);
-                  idx := idx + 1;
-                end;
-            end;
+          res := ''+ res+','+_yapiFloatToStr( rawValues[idx])+','+_yapiFloatToStr(refValues[idx]);
+          idx := idx + 1;
         end;
       result := res;
       exit;
@@ -11005,169 +11013,121 @@ var
     end;
 
 
-  function TYSensor._decodeTimedReport(timestamp: double; report: TLongIntArray):TYMeasure;
+  function TYSensor._decodeTimedReport(timestamp: double; duration: double; report: TLongIntArray):TYMeasure;
     var
       i : LongInt;
       byteVal : LongInt;
-      poww : LongInt;
-      minRaw : LongInt;
-      avgRaw : LongInt;
-      maxRaw : LongInt;
+      poww : double;
+      minRaw : double;
+      avgRaw : double;
+      maxRaw : double;
       sublen : LongInt;
-      difRaw : LongInt;
+      difRaw : double;
       startTime : double;
       endTime : double;
       minVal : double;
       avgVal : double;
       maxVal : double;
     begin
-      startTime := self._prevTimedReport;
+      if duration > 0 then
+        begin
+          startTime := timestamp - duration;
+        end
+      else
+        begin
+          startTime := self._prevTimedReport;
+        end;
       endTime := timestamp;
       self._prevTimedReport := endTime;
       if startTime = 0 then
         begin
           startTime := endTime;
         end;
-      if report[0] = 2 then
+      // 32bit timed report format
+      if length(report) <= 5 then
         begin
-          // 32bit timed report format
-          if length(report) <= 5 then
+          // sub-second report, 1-4 bytes
+          poww := 1;
+          avgRaw := 0;
+          byteVal := 0;
+          i := 1;
+          while i < length(report) do
             begin
-              // sub-second report, 1-4 bytes
-              poww := 1;
-              avgRaw := 0;
-              byteVal := 0;
-              i := 1;
-              while i < length(report) do
-                begin
-                  byteVal := report[i];
-                  avgRaw := avgRaw + poww * byteVal;
-                  poww := poww * $0100;
-                  i := i + 1;
-                end;
-              if ((byteVal) and ($080)) <> 0 then
-                begin
-                  avgRaw := avgRaw - poww;
-                end;
-              avgVal := avgRaw / 1000.0;
-              if self._caltyp <> 0 then
-                begin
-                  if (addr(self._calhdl) <> nil) then
-                    begin
-                      avgVal := self._calhdl(avgVal, self._caltyp, self._calpar, self._calraw, self._calref);
-                    end;
-                end;
-              minVal := avgVal;
-              maxVal := avgVal;
-            end
-          else
+              byteVal := report[i];
+              avgRaw := avgRaw + poww * byteVal;
+              poww := poww * $0100;
+              i := i + 1;
+            end;
+          if ((byteVal) and ($080)) <> 0 then
             begin
-              // averaged report: avg,avg-min,max-avg
-              sublen := 1 + ((report[1]) and 3);
-              poww := 1;
-              avgRaw := 0;
-              byteVal := 0;
-              i := 2;
-              while (sublen > 0) and(i < length(report)) do
+              avgRaw := avgRaw - poww;
+            end;
+          avgVal := avgRaw / 1000.0;
+          if self._caltyp <> 0 then
+            begin
+              if (addr(self._calhdl) <> nil) then
                 begin
-                  byteVal := report[i];
-                  avgRaw := avgRaw + poww * byteVal;
-                  poww := poww * $0100;
-                  i := i + 1;
-                  sublen := sublen - 1;
-                end;
-              if ((byteVal) and ($080)) <> 0 then
-                begin
-                  avgRaw := avgRaw - poww;
-                end;
-              sublen := 1 + ((((report[1]) shr 2)) and 3);
-              poww := 1;
-              difRaw := 0;
-              while (sublen > 0) and(i < length(report)) do
-                begin
-                  byteVal := report[i];
-                  difRaw := difRaw + poww * byteVal;
-                  poww := poww * $0100;
-                  i := i + 1;
-                  sublen := sublen - 1;
-                end;
-              minRaw := avgRaw - difRaw;
-              sublen := 1 + ((((report[1]) shr 4)) and 3);
-              poww := 1;
-              difRaw := 0;
-              while (sublen > 0) and(i < length(report)) do
-                begin
-                  byteVal := report[i];
-                  difRaw := difRaw + poww * byteVal;
-                  poww := poww * $0100;
-                  i := i + 1;
-                  sublen := sublen - 1;
-                end;
-              maxRaw := avgRaw + difRaw;
-              avgVal := avgRaw / 1000.0;
-              minVal := minRaw / 1000.0;
-              maxVal := maxRaw / 1000.0;
-              if self._caltyp <> 0 then
-                begin
-                  if (addr(self._calhdl) <> nil) then
-                    begin
-                      avgVal := self._calhdl(avgVal, self._caltyp, self._calpar, self._calraw, self._calref);
-                      minVal := self._calhdl(minVal, self._caltyp, self._calpar, self._calraw, self._calref);
-                      maxVal := self._calhdl(maxVal, self._caltyp, self._calpar, self._calraw, self._calref);
-                    end;
+                  avgVal := self._calhdl(avgVal, self._caltyp, self._calpar, self._calraw, self._calref);
                 end;
             end;
+          minVal := avgVal;
+          maxVal := avgVal;
         end
       else
         begin
-          // 16bit timed report format
-          if report[0] = 0 then
+          // averaged report: avg,avg-min,max-avg
+          sublen := 1 + ((report[1]) and 3);
+          poww := 1;
+          avgRaw := 0;
+          byteVal := 0;
+          i := 2;
+          while (sublen > 0) and(i < length(report)) do
             begin
-              // sub-second report, 1-4 bytes
-              poww := 1;
-              avgRaw := 0;
-              byteVal := 0;
-              i := 1;
-              while i < length(report) do
-                begin
-                  byteVal := report[i];
-                  avgRaw := avgRaw + poww * byteVal;
-                  poww := poww * $0100;
-                  i := i + 1;
-                end;
-              if self._isScal then
-                begin
-                  avgVal := self._decodeVal(avgRaw);
-                end
-              else
-                begin
-                  if ((byteVal) and ($080)) <> 0 then
-                    begin
-                      avgRaw := avgRaw - poww;
-                    end;
-                  avgVal := self._decodeAvg(avgRaw);
-                end;
-              minVal := avgVal;
-              maxVal := avgVal;
-            end
-          else
+              byteVal := report[i];
+              avgRaw := avgRaw + poww * byteVal;
+              poww := poww * $0100;
+              i := i + 1;
+              sublen := sublen - 1;
+            end;
+          if ((byteVal) and ($080)) <> 0 then
             begin
-              // averaged report 2+4+2 bytes
-              minRaw := report[1] + $0100 * report[2];
-              maxRaw := report[3] + $0100 * report[4];
-              avgRaw := report[5] + $0100 * report[6] + $010000 * report[7];
-              byteVal := report[8];
-              if ((byteVal) and ($080)) = 0 then
+              avgRaw := avgRaw - poww;
+            end;
+          sublen := 1 + ((((report[1]) shr 2)) and 3);
+          poww := 1;
+          difRaw := 0;
+          while (sublen > 0) and(i < length(report)) do
+            begin
+              byteVal := report[i];
+              difRaw := difRaw + poww * byteVal;
+              poww := poww * $0100;
+              i := i + 1;
+              sublen := sublen - 1;
+            end;
+          minRaw := avgRaw - difRaw;
+          sublen := 1 + ((((report[1]) shr 4)) and 3);
+          poww := 1;
+          difRaw := 0;
+          while (sublen > 0) and(i < length(report)) do
+            begin
+              byteVal := report[i];
+              difRaw := difRaw + poww * byteVal;
+              poww := poww * $0100;
+              i := i + 1;
+              sublen := sublen - 1;
+            end;
+          maxRaw := avgRaw + difRaw;
+          avgVal := avgRaw / 1000.0;
+          minVal := minRaw / 1000.0;
+          maxVal := maxRaw / 1000.0;
+          if self._caltyp <> 0 then
+            begin
+              if (addr(self._calhdl) <> nil) then
                 begin
-                  avgRaw := avgRaw + $01000000 * byteVal;
-                end
-              else
-                begin
-                  avgRaw := avgRaw - $01000000 * ($0100 - byteVal);
+                  avgVal := self._calhdl(avgVal, self._caltyp, self._calpar, self._calraw, self._calref);
+                  minVal := self._calhdl(minVal, self._caltyp, self._calpar, self._calraw, self._calref);
+                  maxVal := self._calhdl(maxVal, self._caltyp, self._calpar, self._calraw, self._calref);
                 end;
-              minVal := self._decodeVal(minRaw);
-              avgVal := self._decodeAvg(avgRaw);
-              maxVal := self._decodeVal(maxRaw);
             end;
         end;
       result := TYMeasure.create(startTime, endTime, minVal, avgVal, maxVal);
@@ -11180,14 +11140,6 @@ var
       val : double;
     begin
       val := w;
-      if self._isScal then
-        begin
-          val := (val - self._offset) / self._scale;
-        end
-      else
-        begin
-          val := _decimalToDouble(w);
-        end;
       if self._caltyp <> 0 then
         begin
           if (addr(self._calhdl) <> nil) then
@@ -11205,14 +11157,6 @@ var
       val : double;
     begin
       val := dw;
-      if self._isScal then
-        begin
-          val := (val / 100 - self._offset) / self._scale;
-        end
-      else
-        begin
-          val := val / self._decexp;
-        end;
       if self._caltyp <> 0 then
         begin
           if (addr(self._calhdl) <> nil) then
@@ -11638,11 +11582,10 @@ var
       val : LongInt;
       i : LongInt;
       maxpos : LongInt;
-      iRaw : LongInt;
-      iRef : LongInt;
+      ms_offset : LongInt;
+      samplesPerHour : LongInt;
       fRaw : double;
       fRef : double;
-      duration_float : double;
       iCalib : TLongIntArray;
       calpar_pos : LongInt;
       calraw_pos : LongInt;
@@ -11653,28 +11596,35 @@ var
       self._utcStamp := encoded[2] + (((encoded[3]) shl 16));
       val := encoded[4];
       self._isAvg := (((val) and ($0100)) = 0);
-      self._samplesPerHour := ((val) and ($0ff));
+      samplesPerHour := ((val) and ($0ff));
       if ((val) and ($0100)) <> 0 then
         begin
-          self._samplesPerHour := self._samplesPerHour * 3600;
+          samplesPerHour := samplesPerHour * 3600;
         end
       else
         begin
           if ((val) and ($0200)) <> 0 then
             begin
-              self._samplesPerHour := self._samplesPerHour * 60;
+              samplesPerHour := samplesPerHour * 60;
             end;
         end;
-      val := encoded[5];
-      if val > 32767 then
+      self._dataSamplesInterval := 3600.0 / samplesPerHour;
+      ms_offset := encoded[6];
+      if ms_offset < 1000 then
         begin
-          val := val - 65536;
+          // new encoding -> add the ms to the UTC timestamp
+          self._startTime := self._utcStamp + (ms_offset / 1000.0);
+        end
+      else
+        begin
+          // legacy encoding subtract the measure interval form the UTC timestamp
+          self._startTime := self._utcStamp -  self._dataSamplesInterval;
         end;
-      self._decimals := val;
-      self._offset := val;
-      self._scale := encoded[6];
-      self._isScal := (self._scale <> 0);
-      self._isScal32 := (length(encoded) >= 14);
+      self._firstMeasureDuration := encoded[5];
+      if not(self._isAvg) then
+        begin
+          self._firstMeasureDuration := self._firstMeasureDuration / 1000.0;
+        end;
       val := encoded[7];
       self._isClosed := (val <> $0ffff);
       if val = $0ffff then
@@ -11682,19 +11632,8 @@ var
           val := 0;
         end;
       self._nRows := val;
-      duration_float := self._nRows * 3600 / self._samplesPerHour;
-      self._duration := round(duration_float);
+      self._duration := self._nRows * self._dataSamplesInterval;
       // precompute decoding parameters
-      self._decexp := 1.0;
-      if self._scale = 0 then
-        begin
-          i := 0;
-          while i < self._decimals do
-            begin
-              self._decexp := self._decexp * 10.0;
-              i := i + 1;
-            end;
-        end;
       iCalib := dataset._get_calibration();
       self._caltyp := iCalib[0];
       if self._caltyp <> 0 then
@@ -11707,60 +11646,25 @@ var
           SetLength(self._calraw, length(iCalib));
           calref_pos := 0;
           SetLength(self._calref, length(iCalib));
-          if self._isScal32 then
+          i := 1;
+          while i < maxpos do
             begin
-              i := 1;
-              while i < maxpos do
-                begin
-                  self._calpar[calpar_pos] := iCalib[i];
-                  inc(calpar_pos);
-                  i := i + 1;
-                end;
-              i := 1;
-              while i + 1 < maxpos do
-                begin
-                  fRaw := iCalib[i];
-                  fRaw := fRaw / 1000.0;
-                  fRef := iCalib[i + 1];
-                  fRef := fRef / 1000.0;
-                  self._calraw[calraw_pos] := fRaw;
-                  inc(calraw_pos);
-                  self._calref[calref_pos] := fRef;
-                  inc(calref_pos);
-                  i := i + 2;
-                end;
-            end
-          else
+              self._calpar[calpar_pos] := iCalib[i];
+              inc(calpar_pos);
+              i := i + 1;
+            end;
+          i := 1;
+          while i + 1 < maxpos do
             begin
-              i := 1;
-              while i + 1 < maxpos do
-                begin
-                  iRaw := iCalib[i];
-                  iRef := iCalib[i + 1];
-                  self._calpar[calpar_pos] := iRaw;
-                  inc(calpar_pos);
-                  self._calpar[calpar_pos] := iRef;
-                  inc(calpar_pos);
-                  if self._isScal then
-                    begin
-                      fRaw := iRaw;
-                      fRaw := (fRaw - self._offset) / self._scale;
-                      fRef := iRef;
-                      fRef := (fRef - self._offset) / self._scale;
-                      self._calraw[calraw_pos] := fRaw;
-                      inc(calraw_pos);
-                      self._calref[calref_pos] := fRef;
-                      inc(calref_pos);
-                    end
-                  else
-                    begin
-                      self._calraw[calraw_pos] := _decimalToDouble(iRaw);
-                      inc(calraw_pos);
-                      self._calref[calref_pos] := _decimalToDouble(iRef);
-                      inc(calref_pos);
-                    end;
-                  i := i + 2;
-                end;
+              fRaw := iCalib[i];
+              fRaw := fRaw / 1000.0;
+              fRef := iCalib[i + 1];
+              fRef := fRef / 1000.0;
+              self._calraw[calraw_pos] := fRaw;
+              inc(calraw_pos);
+              self._calref[calref_pos] := fRef;
+              inc(calref_pos);
+              i := i + 2;
             end;
           SetLength(self._calpar, calpar_pos);
           SetLength(self._calraw, calraw_pos);
@@ -11793,18 +11697,9 @@ var
       // decode min/avg/max values for the sequence
       if self._nRows > 0 then
         begin
-          if self._isScal32 then
-            begin
-              self._avgVal := self._decodeAvg(encoded[8] + (((((encoded[9]) xor ($08000))) shl 16)), 1);
-              self._minVal := self._decodeVal(encoded[10] + (((encoded[11]) shl 16)));
-              self._maxVal := self._decodeVal(encoded[12] + (((encoded[13]) shl 16)));
-            end
-          else
-            begin
-              self._minVal := self._decodeVal(encoded[8]);
-              self._maxVal := self._decodeVal(encoded[9]);
-              self._avgVal := self._decodeAvg(encoded[10] + (((encoded[11]) shl 16)), self._nRows);
-            end;
+          self._avgVal := self._decodeAvg(encoded[8] + (((((encoded[9]) xor ($08000))) shl 16)), 1);
+          self._minVal := self._decodeVal(encoded[10] + (((encoded[11]) shl 16)));
+          self._maxVal := self._decodeVal(encoded[12] + (((encoded[13]) shl 16)));
         end;
       result := 0;
       exit;
@@ -11836,26 +11731,13 @@ var
             begin
               dat_pos := 0;
               SetLength(dat, 3);
-              if self._isScal32 then
-                begin
-                  dat[dat_pos] := self._decodeVal(udat[idx + 2] + (((udat[idx + 3]) shl 16)));
-                  inc(dat_pos);
-                  dat[dat_pos] := self._decodeAvg(udat[idx] + (((((udat[idx + 1]) xor ($08000))) shl 16)), 1);
-                  inc(dat_pos);
-                  dat[dat_pos] := self._decodeVal(udat[idx + 4] + (((udat[idx + 5]) shl 16)));
-                  inc(dat_pos);
-                  idx := idx + 6;
-                end
-              else
-                begin
-                  dat[dat_pos] := self._decodeVal(udat[idx]);
-                  inc(dat_pos);
-                  dat[dat_pos] := self._decodeAvg(udat[idx + 2] + (((udat[idx + 3]) shl 16)), 1);
-                  inc(dat_pos);
-                  dat[dat_pos] := self._decodeVal(udat[idx + 1]);
-                  inc(dat_pos);
-                  idx := idx + 4;
-                end;
+              dat[dat_pos] := self._decodeVal(udat[idx + 2] + (((udat[idx + 3]) shl 16)));
+              inc(dat_pos);
+              dat[dat_pos] := self._decodeAvg(udat[idx] + (((((udat[idx + 1]) xor ($08000))) shl 16)), 1);
+              inc(dat_pos);
+              dat[dat_pos] := self._decodeVal(udat[idx + 4] + (((udat[idx + 5]) shl 16)));
+              inc(dat_pos);
+              idx := idx + 6;
               SetLength(dat, dat_pos);
               self._values[values_pos] := dat;
               inc(values_pos);
@@ -11863,33 +11745,16 @@ var
         end
       else
         begin
-          if self._isScal and not(self._isScal32) then
+          while idx + 1 < length(udat) do
             begin
-              while idx < length(udat) do
-                begin
-                  dat_pos := 0;
-                  SetLength(dat, 1);
-                  dat[dat_pos] := self._decodeVal(udat[idx]);
-                  inc(dat_pos);
-                  SetLength(dat, dat_pos);
-                  self._values[values_pos] := dat;
-                  inc(values_pos);
-                  idx := idx + 1;
-                end;
-            end
-          else
-            begin
-              while idx + 1 < length(udat) do
-                begin
-                  dat_pos := 0;
-                  SetLength(dat, 1);
-                  dat[dat_pos] := self._decodeAvg(udat[idx] + (((((udat[idx + 1]) xor ($08000))) shl 16)), 1);
-                  inc(dat_pos);
-                  SetLength(dat, dat_pos);
-                  self._values[values_pos] := dat;
-                  inc(values_pos);
-                  idx := idx + 2;
-                end;
+              dat_pos := 0;
+              SetLength(dat, 1);
+              dat[dat_pos] := self._decodeAvg(udat[idx] + (((((udat[idx + 1]) xor ($08000))) shl 16)), 1);
+              inc(dat_pos);
+              SetLength(dat, dat_pos);
+              self._values[values_pos] := dat;
+              inc(values_pos);
+              idx := idx + 2;
             end;
         end;
       SetLength(self._values, values_pos);
@@ -11922,21 +11787,7 @@ var
       val : double;
     begin
       val := w;
-      if self._isScal32 then
-        begin
-          val := val / 1000.0;
-        end
-      else
-        begin
-          if self._isScal then
-            begin
-              val := (val - self._offset) / self._scale;
-            end
-          else
-            begin
-              val := _decimalToDouble(w);
-            end;
-        end;
+      val := val / 1000.0;
       if self._caltyp <> 0 then
         begin
           if (addr(self._calhdl) <> nil) then
@@ -11954,21 +11805,7 @@ var
       val : double;
     begin
       val := dw;
-      if self._isScal32 then
-        begin
-          val := val / 1000.0;
-        end
-      else
-        begin
-          if self._isScal then
-            begin
-              val := (val / (100 * count) - self._offset) / self._scale;
-            end
-          else
-            begin
-              val := val / (count * self._decexp);
-            end;
-        end;
+      val := val / 1000.0;
       if self._caltyp <> 0 then
         begin
           if (addr(self._calhdl) <> nil) then
@@ -12004,21 +11841,35 @@ var
 
   function TYDataStream.get_startTimeUTC():int64;
     begin
-      result := self._utcStamp;
+      result := round(self._startTime);
+      exit;
+    end;
+
+
+  function TYDataStream.get_realStartTimeUTC():double;
+    begin
+      result := self._startTime;
       exit;
     end;
 
 
   function TYDataStream.get_dataSamplesIntervalMs():LongInt;
     begin
-      result := (3600000 div self._samplesPerHour);
+      result := round(self._dataSamplesInterval*1000);
       exit;
     end;
 
 
   function TYDataStream.get_dataSamplesInterval():double;
     begin
-      result := 3600.0 / self._samplesPerHour;
+      result := self._dataSamplesInterval;
+      exit;
+    end;
+
+
+  function TYDataStream.get_firstDataSamplesInterval():double;
+    begin
+      result := self._firstMeasureDuration;
       exit;
     end;
 
@@ -12083,14 +11934,14 @@ var
     end;
 
 
-  function TYDataStream.get_duration():LongInt;
+  function TYDataStream.get_realDuration():double;
     begin
       if self._isClosed then
         begin
           result := self._duration;
           exit;
         end;
-      result := integer(Round((Now()-25569)*86400) - self._utcStamp);
+      result := Round((Now()-25569)*86400) - self._utcStamp;
       exit;
     end;
 
@@ -12199,7 +12050,7 @@ var
 
 
 
-  constructor TYDataSet.Create(parent:TYFunction; functionId,func_unit:string; startTime,endTime: LongWord);
+  constructor TYDataSet.Create(parent:TYFunction; functionId,func_unit:string; startTime,endTime: double);
     begin
       self._parent     := parent;
       self._functionId := functionId;
@@ -12238,7 +12089,7 @@ var
       stream : TYDataStream;
       summaryMinVal, summaryMaxVal, summaryTotalTime, summaryTotalAvg: double;
       i : integer;
-      endTime, startTime, streamEndTime, streamStartTime, interval: LongWord;
+      endTime, startTime, streamEndTime, streamStartTime: double;
       rec :  TYMeasure;
     begin
       if not(YAPI_ExceptionsDisabled) then  p := TJsonParser.create(data, false)
@@ -12281,18 +12132,14 @@ var
       for i := 0 to arr.itemcount-1 do
         begin
           stream := _parent._findDataStream(self, string(arr.items[i].svalue));
-          streamEndTime := stream.get_startTimeUTC() + LongWord(stream.get_duration());
-          interval := LongWord(stream.get_dataSamplesIntervalMs() div 1000);
-          if stream.get_startTimeUTC() > interval then
-            streamStartTime := stream.get_startTimeUTC() - interval
-          else
-            streamStartTime := 0;
-          if (self._startTime > 0) and (streamEndTime <= LongWord(self._startTime)) then
+          streamStartTime := stream.get_realStartTimeUTC();
+          streamEndTime := streamStartTime + stream.get_realDuration();
+          if (self._startTime > 0) and (streamEndTime <= self._startTime) then
             begin
               // self stream is too early, drop it
             end
           else
-          if (self._endTime > 0) and (stream.get_startTimeUTC() > self._endTime) then
+          if (self._endTime > 0) and (streamStartTime >= self._endTime) then
             begin
               // self stream is too late, drop it
             end
@@ -12308,8 +12155,8 @@ var
                 begin
                   endTime := streamEndTime;
                 end;
-              if stream.isClosed() and (stream.get_startTimeUTC() >= self._startTime) and
-                 ( (self._endTime = 0) or (streamEndTime <= LongWord(self._endTime))) then
+              if stream.isClosed() and (streamStartTime >= self._startTime) and
+                 ( (self._endTime = 0) or (streamEndTime <= self._endTime)) then
                 begin
                   if summaryMinVal > stream.get_minValue() then
                     begin
@@ -12319,9 +12166,9 @@ var
                     begin
                       summaryMaxVal := stream.get_maxValue();
                     end;
-                  summaryTotalAvg := summaryTotalAvg + (stream.get_averageValue() * stream.get_duration());
-                  summaryTotalTime := summaryTotalTime + stream.get_duration();
-                  rec := TYMeasure.create(stream.get_startTimeUTC(),
+                  summaryTotalAvg := summaryTotalAvg + (stream.get_averageValue() * stream.get_realDuration());
+                  summaryTotalTime := summaryTotalTime + stream.get_realDuration();
+                  rec := TYMeasure.create(streamStartTime,
                                           streamEndTime,
                                           stream.get_minValue(),
                                           stream.get_averageValue(),
@@ -12372,10 +12219,13 @@ var
       strdata : string;
       tim : double;
       itv : double;
+      fitv : double;
+      end_ : double;
       nCols : LongInt;
       minCol : LongInt;
       avgCol : LongInt;
       maxCol : LongInt;
+      firstMeasure : boolean;
       measures_pos : LongInt;
       i_i : LongInt;
     begin
@@ -12405,8 +12255,13 @@ var
           result := self.get_progress;
           exit;
         end;
-      tim := stream.get_startTimeUTC();
+      tim := stream.get_realStartTimeUTC();
+      fitv := stream.get_firstDataSamplesInterval();
       itv := stream.get_dataSamplesInterval();
+      if fitv = 0 then
+        begin
+          fitv := itv;
+        end;
       if tim < itv then
         begin
           tim := itv;
@@ -12431,15 +12286,24 @@ var
         end;
       measures_pos := length(self._measures);
       SetLength(self._measures, measures_pos+length(dataRows));
+      firstMeasure := true;
       for i_i:=0 to length(dataRows)-1 do
         begin
-          if (tim >= self._startTime) and((self._endTime = 0) or(tim <= self._endTime)) then
+          if firstMeasure then
             begin
-              self._measures[measures_pos] := TYMeasure.create(tim - itv, tim, dataRows[i_i][minCol], dataRows[i_i][avgCol], dataRows[i_i][maxCol]);
+              end_ := tim + fitv;
+              firstMeasure := false;
+            end
+          else
+            begin
+              end_ := tim + itv;
+            end;
+          if (tim >= self._startTime) and((self._endTime = 0) or(end_ <= self._endTime)) then
+            begin
+              self._measures[measures_pos] := TYMeasure.create(tim, end_, dataRows[i_i][minCol], dataRows[i_i][avgCol], dataRows[i_i][maxCol]);
               inc(measures_pos);
             end;
-          tim := tim + itv;
-          tim := round(tim * 1000) / 1000.0;
+          tim := end_;
         end;
       SetLength(self._measures, measures_pos);;
       result := self.get_progress;
@@ -12486,14 +12350,28 @@ var
 
   function TYDataSet.get_startTimeUTC():int64;
     begin
-      result := self._startTime;
+      result := self.imm_get_startTimeUTC;
+      exit;
+    end;
+
+
+  function TYDataSet.imm_get_startTimeUTC():int64;
+    begin
+      result := floor(self._startTime);
       exit;
     end;
 
 
   function TYDataSet.get_endTimeUTC():int64;
     begin
-      result := self._endTime;
+      result := self.imm_get_endTimeUTC;
+      exit;
+    end;
+
+
+  function TYDataSet.imm_get_endTimeUTC():int64;
+    begin
+      result := floor(round(self._endTime));
       exit;
     end;
 
@@ -12526,11 +12404,11 @@ var
           url := 'logger.json?id='+self._functionId;
           if self._startTime <> 0 then
             begin
-              url := ''+url+'&from='+inttostr(self._startTime);
+              url := ''+url+'&from='+inttostr(self.imm_get_startTimeUTC);
             end;
           if self._endTime <> 0 then
             begin
-              url := ''+url+'&to='+inttostr(self._endTime);
+              url := ''+url+'&to='+inttostr(self.imm_get_endTimeUTC+1);
             end;
         end
       else
@@ -12572,12 +12450,13 @@ var
 
   function TYDataSet.get_measuresAt(measure: TYMeasure):TYMeasureArray;
     var
-      startUtc : int64;
+      startUtc : double;
       stream : TYDataStream;
       dataRows : TDoubleArrayArray;
       measures : TYMeasureArray;
       tim : double;
       itv : double;
+      end_ : double;
       nCols : LongInt;
       minCol : LongInt;
       avgCol : LongInt;
@@ -12585,11 +12464,11 @@ var
       i_i : LongInt;
       measures_pos : LongInt;
     begin
-      startUtc := round(measure.get_startTimeUTC);
+      startUtc := measure.get_startTimeUTC;
       stream := nil;
       for i_i:=0 to length(self._streams)-1 do
         begin
-          if self._streams[i_i].get_startTimeUTC() = startUtc then
+          if self._streams[i_i].get_realStartTimeUTC() = startUtc then
             begin
               stream := self._streams[i_i];
             end;
@@ -12605,7 +12484,7 @@ var
           result := measures;
           exit;
         end;
-      tim := stream.get_startTimeUTC();
+      tim := stream.get_realStartTimeUTC();
       itv := stream.get_dataSamplesInterval();
       if tim < itv then
         begin
@@ -12633,12 +12512,13 @@ var
       SetLength(measures, measures_pos+length(dataRows));
       for i_i:=0 to length(dataRows)-1 do
         begin
-          if (tim >= self._startTime) and((self._endTime = 0) or(tim <= self._endTime)) then
+          end_ := tim + itv;
+          if (tim >= self._startTime) and((self._endTime = 0) or(end_ <= self._endTime)) then
             begin
-              measures[measures_pos] := TYMeasure.create(tim - itv, tim, dataRows[i_i][minCol], dataRows[i_i][avgCol], dataRows[i_i][maxCol]);
+              measures[measures_pos] := TYMeasure.create(tim, end_, dataRows[i_i][minCol], dataRows[i_i][avgCol], dataRows[i_i][maxCol]);
               inc(measures_pos);
             end;
-          tim := tim + itv;
+          tim := end_;
         end;
       SetLength(measures, measures_pos);;
       result := measures;

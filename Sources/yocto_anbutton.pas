@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_anbutton.pas 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_anbutton.pas 32903 2018-11-02 10:14:32Z seb $
  *
  *  Implements yFindAnButton(), the high-level API for AnButton functions
  *
@@ -508,6 +508,9 @@ type
     /// <summary>
     ///   Continues the enumeration of analog inputs started using <c>yFirstAnButton()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned analog inputs order.
+    ///   If you want to find a specific an analog input, use <c>AnButton.findAnButton()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>

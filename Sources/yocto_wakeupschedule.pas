@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.pas 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_wakeupschedule.pas 32903 2018-11-02 10:14:32Z seb $
  *
  *  Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
@@ -454,6 +454,9 @@ type
     /// <summary>
     ///   Continues the enumeration of wake up schedules started using <c>yFirstWakeUpSchedule()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned wake up schedules order.
+    ///   If you want to find a specific a wake up schedule, use <c>WakeUpSchedule.findWakeUpSchedule()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>

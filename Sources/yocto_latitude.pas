@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_latitude.pas 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_latitude.pas 32903 2018-11-02 10:14:32Z seb $
  *
  *  Implements yFindLatitude(), the high-level API for Latitude functions
  *
@@ -186,6 +186,9 @@ type
     /// <summary>
     ///   Continues the enumeration of latitude sensors started using <c>yFirstLatitude()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned latitude sensors order.
+    ///   If you want to find a specific a latitude sensor, use <c>Latitude.findLatitude()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>

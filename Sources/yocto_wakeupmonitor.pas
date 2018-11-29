@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.pas 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_wakeupmonitor.pas 32903 2018-11-02 10:14:32Z seb $
  *
  *  Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -429,6 +429,9 @@ type
     /// <summary>
     ///   Continues the enumeration of monitors started using <c>yFirstWakeUpMonitor()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned monitors order.
+    ///   If you want to find a specific a monitor, use <c>WakeUpMonitor.findWakeUpMonitor()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>

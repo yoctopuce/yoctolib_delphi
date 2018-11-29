@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_hubport.pas 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_hubport.pas 32903 2018-11-02 10:14:32Z seb $
  *
  *  Implements yFindHubPort(), the high-level API for HubPort functions
  *
@@ -255,6 +255,9 @@ type
     /// <summary>
     ///   Continues the enumeration of Yocto-hub ports started using <c>yFirstHubPort()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned Yocto-hub ports order.
+    ///   If you want to find a specific a Yocto-hub port, use <c>HubPort.findHubPort()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>

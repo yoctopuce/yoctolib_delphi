@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_temperature.pas 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_temperature.pas 33082 2018-11-08 18:08:16Z seb $
  *
  *  Implements yFindTemperature(), the high-level API for Temperature functions
  *
@@ -62,6 +62,7 @@ const Y_SENSORTYPE_RES_OHM = 11;
 const Y_SENSORTYPE_RES_NTC = 12;
 const Y_SENSORTYPE_RES_LINEAR = 13;
 const Y_SENSORTYPE_RES_INTERNAL = 14;
+const Y_SENSORTYPE_IR = 15;
 const Y_SENSORTYPE_INVALID = -1;
 const Y_SIGNALVALUE_INVALID           = YAPI_INVALID_DOUBLE;
 const Y_SIGNALUNIT_INVALID            = YAPI_INVALID_STRING;
@@ -154,8 +155,8 @@ type
     ///   <c>Y_SENSORTYPE_TYPE_J</c>, <c>Y_SENSORTYPE_TYPE_N</c>, <c>Y_SENSORTYPE_TYPE_R</c>,
     ///   <c>Y_SENSORTYPE_TYPE_S</c>, <c>Y_SENSORTYPE_TYPE_T</c>, <c>Y_SENSORTYPE_PT100_4WIRES</c>,
     ///   <c>Y_SENSORTYPE_PT100_3WIRES</c>, <c>Y_SENSORTYPE_PT100_2WIRES</c>, <c>Y_SENSORTYPE_RES_OHM</c>,
-    ///   <c>Y_SENSORTYPE_RES_NTC</c>, <c>Y_SENSORTYPE_RES_LINEAR</c> and <c>Y_SENSORTYPE_RES_INTERNAL</c>
-    ///   corresponding to the temperature sensor type
+    ///   <c>Y_SENSORTYPE_RES_NTC</c>, <c>Y_SENSORTYPE_RES_LINEAR</c>, <c>Y_SENSORTYPE_RES_INTERNAL</c> and
+    ///   <c>Y_SENSORTYPE_IR</c> corresponding to the temperature sensor type
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_SENSORTYPE_INVALID</c>.
@@ -181,8 +182,8 @@ type
     ///   <c>Y_SENSORTYPE_TYPE_J</c>, <c>Y_SENSORTYPE_TYPE_N</c>, <c>Y_SENSORTYPE_TYPE_R</c>,
     ///   <c>Y_SENSORTYPE_TYPE_S</c>, <c>Y_SENSORTYPE_TYPE_T</c>, <c>Y_SENSORTYPE_PT100_4WIRES</c>,
     ///   <c>Y_SENSORTYPE_PT100_3WIRES</c>, <c>Y_SENSORTYPE_PT100_2WIRES</c>, <c>Y_SENSORTYPE_RES_OHM</c>,
-    ///   <c>Y_SENSORTYPE_RES_NTC</c>, <c>Y_SENSORTYPE_RES_LINEAR</c> and <c>Y_SENSORTYPE_RES_INTERNAL</c>
-    ///   corresponding to the temperature sensor type
+    ///   <c>Y_SENSORTYPE_RES_NTC</c>, <c>Y_SENSORTYPE_RES_LINEAR</c>, <c>Y_SENSORTYPE_RES_INTERNAL</c> and
+    ///   <c>Y_SENSORTYPE_IR</c> corresponding to the temperature sensor type
     /// </param>
     /// <para>
     /// </para>
@@ -420,6 +421,9 @@ type
     /// <summary>
     ///   Continues the enumeration of temperature sensors started using <c>yFirstTemperature()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned temperature sensors order.
+    ///   If you want to find a specific a temperature sensor, use <c>Temperature.findTemperature()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>

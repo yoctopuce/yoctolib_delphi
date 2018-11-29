@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_rangefinder.pas 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_rangefinder.pas 32903 2018-11-02 10:14:32Z seb $
  *
  *  Implements yFindRangeFinder(), the high-level API for RangeFinder functions
  *
@@ -401,6 +401,9 @@ type
     /// <summary>
     ///   Continues the enumeration of range finders started using <c>yFirstRangeFinder()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned range finders order.
+    ///   If you want to find a specific a range finder, use <c>RangeFinder.findRangeFinder()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>

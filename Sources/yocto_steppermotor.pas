@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_steppermotor.pas 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_steppermotor.pas 32903 2018-11-02 10:14:32Z seb $
  *
  *  Implements yFindStepperMotor(), the high-level API for StepperMotor functions
  *
@@ -829,6 +829,9 @@ type
     /// <summary>
     ///   Continues the enumeration of stepper motors started using <c>yFirstStepperMotor()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned stepper motors order.
+    ///   If you want to find a specific a stepper motor, use <c>StepperMotor.findStepperMotor()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>

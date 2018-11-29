@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 32348 2018-09-25 13:28:40Z seb $
+ * $Id: yocto_messagebox.pas 32903 2018-11-02 10:14:32Z seb $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *
@@ -427,6 +427,9 @@ type
     /// <summary>
     ///   Continues the enumeration of MessageBox interfaces started using <c>yFirstMessageBox()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned MessageBox interfaces order.
+    ///   If you want to find a specific a MessageBox interface, use <c>MessageBox.findMessageBox()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>

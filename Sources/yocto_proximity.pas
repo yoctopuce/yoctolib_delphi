@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_proximity.pas 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_proximity.pas 32903 2018-11-02 10:14:32Z seb $
  *
  *  Implements yFindProximity(), the high-level API for Proximity functions
  *
@@ -563,6 +563,9 @@ type
     /// <summary>
     ///   Continues the enumeration of proximity sensors started using <c>yFirstProximity()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned proximity sensors order.
+    ///   If you want to find a specific a proximity sensor, use <c>Proximity.findProximity()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>

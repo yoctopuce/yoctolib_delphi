@@ -1,8 +1,8 @@
 {*********************************************************************
  *
- *  $Id: yocto_realtimeclock.pas 32903 2018-11-02 10:14:32Z seb $
+ *  $Id: yocto_multisenscontroller.pas 33270 2018-11-22 08:41:15Z seb $
  *
- *  Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
+ *  Implements yFindMultiSensController(), the high-level API for MultiSensController functions
  *
  *  - - - - - - - - - License information: - - - - - - - - -
  *
@@ -38,91 +38,92 @@
  *********************************************************************}
 
 
-unit yocto_realtimeclock;
+unit yocto_multisenscontroller;
 
 interface
 
 uses
   sysutils, classes, windows, yocto_api, yjson;
 
-//--- (YRealTimeClock definitions)
+//--- (YMultiSensController definitions)
 
-const Y_UNIXTIME_INVALID              = YAPI_INVALID_LONG;
-const Y_DATETIME_INVALID              = YAPI_INVALID_STRING;
-const Y_UTCOFFSET_INVALID             = YAPI_INVALID_INT;
-const Y_TIMESET_FALSE = 0;
-const Y_TIMESET_TRUE = 1;
-const Y_TIMESET_INVALID = -1;
+const Y_NSENSORS_INVALID              = YAPI_INVALID_UINT;
+const Y_MAXSENSORS_INVALID            = YAPI_INVALID_UINT;
+const Y_MAINTENANCEMODE_FALSE = 0;
+const Y_MAINTENANCEMODE_TRUE = 1;
+const Y_MAINTENANCEMODE_INVALID = -1;
+const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 
-//--- (end of YRealTimeClock definitions)
-//--- (YRealTimeClock yapiwrapper declaration)
-//--- (end of YRealTimeClock yapiwrapper declaration)
+//--- (end of YMultiSensController definitions)
+//--- (YMultiSensController yapiwrapper declaration)
+//--- (end of YMultiSensController yapiwrapper declaration)
 
 type
-  TYRealTimeClock = class;
-  //--- (YRealTimeClock class start)
-  TYRealTimeClockValueCallback = procedure(func: TYRealTimeClock; value:string);
-  TYRealTimeClockTimedReportCallback = procedure(func: TYRealTimeClock; value:TYMeasure);
+  TYMultiSensController = class;
+  //--- (YMultiSensController class start)
+  TYMultiSensControllerValueCallback = procedure(func: TYMultiSensController; value:string);
+  TYMultiSensControllerTimedReportCallback = procedure(func: TYMultiSensController; value:TYMeasure);
 
   ////
   /// <summary>
-  ///   TYRealTimeClock Class: Real Time Clock function interface
+  ///   TYMultiSensController Class: MultiSensController function interface
   /// <para>
-  ///   The RealTimeClock function maintains and provides current date and time, even accross power cut
-  ///   lasting several days. It is the base for automated wake-up functions provided by the WakeUpScheduler.
-  ///   The current time may represent a local time as well as an UTC time, but no automatic time change
-  ///   will occur to account for daylight saving time.
+  ///   The Yoctopuce application programming interface allows you to drive a stepper motor.
   /// </para>
   /// </summary>
   ///-
-  TYRealTimeClock=class(TYFunction)
-  //--- (end of YRealTimeClock class start)
+  TYMultiSensController=class(TYFunction)
+  //--- (end of YMultiSensController class start)
   protected
-  //--- (YRealTimeClock declaration)
+  //--- (YMultiSensController declaration)
     // Attributes (function value cache)
-    _unixTime                 : int64;
-    _dateTime                 : string;
-    _utcOffset                : LongInt;
-    _timeSet                  : Integer;
-    _valueCallbackRealTimeClock : TYRealTimeClockValueCallback;
+    _nSensors                 : LongInt;
+    _maxSensors               : LongInt;
+    _maintenanceMode          : Integer;
+    _command                  : string;
+    _valueCallbackMultiSensController : TYMultiSensControllerValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
 
-    //--- (end of YRealTimeClock declaration)
+    //--- (end of YMultiSensController declaration)
 
   public
-    //--- (YRealTimeClock accessors declaration)
+    //--- (YMultiSensController accessors declaration)
     constructor Create(func:string);
 
     ////
     /// <summary>
-    ///   Returns the current time in Unix format (number of elapsed seconds since Jan 1st, 1970).
+    ///   Returns the number of sensors to poll.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the current time in Unix format (number of elapsed seconds since Jan 1st, 1970)
+    ///   an integer corresponding to the number of sensors to poll
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_UNIXTIME_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>Y_NSENSORS_INVALID</c>.
     /// </para>
     ///-
-    function get_unixTime():int64;
+    function get_nSensors():LongInt;
 
     ////
     /// <summary>
-    ///   Changes the current time.
+    ///   Changes the number of sensors to poll.
     /// <para>
-    ///   Time is specifid in Unix format (number of elapsed seconds since Jan 1st, 1970).
+    ///   Remember to call the
+    ///   <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept. Il is recommended to restart the
+    ///   device with  <c>module->reboot()</c> after modifing
+    ///   (and saving) this settings
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer corresponding to the current time
+    ///   an integer corresponding to the number of sensors to poll
     /// </param>
     /// <para>
     /// </para>
@@ -133,53 +134,56 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function set_unixTime(newval:int64):integer;
+    function set_nSensors(newval:LongInt):integer;
 
     ////
     /// <summary>
-    ///   Returns the current time in the form "YYYY/MM/DD hh:mm:ss".
+    ///   Returns the maximum configurable sensor count allowed on this device.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a string corresponding to the current time in the form "YYYY/MM/DD hh:mm:ss"
+    ///   an integer corresponding to the maximum configurable sensor count allowed on this device
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_DATETIME_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>Y_MAXSENSORS_INVALID</c>.
     /// </para>
     ///-
-    function get_dateTime():string;
+    function get_maxSensors():LongInt;
 
     ////
     /// <summary>
-    ///   Returns the number of seconds between current time and UTC time (time zone).
+    ///   Returns true when the device is in maintenance mode.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the number of seconds between current time and UTC time (time zone)
+    ///   either <c>Y_MAINTENANCEMODE_FALSE</c> or <c>Y_MAINTENANCEMODE_TRUE</c>, according to true when the
+    ///   device is in maintenance mode
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_UTCOFFSET_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>Y_MAINTENANCEMODE_INVALID</c>.
     /// </para>
     ///-
-    function get_utcOffset():LongInt;
+    function get_maintenanceMode():Integer;
 
     ////
     /// <summary>
-    ///   Changes the number of seconds between current time and UTC time (time zone).
+    ///   Changes the device mode to enable maintenance and stop sensors polling.
     /// <para>
-    ///   The timezone is automatically rounded to the nearest multiple of 15 minutes.
+    ///   This way, the device will not restart automatically in case it cannot
+    ///   communicate with one of the sensors.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer corresponding to the number of seconds between current time and UTC time (time zone)
+    ///   either <c>Y_MAINTENANCEMODE_FALSE</c> or <c>Y_MAINTENANCEMODE_TRUE</c>, according to the device
+    ///   mode to enable maintenance and stop sensors polling
     /// </param>
     /// <para>
     /// </para>
@@ -190,25 +194,11 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function set_utcOffset(newval:LongInt):integer;
+    function set_maintenanceMode(newval:Integer):integer;
 
-    ////
-    /// <summary>
-    ///   Returns true if the clock has been set, and false otherwise.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   either <c>Y_TIMESET_FALSE</c> or <c>Y_TIMESET_TRUE</c>, according to true if the clock has been
-    ///   set, and false otherwise
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>Y_TIMESET_INVALID</c>.
-    /// </para>
-    ///-
-    function get_timeSet():Integer;
+    function get_command():string;
+
+    function set_command(newval:string):integer;
 
     ////
     /// <summary>
@@ -238,7 +228,7 @@ type
     /// <para>
     ///   This function does not require that $THEFUNCTION$ is online at the time
     ///   it is invoked. The returned object is nevertheless valid.
-    ///   Use the method <c>YRealTimeClock.isOnline()</c> to test if $THEFUNCTION$ is
+    ///   Use the method <c>YMultiSensController.isOnline()</c> to test if $THEFUNCTION$ is
     ///   indeed online at a given time. In case of ambiguity when looking for
     ///   $AFUNCTION$ by logical name, no error is notified: the first instance
     ///   found is returned. The search is performed first by hardware name,
@@ -256,10 +246,10 @@ type
     ///   a string that uniquely characterizes $THEFUNCTION$
     /// </param>
     /// <returns>
-    ///   a <c>YRealTimeClock</c> object allowing you to drive $THEFUNCTION$.
+    ///   a <c>YMultiSensController</c> object allowing you to drive $THEFUNCTION$.
     /// </returns>
     ///-
-    class function FindRealTimeClock(func: string):TYRealTimeClock;
+    class function FindMultiSensController(func: string):TYMultiSensController;
 
     ////
     /// <summary>
@@ -279,27 +269,50 @@ type
     /// @noreturn
     /// </param>
     ///-
-    function registerValueCallback(callback: TYRealTimeClockValueCallback):LongInt; overload;
+    function registerValueCallback(callback: TYMultiSensControllerValueCallback):LongInt; overload;
 
     function _invokeValueCallback(value: string):LongInt; override;
+
+    ////
+    /// <summary>
+    ///   Configure the I2C address of the only sensor connected to the device.
+    /// <para>
+    ///   It is recommanded to put the the device in maintenance mode before
+    ///   changing Sensors addresses.  This method is only intended to work with a single
+    ///   sensor connected to the device, if several sensors are connected, result
+    ///   is unpredictible.
+    ///   Note that the device is probably expecting to find a string of sensors with specific
+    ///   addresses. Check the device documentation to find out which addresses should be used.
+    /// </para>
+    /// </summary>
+    /// <param name="addr">
+    ///   new address of the connected sensor
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </returns>
+    ///-
+    function setupAddress(addr: LongInt):LongInt; overload; virtual;
 
 
     ////
     /// <summary>
-    ///   Continues the enumeration of clocks started using <c>yFirstRealTimeClock()</c>.
+    ///   Continues the enumeration of multi-sensor controllers started using <c>yFirstMultiSensController()</c>.
     /// <para>
-    ///   Caution: You can't make any assumption about the returned clocks order.
-    ///   If you want to find a specific a clock, use <c>RealTimeClock.findRealTimeClock()</c>
+    ///   Caution: You can't make any assumption about the returned multi-sensor controllers order.
+    ///   If you want to find a specific a multi-sensor controller, use
+    ///   <c>MultiSensController.findMultiSensController()</c>
     ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a pointer to a <c>YRealTimeClock</c> object, corresponding to
-    ///   a clock currently online, or a <c>NIL</c> pointer
-    ///   if there are no more clocks to enumerate.
+    ///   a pointer to a <c>YMultiSensController</c> object, corresponding to
+    ///   a multi-sensor controller currently online, or a <c>NIL</c> pointer
+    ///   if there are no more multi-sensor controllers to enumerate.
     /// </returns>
     ///-
-    function nextRealTimeClock():TYRealTimeClock;
+    function nextMultiSensController():TYMultiSensController;
     ////
     /// <summary>
     ///   c
@@ -308,14 +321,14 @@ type
     /// </para>
     /// </summary>
     ///-
-    class function FirstRealTimeClock():TYRealTimeClock;
-  //--- (end of YRealTimeClock accessors declaration)
+    class function FirstMultiSensController():TYMultiSensController;
+  //--- (end of YMultiSensController accessors declaration)
   end;
 
-//--- (YRealTimeClock functions declaration)
+//--- (YMultiSensController functions declaration)
   ////
   /// <summary>
-  ///   Retrieves a clock for a given identifier.
+  ///   Retrieves a multi-sensor controller for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
   /// </para>
@@ -339,11 +352,11 @@ type
   /// <para>
   /// </para>
   /// <para>
-  ///   This function does not require that the clock is online at the time
+  ///   This function does not require that the multi-sensor controller is online at the time
   ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YRealTimeClock.isOnline()</c> to test if the clock is
+  ///   Use the method <c>YMultiSensController.isOnline()</c> to test if the multi-sensor controller is
   ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   a clock by logical name, no error is notified: the first instance
+  ///   a multi-sensor controller by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
   /// </para>
@@ -356,79 +369,79 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the clock
+  ///   a string that uniquely characterizes the multi-sensor controller
   /// </param>
   /// <returns>
-  ///   a <c>YRealTimeClock</c> object allowing you to drive the clock.
+  ///   a <c>YMultiSensController</c> object allowing you to drive the multi-sensor controller.
   /// </returns>
   ///-
-  function yFindRealTimeClock(func:string):TYRealTimeClock;
+  function yFindMultiSensController(func:string):TYMultiSensController;
   ////
   /// <summary>
-  ///   Starts the enumeration of clocks currently accessible.
+  ///   Starts the enumeration of multi-sensor controllers currently accessible.
   /// <para>
-  ///   Use the method <c>YRealTimeClock.nextRealTimeClock()</c> to iterate on
-  ///   next clocks.
+  ///   Use the method <c>YMultiSensController.nextMultiSensController()</c> to iterate on
+  ///   next multi-sensor controllers.
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a pointer to a <c>YRealTimeClock</c> object, corresponding to
-  ///   the first clock currently online, or a <c>NIL</c> pointer
+  ///   a pointer to a <c>YMultiSensController</c> object, corresponding to
+  ///   the first multi-sensor controller currently online, or a <c>NIL</c> pointer
   ///   if there are none.
   /// </returns>
   ///-
-  function yFirstRealTimeClock():TYRealTimeClock;
+  function yFirstMultiSensController():TYMultiSensController;
 
-//--- (end of YRealTimeClock functions declaration)
+//--- (end of YMultiSensController functions declaration)
 
 implementation
-//--- (YRealTimeClock dlldef)
-//--- (end of YRealTimeClock dlldef)
+//--- (YMultiSensController dlldef)
+//--- (end of YMultiSensController dlldef)
 
-  constructor TYRealTimeClock.Create(func:string);
+  constructor TYMultiSensController.Create(func:string);
     begin
       inherited Create(func);
-      _className := 'RealTimeClock';
-      //--- (YRealTimeClock accessors initialization)
-      _unixTime := Y_UNIXTIME_INVALID;
-      _dateTime := Y_DATETIME_INVALID;
-      _utcOffset := Y_UTCOFFSET_INVALID;
-      _timeSet := Y_TIMESET_INVALID;
-      _valueCallbackRealTimeClock := nil;
-      //--- (end of YRealTimeClock accessors initialization)
+      _className := 'MultiSensController';
+      //--- (YMultiSensController accessors initialization)
+      _nSensors := Y_NSENSORS_INVALID;
+      _maxSensors := Y_MAXSENSORS_INVALID;
+      _maintenanceMode := Y_MAINTENANCEMODE_INVALID;
+      _command := Y_COMMAND_INVALID;
+      _valueCallbackMultiSensController := nil;
+      //--- (end of YMultiSensController accessors initialization)
     end;
 
-//--- (YRealTimeClock yapiwrapper)
-//--- (end of YRealTimeClock yapiwrapper)
+//--- (YMultiSensController yapiwrapper)
+//--- (end of YMultiSensController yapiwrapper)
 
-//--- (YRealTimeClock implementation)
+//--- (YMultiSensController implementation)
 {$HINTS OFF}
-  function TYRealTimeClock._parseAttr(member:PJSONRECORD):integer;
+  function TYMultiSensController._parseAttr(member:PJSONRECORD):integer;
     var
       sub : PJSONRECORD;
       i,l        : integer;
     begin
-      if (member^.name = 'unixTime') then
+      if (member^.name = 'nSensors') then
         begin
-          _unixTime := member^.ivalue;
+          _nSensors := integer(member^.ivalue);
          result := 1;
          exit;
          end;
-      if (member^.name = 'dateTime') then
+      if (member^.name = 'maxSensors') then
         begin
-          _dateTime := string(member^.svalue);
+          _maxSensors := integer(member^.ivalue);
          result := 1;
          exit;
          end;
-      if (member^.name = 'utcOffset') then
+      if (member^.name = 'maintenanceMode') then
         begin
-          _utcOffset := integer(member^.ivalue);
+          _maintenanceMode := member^.ivalue;
          result := 1;
          exit;
          end;
-      if (member^.name = 'timeSet') then
+      if (member^.name = 'command') then
         begin
-          _timeSet := member^.ivalue;
+          _command := string(member^.svalue);
          result := 1;
          exit;
          end;
@@ -436,51 +449,7 @@ implementation
     end;
 {$HINTS ON}
 
-  function TYRealTimeClock.get_unixTime():int64;
-    var
-      res : int64;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
-            begin
-              result := Y_UNIXTIME_INVALID;
-              exit;
-            end;
-        end;
-      res := self._unixTime;
-      result := res;
-      exit;
-    end;
-
-
-  function TYRealTimeClock.set_unixTime(newval:int64):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := inttostr(newval);
-      result := _setAttr('unixTime',rest_val);
-    end;
-
-  function TYRealTimeClock.get_dateTime():string;
-    var
-      res : string;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
-            begin
-              result := Y_DATETIME_INVALID;
-              exit;
-            end;
-        end;
-      res := self._dateTime;
-      result := res;
-      exit;
-    end;
-
-
-  function TYRealTimeClock.get_utcOffset():LongInt;
+  function TYMultiSensController.get_nSensors():LongInt;
     var
       res : LongInt;
     begin
@@ -488,25 +457,43 @@ implementation
         begin
           if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
-              result := Y_UTCOFFSET_INVALID;
+              result := Y_NSENSORS_INVALID;
               exit;
             end;
         end;
-      res := self._utcOffset;
+      res := self._nSensors;
       result := res;
       exit;
     end;
 
 
-  function TYRealTimeClock.set_utcOffset(newval:LongInt):integer;
+  function TYMultiSensController.set_nSensors(newval:LongInt):integer;
     var
       rest_val: string;
     begin
       rest_val := inttostr(newval);
-      result := _setAttr('utcOffset',rest_val);
+      result := _setAttr('nSensors',rest_val);
     end;
 
-  function TYRealTimeClock.get_timeSet():Integer;
+  function TYMultiSensController.get_maxSensors():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_MAXSENSORS_INVALID;
+              exit;
+            end;
+        end;
+      res := self._maxSensors;
+      result := res;
+      exit;
+    end;
+
+
+  function TYMultiSensController.get_maintenanceMode():Integer;
     var
       res : Integer;
     begin
@@ -514,32 +501,66 @@ implementation
         begin
           if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
-              result := Y_TIMESET_INVALID;
+              result := Y_MAINTENANCEMODE_INVALID;
               exit;
             end;
         end;
-      res := self._timeSet;
+      res := self._maintenanceMode;
       result := res;
       exit;
     end;
 
 
-  class function TYRealTimeClock.FindRealTimeClock(func: string):TYRealTimeClock;
+  function TYMultiSensController.set_maintenanceMode(newval:Integer):integer;
     var
-      obj : TYRealTimeClock;
+      rest_val: string;
     begin
-      obj := TYRealTimeClock(TYFunction._FindFromCache('RealTimeClock', func));
+      if(newval>0) then rest_val := '1' else rest_val := '0';
+      result := _setAttr('maintenanceMode',rest_val);
+    end;
+
+  function TYMultiSensController.get_command():string;
+    var
+      res : string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_COMMAND_INVALID;
+              exit;
+            end;
+        end;
+      res := self._command;
+      result := res;
+      exit;
+    end;
+
+
+  function TYMultiSensController.set_command(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('command',rest_val);
+    end;
+
+  class function TYMultiSensController.FindMultiSensController(func: string):TYMultiSensController;
+    var
+      obj : TYMultiSensController;
+    begin
+      obj := TYMultiSensController(TYFunction._FindFromCache('MultiSensController', func));
       if obj = nil then
         begin
-          obj :=  TYRealTimeClock.create(func);
-          TYFunction._AddToCache('RealTimeClock',  func, obj);
+          obj :=  TYMultiSensController.create(func);
+          TYFunction._AddToCache('MultiSensController',  func, obj);
         end;
       result := obj;
       exit;
     end;
 
 
-  function TYRealTimeClock.registerValueCallback(callback: TYRealTimeClockValueCallback):LongInt;
+  function TYMultiSensController.registerValueCallback(callback: TYMultiSensControllerValueCallback):LongInt;
     var
       val : string;
     begin
@@ -551,7 +572,7 @@ implementation
         begin
           TYFunction._UpdateValueCallbackList(self, false);
         end;
-      self._valueCallbackRealTimeClock := callback;
+      self._valueCallbackMultiSensController := callback;
       // Immediately invoke value callback with current value
       if (addr(callback) <> nil) and self.isOnline then
         begin
@@ -566,11 +587,11 @@ implementation
     end;
 
 
-  function TYRealTimeClock._invokeValueCallback(value: string):LongInt;
+  function TYMultiSensController._invokeValueCallback(value: string):LongInt;
     begin
-      if (addr(self._valueCallbackRealTimeClock) <> nil) then
+      if (addr(self._valueCallbackMultiSensController) <> nil) then
         begin
-          self._valueCallbackRealTimeClock(self, value);
+          self._valueCallbackMultiSensController(self, value);
         end
       else
         begin
@@ -581,31 +602,41 @@ implementation
     end;
 
 
-  function TYRealTimeClock.nextRealTimeClock(): TYRealTimeClock;
+  function TYMultiSensController.setupAddress(addr: LongInt):LongInt;
+    var
+      cmd : string;
+    begin
+      cmd := 'A'+inttostr(addr);
+      result := self.set_command(cmd);
+      exit;
+    end;
+
+
+  function TYMultiSensController.nextMultiSensController(): TYMultiSensController;
     var
       hwid: string;
     begin
       if YISERR(_nextFunction(hwid)) then
         begin
-          nextRealTimeClock := nil;
+          nextMultiSensController := nil;
           exit;
         end;
       if hwid = '' then
         begin
-          nextRealTimeClock := nil;
+          nextMultiSensController := nil;
           exit;
         end;
-      nextRealTimeClock := TYRealTimeClock.FindRealTimeClock(hwid);
+      nextMultiSensController := TYMultiSensController.FindMultiSensController(hwid);
     end;
 
-  class function TYRealTimeClock.FirstRealTimeClock(): TYRealTimeClock;
+  class function TYMultiSensController.FirstMultiSensController(): TYMultiSensController;
     var
       v_fundescr      : YFUN_DESCR;
       dev             : YDEV_DESCR;
       neededsize, err : integer;
       serial, funcId, funcName, funcVal, errmsg : string;
     begin
-      err := yapiGetFunctionsByClass('RealTimeClock', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
+      err := yapiGetFunctionsByClass('MultiSensController', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
       if (YISERR(err) or (neededsize = 0)) then
         begin
           result := nil;
@@ -616,35 +647,35 @@ implementation
           result := nil;
           exit;
         end;
-     result := TYRealTimeClock.FindRealTimeClock(serial+'.'+funcId);
+     result := TYMultiSensController.FindMultiSensController(serial+'.'+funcId);
     end;
 
-//--- (end of YRealTimeClock implementation)
+//--- (end of YMultiSensController implementation)
 
-//--- (YRealTimeClock functions)
+//--- (YMultiSensController functions)
 
-  function yFindRealTimeClock(func:string): TYRealTimeClock;
+  function yFindMultiSensController(func:string): TYMultiSensController;
     begin
-      result := TYRealTimeClock.FindRealTimeClock(func);
+      result := TYMultiSensController.FindMultiSensController(func);
     end;
 
-  function yFirstRealTimeClock(): TYRealTimeClock;
+  function yFirstMultiSensController(): TYMultiSensController;
     begin
-      result := TYRealTimeClock.FirstRealTimeClock();
+      result := TYMultiSensController.FirstMultiSensController();
     end;
 
-  procedure _RealTimeClockCleanup();
+  procedure _MultiSensControllerCleanup();
     begin
     end;
 
-//--- (end of YRealTimeClock functions)
+//--- (end of YMultiSensController functions)
 
 initialization
-  //--- (YRealTimeClock initialization)
-  //--- (end of YRealTimeClock initialization)
+  //--- (YMultiSensController initialization)
+  //--- (end of YMultiSensController initialization)
 
 finalization
-  //--- (YRealTimeClock cleanup)
-  _RealTimeClockCleanup();
-  //--- (end of YRealTimeClock cleanup)
+  //--- (YMultiSensController cleanup)
+  _MultiSensControllerCleanup();
+  //--- (end of YMultiSensController cleanup)
 end.

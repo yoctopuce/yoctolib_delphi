@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_bluetoothlink.pas 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_bluetoothlink.pas 32903 2018-11-02 10:14:32Z seb $
  *
  *  Implements yFindBluetoothLink(), the high-level API for BluetoothLink functions
  *
@@ -502,6 +502,9 @@ type
     /// <summary>
     ///   Continues the enumeration of cellular interfaces started using <c>yFirstBluetoothLink()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned cellular interfaces order.
+    ///   If you want to find a specific a cellular interface, use <c>BluetoothLink.findBluetoothLink()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_multicellweighscale.pas 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_multicellweighscale.pas 32903 2018-11-02 10:14:32Z seb $
  *
  *  Implements yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
  *
@@ -546,6 +546,10 @@ type
     /// <summary>
     ///   Continues the enumeration of multi-cell weighing scale sensors started using <c>yFirstMultiCellWeighScale()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned multi-cell weighing scale sensors order.
+    ///   If you want to find a specific a multi-cell weighing scale sensor, use
+    ///   <c>MultiCellWeighScale.findMultiCellWeighScale()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>

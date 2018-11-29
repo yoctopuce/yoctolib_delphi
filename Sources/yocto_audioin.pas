@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_audioin.pas 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_audioin.pas 32903 2018-11-02 10:14:32Z seb $
  *
  *  Implements yFindAudioIn(), the high-level API for AudioIn functions
  *
@@ -307,6 +307,9 @@ type
     /// <summary>
     ///   Continues the enumeration of audio inputs started using <c>yFirstAudioIn()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned audio inputs order.
+    ///   If you want to find a specific an audio input, use <c>AudioIn.findAudioIn()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>

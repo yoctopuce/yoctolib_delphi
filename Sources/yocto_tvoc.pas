@@ -1,8 +1,8 @@
 {*********************************************************************
  *
- *  $Id: yocto_current.pas 32903 2018-11-02 10:14:32Z seb $
+ *  $Id: yocto_tvoc.pas 33270 2018-11-22 08:41:15Z seb $
  *
- *  Implements yFindCurrent(), the high-level API for Current functions
+ *  Implements yFindTvoc(), the high-level API for Tvoc functions
  *
  *  - - - - - - - - - License information: - - - - - - - - -
  *
@@ -38,60 +38,52 @@
  *********************************************************************}
 
 
-unit yocto_current;
+unit yocto_tvoc;
 
 interface
 
 uses
   sysutils, classes, windows, yocto_api, yjson;
 
-//--- (YCurrent definitions)
-
-const Y_ENABLED_FALSE = 0;
-const Y_ENABLED_TRUE = 1;
-const Y_ENABLED_INVALID = -1;
+//--- (YTvoc definitions)
 
 
-//--- (end of YCurrent definitions)
-//--- (YCurrent yapiwrapper declaration)
-//--- (end of YCurrent yapiwrapper declaration)
+
+//--- (end of YTvoc definitions)
+//--- (YTvoc yapiwrapper declaration)
+//--- (end of YTvoc yapiwrapper declaration)
 
 type
-  TYCurrent = class;
-  //--- (YCurrent class start)
-  TYCurrentValueCallback = procedure(func: TYCurrent; value:string);
-  TYCurrentTimedReportCallback = procedure(func: TYCurrent; value:TYMeasure);
+  TYTvoc = class;
+  //--- (YTvoc class start)
+  TYTvocValueCallback = procedure(func: TYTvoc; value:string);
+  TYTvocTimedReportCallback = procedure(func: TYTvoc; value:TYMeasure);
 
   ////
   /// <summary>
-  ///   TYCurrent Class: Current function interface
+  ///   TYTvoc Class: Tvoc function interface
   /// <para>
-  ///   The Yoctopuce class YCurrent allows you to read and configure Yoctopuce current
-  ///   sensors. It inherits from YSensor class the core functions to read measurements,
+  ///   The Yoctopuce class YTvoc allows you to read and configure Yoctopuce Total Volatile Organic
+  ///   Compound sensors. It inherits from YSensor class the core functions to read measurements,
   ///   to register callback functions, to access the autonomous datalogger.
   /// </para>
   /// </summary>
   ///-
-  TYCurrent=class(TYSensor)
-  //--- (end of YCurrent class start)
+  TYTvoc=class(TYSensor)
+  //--- (end of YTvoc class start)
   protected
-  //--- (YCurrent declaration)
+  //--- (YTvoc declaration)
     // Attributes (function value cache)
-    _enabled                  : Integer;
-    _valueCallbackCurrent     : TYCurrentValueCallback;
-    _timedReportCallbackCurrent : TYCurrentTimedReportCallback;
+    _valueCallbackTvoc        : TYTvocValueCallback;
+    _timedReportCallbackTvoc  : TYTvocTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
 
-    //--- (end of YCurrent declaration)
+    //--- (end of YTvoc declaration)
 
   public
-    //--- (YCurrent accessors declaration)
+    //--- (YTvoc accessors declaration)
     constructor Create(func:string);
-
-    function get_enabled():Integer;
-
-    function set_enabled(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -121,7 +113,7 @@ type
     /// <para>
     ///   This function does not require that $THEFUNCTION$ is online at the time
     ///   it is invoked. The returned object is nevertheless valid.
-    ///   Use the method <c>YCurrent.isOnline()</c> to test if $THEFUNCTION$ is
+    ///   Use the method <c>YTvoc.isOnline()</c> to test if $THEFUNCTION$ is
     ///   indeed online at a given time. In case of ambiguity when looking for
     ///   $AFUNCTION$ by logical name, no error is notified: the first instance
     ///   found is returned. The search is performed first by hardware name,
@@ -139,10 +131,10 @@ type
     ///   a string that uniquely characterizes $THEFUNCTION$
     /// </param>
     /// <returns>
-    ///   a <c>YCurrent</c> object allowing you to drive $THEFUNCTION$.
+    ///   a <c>YTvoc</c> object allowing you to drive $THEFUNCTION$.
     /// </returns>
     ///-
-    class function FindCurrent(func: string):TYCurrent;
+    class function FindTvoc(func: string):TYTvoc;
 
     ////
     /// <summary>
@@ -162,7 +154,7 @@ type
     /// @noreturn
     /// </param>
     ///-
-    function registerValueCallback(callback: TYCurrentValueCallback):LongInt; overload;
+    function registerValueCallback(callback: TYTvocValueCallback):LongInt; overload;
 
     function _invokeValueCallback(value: string):LongInt; override;
 
@@ -184,27 +176,27 @@ type
     /// @noreturn
     /// </param>
     ///-
-    function registerTimedReportCallback(callback: TYCurrentTimedReportCallback):LongInt; overload;
+    function registerTimedReportCallback(callback: TYTvocTimedReportCallback):LongInt; overload;
 
     function _invokeTimedReportCallback(value: TYMeasure):LongInt; override;
 
 
     ////
     /// <summary>
-    ///   Continues the enumeration of current sensors started using <c>yFirstCurrent()</c>.
+    ///   Continues the enumeration of Total Volatile Organic Compound sensors started using <c>yFirstTvoc()</c>.
     /// <para>
-    ///   Caution: You can't make any assumption about the returned current sensors order.
-    ///   If you want to find a specific a current sensor, use <c>Current.findCurrent()</c>
+    ///   Caution: You can't make any assumption about the returned Total Volatile Organic Compound sensors order.
+    ///   If you want to find a specific a Total  Volatile Organic Compound sensor, use <c>Tvoc.findTvoc()</c>
     ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a pointer to a <c>YCurrent</c> object, corresponding to
-    ///   a current sensor currently online, or a <c>NIL</c> pointer
-    ///   if there are no more current sensors to enumerate.
+    ///   a pointer to a <c>YTvoc</c> object, corresponding to
+    ///   a Total  Volatile Organic Compound sensor currently online, or a <c>NIL</c> pointer
+    ///   if there are no more Total Volatile Organic Compound sensors to enumerate.
     /// </returns>
     ///-
-    function nextCurrent():TYCurrent;
+    function nextTvoc():TYTvoc;
     ////
     /// <summary>
     ///   c
@@ -213,14 +205,14 @@ type
     /// </para>
     /// </summary>
     ///-
-    class function FirstCurrent():TYCurrent;
-  //--- (end of YCurrent accessors declaration)
+    class function FirstTvoc():TYTvoc;
+  //--- (end of YTvoc accessors declaration)
   end;
 
-//--- (YCurrent functions declaration)
+//--- (YTvoc functions declaration)
   ////
   /// <summary>
-  ///   Retrieves a current sensor for a given identifier.
+  ///   Retrieves a Total  Volatile Organic Compound sensor for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
   /// </para>
@@ -244,11 +236,11 @@ type
   /// <para>
   /// </para>
   /// <para>
-  ///   This function does not require that the current sensor is online at the time
+  ///   This function does not require that the Total  Volatile Organic Compound sensor is online at the time
   ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YCurrent.isOnline()</c> to test if the current sensor is
+  ///   Use the method <c>YTvoc.isOnline()</c> to test if the Total  Volatile Organic Compound sensor is
   ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   a current sensor by logical name, no error is notified: the first instance
+  ///   a Total  Volatile Organic Compound sensor by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
   /// </para>
@@ -261,108 +253,75 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the current sensor
+  ///   a string that uniquely characterizes the Total  Volatile Organic Compound sensor
   /// </param>
   /// <returns>
-  ///   a <c>YCurrent</c> object allowing you to drive the current sensor.
+  ///   a <c>YTvoc</c> object allowing you to drive the Total  Volatile Organic Compound sensor.
   /// </returns>
   ///-
-  function yFindCurrent(func:string):TYCurrent;
+  function yFindTvoc(func:string):TYTvoc;
   ////
   /// <summary>
-  ///   Starts the enumeration of current sensors currently accessible.
+  ///   Starts the enumeration of Total Volatile Organic Compound sensors currently accessible.
   /// <para>
-  ///   Use the method <c>YCurrent.nextCurrent()</c> to iterate on
-  ///   next current sensors.
+  ///   Use the method <c>YTvoc.nextTvoc()</c> to iterate on
+  ///   next Total Volatile Organic Compound sensors.
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a pointer to a <c>YCurrent</c> object, corresponding to
-  ///   the first current sensor currently online, or a <c>NIL</c> pointer
+  ///   a pointer to a <c>YTvoc</c> object, corresponding to
+  ///   the first Total Volatile Organic Compound sensor currently online, or a <c>NIL</c> pointer
   ///   if there are none.
   /// </returns>
   ///-
-  function yFirstCurrent():TYCurrent;
+  function yFirstTvoc():TYTvoc;
 
-//--- (end of YCurrent functions declaration)
+//--- (end of YTvoc functions declaration)
 
 implementation
-//--- (YCurrent dlldef)
-//--- (end of YCurrent dlldef)
+//--- (YTvoc dlldef)
+//--- (end of YTvoc dlldef)
 
-  constructor TYCurrent.Create(func:string);
+  constructor TYTvoc.Create(func:string);
     begin
       inherited Create(func);
-      _className := 'Current';
-      //--- (YCurrent accessors initialization)
-      _enabled := Y_ENABLED_INVALID;
-      _valueCallbackCurrent := nil;
-      _timedReportCallbackCurrent := nil;
-      //--- (end of YCurrent accessors initialization)
+      _className := 'Tvoc';
+      //--- (YTvoc accessors initialization)
+      _valueCallbackTvoc := nil;
+      _timedReportCallbackTvoc := nil;
+      //--- (end of YTvoc accessors initialization)
     end;
 
-//--- (YCurrent yapiwrapper)
-//--- (end of YCurrent yapiwrapper)
+//--- (YTvoc yapiwrapper)
+//--- (end of YTvoc yapiwrapper)
 
-//--- (YCurrent implementation)
+//--- (YTvoc implementation)
 {$HINTS OFF}
-  function TYCurrent._parseAttr(member:PJSONRECORD):integer;
+  function TYTvoc._parseAttr(member:PJSONRECORD):integer;
     var
       sub : PJSONRECORD;
       i,l        : integer;
     begin
-      if (member^.name = 'enabled') then
-        begin
-          _enabled := member^.ivalue;
-         result := 1;
-         exit;
-         end;
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
 
-  function TYCurrent.get_enabled():Integer;
+  class function TYTvoc.FindTvoc(func: string):TYTvoc;
     var
-      res : Integer;
+      obj : TYTvoc;
     begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
-            begin
-              result := Y_ENABLED_INVALID;
-              exit;
-            end;
-        end;
-      res := self._enabled;
-      result := res;
-      exit;
-    end;
-
-
-  function TYCurrent.set_enabled(newval:Integer):integer;
-    var
-      rest_val: string;
-    begin
-      if(newval>0) then rest_val := '1' else rest_val := '0';
-      result := _setAttr('enabled',rest_val);
-    end;
-
-  class function TYCurrent.FindCurrent(func: string):TYCurrent;
-    var
-      obj : TYCurrent;
-    begin
-      obj := TYCurrent(TYFunction._FindFromCache('Current', func));
+      obj := TYTvoc(TYFunction._FindFromCache('Tvoc', func));
       if obj = nil then
         begin
-          obj :=  TYCurrent.create(func);
-          TYFunction._AddToCache('Current',  func, obj);
+          obj :=  TYTvoc.create(func);
+          TYFunction._AddToCache('Tvoc',  func, obj);
         end;
       result := obj;
       exit;
     end;
 
 
-  function TYCurrent.registerValueCallback(callback: TYCurrentValueCallback):LongInt;
+  function TYTvoc.registerValueCallback(callback: TYTvocValueCallback):LongInt;
     var
       val : string;
     begin
@@ -374,7 +333,7 @@ implementation
         begin
           TYFunction._UpdateValueCallbackList(self, false);
         end;
-      self._valueCallbackCurrent := callback;
+      self._valueCallbackTvoc := callback;
       // Immediately invoke value callback with current value
       if (addr(callback) <> nil) and self.isOnline then
         begin
@@ -389,11 +348,11 @@ implementation
     end;
 
 
-  function TYCurrent._invokeValueCallback(value: string):LongInt;
+  function TYTvoc._invokeValueCallback(value: string):LongInt;
     begin
-      if (addr(self._valueCallbackCurrent) <> nil) then
+      if (addr(self._valueCallbackTvoc) <> nil) then
         begin
-          self._valueCallbackCurrent(self, value);
+          self._valueCallbackTvoc(self, value);
         end
       else
         begin
@@ -404,7 +363,7 @@ implementation
     end;
 
 
-  function TYCurrent.registerTimedReportCallback(callback: TYCurrentTimedReportCallback):LongInt;
+  function TYTvoc.registerTimedReportCallback(callback: TYTvocTimedReportCallback):LongInt;
     var
       sensor : TYSensor;
     begin
@@ -417,17 +376,17 @@ implementation
         begin
           TYFunction._UpdateTimedReportCallbackList(sensor, false);
         end;
-      self._timedReportCallbackCurrent := callback;
+      self._timedReportCallbackTvoc := callback;
       result := 0;
       exit;
     end;
 
 
-  function TYCurrent._invokeTimedReportCallback(value: TYMeasure):LongInt;
+  function TYTvoc._invokeTimedReportCallback(value: TYMeasure):LongInt;
     begin
-      if (addr(self._timedReportCallbackCurrent) <> nil) then
+      if (addr(self._timedReportCallbackTvoc) <> nil) then
         begin
-          self._timedReportCallbackCurrent(self, value);
+          self._timedReportCallbackTvoc(self, value);
         end
       else
         begin
@@ -438,31 +397,31 @@ implementation
     end;
 
 
-  function TYCurrent.nextCurrent(): TYCurrent;
+  function TYTvoc.nextTvoc(): TYTvoc;
     var
       hwid: string;
     begin
       if YISERR(_nextFunction(hwid)) then
         begin
-          nextCurrent := nil;
+          nextTvoc := nil;
           exit;
         end;
       if hwid = '' then
         begin
-          nextCurrent := nil;
+          nextTvoc := nil;
           exit;
         end;
-      nextCurrent := TYCurrent.FindCurrent(hwid);
+      nextTvoc := TYTvoc.FindTvoc(hwid);
     end;
 
-  class function TYCurrent.FirstCurrent(): TYCurrent;
+  class function TYTvoc.FirstTvoc(): TYTvoc;
     var
       v_fundescr      : YFUN_DESCR;
       dev             : YDEV_DESCR;
       neededsize, err : integer;
       serial, funcId, funcName, funcVal, errmsg : string;
     begin
-      err := yapiGetFunctionsByClass('Current', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
+      err := yapiGetFunctionsByClass('Tvoc', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
       if (YISERR(err) or (neededsize = 0)) then
         begin
           result := nil;
@@ -473,35 +432,35 @@ implementation
           result := nil;
           exit;
         end;
-     result := TYCurrent.FindCurrent(serial+'.'+funcId);
+     result := TYTvoc.FindTvoc(serial+'.'+funcId);
     end;
 
-//--- (end of YCurrent implementation)
+//--- (end of YTvoc implementation)
 
-//--- (YCurrent functions)
+//--- (YTvoc functions)
 
-  function yFindCurrent(func:string): TYCurrent;
+  function yFindTvoc(func:string): TYTvoc;
     begin
-      result := TYCurrent.FindCurrent(func);
+      result := TYTvoc.FindTvoc(func);
     end;
 
-  function yFirstCurrent(): TYCurrent;
+  function yFirstTvoc(): TYTvoc;
     begin
-      result := TYCurrent.FirstCurrent();
+      result := TYTvoc.FirstTvoc();
     end;
 
-  procedure _CurrentCleanup();
+  procedure _TvocCleanup();
     begin
     end;
 
-//--- (end of YCurrent functions)
+//--- (end of YTvoc functions)
 
 initialization
-  //--- (YCurrent initialization)
-  //--- (end of YCurrent initialization)
+  //--- (YTvoc initialization)
+  //--- (end of YTvoc initialization)
 
 finalization
-  //--- (YCurrent cleanup)
-  _CurrentCleanup();
-  //--- (end of YCurrent cleanup)
+  //--- (YTvoc cleanup)
+  _TvocCleanup();
+  //--- (end of YTvoc cleanup)
 end.

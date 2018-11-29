@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 32348 2018-09-25 13:28:40Z seb $
+ * $Id: yocto_cellular.pas 32903 2018-11-02 10:14:32Z seb $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -813,6 +813,9 @@ type
     /// <summary>
     ///   Continues the enumeration of cellular interfaces started using <c>yFirstCellular()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned cellular interfaces order.
+    ///   If you want to find a specific a cellular interface, use <c>Cellular.findCellular()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>

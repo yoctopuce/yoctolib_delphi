@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_compass.pas 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_compass.pas 32903 2018-11-02 10:14:32Z seb $
  *
  *  Implements yFindCompass(), the high-level API for Compass functions
  *
@@ -260,6 +260,9 @@ type
     /// <summary>
     ///   Continues the enumeration of compasses started using <c>yFirstCompass()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned compasses order.
+    ///   If you want to find a specific a compass, use <c>Compass.findCompass()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 32348 2018-09-25 13:28:40Z seb $
+ * $Id: yocto_wireless.pas 32903 2018-11-02 10:14:32Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -474,6 +474,9 @@ public
     /// <summary>
     ///   Continues the enumeration of wireless lan interfaces started using <c>yFirstWireless()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned wireless lan interfaces order.
+    ///   If you want to find a specific a wireless lan interface, use <c>Wireless.findWireless()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>

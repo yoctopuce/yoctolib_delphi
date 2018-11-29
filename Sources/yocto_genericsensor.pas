@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_genericsensor.pas 32610 2018-10-10 06:52:20Z seb $
+ *  $Id: yocto_genericsensor.pas 33114 2018-11-09 21:58:19Z mvuilleu $
  *
  *  Implements yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -56,6 +56,7 @@ const Y_SIGNALSAMPLING_HIGH_RATE = 0;
 const Y_SIGNALSAMPLING_HIGH_RATE_FILTERED = 1;
 const Y_SIGNALSAMPLING_LOW_NOISE = 2;
 const Y_SIGNALSAMPLING_LOW_NOISE_FILTERED = 3;
+const Y_SIGNALSAMPLING_HIGHEST_RATE = 4;
 const Y_SIGNALSAMPLING_INVALID = -1;
 
 
@@ -300,8 +301,8 @@ type
     /// </summary>
     /// <returns>
     ///   a value among <c>Y_SIGNALSAMPLING_HIGH_RATE</c>, <c>Y_SIGNALSAMPLING_HIGH_RATE_FILTERED</c>,
-    ///   <c>Y_SIGNALSAMPLING_LOW_NOISE</c> and <c>Y_SIGNALSAMPLING_LOW_NOISE_FILTERED</c> corresponding to
-    ///   the electric signal sampling method to use
+    ///   <c>Y_SIGNALSAMPLING_LOW_NOISE</c>, <c>Y_SIGNALSAMPLING_LOW_NOISE_FILTERED</c> and
+    ///   <c>Y_SIGNALSAMPLING_HIGHEST_RATE</c> corresponding to the electric signal sampling method to use
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_SIGNALSAMPLING_INVALID</c>.
@@ -324,8 +325,8 @@ type
     /// </summary>
     /// <param name="newval">
     ///   a value among <c>Y_SIGNALSAMPLING_HIGH_RATE</c>, <c>Y_SIGNALSAMPLING_HIGH_RATE_FILTERED</c>,
-    ///   <c>Y_SIGNALSAMPLING_LOW_NOISE</c> and <c>Y_SIGNALSAMPLING_LOW_NOISE_FILTERED</c> corresponding to
-    ///   the electric signal sampling method to use
+    ///   <c>Y_SIGNALSAMPLING_LOW_NOISE</c>, <c>Y_SIGNALSAMPLING_LOW_NOISE_FILTERED</c> and
+    ///   <c>Y_SIGNALSAMPLING_HIGHEST_RATE</c> corresponding to the electric signal sampling method to use
     /// </param>
     /// <para>
     /// </para>
@@ -456,6 +457,9 @@ type
     /// <summary>
     ///   Continues the enumeration of generic sensors started using <c>yFirstGenericSensor()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned generic sensors order.
+    ///   If you want to find a specific a generic sensor, use <c>GenericSensor.findGenericSensor()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 32348 2018-09-25 13:28:40Z seb $
+ * $Id: yocto_files.pas 32903 2018-11-02 10:14:32Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -362,6 +362,9 @@ public
     /// <summary>
     ///   Continues the enumeration of filesystems started using <c>yFirstFiles()</c>.
     /// <para>
+    ///   Caution: You can't make any assumption about the returned filesystems order.
+    ///   If you want to find a specific a filesystem, use <c>Files.findFiles()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>
