@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 33400 2018-11-27 07:58:29Z seb $
+ * $Id: yocto_api.pas 33508 2018-12-05 15:01:14Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -100,6 +100,10 @@ const
   YAPI_INVALID_INT        = longint($07FFFFFFF);
   YAPI_INVALID_UINT       = longint(-1);
   YAPI_INVALID_LONG       = longword($07FFFFFFFFFFFFFFF);
+  InfinityAndBeyond       =  1.0 / 0.0;
+  YAPI_MAX_DOUBLE         = +InfinityAndBeyond;
+  YAPI_MIN_DOUBLE         = -InfinityAndBeyond;
+
 
   Y_HARDWAREID_INVALID   =  YAPI_INVALID_STRING;
   Y_FUNCTIONID_INVALID   =  YAPI_INVALID_STRING;
@@ -114,7 +118,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '33423';
+  YOCTO_API_BUILD_NO        = '33576';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -3392,14 +3396,18 @@ end;
     _hardwareId               : string;
     _functionId               : string;
     _unit                     : string;
-    _startTime                : double;
-    _endTime                  : double;
+    _startTimeMs              : double;
+    _endTimeMs                : double;
     _progress                 : LongInt;
     _calib                    : TLongIntArray;
     _streams                  : TYDataStreamArray;
     _summary                  : TYMeasure;
     _preview                  : TYMeasureArray;
     _measures                 : TYMeasureArray;
+    _summaryMinVal            : double;
+    _summaryMaxVal            : double;
+    _summaryTotalAvg          : double;
+    _summaryTotalTime         : double;
 
     //--- (end of generated code: YDataSet declaration)
 
@@ -3416,6 +3424,8 @@ end;
 
   //--- (generated code: YDataSet accessors declaration)
     function _get_calibration():TLongIntArray; overload; virtual;
+
+    function loadSummary(data: TByteArray):LongInt; overload; virtual;
 
     function processMore(progress: LongInt; data: TByteArray):LongInt; overload; virtual;
 
@@ -6712,9 +6722,6 @@ var
 
  {$endif}
 
-
-const
-  InfinityAndBeyond =  1.0 / 0.0;
 
   // internal time convertions function (delphi 5 does not have dateutils unit)
   function _UNIXTimeToDateTime(UnixTime: LongWord): TDateTime;
@@ -12055,8 +12062,8 @@ var
       self._parent     := parent;
       self._functionId := functionId;
       self._unit       := func_unit;
-      self._startTime  := startTime;
-      self._endTime    := endTime;
+      self._startTimeMs:= startTime *1000;
+      self._endTimeMS  := endTime * 1000;
       self._summary    := TYMeasure.create(0, 0, 0, 0, 0);
       self._progress   := -1;
     end;
@@ -12064,8 +12071,8 @@ var
   constructor TYDataSet.Create(parent:TYFunction);
     begin
       self._parent := parent;
-      self._startTime := 0;
-      self._endTime := 0;
+      self._startTimeMs := 0;
+      self._endTimeMs := 0;
       self._summary := TYMeasure.create(0, 0, 0, 0, 0);
     end;
 
@@ -12087,10 +12094,8 @@ var
       p : TJsonParser;
       node, arr : PJSONRECORD;
       stream : TYDataStream;
-      summaryMinVal, summaryMaxVal, summaryTotalTime, summaryTotalAvg: double;
       i : integer;
-      endTime, startTime, streamEndTime, streamStartTime: double;
-      rec :  TYMeasure;
+      streamEndTime, streamStartTime: double;
     begin
       if not(YAPI_ExceptionsDisabled) then  p := TJsonParser.create(data, false)
       else
@@ -12103,13 +12108,6 @@ var
             exit;
           end;
       end;
-
-      startTime := $7fffffff;
-      endTime := 0;
-      summaryMinVal := +InfinityAndBeyond;
-      summaryMaxVal := -InfinityAndBeyond;
-      summaryTotalTime := 0;
-      summaryTotalAvg := 0;
       node := p.GetChildNode(nil, 'id');
       self._functionId := string(node.svalue);
       node := p.GetChildNode(nil, 'unit');
@@ -12132,14 +12130,14 @@ var
       for i := 0 to arr.itemcount-1 do
         begin
           stream := _parent._findDataStream(self, string(arr.items[i].svalue));
-          streamStartTime := stream.get_realStartTimeUTC();
-          streamEndTime := streamStartTime + stream.get_realDuration();
-          if (self._startTime > 0) and (streamEndTime <= self._startTime) then
+          streamStartTime := round(stream.get_realStartTimeUTC() * 1000);
+          streamEndTime := streamStartTime + round(stream.get_realDuration() * 1000);
+          if (self._startTimeMs > 0) and (streamEndTime <= self._startTimeMs) then
             begin
               // self stream is too early, drop it
             end
           else
-          if (self._endTime > 0) and (streamStartTime >= self._endTime) then
+          if (self._endTimeMs > 0) and (streamStartTime >= self._endTimeMs) then
             begin
               // self stream is too late, drop it
             end
@@ -12147,54 +12145,7 @@ var
             begin
               SetLength(self._streams, length(self._streams) + 1);
               self._streams[length(self._streams)-1] := stream;
-              if startTime > streamStartTime then
-                begin
-                  startTime := streamStartTime;
-                end;
-              if endTime < streamEndTime then
-                begin
-                  endTime := streamEndTime;
-                end;
-              if stream.isClosed() and (streamStartTime >= self._startTime) and
-                 ( (self._endTime = 0) or (streamEndTime <= self._endTime)) then
-                begin
-                  if summaryMinVal > stream.get_minValue() then
-                    begin
-                      summaryMinVal := stream.get_minValue();
-                    end;
-                  if summaryMaxVal < stream.get_maxValue() then
-                    begin
-                      summaryMaxVal := stream.get_maxValue();
-                    end;
-                  summaryTotalAvg := summaryTotalAvg + (stream.get_averageValue() * stream.get_realDuration());
-                  summaryTotalTime := summaryTotalTime + stream.get_realDuration();
-                  rec := TYMeasure.create(streamStartTime,
-                                          streamEndTime,
-                                          stream.get_minValue(),
-                                          stream.get_averageValue(),
-                                          stream.get_maxValue());
-                  SetLength(self._preview, length(self._preview) + 1);
-                  self._preview[length(self._preview)-1] := rec;
-                end;
             end;
-        end;
-      if (length(self._streams)>0)  and (summaryTotalTime>0) then
-        begin
-          // update time boundaries with actual data
-          if self._startTime < startTime then
-            begin
-              self._startTime := startTime;
-            end;
-          if (self._endTime = 0) or (self._endTime > endTime) then
-            begin
-              self._endTime := endTime;
-            end;
-          self._summary.free();
-          self._summary := TYMeasure.create(_startTime,
-                                            _endTime,
-                                            summaryMinVal,
-                                            summaryTotalAvg / summaryTotalTime,
-                                            summaryMaxVal);
         end;
       self._progress := 0;
       p.free();
@@ -12212,11 +12163,223 @@ var
     end;
 
 
+  function TYDataSet.loadSummary(data: TByteArray):LongInt;
+    var
+      dataRows : TDoubleArrayArray;
+      tim : double;
+      mitv : double;
+      itv : double;
+      fitv : double;
+      end_ : double;
+      nCols : LongInt;
+      minCol : LongInt;
+      avgCol : LongInt;
+      maxCol : LongInt;
+      res : LongInt;
+      m_pos : LongInt;
+      previewTotalTime : double;
+      previewTotalAvg : double;
+      previewMinVal : double;
+      previewMaxVal : double;
+      previewAvgVal : double;
+      previewStartMs : double;
+      previewStopMs : double;
+      previewDuration : double;
+      streamStartTimeMs : double;
+      streamDuration : double;
+      streamEndTimeMs : double;
+      minVal : double;
+      avgVal : double;
+      maxVal : double;
+      summaryStartMs : double;
+      summaryStopMs : double;
+      summaryTotalTime : double;
+      summaryTotalAvg : double;
+      summaryMinVal : double;
+      summaryMaxVal : double;
+      url : string;
+      strdata : string;
+      measure_data : TDoubleArray;
+      preview_pos : LongInt;
+      i_i : LongInt;
+    begin
+      if self._progress < 0 then
+        begin
+          strdata := _ByteToString(data);
+          if (strdata = '{}') then
+            begin
+              self._parent._throw(YAPI_VERSION_MISMATCH, 'device firmware is too old');
+              result := YAPI_VERSION_MISMATCH;
+              exit;
+            end;
+          res := self._parse(strdata);
+          if res < 0 then
+            begin
+              result := res;
+              exit;
+            end;
+        end;
+      summaryTotalTime := 0;
+      summaryTotalAvg := 0;
+      summaryMinVal := YAPI_MAX_DOUBLE;
+      summaryMaxVal := YAPI_MIN_DOUBLE;
+      summaryStartMs := YAPI_MAX_DOUBLE;
+      summaryStopMs := YAPI_MIN_DOUBLE;
+      preview_pos := length(self._preview);
+      SetLength(self._preview, preview_pos+length(self._streams));
+      // Parse comlete streams
+      for i_i:=0 to length( self._streams)-1 do
+        begin
+          streamStartTimeMs := round( self._streams[i_i].get_realStartTimeUTC() *1000);
+          streamDuration :=  self._streams[i_i].get_realDuration() ;
+          streamEndTimeMs := streamStartTimeMs + round(streamDuration * 1000);
+          if (streamStartTimeMs >= self._startTimeMs) and((self._endTimeMs = 0) or(streamEndTimeMs <= self._endTimeMs)) then
+            begin
+              // stream that are completely inside the dataset
+              previewMinVal :=  self._streams[i_i].get_minValue();
+              previewAvgVal :=  self._streams[i_i].get_averageValue();
+              previewMaxVal :=  self._streams[i_i].get_maxValue();
+              previewStartMs := streamStartTimeMs;
+              previewStopMs := streamEndTimeMs;
+              previewDuration := streamDuration;
+            end
+          else
+            begin
+              // stream that are partially in the dataset
+              // we need to parse data to filter value outide the dataset
+              url :=  self._streams[i_i]._get_url();
+              data := self._parent._download(url);
+              self._streams[i_i]._parseStream(data);
+              dataRows :=  self._streams[i_i].get_dataRows();
+              if length(dataRows) = 0 then
+                begin
+                  result := self.get_progress;
+                  exit;
+                end;
+              tim := streamStartTimeMs;
+              fitv := round( self._streams[i_i].get_firstDataSamplesInterval() * 1000);
+              itv := round( self._streams[i_i].get_dataSamplesInterval() * 1000);
+              nCols := length(dataRows[0]);
+              minCol := 0;
+              if nCols > 2 then
+                begin
+                  avgCol := 1;
+                end
+              else
+                begin
+                  avgCol := 0;
+                end;
+              if nCols > 2 then
+                begin
+                  maxCol := 2;
+                end
+              else
+                begin
+                  maxCol := 0;
+                end;
+              previewTotalTime := 0;
+              previewTotalAvg := 0;
+              previewStartMs := streamEndTimeMs;
+              previewStopMs := streamStartTimeMs;
+              previewMinVal := YAPI_MAX_DOUBLE;
+              previewMaxVal := YAPI_MIN_DOUBLE;
+              m_pos := 0;
+              while m_pos < length(dataRows) do
+                begin
+                  measure_data  := dataRows[m_pos];
+                  if m_pos = 0 then
+                    begin
+                      mitv := fitv;
+                    end
+                  else
+                    begin
+                      mitv := itv;
+                    end;
+                  end_ := tim + mitv;
+                  if (end_ > self._startTimeMs) and((self._endTimeMs = 0) or(tim < self._endTimeMs)) then
+                    begin
+                      minVal := measure_data[minCol];
+                      avgVal := measure_data[avgCol];
+                      maxVal := measure_data[maxCol];
+                      if previewStartMs > tim then
+                        begin
+                          previewStartMs := tim;
+                        end;
+                      if previewStopMs < end_ then
+                        begin
+                          previewStopMs := end_;
+                        end;
+                      if previewMinVal > minVal then
+                        begin
+                          previewMinVal := minVal;
+                        end;
+                      if previewMaxVal < maxVal then
+                        begin
+                          previewMaxVal := maxVal;
+                        end;
+                      previewTotalAvg := previewTotalAvg + (avgVal * mitv);
+                      previewTotalTime := previewTotalTime + mitv;
+                    end;
+                  tim := end_;
+                  m_pos := m_pos + 1;
+                end;
+              if previewTotalTime > 0 then
+                begin
+                  previewAvgVal := previewTotalAvg / previewTotalTime;
+                  previewDuration := (previewStopMs - previewStartMs) / 1000.0;
+                end
+              else
+                begin
+                  previewAvgVal := 0.0;
+                  previewDuration := 0.0;
+                end;
+            end;
+          self._preview[preview_pos] := TYMeasure.create(previewStartMs / 1000.0, previewStopMs / 1000.0, previewMinVal, previewAvgVal, previewMaxVal);
+          inc(preview_pos);
+          if summaryMinVal > previewMinVal then
+            begin
+              summaryMinVal := previewMinVal;
+            end;
+          if summaryMaxVal < previewMaxVal then
+            begin
+              summaryMaxVal := previewMaxVal;
+            end;
+          if summaryStartMs > previewStartMs then
+            begin
+              summaryStartMs := previewStartMs;
+            end;
+          if summaryStopMs < previewStopMs then
+            begin
+              summaryStopMs := previewStopMs;
+            end;
+          summaryTotalAvg := summaryTotalAvg + (previewAvgVal * previewDuration);
+          summaryTotalTime := summaryTotalTime + previewDuration;
+        end;
+      if (self._startTimeMs = 0) or(self._startTimeMs > summaryStartMs) then
+        begin
+          self._startTimeMs := summaryStartMs;
+        end;
+      if (self._endTimeMs = 0) or(self._endTimeMs < summaryStopMs) then
+        begin
+          self._endTimeMs := summaryStopMs;
+        end;
+      if summaryTotalTime > 0 then
+        begin
+          self._summary :=  TYMeasure.create(summaryStartMs / 1000.0, summaryStopMs / 1000.0, summaryMinVal, summaryTotalAvg / summaryTotalTime, summaryMaxVal);
+        end
+      else
+        begin
+          self._summary :=  TYMeasure.create(0.0, 0.0, YAPI_INVALID_DOUBLE, YAPI_INVALID_DOUBLE, YAPI_INVALID_DOUBLE);
+        end;
+      result := self.get_progress;
+      exit;
+    end;
+
+
   function TYDataSet.processMore(progress: LongInt; data: TByteArray):LongInt;
     var
       stream : TYDataStream;
       dataRows : TDoubleArrayArray;
-      strdata : string;
       tim : double;
       itv : double;
       fitv : double;
@@ -12236,14 +12399,7 @@ var
         end;
       if self._progress < 0 then
         begin
-          strdata := _ByteToString(data);
-          if (strdata = '{}') then
-            begin
-              self._parent._throw(YAPI_VERSION_MISMATCH, 'device firmware is too old');
-              result := YAPI_VERSION_MISMATCH;
-              exit;
-            end;
-          result := self._parse(strdata);
+          result := self.loadSummary(data);
           exit;
         end;
       stream := self._streams[self._progress];
@@ -12255,9 +12411,9 @@ var
           result := self.get_progress;
           exit;
         end;
-      tim := stream.get_realStartTimeUTC();
-      fitv := stream.get_firstDataSamplesInterval();
-      itv := stream.get_dataSamplesInterval();
+      tim := round(stream.get_realStartTimeUTC() * 1000);
+      fitv := round(stream.get_firstDataSamplesInterval() * 1000);
+      itv := round(stream.get_dataSamplesInterval() * 1000);
       if fitv = 0 then
         begin
           fitv := itv;
@@ -12298,9 +12454,9 @@ var
             begin
               end_ := tim + itv;
             end;
-          if (tim >= self._startTime) and((self._endTime = 0) or(end_ <= self._endTime)) then
+          if (end_ > self._startTimeMs) and((self._endTimeMs = 0) or(tim < self._endTimeMs)) then
             begin
-              self._measures[measures_pos] := TYMeasure.create(tim, end_, dataRows[i_i][minCol], dataRows[i_i][avgCol], dataRows[i_i][maxCol]);
+              self._measures[measures_pos] := TYMeasure.create(tim / 1000, end_ / 1000, dataRows[i_i][minCol], dataRows[i_i][avgCol], dataRows[i_i][maxCol]);
               inc(measures_pos);
             end;
           tim := end_;
@@ -12357,7 +12513,7 @@ var
 
   function TYDataSet.imm_get_startTimeUTC():int64;
     begin
-      result := floor(self._startTime);
+      result := floor((self._startTimeMs / 1000.0));
       exit;
     end;
 
@@ -12371,7 +12527,7 @@ var
 
   function TYDataSet.imm_get_endTimeUTC():int64;
     begin
-      result := floor(round(self._endTime));
+      result := floor(round(self._endTimeMs / 1000.0));
       exit;
     end;
 
@@ -12402,11 +12558,11 @@ var
       if self._progress < 0 then
         begin
           url := 'logger.json?id='+self._functionId;
-          if self._startTime <> 0 then
+          if self._startTimeMs <> 0 then
             begin
               url := ''+url+'&from='+inttostr(self.imm_get_startTimeUTC);
             end;
-          if self._endTime <> 0 then
+          if self._endTimeMs <> 0 then
             begin
               url := ''+url+'&to='+inttostr(self.imm_get_endTimeUTC+1);
             end;
@@ -12450,7 +12606,7 @@ var
 
   function TYDataSet.get_measuresAt(measure: TYMeasure):TYMeasureArray;
     var
-      startUtc : double;
+      startUtcMs : double;
       stream : TYDataStream;
       dataRows : TDoubleArrayArray;
       measures : TYMeasureArray;
@@ -12464,11 +12620,11 @@ var
       i_i : LongInt;
       measures_pos : LongInt;
     begin
-      startUtc := measure.get_startTimeUTC;
+      startUtcMs := measure.get_startTimeUTC * 1000;
       stream := nil;
       for i_i:=0 to length(self._streams)-1 do
         begin
-          if self._streams[i_i].get_realStartTimeUTC() = startUtc then
+          if round(self._streams[i_i].get_realStartTimeUTC() *1000) = startUtcMs then
             begin
               stream := self._streams[i_i];
             end;
@@ -12484,8 +12640,8 @@ var
           result := measures;
           exit;
         end;
-      tim := stream.get_realStartTimeUTC();
-      itv := stream.get_dataSamplesInterval();
+      tim := round(stream.get_realStartTimeUTC() * 1000);
+      itv := round(stream.get_dataSamplesInterval() * 1000);
       if tim < itv then
         begin
           tim := itv;
@@ -12513,9 +12669,9 @@ var
       for i_i:=0 to length(dataRows)-1 do
         begin
           end_ := tim + itv;
-          if (tim >= self._startTime) and((self._endTime = 0) or(end_ <= self._endTime)) then
+          if (end_ > self._startTimeMs) and((self._endTimeMs = 0) or(tim < self._endTimeMs)) then
             begin
-              measures[measures_pos] := TYMeasure.create(tim, end_, dataRows[i_i][minCol], dataRows[i_i][avgCol], dataRows[i_i][maxCol]);
+              measures[measures_pos] := TYMeasure.create(tim / 1000.0, end_ / 1000.0, dataRows[i_i][minCol], dataRows[i_i][avgCol], dataRows[i_i][maxCol]);
               inc(measures_pos);
             end;
           tim := end_;
