@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 33508 2018-12-05 15:01:14Z seb $
+ * $Id: yocto_api.pas 33601 2018-12-09 14:30:31Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -118,7 +118,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '33576';
+  YOCTO_API_BUILD_NO        = '33636';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -303,6 +303,7 @@ const Y_AUTOSTART_INVALID = -1;
 const Y_BEACONDRIVEN_OFF = 0;
 const Y_BEACONDRIVEN_ON = 1;
 const Y_BEACONDRIVEN_INVALID = -1;
+const Y_USAGE_INVALID                 = YAPI_INVALID_UINT;
 const Y_CLEARHISTORY_FALSE = 0;
 const Y_CLEARHISTORY_TRUE = 1;
 const Y_CLEARHISTORY_INVALID = -1;
@@ -3787,6 +3788,7 @@ end;
     _recording                : Integer;
     _autoStart                : Integer;
     _beaconDriven             : Integer;
+    _usage                    : LongInt;
     _clearHistory             : Integer;
     _valueCallbackDataLogger  : TYDataLoggerValueCallback;
     // Function-specific method for reading JSON output and caching result
@@ -4015,6 +4017,23 @@ end;
     /// </para>
     ///-
     function set_beaconDriven(newval:Integer):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the percentage of datalogger memory in use.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the percentage of datalogger memory in use
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_USAGE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_usage():LongInt;
 
     function get_clearHistory():Integer;
 
@@ -12707,6 +12726,7 @@ const
       _recording := Y_RECORDING_INVALID;
       _autoStart := Y_AUTOSTART_INVALID;
       _beaconDriven := Y_BEACONDRIVEN_INVALID;
+      _usage := Y_USAGE_INVALID;
       _clearHistory := Y_CLEARHISTORY_INVALID;
       _valueCallbackDataLogger := nil;
       //--- (end of generated code: YDataLogger accessors initialization)
@@ -12863,6 +12883,12 @@ const
          result := 1;
          exit;
          end;
+      if (member^.name = 'usage') then
+        begin
+          _usage := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
       if (member^.name = 'clearHistory') then
         begin
           _clearHistory := member^.ivalue;
@@ -12994,6 +13020,24 @@ const
       if(newval>0) then rest_val := '1' else rest_val := '0';
       result := _setAttr('beaconDriven',rest_val);
     end;
+
+  function TYDataLogger.get_usage():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_USAGE_INVALID;
+              exit;
+            end;
+        end;
+      res := self._usage;
+      result := res;
+      exit;
+    end;
+
 
   function TYDataLogger.get_clearHistory():Integer;
     var
