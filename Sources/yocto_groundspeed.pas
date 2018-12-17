@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_groundspeed.pas 32903 2018-11-02 10:14:32Z seb $
+ *  $Id: yocto_groundspeed.pas 33711 2018-12-14 14:19:13Z seb $
  *
  *  Implements yFindGroundSpeed(), the high-level API for GroundSpeed functions
  *
@@ -64,7 +64,7 @@ type
   ///   TYGroundSpeed Class: GroundSpeed function interface
   /// <para>
   ///   The Yoctopuce class YGroundSpeed allows you to read the ground speed from Yoctopuce
-  ///   geolocalization sensors. It inherits from the YSensor class the core functions to
+  ///   geolocation sensors. It inherits from the YSensor class the core functions to
   ///   read measurements, register callback functions, access the autonomous
   ///   datalogger.
   /// </para>

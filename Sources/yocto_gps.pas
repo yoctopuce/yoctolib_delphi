@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_gps.pas 32903 2018-11-02 10:14:32Z seb $
+ *  $Id: yocto_gps.pas 33711 2018-12-14 14:19:13Z seb $
  *
  *  Implements yFindGps(), the high-level API for Gps functions
  *
@@ -81,10 +81,10 @@ type
   /// <summary>
   ///   TYGps Class: GPS function interface
   /// <para>
-  ///   The Gps function allows you to extract positionning
+  ///   The GPS function allows you to extract positioning
   ///   data from the GPS device. This class can provides
-  ///   complete positionning information: However, if you
-  ///   whish to define callbacks on position changes, you
+  ///   complete positioning information: However, if you
+  ///   wish to define callbacks on position changes, you
   ///   should use the YLatitude et YLongitude classes.
   /// </para>
   /// </summary>

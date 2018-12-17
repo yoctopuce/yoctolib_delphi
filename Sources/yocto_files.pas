@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 32903 2018-11-02 10:14:32Z seb $
+ * $Id: yocto_files.pas 33711 2018-12-14 14:19:13Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -263,7 +263,7 @@ public
     /// </summary>
     /// <param name="pattern">
     ///   an optional filter pattern, using star and question marks
-    ///   as wildcards. When an empty pattern is provided, all file records
+    ///   as wild cards. When an empty pattern is provided, all file records
     ///   are returned.
     /// </param>
     /// <returns>
@@ -286,7 +286,7 @@ public
     ///   the file name to test.
     /// </param>
     /// <returns>
-    ///   a true if the file existe, false ortherwise.
+    ///   a true if the file exist, false otherwise.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_motor.pas 32903 2018-11-02 10:14:32Z seb $
+ *  $Id: yocto_motor.pas 33711 2018-12-14 14:19:13Z seb $
  *
  *  Implements yFindMotor(), the high-level API for Motor functions
  *
@@ -122,7 +122,7 @@ type
     ///   BACKWD when the controller is driving the motor backward;
     ///   BRAKE  when the controller is braking;
     ///   LOVOLT when the controller has detected a low voltage condition;
-    ///   HICURR when the controller has detected an overcurrent condition;
+    ///   HICURR when the controller has detected an over current condition;
     ///   HIHEAT when the controller has detected an overheat condition;
     ///   FAILSF when the controller switched on the failsafe security.
     /// </para>
@@ -549,7 +549,7 @@ type
     ///   When the motor is running and the failsafe feature
     ///   is active, this function should be called periodically to prove that the control process
     ///   is running properly. Otherwise, the motor is automatically stopped after the specified
-    ///   timeout. Calling a motor <i>set</i> function implicitely rearms the failsafe timer.
+    ///   timeout. Calling a motor <i>set</i> function implicitly rearms the failsafe timer.
     /// </para>
     /// </summary>
     ///-
@@ -559,7 +559,7 @@ type
     /// <summary>
     ///   Reset the controller state to IDLE.
     /// <para>
-    ///   This function must be invoked explicitely
+    ///   This function must be invoked explicitly
     ///   after any error condition is signaled.
     /// </para>
     /// </summary>
@@ -568,7 +568,7 @@ type
 
     ////
     /// <summary>
-    ///   Changes progressively the power sent to the moteur for a specific duration.
+    ///   Changes progressively the power sent to the motor for a specific duration.
     /// <para>
     /// </para>
     /// </summary>

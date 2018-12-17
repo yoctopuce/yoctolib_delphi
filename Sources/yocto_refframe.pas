@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_refframe.pas 32903 2018-11-02 10:14:32Z seb $
+ *  $Id: yocto_refframe.pas 33711 2018-12-14 14:19:13Z seb $
  *
  *  Implements yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -414,7 +414,7 @@ type
     ///   The calibration procedure is completed when the method
     ///   <c>get_3DCalibrationProgress</c> returns 100. At this point,
     ///   the computed calibration parameters can be applied using method
-    ///   <c>save3DCalibration</c>. The calibration process can be canceled
+    ///   <c>save3DCalibration</c>. The calibration process can be cancelled
     ///   at any time using method <c>cancel3DCalibration</c>.
     /// </para>
     /// <para>
@@ -1073,7 +1073,7 @@ implementation
           result := YAPI_SUCCESS;
           exit;
         end;
-      // make sure we leave at least 160ms between samples
+      // make sure we leave at least 160 ms between samples
       currTick :=  ((yGetTickCount) and ($07FFFFFFF));
       if ((currTick - self._calibPrevTick) and ($07FFFFFFF)) < 160 then
         begin

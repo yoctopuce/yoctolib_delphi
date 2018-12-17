@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_relay.pas 32903 2018-11-02 10:14:32Z seb $
+ *  $Id: yocto_relay.pas 33711 2018-12-14 14:19:13Z seb $
  *
  *  Implements yFindRelay(), the high-level API for Relay functions
  *
@@ -358,7 +358,7 @@ type
     /// </para>
     /// </summary>
     /// <param name="ms_duration">
-    ///   pulse duration, in millisecondes
+    ///   pulse duration, in milliseconds
     /// </param>
     /// <para>
     /// </para>
@@ -384,10 +384,10 @@ type
     /// </para>
     /// </summary>
     /// <param name="ms_delay">
-    ///   waiting time before the pulse, in millisecondes
+    ///   waiting time before the pulse, in milliseconds
     /// </param>
     /// <param name="ms_duration">
-    ///   pulse duration, in millisecondes
+    ///   pulse duration, in milliseconds
     /// </param>
     /// <para>
     /// </para>
@@ -858,7 +858,7 @@ implementation
   /// </para>
   /// </summary>
   /// <param name="ms_duration">
-  ///   pulse duration, in millisecondes
+  ///   pulse duration, in milliseconds
   /// </param>
   /// <para>
   /// </para>
@@ -912,10 +912,10 @@ implementation
   /// </para>
   /// </summary>
   /// <param name="ms_delay">
-  ///   waiting time before the pulse, in millisecondes
+  ///   waiting time before the pulse, in milliseconds
   /// </param>
   /// <param name="ms_duration">
-  ///   pulse duration, in millisecondes
+  ///   pulse duration, in milliseconds
   /// </param>
   /// <para>
   /// </para>

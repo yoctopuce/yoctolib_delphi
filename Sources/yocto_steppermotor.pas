@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_steppermotor.pas 32903 2018-11-02 10:14:32Z seb $
+ *  $Id: yocto_steppermotor.pas 33711 2018-12-14 14:19:13Z seb $
  *
  *  Implements yFindStepperMotor(), the high-level API for StepperMotor functions
  *
@@ -769,7 +769,7 @@ type
     /// <summary>
     ///   Move one step in the direction opposite the direction set when the most recent alert was raised.
     /// <para>
-    ///   The move occures even if the system is still in alert mode (end switch depressed). Caution.
+    ///   The move occurs even if the system is still in alert mode (end switch depressed). Caution.
     ///   use this function with great care as it may cause mechanical damages !
     /// </para>
     /// </summary>
@@ -784,12 +784,12 @@ type
     /// <summary>
     ///   Move one single step in the selected direction without regards to end switches.
     /// <para>
-    ///   The move occures even if the system is still in alert mode (end switch depressed). Caution.
+    ///   The move occurs even if the system is still in alert mode (end switch depressed). Caution.
     ///   use this function with great care as it may cause mechanical damages !
     /// </para>
     /// </summary>
     /// <param name="dir">
-    ///   Value +1 ou -1, according to the desired direction of the move
+    ///   Value +1 or -1, according to the desired direction of the move
     /// </param>
     /// <returns>
     ///   <c>YAPI_SUCCESS</c> if the call succeeds.

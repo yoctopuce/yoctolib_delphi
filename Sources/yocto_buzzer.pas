@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_buzzer.pas 32903 2018-11-02 10:14:32Z seb $
+ *  $Id: yocto_buzzer.pas 33711 2018-12-14 14:19:13Z seb $
  *
  *  Implements yFindBuzzer(), the high-level API for Buzzer functions
  *
@@ -457,7 +457,7 @@ type
     ///   pulse frequency, in hertz
     /// </param>
     /// <param name="duration">
-    ///   pulse duration in millseconds
+    ///   pulse duration in milliseconds
     /// </param>
     /// <returns>
     ///   <c>YAPI_SUCCESS</c> if the call succeeds.
@@ -478,7 +478,7 @@ type
     ///   frequency to reach, in hertz. A frequency under 25Hz stops the buzzer.
     /// </param>
     /// <param name="duration">
-    ///   pulse duration in millseconds
+    ///   pulse duration in milliseconds
     /// </param>
     /// <returns>
     ///   <c>YAPI_SUCCESS</c> if the call succeeds.
@@ -499,7 +499,7 @@ type
     ///   volume to reach in %
     /// </param>
     /// <param name="duration">
-    ///   change duration in millseconds
+    ///   change duration in milliseconds
     /// </param>
     /// <returns>
     ///   <c>YAPI_SUCCESS</c> if the call succeeds.

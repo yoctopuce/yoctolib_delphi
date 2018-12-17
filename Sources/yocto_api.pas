@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 33601 2018-12-09 14:30:31Z mvuilleu $
+ * $Id: yocto_api.pas 33711 2018-12-14 14:19:13Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -118,7 +118,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '33657';
+  YOCTO_API_BUILD_NO        = '33736';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -1211,14 +1211,14 @@ type
 
     ////
     /// <summary>
-    ///   Returns the luminosity of the  module informative leds (from 0 to 100).
+    ///   Returns the luminosity of the  module informative LEDs (from 0 to 100).
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the luminosity of the  module informative leds (from 0 to 100)
+    ///   an integer corresponding to the luminosity of the  module informative LEDs (from 0 to 100)
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_LUMINOSITY_INVALID</c>.
@@ -2210,7 +2210,7 @@ end;
     /// <para>
     ///   The frequency can be specified as samples per second,
     ///   as sample per minute (for instance "15/m") or in samples per
-    ///   hour (eg. "4/h"). To disable timed value notifications for this
+    ///   hour (e.g. "4/h"). To disable timed value notifications for this
     ///   function, use the value "OFF".
     /// </para>
     /// <para>
@@ -2499,13 +2499,13 @@ end;
     ///   the start of the desired measure time interval,
     ///   as a Unix timestamp, i.e. the number of seconds since
     ///   January 1, 1970 UTC. The special value 0 can be used
-    ///   to include any meaasure, without initial limit.
+    ///   to include any measure, without initial limit.
     /// </param>
     /// <param name="endTime">
     ///   the end of the desired measure time interval,
     ///   as a Unix timestamp, i.e. the number of seconds since
     ///   January 1, 1970 UTC. The special value 0 can be used
-    ///   to include any meaasure, without ending limit.
+    ///   to include any measure, without ending limit.
     /// </param>
     /// <returns>
     ///   an instance of YDataSet, providing access to historical
@@ -4500,7 +4500,7 @@ type
   /// </para>
   /// <para>
   ///   <b>usb</b>: When the <c>usb</c> keyword is used, the API will work with
-  ///   devices connected directly to the USB bus. Some programming languages such a Javascript,
+  ///   devices connected directly to the USB bus. Some programming languages such a JavaScript,
   ///   PHP, and Java don't provide direct access to USB hardware, so <c>usb</c> will
   ///   not work with these. In this case, use a VirtualHub or a networked YoctoHub (see below).
   /// </para>
@@ -10678,7 +10678,7 @@ var
                   exit;
                 end;
             end;
-          // New 32bit text format
+          // New 32 bits text format
           self._offset := 0;
           self._scale := 1000;
           maxpos := length(iCalib);
@@ -11069,7 +11069,7 @@ var
         begin
           startTime := endTime;
         end;
-      // 32bit timed report format
+      // 32 bits timed report format
       if length(report) <= 5 then
         begin
           // sub-second report, 1-4 bytes
@@ -12246,7 +12246,7 @@ var
       summaryStopMs := YAPI_MIN_DOUBLE;
       preview_pos := length(self._preview);
       SetLength(self._preview, preview_pos+length(self._streams));
-      // Parse comlete streams
+      // Parse complete streams
       for i_i:=0 to length( self._streams)-1 do
         begin
           streamStartTimeMs := round( self._streams[i_i].get_realStartTimeUTC() *1000);
@@ -12265,7 +12265,7 @@ var
           else
             begin
               // stream that are partially in the dataset
-              // we need to parse data to filter value outide the dataset
+              // we need to parse data to filter value outside the dataset
               url :=  self._streams[i_i]._get_url();
               data := self._parent._download(url);
               self._streams[i_i]._parseStream(data);

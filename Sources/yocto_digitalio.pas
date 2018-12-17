@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_digitalio.pas 33135 2018-11-12 15:32:32Z mvuilleu $
+ *  $Id: yocto_digitalio.pas 33722 2018-12-14 15:04:43Z seb $
  *
  *  Implements yFindDigitalIO(), the high-level API for DigitalIO functions
  *
@@ -76,7 +76,7 @@ type
   /// <para>
   ///   The Yoctopuce application programming interface allows you to switch the state of each
   ///   channel of the I/O port. You can switch all channels at once, or one by one. Most functions
-  ///   use a binary represention for channels where bit 0 matches channel #0 , bit 1 matches channel
+  ///   use a binary representation for channels where bit 0 matches channel #0 , bit 1 matches channel
   ///   #1 and so on.... If you are not familiar with numbers binary representation, you will find more
   ///   information here: en.wikipedia.org/wiki/Binary_number#Representation . The library
   ///   can also automatically generate short pulses of a determined duration. Electrical behavior
@@ -1130,13 +1130,13 @@ implementation
     begin
       if not(bitstate >= 0) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'invalid bitstate');
+          self._throw( YAPI_INVALID_ARGUMENT, 'invalid bit state');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
       if not(bitstate <= 1) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'invalid bitstate');
+          self._throw( YAPI_INVALID_ARGUMENT, 'invalid bit state');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
@@ -1195,13 +1195,13 @@ implementation
     begin
       if not(bitpolarity >= 0) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'invalid bitpolarity');
+          self._throw( YAPI_INVALID_ARGUMENT, 'invalid bit polarity');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
       if not(bitpolarity <= 1) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'invalid bitpolarity');
+          self._throw( YAPI_INVALID_ARGUMENT, 'invalid bit polarity');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;

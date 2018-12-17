@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.pas 32903 2018-11-02 10:14:32Z seb $
+ *  $Id: yocto_wakeupschedule.pas 33711 2018-12-14 14:19:13Z seb $
  *
  *  Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
@@ -139,14 +139,14 @@ type
 
     ////
     /// <summary>
-    ///   Returns the minutes in the 30-59 intervalof each hour scheduled for wake up.
+    ///   Returns the minutes in the 30-59 interval of each hour scheduled for wake up.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the minutes in the 30-59 intervalof each hour scheduled for wake up
+    ///   an integer corresponding to the minutes in the 30-59 interval of each hour scheduled for wake up
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_MINUTESB_INVALID</c>.
@@ -334,14 +334,14 @@ type
 
     ////
     /// <summary>
-    ///   Returns the date/time (seconds) of the next wake up occurence.
+    ///   Returns the date/time (seconds) of the next wake up occurrence.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the date/time (seconds) of the next wake up occurence
+    ///   an integer corresponding to the date/time (seconds) of the next wake up occurrence
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_NEXTOCCURENCE_INVALID</c>.

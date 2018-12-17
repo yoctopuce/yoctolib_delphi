@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_spiport.pas 32903 2018-11-02 10:14:32Z seb $
+ *  $Id: yocto_spiport.pas 33722 2018-12-14 15:04:43Z seb $
  *
  *  Implements yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -69,9 +69,9 @@ const Y_SPIMODE_INVALID               = YAPI_INVALID_STRING;
 const Y_SSPOLARITY_ACTIVE_LOW = 0;
 const Y_SSPOLARITY_ACTIVE_HIGH = 1;
 const Y_SSPOLARITY_INVALID = -1;
-const Y_SHITFTSAMPLING_OFF = 0;
-const Y_SHITFTSAMPLING_ON = 1;
-const Y_SHITFTSAMPLING_INVALID = -1;
+const Y_SHIFTSAMPLING_OFF = 0;
+const Y_SHIFTSAMPLING_ON = 1;
+const Y_SHIFTSAMPLING_INVALID = -1;
 
 
 //--- (end of YSpiPort definitions)
@@ -114,7 +114,7 @@ type
     _protocol                 : string;
     _spiMode                  : string;
     _ssPolarity               : Integer;
-    _shitftSampling           : Integer;
+    _shiftSampling            : Integer;
     _valueCallbackSpiPort     : TYSpiPortValueCallback;
     _rxptr                    : LongInt;
     _rxbuff                   : TByteArray;
@@ -508,14 +508,14 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_SHITFTSAMPLING_OFF</c> or <c>Y_SHITFTSAMPLING_ON</c>, according to true when the SDI
-    ///   line phase is shifted with regards to the SDO line
+    ///   either <c>Y_SHIFTSAMPLING_OFF</c> or <c>Y_SHIFTSAMPLING_ON</c>, according to true when the SDI line
+    ///   phase is shifted with regards to the SDO line
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SHITFTSAMPLING_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>Y_SHIFTSAMPLING_INVALID</c>.
     /// </para>
     ///-
-    function get_shitftSampling():Integer;
+    function get_shiftSampling():Integer;
 
     ////
     /// <summary>
@@ -529,7 +529,7 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_SHITFTSAMPLING_OFF</c> or <c>Y_SHITFTSAMPLING_ON</c>, according to the SDI line sampling shift
+    ///   either <c>Y_SHIFTSAMPLING_OFF</c> or <c>Y_SHIFTSAMPLING_ON</c>, according to the SDI line sampling shift
     /// </param>
     /// <para>
     /// </para>
@@ -540,7 +540,7 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function set_shitftSampling(newval:Integer):integer;
+    function set_shiftSampling(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -1146,7 +1146,7 @@ implementation
       _protocol := Y_PROTOCOL_INVALID;
       _spiMode := Y_SPIMODE_INVALID;
       _ssPolarity := Y_SSPOLARITY_INVALID;
-      _shitftSampling := Y_SHITFTSAMPLING_INVALID;
+      _shiftSampling := Y_SHIFTSAMPLING_INVALID;
       _valueCallbackSpiPort := nil;
       _rxptr := 0;
       _rxbuffptr := 0;
@@ -1241,9 +1241,9 @@ implementation
          result := 1;
          exit;
          end;
-      if (member^.name = 'shitftSampling') then
+      if (member^.name = 'shiftSampling') then
         begin
-          _shitftSampling := member^.ivalue;
+          _shiftSampling := member^.ivalue;
          result := 1;
          exit;
          end;
@@ -1541,7 +1541,7 @@ implementation
       result := _setAttr('ssPolarity',rest_val);
     end;
 
-  function TYSpiPort.get_shitftSampling():Integer;
+  function TYSpiPort.get_shiftSampling():Integer;
     var
       res : Integer;
     begin
@@ -1549,22 +1549,22 @@ implementation
         begin
           if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
-              result := Y_SHITFTSAMPLING_INVALID;
+              result := Y_SHIFTSAMPLING_INVALID;
               exit;
             end;
         end;
-      res := self._shitftSampling;
+      res := self._shiftSampling;
       result := res;
       exit;
     end;
 
 
-  function TYSpiPort.set_shitftSampling(newval:Integer):integer;
+  function TYSpiPort.set_shiftSampling(newval:Integer):integer;
     var
       rest_val: string;
     begin
       if(newval>0) then rest_val := '1' else rest_val := '0';
-      result := _setAttr('shitftSampling',rest_val);
+      result := _setAttr('shiftSampling',rest_val);
     end;
 
   class function TYSpiPort.FindSpiPort(func: string):TYSpiPort;

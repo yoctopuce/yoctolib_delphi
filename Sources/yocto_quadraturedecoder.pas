@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.pas 32903 2018-11-02 10:14:32Z seb $
+ *  $Id: yocto_quadraturedecoder.pas 33711 2018-12-14 14:19:13Z seb $
  *
  *  Implements yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
  *
@@ -95,7 +95,7 @@ type
     /// <summary>
     ///   Changes the current expected position of the quadrature decoder.
     /// <para>
-    ///   Invoking this function implicitely activates the quadrature decoder.
+    ///   Invoking this function implicitly activates the quadrature decoder.
     /// </para>
     /// <para>
     /// </para>

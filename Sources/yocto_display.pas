@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 32903 2018-11-02 10:14:32Z seb $
+ * $Id: yocto_display.pas 33711 2018-12-14 14:19:13Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -216,14 +216,14 @@ public
 
     ////
     /// <summary>
-    ///   Returns the luminosity of the  module informative leds (from 0 to 100).
+    ///   Returns the luminosity of the  module informative LEDs (from 0 to 100).
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the luminosity of the  module informative leds (from 0 to 100)
+    ///   an integer corresponding to the luminosity of the  module informative LEDs (from 0 to 100)
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_BRIGHTNESS_INVALID</c>.
@@ -674,7 +674,7 @@ public
     ///   The color and transparency of all the pixels from
     ///   the two layers are swapped. This method only affects the displayed content, but does
     ///   not change any property of the layer objects. In particular, the visibility of each
-    ///   layer stays unchanged. When used between onae hidden layer and a visible layer,
+    ///   layer stays unchanged. When used between one hidden layer and a visible layer,
     ///   this method makes it possible to easily implement double-buffering.
     ///   Note that layer 0 has no transparency support (it is always completely opaque).
     /// </para>
@@ -847,7 +847,7 @@ public
     ///   including text drawing.
     /// <para>
     ///   The gray level is provided as a number between
-    ///   0 (black) and 255 (white, or whichever the lighest color is).
+    ///   0 (black) and 255 (white, or whichever the lightest color is).
     ///   For monochrome displays (without gray levels), any value
     ///   lower than 128 is rendered as black, and any value equal
     ///   or above to 128 is non-black.
@@ -889,7 +889,7 @@ public
     ///   Enables or disables anti-aliasing for drawing oblique lines and circles.
     /// <para>
     ///   Anti-aliasing provides a smoother aspect when looked from far enough,
-    ///   but it can add fuzzyness when the display is looked from very close.
+    ///   but it can add fuzziness when the display is looked from very close.
     ///   At the end of the day, it is your personal choice.
     ///   Anti-aliasing is enabled by default on grayscale and color displays,
     ///   but you can disable it if you prefer. This setting has no effect
@@ -897,7 +897,7 @@ public
     /// </para>
     /// </summary>
     /// <param name="mode">
-    ///   <c>true</c> to enable antialiasing, <c>false</c> to
+    ///   <c>true</c> to enable anti-aliasing, <c>false</c> to
     ///   disable it.
     /// </param>
     /// <returns>
@@ -1274,7 +1274,7 @@ public
 
     ////
     /// <summary>
-    ///   Sets up the wrapping behaviour used by the <c>consoleOut</c> function.
+    ///   Sets up the wrapping behavior used by the <c>consoleOut</c> function.
     /// <para>
     /// </para>
     /// </summary>
@@ -1338,7 +1338,7 @@ public
     /// <summary>
     ///   Hides the layer.
     /// <para>
-    ///   The state of the layer is perserved but the layer is not displayed
+    ///   The state of the layer is preserved but the layer is not displayed
     ///   on the screen until the next call to <c>unhide()</c>. Hiding the layer can positively
     ///   affect the drawing speed, since it postpones the rendering until all operations are
     ///   completed (double-buffering).
