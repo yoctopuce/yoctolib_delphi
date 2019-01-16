@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 33711 2018-12-14 14:19:13Z seb $
+ * $Id: yocto_display.pas 33877 2018-12-26 12:19:48Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -1044,7 +1044,8 @@ public
     /// </para>
     /// </summary>
     /// <param name="fontname">
-    ///   the font file name
+    ///   the font file name, embedded fonts are 8x8.yfm, Small.yfm, Medium.yfm, Large.yfm (not available on
+    ///   Yocto-MiniDisplay).
     /// </param>
     /// <returns>
     ///   <c>YAPI_SUCCESS</c> if the call succeeds.

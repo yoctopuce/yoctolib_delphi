@@ -1,5 +1,4 @@
-Delphi v1.10.33736
+Delphi v1.10.34022
 
-- Fix some typos in error messages
-- Fix crash after 8192 YAPI.InitAPI et YAPI.Free
-- Improve error recovery with WebSocket connection
+- Add get_serialNumber() to YFunctions class
+- Fix crash on device unplug when multiples thread are still using the device.
