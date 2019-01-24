@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_powersupply.pas 32903 2018-11-02 10:14:32Z seb $
+ *  $Id: yocto_powersupply.pas 34115 2019-01-23 14:23:54Z seb $
  *
  *  Implements yFindPowerSupply(), the high-level API for PowerSupply functions
  *
@@ -519,7 +519,7 @@ type
 
     ////
     /// <summary>
-    ///   Performs a smooth transistion of output voltage.
+    ///   Performs a smooth transition of output voltage.
     /// <para>
     ///   Any explicit voltage
     ///   change cancels any ongoing transition process.

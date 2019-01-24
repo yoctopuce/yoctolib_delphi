@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_altitude.pas 32950 2018-11-05 17:15:46Z seb $
+ *  $Id: yocto_altitude.pas 34115 2019-01-23 14:23:54Z seb $
  *
  *  Implements yFindAltitude(), the high-level API for Altitude functions
  *
@@ -95,7 +95,7 @@ type
     /// <summary>
     ///   Changes the current estimated altitude.
     /// <para>
-    ///   This allows to compensate for
+    ///   This allows one to compensate for
     ///   ambient pressure variations and to work in relative mode.
     /// </para>
     /// <para>

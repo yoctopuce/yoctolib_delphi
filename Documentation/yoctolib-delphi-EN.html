@@ -6,7 +6,7 @@
 <style type="text/css">
 /*********************************************************************
  *
- * $Id: yoctolib-delphi-EN.html 34010 2019-01-15 18:19:02Z seb $
+ * $Id: yoctolib-delphi-EN.html 34119 2019-01-23 15:45:33Z seb $
  *
  * Searchable documentation browser for Yoctopuce Library
  *
@@ -257,8 +257,6 @@ var minusimage="data:image/gif;base64,R0lGODlhEAAQAIAAAEJCQv///yH5BAAAAP8ALAAAAA
 
 var marginSize=250;
 var resizeCallBacks= new Array();
-var SVN_Id = '$Id: yoctolib-delphi-EN.html 34010 2019-01-15 18:19:02Z seb $';
-var Version = (SVN_Id.split(' '))[3];
 var doc = new Array();
 
 //--- (generated code: YAPI)
@@ -311,7 +309,7 @@ var ReturnLabel='Returns :';
 var AbbrevHint='The API features two syntaxes : one is purely object oriented, the other is more compact.';
 var NotFound='No match found';
 var AbbrevLabel='Use abbreviated names';
-var UseShortcuts=true;
+var UseShortcuts=false;
 var sub={YAPI_SUCCESS:'YAPI.SUCCESS',YAPI_NOT_INITIALIZED:'YAPI.NOT_INITIALIZED',YAPI_INVALID_ARGUMENT:'YAPI.INVALID_ARGUMENT',YAPI_NOT_SUPPORTED:'YAPI.NOT_SUPPORTED',YAPI_DEVICE_NOT_FOUND:'YAPI.DEVICE_NOT_FOUND',YAPI_VERSION_MISMATCH:'YAPI.VERSION_MISMATCH',YAPI_DEVICE_BUSY:'YAPI.DEVICE_BUSY',YAPI_TIMEOUT:'YAPI.TIMEOUT',YAPI_IO_ERROR:'YAPI.IO_ERROR',YAPI_NO_MORE_DATA:'YAPI.NO_MORE_DATA',YAPI_EXHAUSTED:'YAPI.EXHAUSTED',YAPI_DOUBLE_ACCES:'YAPI.DOUBLE_ACCES',YAPI_UNAUTHORIZED:'YAPI.UNAUTHORIZED',YAPI_RTC_NOT_READY:'YAPI.RTC_NOT_READY',YAPI_FILE_NOT_FOUND:'YAPI.FILE_NOT_FOUND',null:'NIL'};
 doc['Module']={'':{syn:'Module control interface',inc:'uses yocto_api;',cmt:'<p>This interface is identical for all Yoctopuce USB modules. It can be used to control the module global parameters, and to enumerate the functions provided by each module.</p>'}};
 doc['Module']['FindModule']={syn:'Allows you to find a module from its serial number or from its logical name.',lib:'YModule.FindModule()',pro:'function FindModule(<span id=pn>func</span>: string): TYModule',cmt:'<p>Allows you to find a module from its serial number or from its logical name.</p><p> This function does not require that the module is online at the time it is invoked. The returned object is nevertheless valid. Use the method <tt>YModule.isOnline()</tt> to test if the module is indeed online at a given time. In case of ambiguity when looking for a module by logical name, no error is notified: the first instance found is returned. The search is performed first by hardware name, then by logical name.</p><p> If a call to this object\x27s is_online() method returns FALSE although you are certain that the device is plugged, make sure that you did call registerHub() at application initialization time.</p>',par:{func:'a string containing either the serial number or the logical name of the desired module'},ret:'a <tt>YModule</tt> object allowing you to drive the module or get additional information on the module.'};
@@ -2162,7 +2160,7 @@ doc['Altitude']['nextAltitude']={syn:'Continues the enumeration of altimeters st
 doc['Altitude']['registerTimedReportCallback']={syn:'Registers the callback function that is invoked on every periodic timed notification.',lib:'altitude.registerTimedReportCallback()',pro:'function registerTimedReportCallback(<span id=pn>callback</span>: TYAltitudeTimedReportCallback): LongInt',cmt:'<p>Registers the callback function that is invoked on every periodic timed notification. The callback is invoked only during the execution of <tt>ySleep</tt> or <tt>yHandleEvents</tt>. This provides control over the time when the callback is triggered. For good responsiveness, remember to call one of these two functions periodically. To unregister a callback, pass a null pointer as argument.</p>',par:{callback:'the callback function to call, or a null pointer. The callback function should take two arguments: the function object of which the value has changed, and an YMeasure object describing the new advertised value.'}};
 doc['Altitude']['registerValueCallback']={syn:'Registers the callback function that is invoked on every change of advertised value.',lib:'altitude.registerValueCallback()',pro:'function registerValueCallback(<span id=pn>callback</span>: TYAltitudeValueCallback): LongInt',cmt:'<p>Registers the callback function that is invoked on every change of advertised value. The callback is invoked only during the execution of <tt>ySleep</tt> or <tt>yHandleEvents</tt>. This provides control over the time when the callback is triggered. For good responsiveness, remember to call one of these two functions periodically. To unregister a callback, pass a null pointer as argument.</p>',par:{callback:'the callback function to call, or a null pointer. The callback function should take two arguments: the function object of which the value has changed, and the character string describing the new advertised value.'}};
 doc['Altitude']['set_advMode']={syn:'Changes the measuring mode used for the advertised value pushed to the parent hub.',lib:'altitude.set_advMode()',pro:'function set_advMode(<span id=pn>newval</span>: Integer): integer',cmt:'<p>Changes the measuring mode used for the advertised value pushed to the parent hub.</p>',par:{newval:'a value among <tt>Y_ADVMODE_IMMEDIATE</tt>, <tt>Y_ADVMODE_PERIOD_AVG</tt>, <tt>Y_ADVMODE_PERIOD_MIN</tt> and <tt>Y_ADVMODE_PERIOD_MAX</tt> corresponding to the measuring mode used for the advertised value pushed to the parent hub'},ret:'<tt>YAPI_SUCCESS</tt> if the call succeeds.',ext:'On failure, throws an exception or returns a negative error code.'};
-doc['Altitude']['set_currentValue']={syn:'Changes the current estimated altitude.',lib:'altitude.set_currentValue()',pro:'function set_currentValue(<span id=pn>newval</span>: double): integer',cmt:'<p>Changes the current estimated altitude. This allows to compensate for ambient pressure variations and to work in relative mode.</p>',par:{newval:'a floating point number corresponding to the current estimated altitude'},ret:'<tt>YAPI_SUCCESS</tt> if the call succeeds.',ext:'On failure, throws an exception or returns a negative error code.'};
+doc['Altitude']['set_currentValue']={syn:'Changes the current estimated altitude.',lib:'altitude.set_currentValue()',pro:'function set_currentValue(<span id=pn>newval</span>: double): integer',cmt:'<p>Changes the current estimated altitude. This allows one to compensate for ambient pressure variations and to work in relative mode.</p>',par:{newval:'a floating point number corresponding to the current estimated altitude'},ret:'<tt>YAPI_SUCCESS</tt> if the call succeeds.',ext:'On failure, throws an exception or returns a negative error code.'};
 doc['Altitude']['set_highestValue']={syn:'Changes the recorded maximal value observed.',lib:'altitude.set_highestValue()',pro:'function set_highestValue(<span id=pn>newval</span>: double): integer',cmt:'<p>Changes the recorded maximal value observed. Can be used to reset the value returned by get_lowestValue().</p>',par:{newval:'a floating point number corresponding to the recorded maximal value observed'},ret:'<tt>YAPI_SUCCESS</tt> if the call succeeds.',ext:'On failure, throws an exception or returns a negative error code.'};
 doc['Altitude']['set_logFrequency']={syn:'Changes the datalogger recording frequency for this function.',lib:'altitude.set_logFrequency()',pro:'function set_logFrequency(<span id=pn>newval</span>: string): integer',cmt:'<p>Changes the datalogger recording frequency for this function. The frequency can be specified as samples per second, as sample per minute (for instance \x2215/m\x22) or in samples per hour (eg. \x224/h\x22). To disable recording for this function, use the value \x22OFF\x22. Note that setting the datalogger recording frequency to a greater value than the sensor native sampling frequency is useless, and even counterproductive: those two frequencies are not related.</p>',par:{newval:'a string corresponding to the datalogger recording frequency for this function'},ret:'<tt>YAPI_SUCCESS</tt> if the call succeeds.',ext:'On failure, throws an exception or returns a negative error code.'};
 doc['Altitude']['set_logicalName']={syn:'Changes the logical name of the altimeter.',lib:'altitude.set_logicalName()',pro:'function set_logicalName(<span id=pn>newval</span>: string): integer',cmt:'<p>Changes the logical name of the altimeter. You can use <tt>yCheckLogicalName()</tt> prior to this call to make sure that your parameter is valid. Remember to call the <tt>saveToFlash()</tt> method of the module if the modification must be kept.</p>',par:{newval:'a string corresponding to the logical name of the altimeter.'},ret:'<tt>YAPI_SUCCESS</tt> if the call succeeds.',ext:'On failure, throws an exception or returns a negative error code.'};
@@ -4187,8 +4185,7 @@ function Drag_stopMouseCapture()
 <tr><td>
 <img alt="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAANwAAADcBYx2BhQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAGgSURBVCiRjdC9a1NhFAbw8973ed7bewm859KKc4oFwUUwk0uMkICC4gfYIjSDQhaH+ge4BOFCwEUpQsCtEEkHURCHigQjcQo4FFyKHYWsflGaq9elStVr9Yzn4cf5MHmeS1G12+1gNBrdJLkMYIHkNoD+ZDLpDAaDzBRBY4yp1+tPSZ4los0QhzYEH0+RcgLAq3K5fLoQNhqNGwBWY3d85fBM+vxHf8fdPWnc5gOSt4KiNUkukuHb/UhEZGZ35TVs/MZau1gIrbXzLph7UZTBzL4EMF8IAWwZfjrz9duu+T0L3Ic6gK2/rboGmCM77vbF/Rizqw1SjgFY++M5lUqF4/F42mw2HwJYAsJ3sHMb5JcaKEcBPIvj+NwvsFqtni+VSj3vfb/X611vtVrXACxbaxecc9sk+51O536e5/lPWKvVLkRRtJ4kCVX1c5ZlSbfbnRadIiIS7E26FEXRuqpSVafe+6sHIREROxwOL8dx3FdVJkky9d5fSdP0yUFIRCQIw/CeqkJVM+/9Upqmj/+FREQCVb2jqu/30KP/QSIi3wFqcn4o9hAuDAAAAABJRU5ErkJggg==" />
 <input name='search' onkeyup='initSearch()'></form>
-</td><td id ='oosyntax' ></td><td id='version'>
-</td>
+</td><td id ='oosyntax' ></td><td id='version'>2019-01-23</td>
 </table>
 
 </div>
@@ -4197,7 +4194,6 @@ function Drag_stopMouseCapture()
 <SCRIPT type="text/JavaScript" >
 <!--
 document.getElementById('langdt').innerHTML = Language;
-document.getElementById('version').innerHTML = Version;
 
 computeWinWH();
 
@@ -4208,7 +4204,7 @@ onResize(resizeSeparator);
 EnableDrag(document.getElementById("separatorLayer"),marginMove,marginMove);
 if (UseShortcuts!=null)
  { var td = document.getElementById("oosyntax");
-   var widget ='<input type="checkbox" id="OOcheckbox" '+ (UseShortcuts?'checked':'') + ' onclick="OOcheckboxChange(this);"> ' + AbbrevLabel;
+   var widget ='<input type="checkbox" id="OOcheckbox" onclick="OOcheckboxChange(this);"> ' + AbbrevLabel;
    td.innerHTML = widget;
    td.title =AbbrevHint;
    td.alt =AbbrevHint;
