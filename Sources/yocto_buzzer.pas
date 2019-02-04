@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_buzzer.pas 33711 2018-12-14 14:19:13Z seb $
+ *  $Id: yocto_buzzer.pas 34289 2019-02-03 21:12:49Z mvuilleu $
  *
  *  Implements yFindBuzzer(), the high-level API for Buzzer functions
  *
@@ -446,6 +446,32 @@ type
     /// </returns>
     ///-
     function oncePlaySeq():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Saves the preprogrammed playing sequence to flash memory.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </returns>
+    ///-
+    function savePlaySeq():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Reloads the preprogrammed playing sequence from the flash memory.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </returns>
+    ///-
+    function reloadPlaySeq():LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -1139,6 +1165,20 @@ implementation
   function TYBuzzer.oncePlaySeq():LongInt;
     begin
       result := self.sendCommand('s');
+      exit;
+    end;
+
+
+  function TYBuzzer.savePlaySeq():LongInt;
+    begin
+      result := self.sendCommand('W');
+      exit;
+    end;
+
+
+  function TYBuzzer.reloadPlaySeq():LongInt;
+    begin
+      result := self.sendCommand('R');
       exit;
     end;
 
