@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 33916 2018-12-28 10:38:18Z seb $
+ * $Id: yocto_api.pas 34608 2019-03-11 15:23:41Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -118,7 +118,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '34302';
+  YOCTO_API_BUILD_NO        = '34990';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -5032,7 +5032,6 @@ type
 
   procedure yapiSetTraceFile(filename:string);
   function yapiGetDevice(device_str:string;var errmsg:string):YDEV_DESCR;
-  function yapiGetAllDevices(dbuffer:PyHandleArray;maxsize:integer;var neededsize:integer; var errmsg:string):integer;
   function yapiGetDeviceInfo(d:YDEV_DESCR;var infos:yDeviceSt;var errmsg:string):integer;
   function yapiGetFunction(class_str,function_str:string;var errmsg:string):YFUN_DESCR;
   function yapiGetFunctionsByClass( class_str:string; precFuncDesc:YFUN_DESCR;dbuffer:PyHandleArray;maxsize:integer;var neededsize:integer; var errmsg:string):integer;
@@ -5087,8 +5086,11 @@ type
   _yapiFunctionUpdateFunc = procedure (func:YFUN_DESCR; value:pansichar);cdecl;
   _yapiBeaconFunc         = procedure (dev:YDEV_DESCR; beacon:integer);cdecl;
   _yapiTimedReportFunc    = procedure (func:YFUN_DESCR; timestamp:double; bytes:pansichar; len:integer; duration:double);cdecl;
-  _yapiHubDiscoveryCallback = procedure (serial:pansichar; url:pansichar);cdecl;
-  _yapiDeviceLogCallback  = procedure (dev:YDEV_DESCR; line:pansichar);cdecl;
+  _yapiHubDiscoveryFunc = procedure (serial:pansichar; url:pansichar);cdecl;
+  _yapiDeviceLogFunc    = procedure (dev:YDEV_DESCR; line:pansichar);cdecl;
+  _yapiRequestAsyncFunc = procedure (context:pointer; result:pansichar; resultlen:integer; retcode: integer; errmsg:pansichar);cdecl;
+  _yapiRequestProgressFunc = procedure (context:pointer; acked:integer; totalbytes:integer);
+
 
 var
   ylog:     yLogFunc;
@@ -5231,60 +5233,58 @@ const
   {$endif}
 
 
-  function  _yapiInitAPI(mode:integer; errmsg : pansichar):integer;cdecl; external dllfile name 'yapiInitAPI';
-  procedure _yapiFreeAPI();cdecl;  external dllfile name 'yapiFreeAPI';
+  {$ifdef ENABLEPROGRAMMING}
+  function  _yapiFlashDevice(args:PyFlashArg;errmsg : pansichar):integer;cdecl; external dllfile name 'yapiFlashDevice';
+  function  _yapiVerifyDevice(args:PyFlashArg;errmsg : pansichar):integer;cdecl; external dllfile name 'yapiVerifyDevice';
+  {$endif}
+  function  _yapiGetMem(size:integer):pointer; cdecl; external dllfile name 'yapiGetMem';
+  function  _yapiGetErrorString(errorcode:integer;buffer:pansichar; maxsize:integer;errmsg : pansichar):integer;  cdecl; external dllfile name 'yapiGetErrorString';
+  //--- (generated code: YFunction dlldef)
+  function _yapiInitAPI(mode:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiInitAPI';
+  procedure _yapiFreeAPI(); cdecl; external dllfile name 'yapiFreeAPI';
+  procedure _yapiSetTraceFile(tracefile:pansichar); cdecl; external dllfile name 'yapiSetTraceFile';
   procedure _yapiRegisterLogFunction(fct:_yapiLogFunc); cdecl; external dllfile name 'yapiRegisterLogFunction';
-  procedure _yapiRegisterDeviceLogCallback(fct:_yapiDeviceLogCallback); cdecl; external dllfile name 'yapiRegisterDeviceLogCallback';
   procedure _yapiRegisterDeviceArrivalCallback(fct:_yapiDeviceUpdateFunc); cdecl; external dllfile name 'yapiRegisterDeviceArrivalCallback';
   procedure _yapiRegisterDeviceRemovalCallback(fct:_yapiDeviceUpdateFunc); cdecl; external dllfile name 'yapiRegisterDeviceRemovalCallback';
   procedure _yapiRegisterDeviceChangeCallback(fct:_yapiDeviceUpdateFunc); cdecl; external dllfile name 'yapiRegisterDeviceChangeCallback';
   procedure _yapiRegisterDeviceConfigChangeCallback(fct:_yapiDeviceUpdateFunc); cdecl; external dllfile name 'yapiRegisterDeviceConfigChangeCallback';
   procedure _yapiRegisterFunctionUpdateCallback(fct:_yapiFunctionUpdateFunc); cdecl; external dllfile name 'yapiRegisterFunctionUpdateCallback';
   procedure _yapiRegisterTimedReportCallback(fct:_yapiTimedReportFunc); cdecl; external dllfile name 'yapiRegisterTimedReportCallback';
-  function  _yapiLockDeviceCallBack(errmsg:pansichar):integer;  cdecl; external dllfile name 'yapiLockDeviceCallBack';
-  function  _yapiUnlockDeviceCallBack(errmsg:pansichar):integer;  cdecl; external dllfile name 'yapiUnlockDeviceCallBack';
-  function  _yapiLockFunctionCallBack(errmsg:pansichar):integer;  cdecl; external dllfile name 'yapiLockFunctionCallBack';
-  function  _yapiUnlockFunctionCallBack(errmsg:pansichar):integer;  cdecl; external dllfile name 'yapiUnlockFunctionCallBack';
-  function  _yapiRegisterHub(rootUrl:pansichar;errmsg:pansichar):integer;cdecl;external dllfile name 'yapiRegisterHub';
-  function  _yapiPreregisterHub(rootUrl:pansichar;errmsg:pansichar):integer;cdecl;external dllfile name 'yapiPreregisterHub';
-  procedure _yapiUnregisterHub(rootUrl:pansichar);cdecl;external dllfile name 'yapiUnregisterHub';
-  function  _yapiUpdateDeviceList(force:integer;errmsg : pansichar):integer;cdecl;  external dllfile name 'yapiUpdateDeviceList';
-  function  _yapiHandleEvents(errmsg : pansichar):integer;cdecl; external dllfile name 'yapiHandleEvents';
-  function  _yapiGetTickCount():u64; external dllfile name 'yapiGetTickCount';
-  function  _yapiCheckLogicalName(name:pansichar):integer;cdecl;external dllfile name 'yapiCheckLogicalName';
-  function  _yapiGetAPIVersion(var version:pansichar;var build_date:pansichar):u16;cdecl; external   dllfile  name 'yapiGetAPIVersion';
-  procedure _yapiSetTraceFile(tracefile:pansichar);cdecl; external dllfile name 'yapiSetTraceFile';
-  function  _yapiGetDevice(device_str:pansichar;errmsg : pansichar ):YDEV_DESCR; cdecl; external dllfile name 'yapiGetDevice';
-  function  _yapiGetAllDevices( buffer:PyHandleArray;maxsize:integer;var neededsize:integer;errmsg : pansichar):integer; cdecl;  external dllfile name 'yapiGetAllDevices';
-  function  _yapiGetDeviceInfo(d:YDEV_DESCR;var infos:yDeviceSt;errmsg : pansichar):integer;  cdecl; external dllfile name 'yapiGetDeviceInfo';
-  function  _yapiGetFunction(class_str,function_str:pansichar;errmsg : pansichar ):YFUN_DESCR; cdecl; external dllfile name 'yapiGetFunction';
-  function  _yapiGetFunctionsByClass( class_str:pansichar; precFuncDesc:YFUN_DESCR; buffer:PyHandleArray;maxsize:integer;var neededsize:integer;errmsg : pansichar):integer; cdecl;  external dllfile name 'yapiGetFunctionsByClass';
-  function  _yapiGetFunctionsByDevice( device:YDEV_DESCR; precFuncDesc:YFUN_DESCR; buffer:PyHandleArray;maxsize:integer;var neededsize:integer;errmsg : pansichar):integer; cdecl;  external dllfile name 'yapiGetFunctionsByDevice';
-  function  _yapiGetFunctionInfo(fundesc:YFUN_DESCR;var devdesc:YDEV_DESCR;serial,funcId,funcName,funcVal,errmsg : pansichar):integer;  cdecl; external dllfile name 'yapiGetFunctionInfo';
-  function  _yapiGetFunctionInfoEx(fundesc:YFUN_DESCR;var devdesc:YDEV_DESCR;serial,funcId,baseType,funcName,funcVal,errmsg : pansichar):integer;  cdecl; external dllfile name 'yapiGetFunctionInfoEx';
-  function  _yapiGetErrorString(errorcode:integer;buffer:pansichar; maxsize:integer;errmsg : pansichar):integer;  cdecl; external dllfile name 'yapiGetErrorString';
-  function  _yapiHTTPRequestSyncStart(iohdl:PYIOHDL;device:pansichar;url:pansichar; var reply:pansichar; var replysize:integer; errmsg : pansichar):integer;cdecl;external dllfile name 'yapiHTTPRequestSyncStart';
-  function  _yapiHTTPRequestSyncStartEx(iohdl:PYIOHDL;device:pansichar;url:pansichar;urllen:integer; var reply:pansichar; var replysize:integer; errmsg : pansichar):integer;cdecl;external dllfile name 'yapiHTTPRequestSyncStartEx';
-  function  _yapiHTTPRequestSyncDone(iohdl:PYIOHDL;errmsg : pansichar):integer;cdecl;external dllfile name 'yapiHTTPRequestSyncDone';
-  function  _yapiHTTPRequestAsync(device:pansichar;url:pansichar; callback:pointer; context:pointer; errmsg : pansichar):integer;cdecl;external dllfile name 'yapiHTTPRequestAsync';
-  function  _yapiHTTPRequest(device:pansichar;url:pansichar; buffer:pansichar;buffsize:integer;var fullsize:integer;errmsg : pansichar):integer;cdecl;external dllfile name 'yapiHTTPRequest';
-  {$ifdef ENABLEPROGRAMMING}
-  function  _yapiFlashDevice(args:PyFlashArg;errmsg : pansichar):integer;cdecl; external dllfile name 'yapiFlashDevice';
-  function  _yapiVerifyDevice(args:PyFlashArg;errmsg : pansichar):integer;cdecl; external dllfile name 'yapiVerifyDevice';
-  {$endif}
-  function  _yapiGetDevicePath(devdesc :integer ; rootdevice :pansichar; path:pansichar; pathsize:integer; var neededsize:integer; errmsg:pansichar):integer;cdecl; external dllfile name 'yapiGetDevicePath';
-  function  _yapiSleep(duration_ms: integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiSleep';
-  procedure _yapiRegisterHubDiscoveryCallback(fct:_yapiHubDiscoveryCallback); cdecl; external dllfile name 'yapiRegisterHubDiscoveryCallback';
-  function  _yapiTriggerHubDiscovery(errmsg:pansichar):integer; cdecl; external dllfile name 'yapiTriggerHubDiscovery';
-  function  _yapiGetMem(size:integer):pointer; cdecl; external dllfile name 'yapiGetMem';
-
-  //--- (generated code: YFunction dlldef)
+  function _yapiLockDeviceCallBack(errmsg:pansichar):integer; cdecl; external dllfile name 'yapiLockDeviceCallBack';
+  function _yapiUnlockDeviceCallBack(errmsg:pansichar):integer; cdecl; external dllfile name 'yapiUnlockDeviceCallBack';
+  function _yapiLockFunctionCallBack(errmsg:pansichar):integer; cdecl; external dllfile name 'yapiLockFunctionCallBack';
+  function _yapiUnlockFunctionCallBack(errmsg:pansichar):integer; cdecl; external dllfile name 'yapiUnlockFunctionCallBack';
+  function _yapiRegisterHub(rootUrl:pansichar; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiRegisterHub';
+  function _yapiPreregisterHub(rootUrl:pansichar; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiPreregisterHub';
+  procedure _yapiUnregisterHub(rootUrl:pansichar); cdecl; external dllfile name 'yapiUnregisterHub';
+  function _yapiUpdateDeviceList(force:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiUpdateDeviceList';
+  function _yapiHandleEvents(errmsg:pansichar):integer; cdecl; external dllfile name 'yapiHandleEvents';
+  function _yapiGetTickCount():u64; cdecl; external dllfile name 'yapiGetTickCount';
+  function _yapiCheckLogicalName(name:pansichar):integer; cdecl; external dllfile name 'yapiCheckLogicalName';
+  function _yapiGetAPIVersion(var version:pansichar; var dat_:pansichar):u16; cdecl; external dllfile name 'yapiGetAPIVersion';
+  function _yapiGetDevice(device_str:pansichar; errmsg:pansichar):YDEV_DESCR; cdecl; external dllfile name 'yapiGetDevice';
+  function _yapiGetDeviceInfo(d:YDEV_DESCR; var infos:yDeviceSt; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetDeviceInfo';
+  function _yapiGetFunction(class_str:pansichar; function_str:pansichar; errmsg:pansichar):YFUN_DESCR; cdecl; external dllfile name 'yapiGetFunction';
+  function _yapiGetFunctionsByClass(class_str:pansichar; precFuncDesc:YFUN_DESCR; buffer:PyHandleArray; maxsize:integer; var neededsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetFunctionsByClass';
+  function _yapiGetFunctionsByDevice(device:YDEV_DESCR; precFuncDesc:YFUN_DESCR; buffer:PyHandleArray; maxsize:integer; var neededsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetFunctionsByDevice';
+  function _yapiGetFunctionInfoEx(fundesc:YFUN_DESCR; var devdesc:YDEV_DESCR; serial:pansichar; funcId:pansichar; baseType:pansichar; funcName:pansichar; funcVal:pansichar; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetFunctionInfoEx';
+  function _yapiHTTPRequestSyncStart(iohdl:PYIOHDL; device:pansichar; request:pansichar; var reply:pansichar; var replysize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiHTTPRequestSyncStart';
+  function _yapiHTTPRequestSyncStartEx(iohdl:PYIOHDL; device:pansichar; request:pansichar; requestlen:integer; var reply:pansichar; var replysize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiHTTPRequestSyncStartEx';
+  function _yapiHTTPRequestSyncDone(iohdl:PYIOHDL; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiHTTPRequestSyncDone';
+  function _yapiHTTPRequestAsync(device:pansichar; request:pansichar; callback:_yapiRequestAsyncFunc; context:pointer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiHTTPRequestAsync';
+  function _yapiHTTPRequestAsyncEx(device:pansichar; request:pansichar; requestlen:integer; callback:_yapiRequestAsyncFunc; context:pointer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiHTTPRequestAsyncEx';
+  function _yapiHTTPRequest(device:pansichar; url:pansichar; buffer:pansichar; buffsize:integer; var fullsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiHTTPRequest';
+  function _yapiGetDevicePath(devdesc:integer; rootdevice:pansichar; path:pansichar; pathsize:integer; var neededsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetDevicePath';
+  function _yapiSleep(duration_ms:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiSleep';
+  procedure _yapiRegisterHubDiscoveryCallback(fct:_yapiHubDiscoveryFunc); cdecl; external dllfile name 'yapiRegisterHubDiscoveryCallback';
+  function _yapiTriggerHubDiscovery(errmsg:pansichar):integer; cdecl; external dllfile name 'yapiTriggerHubDiscovery';
+  procedure _yapiRegisterDeviceLogCallback(fct:_yapiDeviceLogFunc); cdecl; external dllfile name 'yapiRegisterDeviceLogCallback';
   function _yapiGetAllJsonKeys(jsonbuffer:pansichar; out_buffer:pansichar; out_buffersize:integer; var fullsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetAllJsonKeys';
   function _yapiCheckFirmware(serial:pansichar; rev:pansichar; path:pansichar; buffer:pansichar; buffersize:integer; var fullsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiCheckFirmware';
   function _yapiGetBootloaders(buffer:pansichar; buffersize:integer; var totalSize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetBootloaders';
   function _yapiUpdateFirmwareEx(serial:pansichar; firmwarePath:pansichar; settings:pansichar; force:integer; startUpdate:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiUpdateFirmwareEx';
-  function _yapiHTTPRequestSyncStartOutOfBand(var iohdl:PYIOHDL; channel:integer; device:pansichar; request:pansichar; requestsize:integer; var reply:pansichar; var replysize:integer; var progress_cb:pointer; progress_ctx:pointer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiHTTPRequestSyncStartOutOfBand';
-  function _yapiHTTPRequestAsyncOutOfBand(channel:integer; device:pansichar; request:pansichar; requestsize:integer; var callback:pointer; context:pointer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiHTTPRequestAsyncOutOfBand';
+  function _yapiHTTPRequestSyncStartOutOfBand(iohdl:PYIOHDL; channel:integer; device:pansichar; request:pansichar; requestsize:integer; var reply:pansichar; var replysize:integer; progress_cb:_yapiRequestProgressFunc; progress_ctx:pointer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiHTTPRequestSyncStartOutOfBand';
+  function _yapiHTTPRequestAsyncOutOfBand(channel:integer; device:pansichar; request:pansichar; requestsize:integer; callback:_yapiRequestAsyncFunc; context:pointer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiHTTPRequestAsyncOutOfBand';
   function _yapiTestHub(url:pansichar; mstimeout:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiTestHub';
   function _yapiJsonGetPath(path:pansichar; json_data:pansichar; json_len:integer; var result:pansichar; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiJsonGetPath';
   function _yapiJsonDecodeString(json_data:pansichar; output:pansichar):integer; cdecl; external dllfile name 'yapiJsonDecodeString';
@@ -6359,18 +6359,6 @@ var
       errmsg:=string(perror);
     end;
 
-  function yapiGetAllDevices( dbuffer:PyHandleArray;maxsize:integer;var neededsize:integer; var errmsg:string):integer;
-    var
-      buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
-      perror :pansichar;
-    begin
-      buffer[0]:=#0;perror:=@buffer;
-      yapiGetAllDevices:=_yapiGetAllDevices( dbuffer,maxsize,neededsize,perror);
-      errmsg := string(perror);
-    end;
-
-
-
   function yapiGetDeviceInfo(d:YDEV_DESCR;var infos:yDeviceSt;var errmsg:string):integer;
     var
       buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
@@ -6380,9 +6368,6 @@ var
       yapiGetDeviceInfo :=_yapiGetDeviceInfo(d,infos,perror);
       errmsg:=string(perror);
     end;
-
-
-
 
   function yapiGetFunction(class_str,function_str:string;var errmsg:string):YFUN_DESCR;
     var
@@ -6476,7 +6461,7 @@ var
       res            : integer;
     begin
       errBuffer[0]:=#0;     pError     := @errBuffer;
-      res    := _yapiGetFunctionInfo(fundesc,devdesc,nil,nil,nil,nil,pError);
+      res    := _yapiGetFunctionInfoEx(fundesc,devdesc,nil,nil,nil,nil,nil,pError);
       errmsg := string(perror);
       if(res<0) then yapiGetDeviceByFunction := res
       else yapiGetDeviceByFunction := devdesc;
@@ -6994,7 +6979,7 @@ var
             _buildSetRequest :=res;
             exit;
           end;
-        res:=_yapiGetFunctionInfo(fundesc, devdesc, NIL, pfuncid, NIL, NIL,perrbuff);
+        res:=_yapiGetFunctionInfoEx(fundesc, devdesc, NIL, pfuncid, NIL, NIL, NIL,perrbuff);
         if  YISERR(res) then
           begin
             errmsg := string(errbuff);

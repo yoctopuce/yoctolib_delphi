@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 33711 2018-12-14 14:19:13Z seb $
+ * $Id: yocto_wireless.pas 34651 2019-03-15 17:21:54Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -77,8 +77,9 @@ TYWlanRecordArr = array of TYWlanRecord;
   /// <summary>
   ///   TYWlanRecord Class: Description of a wireless network
   /// <para>
-  /// </para>
-  /// <para>
+  ///   YWlanRecord objects are used to describe a wireless network.
+  ///   These objects are  used in particular in conjunction with the
+  ///   YWireless class.
   /// </para>
   /// </summary>
   ///-
@@ -99,12 +100,52 @@ public
 
 
    //--- (generated code: YWlanRecord accessors declaration)
+    ////
+    /// <summary>
+    ///   Returns the name of the wireless network (SSID).
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string with the name of the wireless network (SSID).
+    /// </returns>
+    ///-
     function get_ssid():string; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the 802.11 channel.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the 802.11 channel.
+    /// </returns>
+    ///-
     function get_channel():LongInt; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the security algorithm used by the wireless network.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string with the security algorithm.
+    /// </returns>
+    ///-
     function get_security():string; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the quality of the wireless network link, in per cents.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the quality of the wireless network link, in per cents.
+    /// </returns>
+    ///-
     function get_linkQuality():LongInt; overload; virtual;
 
 

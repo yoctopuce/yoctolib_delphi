@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 33711 2018-12-14 14:19:13Z seb $
+ * $Id: yocto_files.pas 34651 2019-03-15 17:21:54Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -63,8 +63,8 @@ type
   /// <summary>
   ///   TYFileRecord Class: Description of a file on the device filesystem
   /// <para>
-  /// </para>
-  /// <para>
+  ///   YFileRecord objects are used to describe a file that is stored on a Yoctopuce device.
+  ///   These objects are used in particular in conjunction with the YFiles class.
   /// </para>
   /// </summary>
   ///-
@@ -84,10 +84,40 @@ public
 
 
    //--- (generated code: YFileRecord accessors declaration)
+    ////
+    /// <summary>
+    ///   Returns the name of the file.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string with the name of the file.
+    /// </returns>
+    ///-
     function get_name():string; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the size of the file in bytes.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the size of the file.
+    /// </returns>
+    ///-
     function get_size():LongInt; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the 32-bit CRC of the file content.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the 32-bit CRC of the file content.
+    /// </returns>
+    ///-
     function get_crc():LongInt; overload; virtual;
 
 

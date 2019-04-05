@@ -1,3 +1,5 @@
-Delphi v1.10.34302
+Delphi v1.10.34990
 
-- Add support for sub-second time synchronization, now aligned up to +/- 0.02s
+- Fix loadThermistorResponseTable() method of YTemperature
+- Add documentation for YFileRecord and YWlanRecord class
+- Add toggle() method in YRelay class

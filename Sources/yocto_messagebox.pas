@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 32903 2018-11-02 10:14:32Z seb $
+ * $Id: yocto_messagebox.pas 34661 2019-03-18 11:02:50Z seb $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *
@@ -458,8 +458,8 @@ type
   /// <summary>
   ///   TYSms Class: SMS message sent or received
   /// <para>
-  /// </para>
-  /// <para>
+  ///   YSms objects are used to describe a SMS.
+  ///   These objects are used in particular in conjunction with the YMessageBox class.
   /// </para>
   /// </summary>
   ///-
@@ -518,6 +518,18 @@ type
 
     function get_userData():TByteArray; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the content of the message.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string with the content of the message.
+    /// </returns>
+    ///-
     function get_textData():string; overload; virtual;
 
     function get_unicodeData():TLongIntArray; overload; virtual;
@@ -562,8 +574,44 @@ type
 
     function convertToUnicode():LongInt; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Add a regular text to the SMS.
+    /// <para>
+    ///   This function support messages
+    ///   of more than 160 characters. ISO-latin accented characters
+    ///   are supported. For messages with special unicode characters such as asian
+    ///   characters and emoticons, use the  <c>addUnicodeData</c> method.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="val">
+    ///   the text to be sent in the message
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    ///-
     function addText(val: string):LongInt; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Add a unicode text to the SMS.
+    /// <para>
+    ///   This function support messages
+    ///   of more than 160 characters, using SMS concatenation.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="val">
+    ///   an array of special unicode characters
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    ///-
     function addUnicodeData(val: TLongIntArray):LongInt; overload; virtual;
 
     function set_pdu(pdu: TByteArray):LongInt; overload; virtual;
@@ -590,6 +638,23 @@ type
 
     function parsePdu(pdu: TByteArray):LongInt; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Sends the SMS to the recipient.
+    /// <para>
+    ///   Messages of more than 160 characters are supported
+    ///   using SMS concatenation.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
     function send():LongInt; overload; virtual;
 
     function deleteFromSIM():LongInt; overload; virtual;

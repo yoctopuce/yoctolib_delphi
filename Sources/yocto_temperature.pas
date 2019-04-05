@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_temperature.pas 33711 2018-12-14 14:19:13Z seb $
+ *  $Id: yocto_temperature.pas 34584 2019-03-08 09:36:55Z mvuilleu $
  *
  *  Implements yFindTemperature(), the high-level API for Temperature functions
  *
@@ -881,6 +881,10 @@ implementation
 
       id := self.get_functionId;
       id := Copy(id,  11 + 1, Length(id) - 11);
+      if (id = '') then
+        begin
+          id := '1';
+        end;
       bin_json := self._download('extra.json?page='+id);
       paramlist := self._json_get_array(bin_json);
       // first convert all temperatures to float

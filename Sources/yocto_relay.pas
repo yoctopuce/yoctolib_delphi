@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_relay.pas 33711 2018-12-14 14:19:13Z seb $
+ *  $Id: yocto_relay.pas 34976 2019-04-05 06:47:49Z seb $
  *
  *  Implements yFindRelay(), the high-level API for Relay functions
  *
@@ -109,6 +109,7 @@ type
     _delayedPulseTimer        : TYRelayDelayedPulse;
     _countdown                : int64;
     _valueCallbackRelay       : TYRelayValueCallback;
+    _firm                     : LongInt;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
 
@@ -492,6 +493,21 @@ type
 
     function _invokeValueCallback(value: string):LongInt; override;
 
+    ////
+    /// <summary>
+    ///   Switch the relay to the opposite state.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function toggle():LongInt; overload; virtual;
+
 
     ////
     /// <summary>
@@ -615,6 +631,7 @@ implementation
       _delayedPulseTimer := Y_DELAYEDPULSETIMER_INVALID;
       _countdown := Y_COUNTDOWN_INVALID;
       _valueCallbackRelay := nil;
+      _firm := 0;
       //--- (end of YRelay accessors initialization)
     end;
 
@@ -1006,6 +1023,50 @@ implementation
         end;
       result := 0;
       exit;
+    end;
+
+
+  function TYRelay.toggle():LongInt;
+    var
+      sta : LongInt;
+      fw : string;
+      mo : TYModule;
+    begin
+      if self._firm = 0 then
+        begin
+          mo := self.get_module;
+          fw := mo.get_firmwareRelease();
+          if (fw = Y_FIRMWARERELEASE_INVALID) then
+            begin
+              result := Y_STATE_INVALID;
+              exit;
+            end;
+          self._firm := _atoi(fw);
+        end;
+      if self._firm < 34921 then
+        begin
+          sta := self.get_state;
+          if sta = Y_STATE_INVALID then
+            begin
+              result := Y_STATE_INVALID;
+              exit;
+            end;
+          if sta = Y_STATE_B then
+            begin
+              self.set_state(Y_STATE_A);
+            end
+          else
+            begin
+              self.set_state(Y_STATE_B);
+            end;
+          result := YAPI_SUCCESS;
+          exit;
+        end
+      else
+        begin
+          result := self._setAttr('state', 'X');
+          exit;
+        end;
     end;
 
 
