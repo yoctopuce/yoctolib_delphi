@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 32903 2018-11-02 10:14:32Z seb $
+ * $Id: yocto_serialport.pas 35124 2019-04-12 09:03:41Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -2344,7 +2344,7 @@ implementation
     begin
       SetLength(msgarr, 0);
 
-      url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=!'+query;
+      url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=!'+self._escapeAttr(query);
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
       msglen := length(msgarr);
