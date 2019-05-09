@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_altitude.pas 34115 2019-01-23 14:23:54Z seb $
+ *  $Id: yocto_altitude.pas 35285 2019-05-07 07:37:56Z seb $
  *
  *  Implements yFindAltitude(), the high-level API for Altitude functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_altitude;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 

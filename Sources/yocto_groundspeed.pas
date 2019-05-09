@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_groundspeed.pas 33711 2018-12-14 14:19:13Z seb $
+ *  $Id: yocto_groundspeed.pas 35285 2019-05-07 07:37:56Z seb $
  *
  *  Implements yFindGroundSpeed(), the high-level API for GroundSpeed functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_groundspeed;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 

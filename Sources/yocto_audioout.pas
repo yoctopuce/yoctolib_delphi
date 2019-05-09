@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_audioout.pas 32903 2018-11-02 10:14:32Z seb $
+ *  $Id: yocto_audioout.pas 35285 2019-05-07 07:37:56Z seb $
  *
  *  Implements yFindAudioOut(), the high-level API for AudioOut functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_audioout;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 

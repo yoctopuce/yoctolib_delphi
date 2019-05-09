@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_colorled.pas 33711 2018-12-14 14:19:13Z seb $
+ *  $Id: yocto_colorled.pas 35285 2019-05-07 07:37:56Z seb $
  *
  *  Implements yFindColorLed(), the high-level API for ColorLed functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_colorled;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_buzzer.pas 34289 2019-02-03 21:12:49Z mvuilleu $
+ *  $Id: yocto_buzzer.pas 35285 2019-05-07 07:37:56Z seb $
  *
  *  Implements yFindBuzzer(), the high-level API for Buzzer functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_buzzer;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 

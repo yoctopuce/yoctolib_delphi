@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_pressure.pas 32903 2018-11-02 10:14:32Z seb $
+ *  $Id: yocto_pressure.pas 35285 2019-05-07 07:37:56Z seb $
  *
  *  Implements yFindPressure(), the high-level API for Pressure functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_pressure;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 

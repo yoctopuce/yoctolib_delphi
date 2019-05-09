@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_datalogger.pas 29827 2018-02-01 16:09:36Z seb $
+ * $Id: yocto_datalogger.pas 35285 2019-05-07 07:37:56Z seb $
  *
  * Implements yFindDataLogger(), the high-level API for DataLogger functions
  *
@@ -39,7 +39,7 @@
 
 
 unit yocto_datalogger;
-
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 interface
 
 uses

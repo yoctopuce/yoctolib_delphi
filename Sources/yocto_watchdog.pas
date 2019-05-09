@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_watchdog.pas 34976 2019-04-05 06:47:49Z seb $
+ *  $Id: yocto_watchdog.pas 35285 2019-05-07 07:37:56Z seb $
  *
  *  Implements yFindWatchdog(), the high-level API for Watchdog functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_watchdog;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 

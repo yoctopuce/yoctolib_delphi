@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 34608 2019-03-11 15:23:41Z seb $
+ * $Id: yocto_api.pas 35285 2019-05-07 07:37:56Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -37,6 +37,7 @@
  *
  *********************************************************************}
 unit yocto_api;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 
@@ -118,7 +119,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '35153';
+  YOCTO_API_BUILD_NO        = '35340';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -5226,12 +5227,19 @@ const
   function SetupDiDestroyDeviceInfoList(DeviceInfoSet: HDEVINFO): LongBool; stdcall;  external   'setupapi.dll' name 'SetupDiDestroyDeviceInfoList';
 
 const
-  {$ifdef ENABLEPROGRAMMING}
+{$IFDEF ENABLEPROGRAMMING}
   dllfile = 'yprogrammer.dll';
-  {$else}
-  dllfile = 'yapi.dll';
-  {$endif}
-
+{$ELSE}
+  {$IFDEF WIN32}
+     dllfile = 'yapi.dll';
+  {$ELSE}
+    {$IFDEF WIN64}
+       dllfile = 'yapi64.dll';
+    {$ELSE}
+       dllfile = 'yapi.dll';
+    {$ENDIF}
+   {$ENDIF}
+{$ENDIF}
 
   {$ifdef ENABLEPROGRAMMING}
   function  _yapiFlashDevice(args:PyFlashArg;errmsg : pansichar):integer;cdecl; external dllfile name 'yapiFlashDevice';
@@ -5458,7 +5466,7 @@ var
       if(yapiGetDeviceInfo(d, infos, errmsg) <> YAPI_SUCCESS) then exit;
       hwid := string(infos.serial)+'.module';
       index := _moduleCallbackList.indexof(hwid);
-      if (index > 0) and (Integer(_moduleCallbackList.Objects[index]) > 1) then
+      if (index > 0) and (Integer(_moduleCallbackList.Objects[index]) > 0) then
       begin
         modul := yFindModule(hwid);
         event := _yapiGetMem(sizeof(TyapiEvent));
@@ -5480,7 +5488,7 @@ var
       if(yapiGetDeviceInfo(d, infos, errmsg) <> YAPI_SUCCESS) then exit;
       hwid := string(infos.serial)+'.module';
       index := _moduleCallbackList.indexof(hwid);
-      if (index >= 0) and (Integer(_moduleCallbackList.Objects[index]) > 1) then
+      if (index >= 0) and (Integer(_moduleCallbackList.Objects[index]) > 0) then
       begin
         modul := yFindModule(hwid);
         event := _yapiGetMem(sizeof(TyapiEvent));

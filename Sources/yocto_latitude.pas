@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_latitude.pas 33711 2018-12-14 14:19:13Z seb $
+ *  $Id: yocto_latitude.pas 35285 2019-05-07 07:37:56Z seb $
  *
  *  Implements yFindLatitude(), the high-level API for Latitude functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_latitude;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_temperature.pas 34584 2019-03-08 09:36:55Z mvuilleu $
+ *  $Id: yocto_temperature.pas 35285 2019-05-07 07:37:56Z seb $
  *
  *  Implements yFindTemperature(), the high-level API for Temperature functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_temperature;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 

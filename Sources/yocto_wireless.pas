@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 34651 2019-03-15 17:21:54Z seb $
+ * $Id: yocto_wireless.pas 35285 2019-05-07 07:37:56Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_wireless;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 

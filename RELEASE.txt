@@ -1,3 +1,10 @@
-Delphi v1.10.35153
+Delphi v1.10.35340
 
-- Fix handling of '=' characters in queryLine() method
+(Libs)- Library now use WebSocket by default
+(Libs)- Add support for RangeFinder timeframe and quality
+(Libs)- Add getting started example for Yocto-Pressure
+(Misc)- Misc:[prod] Yocto-Visualization, improved behavior when sensors are read only
+(delphi)- Fix registerConfigChangeCallback() and registerBeaconCallback() methods of YModule
+(delphi)- Add support for Lazarus
+(yapi)- Library now use WebSocket by default
+(yapi)- Fix some Thread Sanatiser errors

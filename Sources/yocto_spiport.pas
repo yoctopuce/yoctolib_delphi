@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_spiport.pas 35124 2019-04-12 09:03:41Z seb $
+ *  $Id: yocto_spiport.pas 35285 2019-05-07 07:37:56Z seb $
  *
  *  Implements yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_spiport;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 

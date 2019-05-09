@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_powersupply.pas 34115 2019-01-23 14:23:54Z seb $
+ *  $Id: yocto_powersupply.pas 35285 2019-05-07 07:37:56Z seb $
  *
  *  Implements yFindPowerSupply(), the high-level API for PowerSupply functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_powersupply;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 

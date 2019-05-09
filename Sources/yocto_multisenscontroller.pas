@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_multisenscontroller.pas 34975 2019-04-04 17:01:43Z seb $
+ *  $Id: yocto_multisenscontroller.pas 35285 2019-05-07 07:37:56Z seb $
  *
  *  Implements yFindMultiSensController(), the high-level API for MultiSensController functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_multisenscontroller;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_digitalio.pas 33722 2018-12-14 15:04:43Z seb $
+ *  $Id: yocto_digitalio.pas 35285 2019-05-07 07:37:56Z seb $
  *
  *  Implements yFindDigitalIO(), the high-level API for DigitalIO functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_digitalio;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 

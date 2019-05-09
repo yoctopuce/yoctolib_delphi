@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_tvoc.pas 33270 2018-11-22 08:41:15Z seb $
+ *  $Id: yocto_tvoc.pas 35285 2019-05-07 07:37:56Z seb $
  *
  *  Implements yFindTvoc(), the high-level API for Tvoc functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_tvoc;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 

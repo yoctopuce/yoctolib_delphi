@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.pas 33711 2018-12-14 14:19:13Z seb $
+ *  $Id: yocto_quadraturedecoder.pas 35285 2019-05-07 07:37:56Z seb $
  *
  *  Implements yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_quadraturedecoder;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_rangefinder.pas 32903 2018-11-02 10:14:32Z seb $
+ *  $Id: yocto_rangefinder.pas 35285 2019-05-07 07:37:56Z seb $
  *
  *  Implements yFindRangeFinder(), the high-level API for RangeFinder functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_rangefinder;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 
@@ -52,6 +53,8 @@ const Y_RANGEFINDERMODE_LONG_RANGE = 1;
 const Y_RANGEFINDERMODE_HIGH_ACCURACY = 2;
 const Y_RANGEFINDERMODE_HIGH_SPEED = 3;
 const Y_RANGEFINDERMODE_INVALID = -1;
+const Y_TIMEFRAME_INVALID             = YAPI_INVALID_LONG;
+const Y_QUALITY_INVALID               = YAPI_INVALID_UINT;
 const Y_HARDWARECALIBRATION_INVALID   = YAPI_INVALID_STRING;
 const Y_CURRENTTEMPERATURE_INVALID    = YAPI_INVALID_DOUBLE;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
@@ -85,6 +88,8 @@ type
   //--- (YRangeFinder declaration)
     // Attributes (function value cache)
     _rangeFinderMode          : Integer;
+    _timeFrame                : int64;
+    _quality                  : LongInt;
     _hardwareCalibration      : string;
     _currentTemperature       : double;
     _command                  : string;
@@ -172,6 +177,70 @@ type
     /// </para>
     ///-
     function set_rangeFinderMode(newval:Integer):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the time frame used to measure the distance and estimate the measure
+    ///   reliability.
+    /// <para>
+    ///   The time frame is expressed in milliseconds.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the time frame used to measure the distance and estimate the measure
+    ///   reliability
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_TIMEFRAME_INVALID</c>.
+    /// </para>
+    ///-
+    function get_timeFrame():int64;
+
+    ////
+    /// <summary>
+    ///   Changes the time frame used to measure the distance and estimate the measure
+    ///   reliability.
+    /// <para>
+    ///   The time frame is expressed in milliseconds. A larger timeframe
+    ///   improves stability and reliability, at the cost of higher latency, but prevents
+    ///   the detection of events shorter than the time frame.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the time frame used to measure the distance and estimate the measure
+    ///   reliability
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_timeFrame(newval:int64):integer;
+
+    ////
+    /// <summary>
+    ///   Returns a measure quality estimate, based on measured dispersion.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to a measure quality estimate, based on measured dispersion
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_QUALITY_INVALID</c>.
+    /// </para>
+    ///-
+    function get_quality():LongInt;
 
     function get_hardwareCalibration():string;
 
@@ -504,6 +573,8 @@ implementation
       _className := 'RangeFinder';
       //--- (YRangeFinder accessors initialization)
       _rangeFinderMode := Y_RANGEFINDERMODE_INVALID;
+      _timeFrame := Y_TIMEFRAME_INVALID;
+      _quality := Y_QUALITY_INVALID;
       _hardwareCalibration := Y_HARDWARECALIBRATION_INVALID;
       _currentTemperature := Y_CURRENTTEMPERATURE_INVALID;
       _command := Y_COMMAND_INVALID;
@@ -525,6 +596,18 @@ implementation
       if (member^.name = 'rangeFinderMode') then
         begin
           _rangeFinderMode := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'timeFrame') then
+        begin
+          _timeFrame := member^.ivalue;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'quality') then
+        begin
+          _quality := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -583,6 +666,50 @@ implementation
       rest_val := inttostr(newval);
       result := _setAttr('rangeFinderMode',rest_val);
     end;
+
+  function TYRangeFinder.get_timeFrame():int64;
+    var
+      res : int64;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_TIMEFRAME_INVALID;
+              exit;
+            end;
+        end;
+      res := self._timeFrame;
+      result := res;
+      exit;
+    end;
+
+
+  function TYRangeFinder.set_timeFrame(newval:int64):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('timeFrame',rest_val);
+    end;
+
+  function TYRangeFinder.get_quality():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_QUALITY_INVALID;
+              exit;
+            end;
+        end;
+      res := self._quality;
+      result := res;
+      exit;
+    end;
+
 
   function TYRangeFinder.get_hardwareCalibration():string;
     var

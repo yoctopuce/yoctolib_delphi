@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_hubport.pas 32903 2018-11-02 10:14:32Z seb $
+ *  $Id: yocto_hubport.pas 35285 2019-05-07 07:37:56Z seb $
  *
  *  Implements yFindHubPort(), the high-level API for HubPort functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_hubport;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yjson.pas 21797 2015-10-16 10:07:42Z martinm $
+ * $Id: yjson.pas 35285 2019-05-07 07:37:56Z seb $
  *
  * Simple JSON parser to parse the output of Yoctopuce devices
  *
@@ -37,6 +37,7 @@
  *
  *********************************************************************}
 unit yjson;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 

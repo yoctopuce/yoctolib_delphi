@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 34651 2019-03-15 17:21:54Z seb $
+ * $Id: yocto_files.pas 35285 2019-05-07 07:37:56Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_files;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 

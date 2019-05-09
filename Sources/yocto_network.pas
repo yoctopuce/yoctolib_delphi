@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_network.pas 34604 2019-03-11 14:49:45Z seb $
+ *  $Id: yocto_network.pas 35285 2019-05-07 07:37:56Z seb $
  *
  *  Implements yFindNetwork(), the high-level API for Network functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_network;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 34661 2019-03-18 11:02:50Z seb $
+ * $Id: yocto_messagebox.pas 35285 2019-05-07 07:37:56Z seb $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_messagebox;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 

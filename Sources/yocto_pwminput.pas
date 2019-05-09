@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_pwminput.pas 32903 2018-11-02 10:14:32Z seb $
+ *  $Id: yocto_pwminput.pas 35285 2019-05-07 07:37:56Z seb $
  *
  *  Implements yFindPwmInput(), the high-level API for PwmInput functions
  *
@@ -39,6 +39,7 @@
 
 
 unit yocto_pwminput;
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 
