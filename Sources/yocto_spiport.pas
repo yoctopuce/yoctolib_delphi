@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_spiport.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_spiport.pas 35467 2019-05-16 14:41:53Z seb $
  *
  *  Implements yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -64,6 +64,7 @@ const Y_VOLTAGELEVEL_TTL5V = 3;
 const Y_VOLTAGELEVEL_TTL5VR = 4;
 const Y_VOLTAGELEVEL_RS232 = 5;
 const Y_VOLTAGELEVEL_RS485 = 6;
+const Y_VOLTAGELEVEL_TTL1V8 = 7;
 const Y_VOLTAGELEVEL_INVALID = -1;
 const Y_PROTOCOL_INVALID              = YAPI_INVALID_STRING;
 const Y_SPIMODE_INVALID               = YAPI_INVALID_STRING;
@@ -327,8 +328,9 @@ type
     /// </summary>
     /// <returns>
     ///   a value among <c>Y_VOLTAGELEVEL_OFF</c>, <c>Y_VOLTAGELEVEL_TTL3V</c>, <c>Y_VOLTAGELEVEL_TTL3VR</c>,
-    ///   <c>Y_VOLTAGELEVEL_TTL5V</c>, <c>Y_VOLTAGELEVEL_TTL5VR</c>, <c>Y_VOLTAGELEVEL_RS232</c> and
-    ///   <c>Y_VOLTAGELEVEL_RS485</c> corresponding to the voltage level used on the serial line
+    ///   <c>Y_VOLTAGELEVEL_TTL5V</c>, <c>Y_VOLTAGELEVEL_TTL5VR</c>, <c>Y_VOLTAGELEVEL_RS232</c>,
+    ///   <c>Y_VOLTAGELEVEL_RS485</c> and <c>Y_VOLTAGELEVEL_TTL1V8</c> corresponding to the voltage level
+    ///   used on the serial line
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_VOLTAGELEVEL_INVALID</c>.
@@ -351,8 +353,9 @@ type
     /// </summary>
     /// <param name="newval">
     ///   a value among <c>Y_VOLTAGELEVEL_OFF</c>, <c>Y_VOLTAGELEVEL_TTL3V</c>, <c>Y_VOLTAGELEVEL_TTL3VR</c>,
-    ///   <c>Y_VOLTAGELEVEL_TTL5V</c>, <c>Y_VOLTAGELEVEL_TTL5VR</c>, <c>Y_VOLTAGELEVEL_RS232</c> and
-    ///   <c>Y_VOLTAGELEVEL_RS485</c> corresponding to the voltage type used on the serial line
+    ///   <c>Y_VOLTAGELEVEL_TTL5V</c>, <c>Y_VOLTAGELEVEL_TTL5VR</c>, <c>Y_VOLTAGELEVEL_RS232</c>,
+    ///   <c>Y_VOLTAGELEVEL_RS485</c> and <c>Y_VOLTAGELEVEL_TTL1V8</c> corresponding to the voltage type used
+    ///   on the serial line
     /// </param>
     /// <para>
     /// </para>

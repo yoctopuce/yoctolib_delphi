@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_temperature.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_temperature.pas 35467 2019-05-16 14:41:53Z seb $
  *
  *  Implements yFindTemperature(), the high-level API for Temperature functions
  *
@@ -64,6 +64,7 @@ const Y_SENSORTYPE_RES_NTC = 12;
 const Y_SENSORTYPE_RES_LINEAR = 13;
 const Y_SENSORTYPE_RES_INTERNAL = 14;
 const Y_SENSORTYPE_IR = 15;
+const Y_SENSORTYPE_RES_PT1000 = 16;
 const Y_SENSORTYPE_INVALID = -1;
 const Y_SIGNALVALUE_INVALID           = YAPI_INVALID_DOUBLE;
 const Y_SIGNALUNIT_INVALID            = YAPI_INVALID_STRING;
@@ -156,8 +157,8 @@ type
     ///   <c>Y_SENSORTYPE_TYPE_J</c>, <c>Y_SENSORTYPE_TYPE_N</c>, <c>Y_SENSORTYPE_TYPE_R</c>,
     ///   <c>Y_SENSORTYPE_TYPE_S</c>, <c>Y_SENSORTYPE_TYPE_T</c>, <c>Y_SENSORTYPE_PT100_4WIRES</c>,
     ///   <c>Y_SENSORTYPE_PT100_3WIRES</c>, <c>Y_SENSORTYPE_PT100_2WIRES</c>, <c>Y_SENSORTYPE_RES_OHM</c>,
-    ///   <c>Y_SENSORTYPE_RES_NTC</c>, <c>Y_SENSORTYPE_RES_LINEAR</c>, <c>Y_SENSORTYPE_RES_INTERNAL</c> and
-    ///   <c>Y_SENSORTYPE_IR</c> corresponding to the temperature sensor type
+    ///   <c>Y_SENSORTYPE_RES_NTC</c>, <c>Y_SENSORTYPE_RES_LINEAR</c>, <c>Y_SENSORTYPE_RES_INTERNAL</c>,
+    ///   <c>Y_SENSORTYPE_IR</c> and <c>Y_SENSORTYPE_RES_PT1000</c> corresponding to the temperature sensor type
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_SENSORTYPE_INVALID</c>.
@@ -183,8 +184,8 @@ type
     ///   <c>Y_SENSORTYPE_TYPE_J</c>, <c>Y_SENSORTYPE_TYPE_N</c>, <c>Y_SENSORTYPE_TYPE_R</c>,
     ///   <c>Y_SENSORTYPE_TYPE_S</c>, <c>Y_SENSORTYPE_TYPE_T</c>, <c>Y_SENSORTYPE_PT100_4WIRES</c>,
     ///   <c>Y_SENSORTYPE_PT100_3WIRES</c>, <c>Y_SENSORTYPE_PT100_2WIRES</c>, <c>Y_SENSORTYPE_RES_OHM</c>,
-    ///   <c>Y_SENSORTYPE_RES_NTC</c>, <c>Y_SENSORTYPE_RES_LINEAR</c>, <c>Y_SENSORTYPE_RES_INTERNAL</c> and
-    ///   <c>Y_SENSORTYPE_IR</c> corresponding to the temperature sensor type
+    ///   <c>Y_SENSORTYPE_RES_NTC</c>, <c>Y_SENSORTYPE_RES_LINEAR</c>, <c>Y_SENSORTYPE_RES_INTERNAL</c>,
+    ///   <c>Y_SENSORTYPE_IR</c> and <c>Y_SENSORTYPE_RES_PT1000</c> corresponding to the temperature sensor type
     /// </param>
     /// <para>
     /// </para>

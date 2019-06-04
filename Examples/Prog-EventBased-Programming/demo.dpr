@@ -40,8 +40,8 @@ uses
    begin
      serial := m.get_serialNumber();
      writeln('Device arrival : ' + serial);
-     m.registerConfigChangeCallback(configChangeCallback);
-     m.registerBeaconCallback(beaconCallback);
+     m.registerConfigChangeCallback(@configChangeCallback);
+     m.registerBeaconCallback(@beaconCallback);
 
      // First solution: look for a specific type of function (eg. anButton)
      fctcount := m.functionCount();
@@ -52,7 +52,7 @@ uses
          begin
            writeln('- ' + hardwareId);
            anButton := yFindAnButton(hardwareId);
-           anButton.registerValueCallback(anButtonValueChangeCallBack);
+           anButton.registerValueCallback(@anButtonValueChangeCallBack);
          end;
        end;
 
@@ -64,8 +64,8 @@ uses
          begin
            hardwareId := sensor.get_hardwareId();
            writeln('- ' + hardwareId);
-           sensor.registerValueCallback(sensorValueChangeCallBack);
-           sensor.registerTimedReportCallback(sensorTimedReportCallBack);
+           sensor.registerValueCallback(@sensorValueChangeCallBack);
+           sensor.registerTimedReportCallback(@sensorTimedReportCallBack);
          end;
          sensor := sensor.nextSensor();
        end
@@ -86,8 +86,8 @@ begin
      halt;
    end;
 
-  yRegisterDeviceArrivalCallback(deviceArrival);
-  yRegisterDeviceRemovalCallback(deviceRemoval);
+  yRegisterDeviceArrivalCallback(@deviceArrival);
+  yRegisterDeviceRemovalCallback(@deviceRemoval);
 
   WriteLn('Hit Ctrl-C to Stop ');
 

@@ -66,7 +66,7 @@ begin
 
   // register the callback: HubDiscovered will be
   // invoked each time a hub signals its presence
-  yRegisterHubDiscoveryCallback(HubDiscovered);
+  yRegisterHubDiscoveryCallback(@HubDiscovered);
 
   // wait for 30 seconds, doing nothing.
   for i:=1 to 30 do

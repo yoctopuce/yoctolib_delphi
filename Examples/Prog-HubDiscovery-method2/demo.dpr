@@ -52,7 +52,7 @@ begin
 
   // each time a new device is connected/discovered
   // arrivalCallback will be called.
-  yRegisterDeviceArrivalCallback(arrivalCallback);
+  yRegisterDeviceArrivalCallback(@arrivalCallback);
 
   // wait for 30 seconds, doing nothing.
   for i:=1 to 30 do

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_current.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_current.pas 35360 2019-05-09 09:02:29Z mvuilleu $
  *
  *  Implements yFindCurrent(), the high-level API for Current functions
  *
@@ -90,8 +90,46 @@ type
     //--- (YCurrent accessors declaration)
     constructor Create(func:string);
 
+    ////
+    /// <summary>
+    ///   Returns the activation state of this input.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   either <c>Y_ENABLED_FALSE</c> or <c>Y_ENABLED_TRUE</c>, according to the activation state of this input
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_ENABLED_INVALID</c>.
+    /// </para>
+    ///-
     function get_enabled():Integer;
 
+    ////
+    /// <summary>
+    ///   Changes the activation state of this input.
+    /// <para>
+    ///   When an input is disabled,
+    ///   its value is no more updated. On some devices, disabling an input can
+    ///   improve the refresh rate of the other active inputs.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   either <c>Y_ENABLED_FALSE</c> or <c>Y_ENABLED_TRUE</c>, according to the activation state of this input
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
     function set_enabled(newval:Integer):integer;
 
     ////

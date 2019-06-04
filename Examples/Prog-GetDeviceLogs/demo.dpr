@@ -14,7 +14,7 @@ uses
    begin
      serial := m.get_serialNumber();
      writeln('Device arrival : ' + serial);
-     m.registerLogCallback(logfun)
+     m.registerLogCallback(@logfun)
    end;
 
 
@@ -28,7 +28,7 @@ begin
      halt;
    end;
 
-  yRegisterDeviceArrivalCallback(deviceArrival);
+  yRegisterDeviceArrivalCallback(@deviceArrival);
   
   WriteLn('Hit Ctrl-C to Stop ');
 

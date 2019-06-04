@@ -164,7 +164,7 @@ var
       for i :=0 to __rootDevices.Count - 1 do
         if (TRootDevice(__rootDevices[i]).getSerial() = serial) then
           begin
-            result := __rootDevices[i];
+            result := TRootDevice(__rootDevices[i]);
             exit;
           end;
       result := nil;
@@ -252,8 +252,8 @@ begin
      halt;
    end;
 
-  yRegisterDeviceArrivalCallback(deviceArrival);
-  yRegisterDeviceRemovalCallback(deviceRemoval);
+  yRegisterDeviceArrivalCallback(@deviceArrival);
+  yRegisterDeviceRemovalCallback(@deviceRemoval);
 
   WriteLn('Hit Ctrl-C to Stop ');
 

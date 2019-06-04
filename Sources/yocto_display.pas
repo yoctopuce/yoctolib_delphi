@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 35285 2019-05-07 07:37:56Z seb $
+ * $Id: yocto_display.pas 35360 2019-05-09 09:02:29Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -1074,13 +1074,13 @@ public
     /// </param>
     /// <param name="anchor">
     ///   the text anchor point, chosen among the <c>Y_ALIGN</c> enumeration:
-    ///   <c>Y_ALIGN_TOP_LEFT</c>,    <c>Y_ALIGN_CENTER_LEFT</c>,    <c>Y_ALIGN_BASELINE_LEFT</c>,
+    ///   <c>Y_ALIGN_TOP_LEFT</c>,    <c>Y_ALIGN_CENTER_LEFT</c>,    <c>Y_ALIGN_BASELINE_LEFT</c>,   
     ///   <c>Y_ALIGN_BOTTOM_LEFT</c>,
-    ///   <c>Y_ALIGN_TOP_CENTER</c>,  <c>Y_ALIGN_CENTER</c>,         <c>Y_ALIGN_BASELINE_CENTER</c>,
+    ///   <c>Y_ALIGN_TOP_CENTER</c>,  <c>Y_ALIGN_CENTER</c>,         <c>Y_ALIGN_BASELINE_CENTER</c>, 
     ///   <c>Y_ALIGN_BOTTOM_CENTER</c>,
     ///   <c>Y_ALIGN_TOP_DECIMAL</c>, <c>Y_ALIGN_CENTER_DECIMAL</c>, <c>Y_ALIGN_BASELINE_DECIMAL</c>,
     ///   <c>Y_ALIGN_BOTTOM_DECIMAL</c>,
-    ///   <c>Y_ALIGN_TOP_RIGHT</c>,   <c>Y_ALIGN_CENTER_RIGHT</c>,   <c>Y_ALIGN_BASELINE_RIGHT</c>,
+    ///   <c>Y_ALIGN_TOP_RIGHT</c>,   <c>Y_ALIGN_CENTER_RIGHT</c>,   <c>Y_ALIGN_BASELINE_RIGHT</c>,  
     ///   <c>Y_ALIGN_BOTTOM_RIGHT</c>.
     /// </param>
     /// <param name="text">

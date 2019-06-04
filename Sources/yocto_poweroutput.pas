@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_poweroutput.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_poweroutput.pas 35467 2019-05-16 14:41:53Z seb $
  *
  *  Implements yFindPowerOutput(), the high-level API for PowerOutput functions
  *
@@ -51,6 +51,8 @@ uses
 const Y_VOLTAGE_OFF = 0;
 const Y_VOLTAGE_OUT3V3 = 1;
 const Y_VOLTAGE_OUT5V = 2;
+const Y_VOLTAGE_OUT4V7 = 3;
+const Y_VOLTAGE_OUT1V8 = 4;
 const Y_VOLTAGE_INVALID = -1;
 
 
@@ -98,8 +100,9 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_VOLTAGE_OFF</c>, <c>Y_VOLTAGE_OUT3V3</c> and <c>Y_VOLTAGE_OUT5V</c>
-    ///   corresponding to the voltage on the power output featured by the module
+    ///   a value among <c>Y_VOLTAGE_OFF</c>, <c>Y_VOLTAGE_OUT3V3</c>, <c>Y_VOLTAGE_OUT5V</c>,
+    ///   <c>Y_VOLTAGE_OUT4V7</c> and <c>Y_VOLTAGE_OUT1V8</c> corresponding to the voltage on the power
+    ///   output featured by the module
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_VOLTAGE_INVALID</c>.
@@ -119,8 +122,9 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>Y_VOLTAGE_OFF</c>, <c>Y_VOLTAGE_OUT3V3</c> and <c>Y_VOLTAGE_OUT5V</c>
-    ///   corresponding to the voltage on the power output provided by the
+    ///   a value among <c>Y_VOLTAGE_OFF</c>, <c>Y_VOLTAGE_OUT3V3</c>, <c>Y_VOLTAGE_OUT5V</c>,
+    ///   <c>Y_VOLTAGE_OUT4V7</c> and <c>Y_VOLTAGE_OUT1V8</c> corresponding to the voltage on the power
+    ///   output provided by the
     ///   module
     /// </param>
     /// <para>

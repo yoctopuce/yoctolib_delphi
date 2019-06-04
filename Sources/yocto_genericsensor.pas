@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_genericsensor.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_genericsensor.pas 35360 2019-05-09 09:02:29Z mvuilleu $
  *
  *  Implements yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -59,6 +59,9 @@ const Y_SIGNALSAMPLING_LOW_NOISE = 2;
 const Y_SIGNALSAMPLING_LOW_NOISE_FILTERED = 3;
 const Y_SIGNALSAMPLING_HIGHEST_RATE = 4;
 const Y_SIGNALSAMPLING_INVALID = -1;
+const Y_ENABLED_FALSE = 0;
+const Y_ENABLED_TRUE = 1;
+const Y_ENABLED_INVALID = -1;
 
 
 //--- (end of YGenericSensor definitions)
@@ -94,6 +97,7 @@ type
     _valueRange               : string;
     _signalBias               : double;
     _signalSampling           : Integer;
+    _enabled                  : Integer;
     _valueCallbackGenericSensor : TYGenericSensorValueCallback;
     _timedReportCallbackGenericSensor : TYGenericSensorTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
@@ -342,6 +346,48 @@ type
 
     ////
     /// <summary>
+    ///   Returns the activation state of this input.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   either <c>Y_ENABLED_FALSE</c> or <c>Y_ENABLED_TRUE</c>, according to the activation state of this input
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_ENABLED_INVALID</c>.
+    /// </para>
+    ///-
+    function get_enabled():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the activation state of this input.
+    /// <para>
+    ///   When an input is disabled,
+    ///   its value is no more updated. On some devices, disabling an input can
+    ///   improve the refresh rate of the other active inputs.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   either <c>Y_ENABLED_FALSE</c> or <c>Y_ENABLED_TRUE</c>, according to the activation state of this input
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_enabled(newval:Integer):integer;
+
+    ////
+    /// <summary>
     ///   Retrieves $AFUNCTION$ for a given identifier.
     /// <para>
     ///   The identifier can be specified using several formats:
@@ -566,6 +612,7 @@ implementation
       _valueRange := Y_VALUERANGE_INVALID;
       _signalBias := Y_SIGNALBIAS_INVALID;
       _signalSampling := Y_SIGNALSAMPLING_INVALID;
+      _enabled := Y_ENABLED_INVALID;
       _valueCallbackGenericSensor := nil;
       _timedReportCallbackGenericSensor := nil;
       //--- (end of YGenericSensor accessors initialization)
@@ -614,6 +661,12 @@ implementation
       if (member^.name = 'signalSampling') then
         begin
           _signalSampling := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'enabled') then
+        begin
+          _enabled := member^.ivalue;
          result := 1;
          exit;
          end;
@@ -767,6 +820,32 @@ implementation
     begin
       rest_val := inttostr(newval);
       result := _setAttr('signalSampling',rest_val);
+    end;
+
+  function TYGenericSensor.get_enabled():Integer;
+    var
+      res : Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_ENABLED_INVALID;
+              exit;
+            end;
+        end;
+      res := self._enabled;
+      result := res;
+      exit;
+    end;
+
+
+  function TYGenericSensor.set_enabled(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      if(newval>0) then rest_val := '1' else rest_val := '0';
+      result := _setAttr('enabled',rest_val);
     end;
 
   class function TYGenericSensor.FindGenericSensor(func: string):TYGenericSensor;

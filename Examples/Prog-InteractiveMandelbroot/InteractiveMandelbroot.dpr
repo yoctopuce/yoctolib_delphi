@@ -118,11 +118,11 @@ begin
      end;
 
 
-  b1.registerValueCallback(b1change);
-  b2.registerValueCallback(b2change);
+  b1.registerValueCallback(@b1change);
+  b2.registerValueCallback(@b2change);
 
-  by.registerValueCallback(bychange);
-  bx.registerValueCallback(bxchange);
+  by.registerValueCallback(@bychange);
+  bx.registerValueCallback(@bxchange);
 
 
 

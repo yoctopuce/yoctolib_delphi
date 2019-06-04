@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 35285 2019-05-07 07:37:56Z seb $
+ * $Id: yocto_api.pas 35620 2019-06-04 08:29:58Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -119,7 +119,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '35340';
+  YOCTO_API_BUILD_NO        = '35622';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -897,6 +897,22 @@ type
     /// </para>
     ///-
     function loadAttribute(attrName: string):string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Test if the function is readOnly.
+    /// <para>
+    ///   Return <c>true</c> if the function is write protected
+    ///   or that the function is not available.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>true</c> if the function is readOnly or not online.
+    /// </returns>
+    ///-
+    function isReadOnly():boolean; overload; virtual;
 
     ////
     /// <summary>
@@ -5303,6 +5319,7 @@ const
   function _yapiGetNetDevListValidity():integer; cdecl; external dllfile name 'yapiGetNetDevListValidity';
   procedure _yapiRegisterBeaconCallback(beaconCallback:_yapiBeaconFunc); cdecl; external dllfile name 'yapiRegisterBeaconCallback';
   procedure _yapiStartStopDeviceLogCallback(serial:pansichar; start:integer); cdecl; external dllfile name 'yapiStartStopDeviceLogCallback';
+  function _yapiIsModuleWritable(serial:pansichar; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiIsModuleWritable';
 //--- (end of generated code: YFunction dlldef)
 
 
@@ -7452,6 +7469,31 @@ var
     end;
 
 
+  function TYFunction.isReadOnly():boolean;
+    var
+      serial : string;
+      errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
+      errmsg : pansichar;
+      res : LongInt;
+    begin
+      errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
+      Try
+        serial := self.get_serialNumber;
+      Except
+        result := true;
+        exit;
+      End;
+      res := _yapiIsModuleWritable(pansichar(ansistring(serial)), errmsg);
+      if res > 0 then
+        begin
+          result := false;
+          exit;
+        end;
+      result := true;
+      exit;
+    end;
+
+
   function TYFunction.get_serialNumber():string;
     var
       m : TYModule;
@@ -8745,12 +8787,20 @@ var
   class function TYModule.FindModule(func: string):TYModule;
     var
       obj : TYModule;
+      cleanHwId : string;
+      modpos : LongInt;
     begin
-      obj := TYModule(TYFunction._FindFromCache('Module', func));
+      cleanHwId := func;
+      modpos := (pos('.module', func) - 1);
+      if modpos <> (Length(func) - 7) then
+        begin
+          cleanHwId := func + '.module';
+        end;
+      obj := TYModule(TYFunction._FindFromCache('Module', cleanHwId));
       if obj = nil then
         begin
-          obj :=  TYModule.create(func);
-          TYFunction._AddToCache('Module',  func, obj);
+          obj :=  TYModule.create(cleanHwId);
+          TYFunction._AddToCache('Module',  cleanHwId, obj);
         end;
       result := obj;
       exit;
@@ -9017,18 +9067,20 @@ var
             begin
               url := 'api/'+ templist[i_i]+'/sensorType';
               t_type := _ByteToString(self._download(url));
-              if (t_type = 'RES_NTC') then
+              if (t_type = 'RES_NTC') or (t_type = 'RES_LINEAR') then
                 begin
                   id := Copy( templist[i_i],  11 + 1, Length( templist[i_i]) - 11);
-                  temp_data_bin := self._download('extra.json?page='+id);
-                  if length(temp_data_bin) = 0 then
+                  if (id = '') then
                     begin
-                      result := temp_data_bin;
-                      exit;
+                      id := '1';
                     end;
-                  item := ''+ sep+'{"fid":"'+  templist[i_i]+'", "json":'+_ByteToString(temp_data_bin)+'}'#10'';
-                  ext_settings := ext_settings + item;
-                  sep := ',';
+                  temp_data_bin := self._download('extra.json?page='+id);
+                  if length(temp_data_bin) > 0 then
+                    begin
+                      item := ''+ sep+'{"fid":"'+  templist[i_i]+'", "json":'+_ByteToString(temp_data_bin)+'}'#10'';
+                      ext_settings := ext_settings + item;
+                      sep := ',';
+                    end;
                 end;
             end;
         end;
@@ -9083,7 +9135,7 @@ var
         begin
           curr := values[ofs];
           currTemp := values[ofs + 1];
-          url := 'api/'+  funcId+'/.json?command=m'+ curr+':'+currTemp;
+          url := 'api/'+ funcId+'.json?command=m'+ curr+':'+currTemp;
           self._download(url);
           ofs := ofs + 2;
         end;
