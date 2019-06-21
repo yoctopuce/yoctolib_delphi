@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 35620 2019-06-04 08:29:58Z seb $
+ * $Id: yocto_api.pas 35678 2019-06-05 09:35:13Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -119,7 +119,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '35652';
+  YOCTO_API_BUILD_NO        = '35871';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -435,8 +435,10 @@ type
     // Set an attribute in the function, and parse the resulting new function state
     function _setAttr( attrname:string; newvalue:string):YRETCODE;
 
+    function  _strip_http_header(buffer:TByteArray) :TByteArray;
     function  _upload(path:string; strcontent:string):integer; overload;
     function  _upload(path:string; content:TByteArray):integer; overload;
+    function  _uploadEx(path:string; content:TByteArray):TByteArray; overload;
 
     function  _download(path:string) :TByteArray;
     function  _request(request: string) :TByteArray; overload;
@@ -7169,20 +7171,14 @@ var
       setlength(result,0);
     end;
 
-
-  // Method used to send http request to the device (not the function)
-  function TYFunction._download(path:string):TByteArray;
-    var
-      request   :string;
-      buffer    :TByteArray;
+  function TYFunction._strip_http_header(buffer:TByteArray):TByteArray;
+   var
       found,i,j :integer;
       body      :integer;
       res       :TByteArray;
       isfound   :boolean;
       tmp :string;
     begin
-      request := 'GET /'+path+' HTTP/1.1'#13#10#13#10;
-      buffer := self._request(request);
       if length(buffer) =0 then
         begin
           result := buffer;
@@ -7215,6 +7211,18 @@ var
       result := res;
     end;
 
+
+  // Method used to send http request to the device (not the function)
+  function TYFunction._download(path:string):TByteArray;
+    var
+      request   :string;
+      buffer    :TByteArray;
+    begin
+      request := 'GET /'+path+' HTTP/1.1'#13#10#13#10;
+      buffer := self._request(request);
+      result := _strip_http_header(buffer);
+    end;
+
   function  TYFunction._upload(path: string; strcontent: string) :integer;
     begin
       result :=  _upload(path,  _StrToByte(strcontent));
@@ -7222,6 +7230,21 @@ var
 
   // Method used to upload a file to the device
   function  TYFunction._upload(path: string; content: TByteArray) :integer;
+    var
+      buffer :TByteArray;
+    begin
+
+      buffer  := _uploadEx(path, content);
+      if length(buffer) = 0 then
+        begin
+          result := YAPI_IO_ERROR;
+          exit;
+        end;
+      result := YAPI_SUCCESS;
+    end;
+
+ // Method used to upload a file to the device
+  function  TYFunction._uploadEx(path: string; content: TByteArray) :TByteArray;
     var
       buffer,bb,header,footer :TByteArray;
       body,fullrequest        :TByteArray;
@@ -7265,13 +7288,7 @@ var
       Move(body[0],   fullrequest[Length(header)], length(body));
       Move(footer[0], fullrequest[Length(header) + length(body)], length(footer));
       buffer  := _request(fullrequest);
-      if length(buffer) = 0 then
-        begin
-          _throw(YAPI_IO_ERROR,'http request failed');
-          result := YAPI_IO_ERROR;
-          exit;
-        end;
-      result := YAPI_SUCCESS;
+      result := _strip_http_header(buffer);
     end;
 
 
