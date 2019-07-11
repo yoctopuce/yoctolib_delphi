@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 35678 2019-06-05 09:35:13Z seb $
+ * $Id: yocto_api.pas 36141 2019-07-08 17:51:33Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -79,6 +79,7 @@ type
   TLongIntArray   = array of LongInt;
   intArr          = TLongIntArray;    // for backward compatibility
   pTLongIntArray  = ^TLongIntArray;
+  TYDataLoggerRawData = array of array of double;
 
   yCalibrationHandler = function (rawValue:double; calibType: integer; params : TLongIntArray; rawValues,refValues:TDoubleArray ):double;
 
@@ -119,7 +120,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '35983';
+  YOCTO_API_BUILD_NO        = '36218';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -289,6 +290,10 @@ const Y_SENSORSTATE_INVALID           = YAPI_INVALID_INT;
 
 
 //--- (end of generated code: YDataSet definitions)
+//--- (generated code: YConsolidatedDataSet definitions)
+
+
+//--- (end of generated code: YConsolidatedDataSet definitions)
 
 //--- (generated code: YDataLogger definitions)
 
@@ -322,10 +327,13 @@ type
   TYDataStream = class;
   TYMeasure = class;
   TYDataSet = class;
+  TYConsolidatedDataSet = class;
 
   TDoubleArrayArray = array of TDoubleArray;
   TYDataStreamArray = array of TYDataStream;
   TYMeasureArray = array of TYMeasure;
+  TYDataSetArray  = array of TYDataSet;
+  TYSensorArray   = array of TYSensor;
 
   TYAPIContext = class;
 
@@ -2166,7 +2174,8 @@ end;
 
     ////
     /// <summary>
-    ///   Returns the uncalibrated, unrounded raw value returned by the sensor, in the specified unit, as a floating point number.
+    ///   Returns the uncalibrated, unrounded raw value returned by the
+    ///   sensor, in the specified unit, as a floating point number.
     /// <para>
     /// </para>
     /// <para>
@@ -3747,9 +3756,71 @@ end;
   //--- (end of generated code: YDataSet accessors declaration)
 end;
 
+  //--- (generated code: YConsolidatedDataSet class start)
+  ////
+  /// <summary>
+  ///   TYConsolidatedDataSet Class: Cross-sensor consolidated data sequence
+  /// <para>
+  ///   YConsolidatedDataSet objects make it possible to retrieve a set of
+  ///   recorded measures from multiple sensors, for a specified time interval.
+  ///   They can be used to load data points progressively, and to receive
+  ///   data records by timestamp, one by one..
+  /// </para>
+  /// </summary>
+  ///-
+  TYConsolidatedDataSet=class(TObject)
+  //--- (end of generated code: YConsolidatedDataSet class start)
+  protected
+  //--- (generated code: YConsolidatedDataSet declaration)
+    // Attributes (function value cache)
+    _start                    : double;
+    _end                      : double;
+    _nsensors                 : LongInt;
+    _sensors                  : TYSensorArray;
+    _datasets                 : TYDataSetArray;
+    _progresss                : TLongIntArray;
+    _nextidx                  : TLongIntArray;
+    _nexttim                  : TDoubleArray;
 
-  TYDataLoggerRawData = array of array of double;
-  TYDataSetArray = array of TYDataSet;
+    //--- (end of generated code: YConsolidatedDataSet declaration)
+
+
+  public
+
+    constructor Create(startTime,endTime: double; sensorList: TYSensorArray); Overload;
+
+    destructor Destroy();override;
+
+  //--- (generated code: YConsolidatedDataSet accessors declaration)
+    function _init(startt: double; endt: double; sensorList: TYSensorArray):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Extracts the next data record from the dataLogger of all sensors linked to this
+    ///   object.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="datarec">
+    ///   array of floating point numbers, that will be filled by the
+    ///   function with the timestamp of the measure in first position,
+    ///   followed by the measured value in next positions.
+    /// </param>
+    /// <returns>
+    ///   an integer in the range 0 to 100 (percentage of completion),
+    ///   or a negative error code in case of failure.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function nextRecord(var datarec: TDoubleArray):LongInt; overload; virtual;
+
+
+  //--- (end of generated code: YConsolidatedDataSet accessors declaration)
+end;
 
 
   TYOldDataStream=class(TYDataStream)
@@ -5028,6 +5099,8 @@ type
 //--- (end of generated code: YMeasure functions declaration)
 //--- (generated code: YDataSet functions declaration)
 //--- (end of generated code: YDataSet functions declaration)
+//--- (generated code: YConsolidatedDataSet functions declaration)
+//--- (end of generated code: YConsolidatedDataSet functions declaration)
 
 
   {*****************************************************************************
@@ -8102,13 +8175,13 @@ var
           exit;
         end;
       first := funcId[1];
-      for i := 2 to Length(funcId) do
+      for i := Length(funcId) DownTo 2 do
         begin
           c := funcId[i];
-          if (c >= '0') and (c <= '9') Then
+          if (c > '9') Then
             break;
         end;
-      result := UpCase(first) + Copy(funcId, 2, i - 2);
+      result := UpCase(first) + Copy(funcId, 2, i - 1);
     end;
 
  // Retrieve the type of the nth function (beside "module") in the device
@@ -12815,6 +12888,177 @@ var
 
 //--- (end of generated code: YDataSet implementation)
 
+
+  constructor TYConsolidatedDataSet.Create(startTime,endTime: double; sensorList: TYSensorArray);
+    begin
+      self._init(startTime, endTime, sensorList);
+    end;
+
+  destructor TYConsolidatedDataSet.Destroy();
+    var
+      i : LongInt;
+    begin
+      for i := length(self._datasets)-1 downto 0 do
+        self._datasets[i].Free();
+      setLength(self._datasets,0);
+      setLength(self._progresss,0);
+      setLength(self._nextidx,0);
+      setLength(self._nexttim,0);
+      inherited Destroy();
+    end;
+
+
+//--- (generated code: YConsolidatedDataSet implementation)
+
+  function TYConsolidatedDataSet._init(startt: double; endt: double; sensorList: TYSensorArray):LongInt;
+    begin
+      self._start := startt;
+      self._end := endt;
+      self._sensors := sensorList;
+      self._nsensors := -1;
+      result := YAPI_SUCCESS;
+      exit;
+    end;
+
+
+  function TYConsolidatedDataSet.nextRecord(var datarec: TDoubleArray):LongInt;
+    var
+      s : LongInt;
+      idx : LongInt;
+      sensor : TYSensor;
+      newdataset : TYDataSet;
+      globprogress : LongInt;
+      currprogress : LongInt;
+      currnexttim : double;
+      newvalue : double;
+      measures : TYMeasureArray;
+      nexttime : double;
+      datasets_pos : LongInt;
+      progresss_pos : LongInt;
+      nextidx_pos : LongInt;
+      nexttim_pos : LongInt;
+      datarec_pos : LongInt;
+    begin
+      if self._nsensors = -1 then
+        begin
+          self._nsensors := length(self._sensors);
+          datasets_pos := 0;
+          SetLength(self._datasets, self._nsensors);
+          progresss_pos := 0;
+          SetLength(self._progresss, self._nsensors);
+          nextidx_pos := 0;
+          SetLength(self._nextidx, self._nsensors);
+          nexttim_pos := 0;
+          SetLength(self._nexttim, self._nsensors);
+          s := 0;
+          while s < self._nsensors do
+            begin
+              sensor := self._sensors[s];
+              newdataset := sensor.get_recordedData(self._start, self._end);
+              self._datasets[datasets_pos] := newdataset;
+              inc(datasets_pos);
+              self._progresss[progresss_pos] := 0;
+              inc(progresss_pos);
+              self._nextidx[nextidx_pos] := 0;
+              inc(nextidx_pos);
+              self._nexttim[nexttim_pos] := 0.0;
+              inc(nexttim_pos);
+              s := s + 1;
+            end;
+          SetLength(self._datasets, datasets_pos);
+          SetLength(self._progresss, progresss_pos);
+          SetLength(self._nextidx, nextidx_pos);
+          SetLength(self._nexttim, nexttim_pos);
+        end;
+      SetLength(datarec, 0);
+      //
+      // Find next timestamp to process
+      //
+      nexttime := 0;
+      s := 0;
+      while s < self._nsensors do
+        begin
+          currnexttim := self._nexttim[s];
+          if currnexttim = 0 then
+            begin
+              idx := self._nextidx[s];
+              measures := self._datasets[s].get_measures();
+              currprogress := self._progresss[s];
+              while (idx >= length(measures)) and(currprogress < 100) do
+                begin
+                  currprogress := self._datasets[s].loadMore();
+                  if currprogress < 0 then
+                    begin
+                      currprogress := 100;
+                    end;
+                  self._progresss[ s] := currprogress;
+                  measures := self._datasets[s].get_measures();
+                end;
+              if idx < length(measures) then
+                begin
+                  currnexttim := measures[idx].get_endTimeUTC();
+                  self._nexttim[ s] := currnexttim;
+                end;
+            end;
+          if currnexttim > 0 then
+            begin
+              if (nexttime = 0) or(nexttime > currnexttim) then
+                begin
+                  nexttime := currnexttim;
+                end;
+            end;
+          s := s + 1;
+        end;
+      if nexttime = 0 then
+        begin
+          result := 100;
+          exit;
+        end;
+      //
+      // Extract data for this timestamp
+      //
+      datarec_pos := 0;
+      SetLength(datarec, 1+self._nsensors);;
+      datarec[datarec_pos] := nexttime;
+      inc(datarec_pos);
+      globprogress := 0;
+      s := 0;
+      while s < self._nsensors do
+        begin
+          if self._nexttim[s] = nexttime then
+            begin
+              idx := self._nextidx[s];
+              measures := self._datasets[s].get_measures();
+              newvalue := measures[idx].get_averageValue();
+              datarec[datarec_pos] := newvalue;
+              inc(datarec_pos);
+              self._nexttim[ s] := 0.0;
+              self._nextidx[ s] := idx+1;
+            end
+          else
+            begin
+              datarec[datarec_pos] := (0/0);
+              inc(datarec_pos);
+            end;
+          currprogress := self._progresss[s];
+          globprogress := globprogress + currprogress;
+          s := s + 1;
+        end;
+      if globprogress > 0 then
+        begin
+          globprogress := (globprogress div self._nsensors);
+          if globprogress > 99 then
+            begin
+              globprogress := 99;
+            end;
+        end;
+      SetLength(datarec, datarec_pos);;
+      result := globprogress;
+      exit;
+    end;
+
+
+//--- (end of generated code: YConsolidatedDataSet implementation)
 
 
 const

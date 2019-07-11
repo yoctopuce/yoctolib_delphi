@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 35467 2019-05-16 14:41:53Z seb $
+ * $Id: yocto_serialport.pas 36048 2019-06-28 17:43:51Z mvuilleu $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -587,6 +587,173 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
 
     ////
     /// <summary>
+    ///   Reads a single line (or message) from the receive buffer, starting at current stream position.
+    /// <para>
+    ///   This function is intended to be used when the serial port is configured for a message protocol,
+    ///   such as 'Line' mode or frame protocols.
+    /// </para>
+    /// <para>
+    ///   If data at current stream position is not available anymore in the receive buffer,
+    ///   the function returns the oldest available line and moves the stream position just after.
+    ///   If no new full line is received, the function returns an empty line.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string with a single line of text
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function readLine():string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Searches for incoming messages in the serial port receive buffer matching a given pattern,
+    ///   starting at current position.
+    /// <para>
+    ///   This function will only compare and return printable characters
+    ///   in the message strings. Binary protocols are handled as hexadecimal strings.
+    /// </para>
+    /// <para>
+    ///   The search returns all messages matching the expression provided as argument in the buffer.
+    ///   If no matching message is found, the search waits for one up to the specified maximum timeout
+    ///   (in milliseconds).
+    /// </para>
+    /// </summary>
+    /// <param name="pattern">
+    ///   a limited regular expression describing the expected message format,
+    ///   or an empty string if all messages should be returned (no filtering).
+    ///   When using binary protocols, the format applies to the hexadecimal
+    ///   representation of the message.
+    /// </param>
+    /// <param name="maxWait">
+    ///   the maximum number of milliseconds to wait for a message if none is found
+    ///   in the receive buffer.
+    /// </param>
+    /// <returns>
+    ///   an array of strings containing the messages found, if any.
+    ///   Binary messages are converted to hexadecimal representation.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty array.
+    /// </para>
+    ///-
+    function readMessages(pattern: string; maxWait: LongInt):TStringArray; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Changes the current internal stream position to the specified value.
+    /// <para>
+    ///   This function
+    ///   does not affect the device, it only changes the value stored in the API object
+    ///   for the next read operations.
+    /// </para>
+    /// </summary>
+    /// <param name="absPos">
+    ///   the absolute position index for next read operations.
+    /// </param>
+    /// <returns>
+    ///   nothing.
+    /// </returns>
+    ///-
+    function read_seek(absPos: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the current absolute stream position pointer of the API object.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the absolute position index for next read operations.
+    /// </returns>
+    ///-
+    function read_tell():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the number of bytes available to read in the input buffer starting from the
+    ///   current absolute stream position pointer of the API object.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the number of bytes available to read
+    /// </returns>
+    ///-
+    function read_avail():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Sends a text line query to the serial port, and reads the reply, if any.
+    /// <para>
+    ///   This function is intended to be used when the serial port is configured for 'Line' protocol.
+    /// </para>
+    /// </summary>
+    /// <param name="query">
+    ///   the line query to send (without CR/LF)
+    /// </param>
+    /// <param name="maxWait">
+    ///   the maximum number of milliseconds to wait for a reply.
+    /// </param>
+    /// <returns>
+    ///   the next text line received after sending the text query, as a string.
+    ///   Additional lines can be obtained by calling readLine or readMessages.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty string.
+    /// </para>
+    ///-
+    function queryLine(query: string; maxWait: LongInt):string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Saves the job definition string (JSON data) into a job file.
+    /// <para>
+    ///   The job file can be later enabled using <c>selectJob()</c>.
+    /// </para>
+    /// </summary>
+    /// <param name="jobfile">
+    ///   name of the job file to save on the device filesystem
+    /// </param>
+    /// <param name="jsonDef">
+    ///   a string containing a JSON definition of the job
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function uploadJob(jobfile: string; jsonDef: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Load and start processing the specified job file.
+    /// <para>
+    ///   The file must have
+    ///   been previously created using the user interface or uploaded on the
+    ///   device filesystem using the <c>uploadJob()</c> function.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="jobfile">
+    ///   name of the job file (on the device filesystem)
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function selectJob(jobfile: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Clears the serial port buffer and resets counters to zero.
     /// <para>
     /// </para>
@@ -782,7 +949,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   a sequence of bytes with receive buffer contents
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
+    ///   On failure, throws an exception or returns an empty array.
     /// </para>
     ///-
     function readArray(nChars: LongInt):TLongIntArray; overload; virtual;
@@ -806,173 +973,6 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     /// </para>
     ///-
     function readHex(nBytes: LongInt):string; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Reads a single line (or message) from the receive buffer, starting at current stream position.
-    /// <para>
-    ///   This function is intended to be used when the serial port is configured for a message protocol,
-    ///   such as 'Line' mode or frame protocols.
-    /// </para>
-    /// <para>
-    ///   If data at current stream position is not available anymore in the receive buffer,
-    ///   the function returns the oldest available line and moves the stream position just after.
-    ///   If no new full line is received, the function returns an empty line.
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   a string with a single line of text
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function readLine():string; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Searches for incoming messages in the serial port receive buffer matching a given pattern,
-    ///   starting at current position.
-    /// <para>
-    ///   This function will only compare and return printable characters
-    ///   in the message strings. Binary protocols are handled as hexadecimal strings.
-    /// </para>
-    /// <para>
-    ///   The search returns all messages matching the expression provided as argument in the buffer.
-    ///   If no matching message is found, the search waits for one up to the specified maximum timeout
-    ///   (in milliseconds).
-    /// </para>
-    /// </summary>
-    /// <param name="pattern">
-    ///   a limited regular expression describing the expected message format,
-    ///   or an empty string if all messages should be returned (no filtering).
-    ///   When using binary protocols, the format applies to the hexadecimal
-    ///   representation of the message.
-    /// </param>
-    /// <param name="maxWait">
-    ///   the maximum number of milliseconds to wait for a message if none is found
-    ///   in the receive buffer.
-    /// </param>
-    /// <returns>
-    ///   an array of strings containing the messages found, if any.
-    ///   Binary messages are converted to hexadecimal representation.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns an empty array.
-    /// </para>
-    ///-
-    function readMessages(pattern: string; maxWait: LongInt):TStringArray; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Changes the current internal stream position to the specified value.
-    /// <para>
-    ///   This function
-    ///   does not affect the device, it only changes the value stored in the API object
-    ///   for the next read operations.
-    /// </para>
-    /// </summary>
-    /// <param name="absPos">
-    ///   the absolute position index for next read operations.
-    /// </param>
-    /// <returns>
-    ///   nothing.
-    /// </returns>
-    ///-
-    function read_seek(absPos: LongInt):LongInt; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Returns the current absolute stream position pointer of the API object.
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   the absolute position index for next read operations.
-    /// </returns>
-    ///-
-    function read_tell():LongInt; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Returns the number of bytes available to read in the input buffer starting from the
-    ///   current absolute stream position pointer of the API object.
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   the number of bytes available to read
-    /// </returns>
-    ///-
-    function read_avail():LongInt; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Sends a text line query to the serial port, and reads the reply, if any.
-    /// <para>
-    ///   This function is intended to be used when the serial port is configured for 'Line' protocol.
-    /// </para>
-    /// </summary>
-    /// <param name="query">
-    ///   the line query to send (without CR/LF)
-    /// </param>
-    /// <param name="maxWait">
-    ///   the maximum number of milliseconds to wait for a reply.
-    /// </param>
-    /// <returns>
-    ///   the next text line received after sending the text query, as a string.
-    ///   Additional lines can be obtained by calling readLine or readMessages.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns an empty array.
-    /// </para>
-    ///-
-    function queryLine(query: string; maxWait: LongInt):string; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Saves the job definition string (JSON data) into a job file.
-    /// <para>
-    ///   The job file can be later enabled using <c>selectJob()</c>.
-    /// </para>
-    /// </summary>
-    /// <param name="jobfile">
-    ///   name of the job file to save on the device filesystem
-    /// </param>
-    /// <param name="jsonDef">
-    ///   a string containing a JSON definition of the job
-    /// </param>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function uploadJob(jobfile: string; jsonDef: string):LongInt; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Load and start processing the specified job file.
-    /// <para>
-    ///   The file must have
-    ///   been previously created using the user interface or uploaded on the
-    ///   device filesystem using the <c>uploadJob()</c> function.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="jobfile">
-    ///   name of the job file (on the device filesystem)
-    /// </param>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function selectJob(jobfile: string):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -1854,6 +1854,160 @@ implementation
     end;
 
 
+  function TYSerialPort.readLine():string;
+    var
+      url : string;
+      msgbin : TByteArray;
+      msgarr : TStringArray;
+      msglen : LongInt;
+      res : string;
+    begin
+      SetLength(msgarr, 0);
+
+      url := 'rxmsg.json?pos='+inttostr(self._rxptr)+'&len=1&maxw=1';
+      msgbin := self._download(url);
+      msgarr := self._json_get_array(msgbin);
+      msglen := length(msgarr);
+      if msglen = 0 then
+        begin
+          result := '';
+          exit;
+        end;
+      // last element of array is the new position
+      msglen := msglen - 1;
+      self._rxptr := _atoi(msgarr[msglen]);
+      if msglen = 0 then
+        begin
+          result := '';
+          exit;
+        end;
+      res := self._json_get_string(_StrToByte(msgarr[0]));
+      result := res;
+      exit;
+    end;
+
+
+  function TYSerialPort.readMessages(pattern: string; maxWait: LongInt):TStringArray;
+    var
+      url : string;
+      msgbin : TByteArray;
+      msgarr : TStringArray;
+      msglen : LongInt;
+      res : TStringArray;
+      idx : LongInt;
+      res_pos : LongInt;
+    begin
+      SetLength(msgarr, 0);
+      SetLength(res, 0);
+
+      url := 'rxmsg.json?pos='+inttostr( self._rxptr)+'&maxw='+inttostr( maxWait)+'&pat='+pattern;
+      msgbin := self._download(url);
+      msgarr := self._json_get_array(msgbin);
+      msglen := length(msgarr);
+      if msglen = 0 then
+        begin
+          result := res;
+          exit;
+        end;
+      // last element of array is the new position
+      msglen := msglen - 1;
+      self._rxptr := _atoi(msgarr[msglen]);
+      idx := 0;
+      res_pos := length(res);
+      SetLength(res, res_pos+msglen);;
+      while idx < msglen do
+        begin
+          res[res_pos] := self._json_get_string(_StrToByte(msgarr[idx]));
+          inc(res_pos);
+          idx := idx + 1;
+        end;
+      SetLength(res, res_pos);;
+      result := res;
+      exit;
+    end;
+
+
+  function TYSerialPort.read_seek(absPos: LongInt):LongInt;
+    begin
+      self._rxptr := absPos;
+      result := YAPI_SUCCESS;
+      exit;
+    end;
+
+
+  function TYSerialPort.read_tell():LongInt;
+    begin
+      result := self._rxptr;
+      exit;
+    end;
+
+
+  function TYSerialPort.read_avail():LongInt;
+    var
+      buff : TByteArray;
+      bufflen : LongInt;
+      res : LongInt;
+    begin
+      buff := self._download('rxcnt.bin?pos='+inttostr(self._rxptr));
+      bufflen := length(buff) - 1;
+      while (bufflen > 0) and(buff[bufflen] <> 64) do
+        begin
+          bufflen := bufflen - 1;
+        end;
+      res := _atoi(Copy(_ByteToString(buff),  0 + 1, bufflen));
+      result := res;
+      exit;
+    end;
+
+
+  function TYSerialPort.queryLine(query: string; maxWait: LongInt):string;
+    var
+      url : string;
+      msgbin : TByteArray;
+      msgarr : TStringArray;
+      msglen : LongInt;
+      res : string;
+    begin
+      SetLength(msgarr, 0);
+
+      url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=!'+self._escapeAttr(query);
+      msgbin := self._download(url);
+      msgarr := self._json_get_array(msgbin);
+      msglen := length(msgarr);
+      if msglen = 0 then
+        begin
+          result := '';
+          exit;
+        end;
+      // last element of array is the new position
+      msglen := msglen - 1;
+      self._rxptr := _atoi(msgarr[msglen]);
+      if msglen = 0 then
+        begin
+          result := '';
+          exit;
+        end;
+      res := self._json_get_string(_StrToByte(msgarr[0]));
+      result := res;
+      exit;
+    end;
+
+
+  function TYSerialPort.uploadJob(jobfile: string; jsonDef: string):LongInt;
+    begin
+      self._upload(jobfile, _StrToByte(jsonDef));
+      result := YAPI_SUCCESS;
+      exit;
+    end;
+
+
+  function TYSerialPort.selectJob(jobfile: string):LongInt;
+    begin
+      result := self.set_currentJob(jobfile);
+      exit;
+    end;
+
+
   function TYSerialPort.reset():LongInt;
     begin
       self._rxptr := 0;
@@ -2228,160 +2382,6 @@ implementation
           ofs := ofs + 1;
         end;
       result := res;
-      exit;
-    end;
-
-
-  function TYSerialPort.readLine():string;
-    var
-      url : string;
-      msgbin : TByteArray;
-      msgarr : TStringArray;
-      msglen : LongInt;
-      res : string;
-    begin
-      SetLength(msgarr, 0);
-
-      url := 'rxmsg.json?pos='+inttostr(self._rxptr)+'&len=1&maxw=1';
-      msgbin := self._download(url);
-      msgarr := self._json_get_array(msgbin);
-      msglen := length(msgarr);
-      if msglen = 0 then
-        begin
-          result := '';
-          exit;
-        end;
-      // last element of array is the new position
-      msglen := msglen - 1;
-      self._rxptr := _atoi(msgarr[msglen]);
-      if msglen = 0 then
-        begin
-          result := '';
-          exit;
-        end;
-      res := self._json_get_string(_StrToByte(msgarr[0]));
-      result := res;
-      exit;
-    end;
-
-
-  function TYSerialPort.readMessages(pattern: string; maxWait: LongInt):TStringArray;
-    var
-      url : string;
-      msgbin : TByteArray;
-      msgarr : TStringArray;
-      msglen : LongInt;
-      res : TStringArray;
-      idx : LongInt;
-      res_pos : LongInt;
-    begin
-      SetLength(msgarr, 0);
-      SetLength(res, 0);
-
-      url := 'rxmsg.json?pos='+inttostr( self._rxptr)+'&maxw='+inttostr( maxWait)+'&pat='+pattern;
-      msgbin := self._download(url);
-      msgarr := self._json_get_array(msgbin);
-      msglen := length(msgarr);
-      if msglen = 0 then
-        begin
-          result := res;
-          exit;
-        end;
-      // last element of array is the new position
-      msglen := msglen - 1;
-      self._rxptr := _atoi(msgarr[msglen]);
-      idx := 0;
-      res_pos := length(res);
-      SetLength(res, res_pos+msglen);;
-      while idx < msglen do
-        begin
-          res[res_pos] := self._json_get_string(_StrToByte(msgarr[idx]));
-          inc(res_pos);
-          idx := idx + 1;
-        end;
-      SetLength(res, res_pos);;
-      result := res;
-      exit;
-    end;
-
-
-  function TYSerialPort.read_seek(absPos: LongInt):LongInt;
-    begin
-      self._rxptr := absPos;
-      result := YAPI_SUCCESS;
-      exit;
-    end;
-
-
-  function TYSerialPort.read_tell():LongInt;
-    begin
-      result := self._rxptr;
-      exit;
-    end;
-
-
-  function TYSerialPort.read_avail():LongInt;
-    var
-      buff : TByteArray;
-      bufflen : LongInt;
-      res : LongInt;
-    begin
-      buff := self._download('rxcnt.bin?pos='+inttostr(self._rxptr));
-      bufflen := length(buff) - 1;
-      while (bufflen > 0) and(buff[bufflen] <> 64) do
-        begin
-          bufflen := bufflen - 1;
-        end;
-      res := _atoi(Copy(_ByteToString(buff),  0 + 1, bufflen));
-      result := res;
-      exit;
-    end;
-
-
-  function TYSerialPort.queryLine(query: string; maxWait: LongInt):string;
-    var
-      url : string;
-      msgbin : TByteArray;
-      msgarr : TStringArray;
-      msglen : LongInt;
-      res : string;
-    begin
-      SetLength(msgarr, 0);
-
-      url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=!'+self._escapeAttr(query);
-      msgbin := self._download(url);
-      msgarr := self._json_get_array(msgbin);
-      msglen := length(msgarr);
-      if msglen = 0 then
-        begin
-          result := '';
-          exit;
-        end;
-      // last element of array is the new position
-      msglen := msglen - 1;
-      self._rxptr := _atoi(msgarr[msglen]);
-      if msglen = 0 then
-        begin
-          result := '';
-          exit;
-        end;
-      res := self._json_get_string(_StrToByte(msgarr[0]));
-      result := res;
-      exit;
-    end;
-
-
-  function TYSerialPort.uploadJob(jobfile: string; jsonDef: string):LongInt;
-    begin
-      self._upload(jobfile, _StrToByte(jsonDef));
-      result := YAPI_SUCCESS;
-      exit;
-    end;
-
-
-  function TYSerialPort.selectJob(jobfile: string):LongInt;
-    begin
-      result := self.set_currentJob(jobfile);
       exit;
     end;
 

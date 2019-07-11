@@ -1,8 +1,8 @@
 {*********************************************************************
  *
- *  $Id: yocto_spiport.pas 36048 2019-06-28 17:43:51Z mvuilleu $
+ *  $Id: yocto_i2cport.pas 36207 2019-07-10 20:46:18Z mvuilleu $
  *
- *  Implements yFindSpiPort(), the high-level API for SpiPort functions
+ *  Implements yFindI2cPort(), the high-level API for I2cPort functions
  *
  *  - - - - - - - - - License information: - - - - - - - - -
  *
@@ -38,7 +38,7 @@
  *********************************************************************}
 
 
-unit yocto_spiport;
+unit yocto_i2cport;
 {$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
@@ -46,7 +46,7 @@ interface
 uses
   sysutils, classes, windows, yocto_api, yjson;
 
-//--- (YSpiPort definitions)
+//--- (YI2cPort definitions)
 
 const Y_RXCOUNT_INVALID               = YAPI_INVALID_UINT;
 const Y_TXCOUNT_INVALID               = YAPI_INVALID_UINT;
@@ -67,41 +67,35 @@ const Y_VOLTAGELEVEL_RS485 = 6;
 const Y_VOLTAGELEVEL_TTL1V8 = 7;
 const Y_VOLTAGELEVEL_INVALID = -1;
 const Y_PROTOCOL_INVALID              = YAPI_INVALID_STRING;
-const Y_SPIMODE_INVALID               = YAPI_INVALID_STRING;
-const Y_SSPOLARITY_ACTIVE_LOW = 0;
-const Y_SSPOLARITY_ACTIVE_HIGH = 1;
-const Y_SSPOLARITY_INVALID = -1;
-const Y_SHIFTSAMPLING_OFF = 0;
-const Y_SHIFTSAMPLING_ON = 1;
-const Y_SHIFTSAMPLING_INVALID = -1;
+const Y_I2CMODE_INVALID               = YAPI_INVALID_STRING;
 
 
-//--- (end of YSpiPort definitions)
-//--- (YSpiPort yapiwrapper declaration)
-//--- (end of YSpiPort yapiwrapper declaration)
+//--- (end of YI2cPort definitions)
+//--- (YI2cPort yapiwrapper declaration)
+//--- (end of YI2cPort yapiwrapper declaration)
 
 type
-  TYSpiPort = class;
-  //--- (YSpiPort class start)
-  TYSpiPortValueCallback = procedure(func: TYSpiPort; value:string);
-  TYSpiPortTimedReportCallback = procedure(func: TYSpiPort; value:TYMeasure);
+  TYI2cPort = class;
+  //--- (YI2cPort class start)
+  TYI2cPortValueCallback = procedure(func: TYI2cPort; value:string);
+  TYI2cPortTimedReportCallback = procedure(func: TYI2cPort; value:TYMeasure);
 
   ////
   /// <summary>
-  ///   TYSpiPort Class: SPI Port function interface
+  ///   TYI2cPort Class: I2C Port function interface
   /// <para>
-  ///   The SpiPort function interface allows you to fully drive a Yoctopuce
-  ///   SPI port, to send and receive data, and to configure communication
-  ///   parameters (baud rate, bit count, parity, flow control and protocol).
-  ///   Note that Yoctopuce SPI ports are not exposed as virtual COM ports.
+  ///   The I2cPort function interface allows you to fully drive a Yoctopuce
+  ///   I2C port, to send and receive data, and to configure communication
+  ///   parameters (baud rate, etc).
+  ///   Note that Yoctopuce I2C ports are not exposed as virtual COM ports.
   ///   They are meant to be used in the same way as all Yoctopuce devices.
   /// </para>
   /// </summary>
   ///-
-  TYSpiPort=class(TYFunction)
-  //--- (end of YSpiPort class start)
+  TYI2cPort=class(TYFunction)
+  //--- (end of YI2cPort class start)
   protected
-  //--- (YSpiPort declaration)
+  //--- (YI2cPort declaration)
     // Attributes (function value cache)
     _rxCount                  : LongInt;
     _txCount                  : LongInt;
@@ -114,20 +108,18 @@ type
     _command                  : string;
     _voltageLevel             : Integer;
     _protocol                 : string;
-    _spiMode                  : string;
-    _ssPolarity               : Integer;
-    _shiftSampling            : Integer;
-    _valueCallbackSpiPort     : TYSpiPortValueCallback;
+    _i2cMode                  : string;
+    _valueCallbackI2cPort     : TYI2cPortValueCallback;
     _rxptr                    : LongInt;
     _rxbuff                   : TByteArray;
     _rxbuffptr                : LongInt;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
 
-    //--- (end of YSpiPort declaration)
+    //--- (end of YI2cPort declaration)
 
   public
-    //--- (YSpiPort accessors declaration)
+    //--- (YI2cPort accessors declaration)
     constructor Create(func:string);
 
     ////
@@ -372,10 +364,9 @@ type
     /// <summary>
     ///   Returns the type of protocol used over the serial line, as a string.
     /// <para>
-    ///   Possible values are "Line" for ASCII messages separated by CR and/or LF,
-    ///   "Frame:[timeout]ms" for binary messages separated by a delay time,
-    ///   "Char" for a continuous ASCII stream or
-    ///   "Byte" for a continuous binary stream.
+    ///   Possible values are
+    ///   "Line" for messages separated by LF or
+    ///   "Char" for continuous stream of codes.
     /// </para>
     /// <para>
     /// </para>
@@ -393,12 +384,11 @@ type
     /// <summary>
     ///   Changes the type of protocol used over the serial line.
     /// <para>
-    ///   Possible values are "Line" for ASCII messages separated by CR and/or LF,
-    ///   "Frame:[timeout]ms" for binary messages separated by a delay time,
-    ///   "Char" for a continuous ASCII stream or
-    ///   "Byte" for a continuous binary stream.
+    ///   Possible values are
+    ///   "Line" for messages separated by LF or
+    ///   "Char" for continuous stream of codes.
     ///   The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
-    ///   is always at lest the specified number of milliseconds between each bytes sent.
+    ///   is always at lest the specified number of milliseconds between each message sent.
     /// </para>
     /// <para>
     /// </para>
@@ -420,38 +410,38 @@ type
     ////
     /// <summary>
     ///   Returns the SPI port communication parameters, as a string such as
-    ///   "125000,0,msb".
+    ///   "400kbps,2000ms".
     /// <para>
-    ///   The string includes the baud rate, the SPI mode (between
-    ///   0 and 3) and the bit order.
+    ///   The string includes the baud rate and  th  e recovery delay
+    ///   after communications errors.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
     ///   a string corresponding to the SPI port communication parameters, as a string such as
-    ///   "125000,0,msb"
+    ///   "400kbps,2000ms"
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SPIMODE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>Y_I2CMODE_INVALID</c>.
     /// </para>
     ///-
-    function get_spiMode():string;
+    function get_i2cMode():string;
 
     ////
     /// <summary>
     ///   Changes the SPI port communication parameters, with a string such as
-    ///   "125000,0,msb".
+    ///   "400kbps,2000ms".
     /// <para>
-    ///   The string includes the baud rate, the SPI mode (between
-    ///   0 and 3) and the bit order.
+    ///   The string includes the baud rate and the recovery delay
+    ///   after communications errors.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
     ///   a string corresponding to the SPI port communication parameters, with a string such as
-    ///   "125000,0,msb"
+    ///   "400kbps,2000ms"
     /// </param>
     /// <para>
     /// </para>
@@ -462,89 +452,7 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function set_spiMode(newval:string):integer;
-
-    ////
-    /// <summary>
-    ///   Returns the SS line polarity.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   either <c>Y_SSPOLARITY_ACTIVE_LOW</c> or <c>Y_SSPOLARITY_ACTIVE_HIGH</c>, according to the SS line polarity
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SSPOLARITY_INVALID</c>.
-    /// </para>
-    ///-
-    function get_ssPolarity():Integer;
-
-    ////
-    /// <summary>
-    ///   Changes the SS line polarity.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="newval">
-    ///   either <c>Y_SSPOLARITY_ACTIVE_LOW</c> or <c>Y_SSPOLARITY_ACTIVE_HIGH</c>, according to the SS line polarity
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_ssPolarity(newval:Integer):integer;
-
-    ////
-    /// <summary>
-    ///   Returns true when the SDI line phase is shifted with regards to the SDO line.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   either <c>Y_SHIFTSAMPLING_OFF</c> or <c>Y_SHIFTSAMPLING_ON</c>, according to true when the SDI line
-    ///   phase is shifted with regards to the SDO line
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SHIFTSAMPLING_INVALID</c>.
-    /// </para>
-    ///-
-    function get_shiftSampling():Integer;
-
-    ////
-    /// <summary>
-    ///   Changes the SDI line sampling shift.
-    /// <para>
-    ///   When disabled, SDI line is
-    ///   sampled in the middle of data output time. When enabled, SDI line is
-    ///   samples at the end of data output time.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="newval">
-    ///   either <c>Y_SHIFTSAMPLING_OFF</c> or <c>Y_SHIFTSAMPLING_ON</c>, according to the SDI line sampling shift
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_shiftSampling(newval:Integer):integer;
+    function set_i2cMode(newval:string):integer;
 
     ////
     /// <summary>
@@ -574,7 +482,7 @@ type
     /// <para>
     ///   This function does not require that $THEFUNCTION$ is online at the time
     ///   it is invoked. The returned object is nevertheless valid.
-    ///   Use the method <c>YSpiPort.isOnline()</c> to test if $THEFUNCTION$ is
+    ///   Use the method <c>YI2cPort.isOnline()</c> to test if $THEFUNCTION$ is
     ///   indeed online at a given time. In case of ambiguity when looking for
     ///   $AFUNCTION$ by logical name, no error is notified: the first instance
     ///   found is returned. The search is performed first by hardware name,
@@ -592,10 +500,10 @@ type
     ///   a string that uniquely characterizes $THEFUNCTION$
     /// </param>
     /// <returns>
-    ///   a <c>YSpiPort</c> object allowing you to drive $THEFUNCTION$.
+    ///   a <c>YI2cPort</c> object allowing you to drive $THEFUNCTION$.
     /// </returns>
     ///-
-    class function FindSpiPort(func: string):TYSpiPort;
+    class function FindI2cPort(func: string):TYI2cPort;
 
     ////
     /// <summary>
@@ -615,7 +523,7 @@ type
     /// @noreturn
     /// </param>
     ///-
-    function registerValueCallback(callback: TYSpiPortValueCallback):LongInt; overload;
+    function registerValueCallback(callback: TYI2cPortValueCallback):LongInt; overload;
 
     function _invokeValueCallback(value: string):LongInt; override;
 
@@ -807,8 +715,164 @@ type
 
     ////
     /// <summary>
-    ///   Sends a single byte to the serial port.
+    ///   Sends a one-way message (provided as a a binary buffer) to a device on the I2C bus.
     /// <para>
+    ///   This function checks and reports communication errors on the I2C bus.
+    /// </para>
+    /// </summary>
+    /// <param name="slaveAddr">
+    ///   the 7-bit address of the slave device (without the direction bit)
+    /// </param>
+    /// <param name="buff">
+    ///   the binary buffer to be sent
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function i2cSendBin(slaveAddr: LongInt; buff: TByteArray):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Sends a one-way message (provided as a list of integer) to a device on the I2C bus.
+    /// <para>
+    ///   This function checks and reports communication errors on the I2C bus.
+    /// </para>
+    /// </summary>
+    /// <param name="slaveAddr">
+    ///   the 7-bit address of the slave device (without the direction bit)
+    /// </param>
+    /// <param name="values">
+    ///   a list of data bytes to be sent
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function i2cSendArray(slaveAddr: LongInt; values: TLongIntArray):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Sends a one-way message (provided as a a binary buffer) to a device on the I2C bus,
+    ///   then read back the specified number of bytes from device.
+    /// <para>
+    ///   This function checks and reports communication errors on the I2C bus.
+    /// </para>
+    /// </summary>
+    /// <param name="slaveAddr">
+    ///   the 7-bit address of the slave device (without the direction bit)
+    /// </param>
+    /// <param name="buff">
+    ///   the binary buffer to be sent
+    /// </param>
+    /// <param name="rcvCount">
+    ///   the number of bytes to receive once the data bytes are sent
+    /// </param>
+    /// <returns>
+    ///   a list of bytes with the data received from slave device.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty binary buffer.
+    /// </para>
+    ///-
+    function i2cSendAndReceiveBin(slaveAddr: LongInt; buff: TByteArray; rcvCount: LongInt):TByteArray; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Sends a one-way message (provided as a list of integer) to a device on the I2C bus,
+    ///   then read back the specified number of bytes from device.
+    /// <para>
+    ///   This function checks and reports communication errors on the I2C bus.
+    /// </para>
+    /// </summary>
+    /// <param name="slaveAddr">
+    ///   the 7-bit address of the slave device (without the direction bit)
+    /// </param>
+    /// <param name="values">
+    ///   a list of data bytes to be sent
+    /// </param>
+    /// <param name="rcvCount">
+    ///   the number of bytes to receive once the data bytes are sent
+    /// </param>
+    /// <returns>
+    ///   a list of bytes with the data received from slave device.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty array.
+    /// </para>
+    ///-
+    function i2cSendAndReceiveArray(slaveAddr: LongInt; values: TLongIntArray; rcvCount: LongInt):TLongIntArray; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Sends a text-encoded I2C code stream to the I2C bus, as is.
+    /// <para>
+    ///   An I2C code stream is a string made of hexadecimal data bytes,
+    ///   but that may also include the I2C state transitions code:
+    ///   "{S}" to emit a start condition,
+    ///   "{R}" for a repeated start condition,
+    ///   "{P}" for a stop condition,
+    ///   "xx" for receiving a data byte,
+    ///   "{A}" to ack a data byte received and
+    ///   "{N}" to nack a data byte received.
+    ///   If a newline ("\n") is included in the stream, the message
+    ///   will be terminated and a newline will also be added to the
+    ///   receive stream.
+    /// </para>
+    /// </summary>
+    /// <param name="codes">
+    ///   the code stream to send
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function writeStr(codes: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Sends a text-encoded I2C code stream to the I2C bus, and terminate
+    ///   the message en relâchant le bus.
+    /// <para>
+    ///   An I2C code stream is a string made of hexadecimal data bytes,
+    ///   but that may also include the I2C state transitions code:
+    ///   "{S}" to emit a start condition,
+    ///   "{R}" for a repeated start condition,
+    ///   "{P}" for a stop condition,
+    ///   "xx" for receiving a data byte,
+    ///   "{A}" to ack a data byte received and
+    ///   "{N}" to nack a data byte received.
+    ///   At the end of the stream, a stop condition is added if missing
+    ///   and a newline is added to the receive buffer as well.
+    /// </para>
+    /// </summary>
+    /// <param name="codes">
+    ///   the code stream to send
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function writeLine(codes: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Sends a single byte to the I2C bus.
+    /// <para>
+    ///   Depending on the I2C bus state, the byte
+    ///   will be interpreted as an address byte or a data byte.
     /// </para>
     /// </summary>
     /// <param name="code">
@@ -825,62 +889,10 @@ type
 
     ////
     /// <summary>
-    ///   Sends an ASCII string to the serial port, as is.
+    ///   Sends a byte sequence (provided as a hexadecimal string) to the I2C bus.
     /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="text">
-    ///   the text string to send
-    /// </param>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function writeStr(text: string):LongInt; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Sends a binary buffer to the serial port, as is.
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="buff">
-    ///   the binary buffer to send
-    /// </param>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function writeBin(buff: TByteArray):LongInt; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Sends a byte sequence (provided as a list of bytes) to the serial port.
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="byteList">
-    ///   a list of byte codes
-    /// </param>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function writeArray(byteList: TLongIntArray):LongInt; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Sends a byte sequence (provided as a hexadecimal string) to the serial port.
-    /// <para>
+    ///   Depending on the I2C bus state, the first byte will be interpreted as an
+    ///   address byte or a data byte.
     /// </para>
     /// </summary>
     /// <param name="hexString">
@@ -897,12 +909,14 @@ type
 
     ////
     /// <summary>
-    ///   Sends an ASCII string to the serial port, followed by a line break (CR LF).
+    ///   Sends a binary buffer to the I2C bus, as is.
     /// <para>
+    ///   Depending on the I2C bus state, the first byte will be interpreted
+    ///   as an address byte or a data byte.
     /// </para>
     /// </summary>
-    /// <param name="text">
-    ///   the text string to send
+    /// <param name="buff">
+    ///   the binary buffer to send
     /// </param>
     /// <returns>
     ///   <c>YAPI_SUCCESS</c> if the call succeeds.
@@ -911,115 +925,18 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function writeLine(text: string):LongInt; overload; virtual;
+    function writeBin(buff: TByteArray):LongInt; overload; virtual;
 
     ////
     /// <summary>
-    ///   Reads one byte from the receive buffer, starting at current stream position.
+    ///   Sends a byte sequence (provided as a list of bytes) to the I2C bus.
     /// <para>
-    ///   If data at current stream position is not available anymore in the receive buffer,
-    ///   or if there is no data available yet, the function returns YAPI_NO_MORE_DATA.
+    ///   Depending on the I2C bus state, the first byte will be interpreted as an
+    ///   address byte or a data byte.
     /// </para>
     /// </summary>
-    /// <returns>
-    ///   the next byte
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function readByte():LongInt; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Reads data from the receive buffer as a string, starting at current stream position.
-    /// <para>
-    ///   If data at current stream position is not available anymore in the receive buffer, the
-    ///   function performs a short read.
-    /// </para>
-    /// </summary>
-    /// <param name="nChars">
-    ///   the maximum number of characters to read
-    /// </param>
-    /// <returns>
-    ///   a string with receive buffer contents
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function readStr(nChars: LongInt):string; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Reads data from the receive buffer as a binary buffer, starting at current stream position.
-    /// <para>
-    ///   If data at current stream position is not available anymore in the receive buffer, the
-    ///   function performs a short read.
-    /// </para>
-    /// </summary>
-    /// <param name="nChars">
-    ///   the maximum number of bytes to read
-    /// </param>
-    /// <returns>
-    ///   a binary object with receive buffer contents
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function readBin(nChars: LongInt):TByteArray; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Reads data from the receive buffer as a list of bytes, starting at current stream position.
-    /// <para>
-    ///   If data at current stream position is not available anymore in the receive buffer, the
-    ///   function performs a short read.
-    /// </para>
-    /// </summary>
-    /// <param name="nChars">
-    ///   the maximum number of bytes to read
-    /// </param>
-    /// <returns>
-    ///   a sequence of bytes with receive buffer contents
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns an empty array.
-    /// </para>
-    ///-
-    function readArray(nChars: LongInt):TLongIntArray; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Reads data from the receive buffer as a hexadecimal string, starting at current stream position.
-    /// <para>
-    ///   If data at current stream position is not available anymore in the receive buffer, the
-    ///   function performs a short read.
-    /// </para>
-    /// </summary>
-    /// <param name="nBytes">
-    ///   the maximum number of bytes to read
-    /// </param>
-    /// <returns>
-    ///   a string with receive buffer contents, encoded in hexadecimal
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function readHex(nBytes: LongInt):string; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Manually sets the state of the SS line.
-    /// <para>
-    ///   This function has no effect when
-    ///   the SS line is handled automatically.
-    /// </para>
-    /// </summary>
-    /// <param name="val">
-    ///   1 to turn SS active, 0 to release SS.
+    /// <param name="byteList">
+    ///   a list of byte codes
     /// </param>
     /// <returns>
     ///   <c>YAPI_SUCCESS</c> if the call succeeds.
@@ -1028,25 +945,25 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function set_SS(val: LongInt):LongInt; overload; virtual;
+    function writeArray(byteList: TLongIntArray):LongInt; overload; virtual;
 
 
     ////
     /// <summary>
-    ///   Continues the enumeration of SPI ports started using <c>yFirstSpiPort()</c>.
+    ///   Continues the enumeration of I2C ports started using <c>yFirstI2cPort()</c>.
     /// <para>
-    ///   Caution: You can't make any assumption about the returned SPI ports order.
-    ///   If you want to find a specific a SPI port, use <c>SpiPort.findSpiPort()</c>
+    ///   Caution: You can't make any assumption about the returned I2C ports order.
+    ///   If you want to find a specific an I2C port, use <c>I2cPort.findI2cPort()</c>
     ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a pointer to a <c>YSpiPort</c> object, corresponding to
-    ///   a SPI port currently online, or a <c>NIL</c> pointer
-    ///   if there are no more SPI ports to enumerate.
+    ///   a pointer to a <c>YI2cPort</c> object, corresponding to
+    ///   an I2C port currently online, or a <c>NIL</c> pointer
+    ///   if there are no more I2C ports to enumerate.
     /// </returns>
     ///-
-    function nextSpiPort():TYSpiPort;
+    function nextI2cPort():TYI2cPort;
     ////
     /// <summary>
     ///   c
@@ -1055,14 +972,14 @@ type
     /// </para>
     /// </summary>
     ///-
-    class function FirstSpiPort():TYSpiPort;
-  //--- (end of YSpiPort accessors declaration)
+    class function FirstI2cPort():TYI2cPort;
+  //--- (end of YI2cPort accessors declaration)
   end;
 
-//--- (YSpiPort functions declaration)
+//--- (YI2cPort functions declaration)
   ////
   /// <summary>
-  ///   Retrieves a SPI port for a given identifier.
+  ///   Retrieves an I2C port for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
   /// </para>
@@ -1086,11 +1003,11 @@ type
   /// <para>
   /// </para>
   /// <para>
-  ///   This function does not require that the SPI port is online at the time
+  ///   This function does not require that the I2C port is online at the time
   ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YSpiPort.isOnline()</c> to test if the SPI port is
+  ///   Use the method <c>YI2cPort.isOnline()</c> to test if the I2C port is
   ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   a SPI port by logical name, no error is notified: the first instance
+  ///   an I2C port by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
   /// </para>
@@ -1103,40 +1020,40 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the SPI port
+  ///   a string that uniquely characterizes the I2C port
   /// </param>
   /// <returns>
-  ///   a <c>YSpiPort</c> object allowing you to drive the SPI port.
+  ///   a <c>YI2cPort</c> object allowing you to drive the I2C port.
   /// </returns>
   ///-
-  function yFindSpiPort(func:string):TYSpiPort;
+  function yFindI2cPort(func:string):TYI2cPort;
   ////
   /// <summary>
-  ///   Starts the enumeration of SPI ports currently accessible.
+  ///   Starts the enumeration of I2C ports currently accessible.
   /// <para>
-  ///   Use the method <c>YSpiPort.nextSpiPort()</c> to iterate on
-  ///   next SPI ports.
+  ///   Use the method <c>YI2cPort.nextI2cPort()</c> to iterate on
+  ///   next I2C ports.
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a pointer to a <c>YSpiPort</c> object, corresponding to
-  ///   the first SPI port currently online, or a <c>NIL</c> pointer
+  ///   a pointer to a <c>YI2cPort</c> object, corresponding to
+  ///   the first I2C port currently online, or a <c>NIL</c> pointer
   ///   if there are none.
   /// </returns>
   ///-
-  function yFirstSpiPort():TYSpiPort;
+  function yFirstI2cPort():TYI2cPort;
 
-//--- (end of YSpiPort functions declaration)
+//--- (end of YI2cPort functions declaration)
 
 implementation
-//--- (YSpiPort dlldef)
-//--- (end of YSpiPort dlldef)
+//--- (YI2cPort dlldef)
+//--- (end of YI2cPort dlldef)
 
-  constructor TYSpiPort.Create(func:string);
+  constructor TYI2cPort.Create(func:string);
     begin
       inherited Create(func);
-      _className := 'SpiPort';
-      //--- (YSpiPort accessors initialization)
+      _className := 'I2cPort';
+      //--- (YI2cPort accessors initialization)
       _rxCount := Y_RXCOUNT_INVALID;
       _txCount := Y_TXCOUNT_INVALID;
       _errCount := Y_ERRCOUNT_INVALID;
@@ -1148,21 +1065,19 @@ implementation
       _command := Y_COMMAND_INVALID;
       _voltageLevel := Y_VOLTAGELEVEL_INVALID;
       _protocol := Y_PROTOCOL_INVALID;
-      _spiMode := Y_SPIMODE_INVALID;
-      _ssPolarity := Y_SSPOLARITY_INVALID;
-      _shiftSampling := Y_SHIFTSAMPLING_INVALID;
-      _valueCallbackSpiPort := nil;
+      _i2cMode := Y_I2CMODE_INVALID;
+      _valueCallbackI2cPort := nil;
       _rxptr := 0;
       _rxbuffptr := 0;
-      //--- (end of YSpiPort accessors initialization)
+      //--- (end of YI2cPort accessors initialization)
     end;
 
-//--- (YSpiPort yapiwrapper)
-//--- (end of YSpiPort yapiwrapper)
+//--- (YI2cPort yapiwrapper)
+//--- (end of YI2cPort yapiwrapper)
 
-//--- (YSpiPort implementation)
+//--- (YI2cPort implementation)
 {$HINTS OFF}
-  function TYSpiPort._parseAttr(member:PJSONRECORD):integer;
+  function TYI2cPort._parseAttr(member:PJSONRECORD):integer;
     var
       sub : PJSONRECORD;
       i,l        : integer;
@@ -1233,21 +1148,9 @@ implementation
          result := 1;
          exit;
          end;
-      if (member^.name = 'spiMode') then
+      if (member^.name = 'i2cMode') then
         begin
-          _spiMode := string(member^.svalue);
-         result := 1;
-         exit;
-         end;
-      if (member^.name = 'ssPolarity') then
-        begin
-          _ssPolarity := member^.ivalue;
-         result := 1;
-         exit;
-         end;
-      if (member^.name = 'shiftSampling') then
-        begin
-          _shiftSampling := member^.ivalue;
+          _i2cMode := string(member^.svalue);
          result := 1;
          exit;
          end;
@@ -1255,7 +1158,7 @@ implementation
     end;
 {$HINTS ON}
 
-  function TYSpiPort.get_rxCount():LongInt;
+  function TYI2cPort.get_rxCount():LongInt;
     var
       res : LongInt;
     begin
@@ -1273,7 +1176,7 @@ implementation
     end;
 
 
-  function TYSpiPort.get_txCount():LongInt;
+  function TYI2cPort.get_txCount():LongInt;
     var
       res : LongInt;
     begin
@@ -1291,7 +1194,7 @@ implementation
     end;
 
 
-  function TYSpiPort.get_errCount():LongInt;
+  function TYI2cPort.get_errCount():LongInt;
     var
       res : LongInt;
     begin
@@ -1309,7 +1212,7 @@ implementation
     end;
 
 
-  function TYSpiPort.get_rxMsgCount():LongInt;
+  function TYI2cPort.get_rxMsgCount():LongInt;
     var
       res : LongInt;
     begin
@@ -1327,7 +1230,7 @@ implementation
     end;
 
 
-  function TYSpiPort.get_txMsgCount():LongInt;
+  function TYI2cPort.get_txMsgCount():LongInt;
     var
       res : LongInt;
     begin
@@ -1345,7 +1248,7 @@ implementation
     end;
 
 
-  function TYSpiPort.get_lastMsg():string;
+  function TYI2cPort.get_lastMsg():string;
     var
       res : string;
     begin
@@ -1363,7 +1266,7 @@ implementation
     end;
 
 
-  function TYSpiPort.get_currentJob():string;
+  function TYI2cPort.get_currentJob():string;
     var
       res : string;
     begin
@@ -1381,7 +1284,7 @@ implementation
     end;
 
 
-  function TYSpiPort.set_currentJob(newval:string):integer;
+  function TYI2cPort.set_currentJob(newval:string):integer;
     var
       rest_val: string;
     begin
@@ -1389,7 +1292,7 @@ implementation
       result := _setAttr('currentJob',rest_val);
     end;
 
-  function TYSpiPort.get_startupJob():string;
+  function TYI2cPort.get_startupJob():string;
     var
       res : string;
     begin
@@ -1407,7 +1310,7 @@ implementation
     end;
 
 
-  function TYSpiPort.set_startupJob(newval:string):integer;
+  function TYI2cPort.set_startupJob(newval:string):integer;
     var
       rest_val: string;
     begin
@@ -1415,7 +1318,7 @@ implementation
       result := _setAttr('startupJob',rest_val);
     end;
 
-  function TYSpiPort.get_command():string;
+  function TYI2cPort.get_command():string;
     var
       res : string;
     begin
@@ -1433,7 +1336,7 @@ implementation
     end;
 
 
-  function TYSpiPort.set_command(newval:string):integer;
+  function TYI2cPort.set_command(newval:string):integer;
     var
       rest_val: string;
     begin
@@ -1441,7 +1344,7 @@ implementation
       result := _setAttr('command',rest_val);
     end;
 
-  function TYSpiPort.get_voltageLevel():Integer;
+  function TYI2cPort.get_voltageLevel():Integer;
     var
       res : Integer;
     begin
@@ -1459,7 +1362,7 @@ implementation
     end;
 
 
-  function TYSpiPort.set_voltageLevel(newval:Integer):integer;
+  function TYI2cPort.set_voltageLevel(newval:Integer):integer;
     var
       rest_val: string;
     begin
@@ -1467,7 +1370,7 @@ implementation
       result := _setAttr('voltageLevel',rest_val);
     end;
 
-  function TYSpiPort.get_protocol():string;
+  function TYI2cPort.get_protocol():string;
     var
       res : string;
     begin
@@ -1485,7 +1388,7 @@ implementation
     end;
 
 
-  function TYSpiPort.set_protocol(newval:string):integer;
+  function TYI2cPort.set_protocol(newval:string):integer;
     var
       rest_val: string;
     begin
@@ -1493,7 +1396,7 @@ implementation
       result := _setAttr('protocol',rest_val);
     end;
 
-  function TYSpiPort.get_spiMode():string;
+  function TYI2cPort.get_i2cMode():string;
     var
       res : string;
     begin
@@ -1501,92 +1404,40 @@ implementation
         begin
           if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
-              result := Y_SPIMODE_INVALID;
+              result := Y_I2CMODE_INVALID;
               exit;
             end;
         end;
-      res := self._spiMode;
+      res := self._i2cMode;
       result := res;
       exit;
     end;
 
 
-  function TYSpiPort.set_spiMode(newval:string):integer;
+  function TYI2cPort.set_i2cMode(newval:string):integer;
     var
       rest_val: string;
     begin
       rest_val := newval;
-      result := _setAttr('spiMode',rest_val);
+      result := _setAttr('i2cMode',rest_val);
     end;
 
-  function TYSpiPort.get_ssPolarity():Integer;
+  class function TYI2cPort.FindI2cPort(func: string):TYI2cPort;
     var
-      res : Integer;
+      obj : TYI2cPort;
     begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
-            begin
-              result := Y_SSPOLARITY_INVALID;
-              exit;
-            end;
-        end;
-      res := self._ssPolarity;
-      result := res;
-      exit;
-    end;
-
-
-  function TYSpiPort.set_ssPolarity(newval:Integer):integer;
-    var
-      rest_val: string;
-    begin
-      if(newval>0) then rest_val := '1' else rest_val := '0';
-      result := _setAttr('ssPolarity',rest_val);
-    end;
-
-  function TYSpiPort.get_shiftSampling():Integer;
-    var
-      res : Integer;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
-            begin
-              result := Y_SHIFTSAMPLING_INVALID;
-              exit;
-            end;
-        end;
-      res := self._shiftSampling;
-      result := res;
-      exit;
-    end;
-
-
-  function TYSpiPort.set_shiftSampling(newval:Integer):integer;
-    var
-      rest_val: string;
-    begin
-      if(newval>0) then rest_val := '1' else rest_val := '0';
-      result := _setAttr('shiftSampling',rest_val);
-    end;
-
-  class function TYSpiPort.FindSpiPort(func: string):TYSpiPort;
-    var
-      obj : TYSpiPort;
-    begin
-      obj := TYSpiPort(TYFunction._FindFromCache('SpiPort', func));
+      obj := TYI2cPort(TYFunction._FindFromCache('I2cPort', func));
       if obj = nil then
         begin
-          obj :=  TYSpiPort.create(func);
-          TYFunction._AddToCache('SpiPort',  func, obj);
+          obj :=  TYI2cPort.create(func);
+          TYFunction._AddToCache('I2cPort',  func, obj);
         end;
       result := obj;
       exit;
     end;
 
 
-  function TYSpiPort.registerValueCallback(callback: TYSpiPortValueCallback):LongInt;
+  function TYI2cPort.registerValueCallback(callback: TYI2cPortValueCallback):LongInt;
     var
       val : string;
     begin
@@ -1598,7 +1449,7 @@ implementation
         begin
           TYFunction._UpdateValueCallbackList(self, false);
         end;
-      self._valueCallbackSpiPort := callback;
+      self._valueCallbackI2cPort := callback;
       // Immediately invoke value callback with current value
       if (addr(callback) <> nil) and self.isOnline then
         begin
@@ -1613,11 +1464,11 @@ implementation
     end;
 
 
-  function TYSpiPort._invokeValueCallback(value: string):LongInt;
+  function TYI2cPort._invokeValueCallback(value: string):LongInt;
     begin
-      if (addr(self._valueCallbackSpiPort) <> nil) then
+      if (addr(self._valueCallbackI2cPort) <> nil) then
         begin
-          self._valueCallbackSpiPort(self, value);
+          self._valueCallbackI2cPort(self, value);
         end
       else
         begin
@@ -1628,14 +1479,14 @@ implementation
     end;
 
 
-  function TYSpiPort.sendCommand(text: string):LongInt;
+  function TYI2cPort.sendCommand(text: string):LongInt;
     begin
       result := self.set_command(text);
       exit;
     end;
 
 
-  function TYSpiPort.readLine():string;
+  function TYI2cPort.readLine():string;
     var
       url : string;
       msgbin : TByteArray;
@@ -1668,7 +1519,7 @@ implementation
     end;
 
 
-  function TYSpiPort.readMessages(pattern: string; maxWait: LongInt):TStringArray;
+  function TYI2cPort.readMessages(pattern: string; maxWait: LongInt):TStringArray;
     var
       url : string;
       msgbin : TByteArray;
@@ -1708,7 +1559,7 @@ implementation
     end;
 
 
-  function TYSpiPort.read_seek(absPos: LongInt):LongInt;
+  function TYI2cPort.read_seek(absPos: LongInt):LongInt;
     begin
       self._rxptr := absPos;
       result := YAPI_SUCCESS;
@@ -1716,14 +1567,14 @@ implementation
     end;
 
 
-  function TYSpiPort.read_tell():LongInt;
+  function TYI2cPort.read_tell():LongInt;
     begin
       result := self._rxptr;
       exit;
     end;
 
 
-  function TYSpiPort.read_avail():LongInt;
+  function TYI2cPort.read_avail():LongInt;
     var
       buff : TByteArray;
       bufflen : LongInt;
@@ -1741,7 +1592,7 @@ implementation
     end;
 
 
-  function TYSpiPort.queryLine(query: string; maxWait: LongInt):string;
+  function TYI2cPort.queryLine(query: string; maxWait: LongInt):string;
     var
       url : string;
       msgbin : TByteArray;
@@ -1774,7 +1625,7 @@ implementation
     end;
 
 
-  function TYSpiPort.uploadJob(jobfile: string; jsonDef: string):LongInt;
+  function TYI2cPort.uploadJob(jobfile: string; jsonDef: string):LongInt;
     begin
       self._upload(jobfile, _StrToByte(jsonDef));
       result := YAPI_SUCCESS;
@@ -1782,14 +1633,14 @@ implementation
     end;
 
 
-  function TYSpiPort.selectJob(jobfile: string):LongInt;
+  function TYI2cPort.selectJob(jobfile: string):LongInt;
     begin
       result := self.set_currentJob(jobfile);
       exit;
     end;
 
 
-  function TYSpiPort.reset():LongInt;
+  function TYI2cPort.reset():LongInt;
     begin
       self._rxptr := 0;
       self._rxbuffptr := 0;
@@ -1800,322 +1651,205 @@ implementation
     end;
 
 
-  function TYSpiPort.writeByte(code: LongInt):LongInt;
-    begin
-      result := self.sendCommand('$'+AnsiUpperCase(inttohex(code,02)));
-      exit;
-    end;
-
-
-  function TYSpiPort.writeStr(text: string):LongInt;
+  function TYI2cPort.i2cSendBin(slaveAddr: LongInt; buff: TByteArray):LongInt;
     var
-      buff : TByteArray;
-      bufflen : LongInt;
+      nBytes : LongInt;
       idx : LongInt;
-      ch : LongInt;
+      val : LongInt;
+      msg : string;
+      reply : string;
     begin
-      buff := _StrToByte(text);
-      bufflen := length(buff);
-      if bufflen < 100 then
-        begin
-          // if string is pure text, we can send it as a simple command (faster)
-          ch := $020;
-          idx := 0;
-          while (idx < bufflen) and(ch <> 0) do
-            begin
-              ch := buff[idx];
-              if (ch >= $020) and(ch < $07f) then
-                begin
-                  idx := idx + 1;
-                end
-              else
-                begin
-                  ch := 0;
-                end;
-            end;
-          if idx >= bufflen then
-            begin
-              result := self.sendCommand('+'+text);
-              exit;
-            end;
-        end;
-      // send string using file upload
-      result := self._upload('txdata', buff);
-      exit;
-    end;
-
-
-  function TYSpiPort.writeBin(buff: TByteArray):LongInt;
-    begin
-      result := self._upload('txdata', buff);
-      exit;
-    end;
-
-
-  function TYSpiPort.writeArray(byteList: TLongIntArray):LongInt;
-    var
-      buff : TByteArray;
-      bufflen : LongInt;
-      idx : LongInt;
-      hexb : LongInt;
-      res : LongInt;
-    begin
-      bufflen := length(byteList);
-      setlength(buff,bufflen);
+      msg := '@'+AnsiLowerCase(inttohex(slaveAddr,02))+':';
+      nBytes := length(buff);
       idx := 0;
-      while idx < bufflen do
+      while idx < nBytes do
         begin
-          hexb := byteList[idx];
-          buff[idx] := hexb;
+          val := buff[idx];
+          msg := ''+ msg+''+AnsiLowerCase(inttohex(val,02));
           idx := idx + 1;
         end;
 
-      res := self._upload('txdata', buff);
-      result := res;
+      reply := self.queryLine(msg, 1000);
+      if not(Length(reply) > 0) then
+        begin
+          self._throw( YAPI_IO_ERROR, 'no response from device');
+          result:=YAPI_IO_ERROR;
+          exit;
+        end;
+      idx := (pos('[N]!', reply) - 1);
+      if not(idx < 0) then
+        begin
+          self._throw( YAPI_IO_ERROR, 'No ACK received');
+          result:=YAPI_IO_ERROR;
+          exit;
+        end;
+      idx := (pos('!', reply) - 1);
+      if not(idx < 0) then
+        begin
+          self._throw( YAPI_IO_ERROR, 'Protocol error');
+          result:=YAPI_IO_ERROR;
+          exit;
+        end;
+      result := YAPI_SUCCESS;
       exit;
     end;
 
 
-  function TYSpiPort.writeHex(hexString: string):LongInt;
+  function TYI2cPort.i2cSendArray(slaveAddr: LongInt; values: TLongIntArray):LongInt;
     var
-      buff : TByteArray;
-      bufflen : LongInt;
+      nBytes : LongInt;
       idx : LongInt;
-      hexb : LongInt;
-      res : LongInt;
+      val : LongInt;
+      msg : string;
+      reply : string;
     begin
-      bufflen := Length(hexString);
-      if bufflen < 100 then
-        begin
-          result := self.sendCommand('$'+hexString);
-          exit;
-        end;
-      bufflen := ((bufflen) shr 1);
-      setlength(buff,bufflen);
+      msg := '@'+AnsiLowerCase(inttohex(slaveAddr,02))+':';
+      nBytes := length(values);
       idx := 0;
-      while idx < bufflen do
+      while idx < nBytes do
         begin
-          hexb := StrToInt('$0' + Copy(hexString,  2 * idx + 1, 2));
-          buff[idx] := hexb;
+          val := values[idx];
+          msg := ''+ msg+''+AnsiLowerCase(inttohex(val,02));
           idx := idx + 1;
         end;
 
-      res := self._upload('txdata', buff);
-      result := res;
+      reply := self.queryLine(msg, 1000);
+      if not(Length(reply) > 0) then
+        begin
+          self._throw( YAPI_IO_ERROR, 'no response from device');
+          result:=YAPI_IO_ERROR;
+          exit;
+        end;
+      idx := (pos('[N]!', reply) - 1);
+      if not(idx < 0) then
+        begin
+          self._throw( YAPI_IO_ERROR, 'No ACK received');
+          result:=YAPI_IO_ERROR;
+          exit;
+        end;
+      idx := (pos('!', reply) - 1);
+      if not(idx < 0) then
+        begin
+          self._throw( YAPI_IO_ERROR, 'Protocol error');
+          result:=YAPI_IO_ERROR;
+          exit;
+        end;
+      result := YAPI_SUCCESS;
       exit;
     end;
 
 
-  function TYSpiPort.writeLine(text: string):LongInt;
+  function TYI2cPort.i2cSendAndReceiveBin(slaveAddr: LongInt; buff: TByteArray; rcvCount: LongInt):TByteArray;
     var
-      buff : TByteArray;
-      bufflen : LongInt;
+      nBytes : LongInt;
       idx : LongInt;
-      ch : LongInt;
+      val : LongInt;
+      msg : string;
+      reply : string;
+      rcvbytes : TByteArray;
     begin
-      buff := _StrToByte(''+text+''#13''#10'');
-      bufflen := length(buff)-2;
-      if bufflen < 100 then
-        begin
-          // if string is pure text, we can send it as a simple command (faster)
-          ch := $020;
-          idx := 0;
-          while (idx < bufflen) and(ch <> 0) do
-            begin
-              ch := buff[idx];
-              if (ch >= $020) and(ch < $07f) then
-                begin
-                  idx := idx + 1;
-                end
-              else
-                begin
-                  ch := 0;
-                end;
-            end;
-          if idx >= bufflen then
-            begin
-              result := self.sendCommand('!'+text);
-              exit;
-            end;
-        end;
-      // send string using file upload
-      result := self._upload('txdata', buff);
-      exit;
-    end;
-
-
-  function TYSpiPort.readByte():LongInt;
-    var
-      currpos : LongInt;
-      reqlen : LongInt;
-      buff : TByteArray;
-      bufflen : LongInt;
-      mult : LongInt;
-      endpos : LongInt;
-      res : LongInt;
-    begin
-      bufflen := length(self._rxbuff);
-      if (self._rxptr >= self._rxbuffptr) and(self._rxptr < self._rxbuffptr+bufflen) then
-        begin
-          res := self._rxbuff[self._rxptr-self._rxbuffptr];
-          self._rxptr := self._rxptr + 1;
-          result := res;
-          exit;
-        end;
-      // try to preload more than one byte to speed-up byte-per-byte access
-      currpos := self._rxptr;
-      reqlen := 1024;
-      buff := self.readBin(reqlen);
-      bufflen := length(buff);
-      if self._rxptr = currpos+bufflen then
-        begin
-          res := buff[0];
-          self._rxptr := currpos+1;
-          self._rxbuffptr := currpos;
-          self._rxbuff := buff;
-          result := res;
-          exit;
-        end;
-      // mixed bidirectional data, retry with a smaller block
-      self._rxptr := currpos;
-      reqlen := 16;
-      buff := self.readBin(reqlen);
-      bufflen := length(buff);
-      if self._rxptr = currpos+bufflen then
-        begin
-          res := buff[0];
-          self._rxptr := currpos+1;
-          self._rxbuffptr := currpos;
-          self._rxbuff := buff;
-          result := res;
-          exit;
-        end;
-      // still mixed, need to process character by character
-      self._rxptr := currpos;
-
-      buff := self._download('rxdata.bin?pos='+inttostr(self._rxptr)+'&len=1');
-      bufflen := length(buff) - 1;
-      endpos := 0;
-      mult := 1;
-      while (bufflen > 0) and(buff[bufflen] <> 64) do
-        begin
-          endpos := endpos + mult * (buff[bufflen] - 48);
-          mult := mult * 10;
-          bufflen := bufflen - 1;
-        end;
-      self._rxptr := endpos;
-      if bufflen = 0 then
-        begin
-          result := YAPI_NO_MORE_DATA;
-          exit;
-        end;
-      res := buff[0];
-      result := res;
-      exit;
-    end;
-
-
-  function TYSpiPort.readStr(nChars: LongInt):string;
-    var
-      buff : TByteArray;
-      bufflen : LongInt;
-      mult : LongInt;
-      endpos : LongInt;
-      res : string;
-    begin
-      if nChars > 65535 then
-        begin
-          nChars := 65535;
-        end;
-
-      buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
-      bufflen := length(buff) - 1;
-      endpos := 0;
-      mult := 1;
-      while (bufflen > 0) and(buff[bufflen] <> 64) do
-        begin
-          endpos := endpos + mult * (buff[bufflen] - 48);
-          mult := mult * 10;
-          bufflen := bufflen - 1;
-        end;
-      self._rxptr := endpos;
-      res := Copy(_ByteToString(buff),  0 + 1, bufflen);
-      result := res;
-      exit;
-    end;
-
-
-  function TYSpiPort.readBin(nChars: LongInt):TByteArray;
-    var
-      buff : TByteArray;
-      bufflen : LongInt;
-      mult : LongInt;
-      endpos : LongInt;
-      idx : LongInt;
-      res : TByteArray;
-    begin
-      if nChars > 65535 then
-        begin
-          nChars := 65535;
-        end;
-
-      buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
-      bufflen := length(buff) - 1;
-      endpos := 0;
-      mult := 1;
-      while (bufflen > 0) and(buff[bufflen] <> 64) do
-        begin
-          endpos := endpos + mult * (buff[bufflen] - 48);
-          mult := mult * 10;
-          bufflen := bufflen - 1;
-        end;
-      self._rxptr := endpos;
-      setlength(res,bufflen);
+      msg := '@'+AnsiLowerCase(inttohex(slaveAddr,02))+':';
+      nBytes := length(buff);
       idx := 0;
-      while idx < bufflen do
+      while idx < nBytes do
         begin
-          res[idx] := buff[idx];
+          val := buff[idx];
+          msg := ''+ msg+''+AnsiLowerCase(inttohex(val,02));
           idx := idx + 1;
         end;
-      result := res;
+      idx := 0;
+      while idx < rcvCount do
+        begin
+          msg := ''+msg+'xx';
+          idx := idx + 1;
+        end;
+
+      reply := self.queryLine(msg, 1000);
+      setlength(rcvbytes,0);
+      if not(Length(reply) > 0) then
+        begin
+          self._throw( YAPI_IO_ERROR, 'no response from device');
+          result:=rcvbytes;
+          exit;
+        end;
+      idx := (pos('[N]!', reply) - 1);
+      if not(idx < 0) then
+        begin
+          self._throw( YAPI_IO_ERROR, 'No ACK received');
+          result:=rcvbytes;
+          exit;
+        end;
+      idx := (pos('!', reply) - 1);
+      if not(idx < 0) then
+        begin
+          self._throw( YAPI_IO_ERROR, 'Protocol error');
+          result:=rcvbytes;
+          exit;
+        end;
+      reply := Copy(reply,  Length(reply)-2*rcvCount + 1, 2*rcvCount);
+      rcvbytes := _hexStrToBin(reply);
+      result := rcvbytes;
       exit;
     end;
 
 
-  function TYSpiPort.readArray(nChars: LongInt):TLongIntArray;
+  function TYI2cPort.i2cSendAndReceiveArray(slaveAddr: LongInt; values: TLongIntArray; rcvCount: LongInt):TLongIntArray;
     var
-      buff : TByteArray;
-      bufflen : LongInt;
-      mult : LongInt;
-      endpos : LongInt;
+      nBytes : LongInt;
       idx : LongInt;
-      b : LongInt;
+      val : LongInt;
+      msg : string;
+      reply : string;
+      rcvbytes : TByteArray;
       res : TLongIntArray;
       res_pos : LongInt;
     begin
-      if nChars > 65535 then
+      msg := '@'+AnsiLowerCase(inttohex(slaveAddr,02))+':';
+      nBytes := length(values);
+      idx := 0;
+      while idx < nBytes do
         begin
-          nChars := 65535;
+          val := values[idx];
+          msg := ''+ msg+''+AnsiLowerCase(inttohex(val,02));
+          idx := idx + 1;
+        end;
+      idx := 0;
+      while idx < rcvCount do
+        begin
+          msg := ''+msg+'xx';
+          idx := idx + 1;
         end;
 
-      buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
-      bufflen := length(buff) - 1;
-      endpos := 0;
-      mult := 1;
-      while (bufflen > 0) and(buff[bufflen] <> 64) do
+      reply := self.queryLine(msg, 1000);
+      if not(Length(reply) > 0) then
         begin
-          endpos := endpos + mult * (buff[bufflen] - 48);
-          mult := mult * 10;
-          bufflen := bufflen - 1;
+          self._throw( YAPI_IO_ERROR, 'no response from device');
+          result:=res;
+          exit;
         end;
-      self._rxptr := endpos;
-      res_pos := 0;
-      SetLength(res, bufflen);;
-      idx := 0;
-      while idx < bufflen do
+      idx := (pos('[N]!', reply) - 1);
+      if not(idx < 0) then
         begin
-          b := buff[idx];
-          res[res_pos] := b;
+          self._throw( YAPI_IO_ERROR, 'No ACK received');
+          result:=res;
+          exit;
+        end;
+      idx := (pos('!', reply) - 1);
+      if not(idx < 0) then
+        begin
+          self._throw( YAPI_IO_ERROR, 'Protocol error');
+          result:=res;
+          exit;
+        end;
+      reply := Copy(reply,  Length(reply)-2*rcvCount + 1, 2*rcvCount);
+      rcvbytes := _hexStrToBin(reply);
+      res_pos := 0;
+      SetLength(res, rcvCount);;
+      idx := 0;
+      while idx < rcvCount do
+        begin
+          val := rcvbytes[idx];
+          res[res_pos] := val;
           inc(res_pos);
           idx := idx + 1;
         end;
@@ -2125,80 +1859,156 @@ implementation
     end;
 
 
-  function TYSpiPort.readHex(nBytes: LongInt):string;
+  function TYI2cPort.writeStr(codes: string):LongInt;
     var
-      buff : TByteArray;
       bufflen : LongInt;
-      mult : LongInt;
-      endpos : LongInt;
-      ofs : LongInt;
-      res : string;
+      buff : TByteArray;
+      idx : LongInt;
+      ch : LongInt;
     begin
-      if nBytes > 65535 then
+      buff := _StrToByte(codes);
+      bufflen := length(buff);
+      if bufflen < 100 then
         begin
-          nBytes := 65535;
+          // if string is pure text, we can send it as a simple command (faster)
+          ch := $020;
+          idx := 0;
+          while (idx < bufflen) and(ch <> 0) do
+            begin
+              ch := buff[idx];
+              if (ch >= $020) and(ch < $07f) then
+                begin
+                  idx := idx + 1;
+                end
+              else
+                begin
+                  ch := 0;
+                end;
+            end;
+          if idx >= bufflen then
+            begin
+              result := self.sendCommand('+'+codes);
+              exit;
+            end;
         end;
-
-      buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nBytes));
-      bufflen := length(buff) - 1;
-      endpos := 0;
-      mult := 1;
-      while (bufflen > 0) and(buff[bufflen] <> 64) do
-        begin
-          endpos := endpos + mult * (buff[bufflen] - 48);
-          mult := mult * 10;
-          bufflen := bufflen - 1;
-        end;
-      self._rxptr := endpos;
-      res := '';
-      ofs := 0;
-      while ofs + 3 < bufflen do
-        begin
-          res := ''+ res+''+AnsiUpperCase(inttohex( buff[ofs],02))+''+AnsiUpperCase(inttohex( buff[ofs + 1],02))+''+AnsiUpperCase(inttohex( buff[ofs + 2],02))+''+AnsiUpperCase(inttohex(buff[ofs + 3],02));
-          ofs := ofs + 4;
-        end;
-      while ofs < bufflen do
-        begin
-          res := ''+ res+''+AnsiUpperCase(inttohex(buff[ofs],02));
-          ofs := ofs + 1;
-        end;
-      result := res;
+      // send string using file upload
+      result := self._upload('txdata', buff);
       exit;
     end;
 
 
-  function TYSpiPort.set_SS(val: LongInt):LongInt;
+  function TYI2cPort.writeLine(codes: string):LongInt;
+    var
+      bufflen : LongInt;
+      buff : TByteArray;
     begin
-      result := self.sendCommand('S'+inttostr(val));
+      bufflen := Length(codes);
+      if bufflen < 100 then
+        begin
+          result := self.sendCommand('!'+codes);
+          exit;
+        end;
+      // send string using file upload
+      buff := _StrToByte(''+codes+''#10'');
+      result := self._upload('txdata', buff);
       exit;
     end;
 
 
-  function TYSpiPort.nextSpiPort(): TYSpiPort;
+  function TYI2cPort.writeByte(code: LongInt):LongInt;
+    begin
+      result := self.sendCommand('+'+AnsiUpperCase(inttohex(code,02)));
+      exit;
+    end;
+
+
+  function TYI2cPort.writeHex(hexString: string):LongInt;
+    var
+      bufflen : LongInt;
+      buff : TByteArray;
+    begin
+      bufflen := Length(hexString);
+      if bufflen < 100 then
+        begin
+          result := self.sendCommand('+'+hexString);
+          exit;
+        end;
+      buff := _StrToByte(hexString);
+
+      result := self._upload('txdata', buff);
+      exit;
+    end;
+
+
+  function TYI2cPort.writeBin(buff: TByteArray):LongInt;
+    var
+      nBytes : LongInt;
+      idx : LongInt;
+      val : LongInt;
+      msg : string;
+    begin
+      msg := '';
+      nBytes := length(buff);
+      idx := 0;
+      while idx < nBytes do
+        begin
+          val := buff[idx];
+          msg := ''+ msg+''+AnsiLowerCase(inttohex(val,02));
+          idx := idx + 1;
+        end;
+
+      result := self.writeHex(msg);
+      exit;
+    end;
+
+
+  function TYI2cPort.writeArray(byteList: TLongIntArray):LongInt;
+    var
+      nBytes : LongInt;
+      idx : LongInt;
+      val : LongInt;
+      msg : string;
+    begin
+      msg := '';
+      nBytes := length(byteList);
+      idx := 0;
+      while idx < nBytes do
+        begin
+          val := byteList[idx];
+          msg := ''+ msg+''+AnsiLowerCase(inttohex(val,02));
+          idx := idx + 1;
+        end;
+
+      result := self.writeHex(msg);
+      exit;
+    end;
+
+
+  function TYI2cPort.nextI2cPort(): TYI2cPort;
     var
       hwid: string;
     begin
       if YISERR(_nextFunction(hwid)) then
         begin
-          nextSpiPort := nil;
+          nextI2cPort := nil;
           exit;
         end;
       if hwid = '' then
         begin
-          nextSpiPort := nil;
+          nextI2cPort := nil;
           exit;
         end;
-      nextSpiPort := TYSpiPort.FindSpiPort(hwid);
+      nextI2cPort := TYI2cPort.FindI2cPort(hwid);
     end;
 
-  class function TYSpiPort.FirstSpiPort(): TYSpiPort;
+  class function TYI2cPort.FirstI2cPort(): TYI2cPort;
     var
       v_fundescr      : YFUN_DESCR;
       dev             : YDEV_DESCR;
       neededsize, err : integer;
       serial, funcId, funcName, funcVal, errmsg : string;
     begin
-      err := yapiGetFunctionsByClass('SpiPort', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
+      err := yapiGetFunctionsByClass('I2cPort', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
       if (YISERR(err) or (neededsize = 0)) then
         begin
           result := nil;
@@ -2209,35 +2019,35 @@ implementation
           result := nil;
           exit;
         end;
-     result := TYSpiPort.FindSpiPort(serial+'.'+funcId);
+     result := TYI2cPort.FindI2cPort(serial+'.'+funcId);
     end;
 
-//--- (end of YSpiPort implementation)
+//--- (end of YI2cPort implementation)
 
-//--- (YSpiPort functions)
+//--- (YI2cPort functions)
 
-  function yFindSpiPort(func:string): TYSpiPort;
+  function yFindI2cPort(func:string): TYI2cPort;
     begin
-      result := TYSpiPort.FindSpiPort(func);
+      result := TYI2cPort.FindI2cPort(func);
     end;
 
-  function yFirstSpiPort(): TYSpiPort;
+  function yFirstI2cPort(): TYI2cPort;
     begin
-      result := TYSpiPort.FirstSpiPort();
+      result := TYI2cPort.FirstI2cPort();
     end;
 
-  procedure _SpiPortCleanup();
+  procedure _I2cPortCleanup();
     begin
     end;
 
-//--- (end of YSpiPort functions)
+//--- (end of YI2cPort functions)
 
 initialization
-  //--- (YSpiPort initialization)
-  //--- (end of YSpiPort initialization)
+  //--- (YI2cPort initialization)
+  //--- (end of YI2cPort initialization)
 
 finalization
-  //--- (YSpiPort cleanup)
-  _SpiPortCleanup();
-  //--- (end of YSpiPort cleanup)
+  //--- (YI2cPort cleanup)
+  _I2cPortCleanup();
+  //--- (end of YI2cPort cleanup)
 end.
