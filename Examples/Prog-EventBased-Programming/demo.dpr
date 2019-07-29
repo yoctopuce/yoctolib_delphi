@@ -9,13 +9,19 @@ uses
    end;
 
   Procedure sensorValueChangeCallBack(fct:TYSensor; value:string);
+   var
+    uni        : String;
    begin
-    writeln(fct.get_hardwareId() + ' : ' + value + ' ' + fct.get_unit() + ' (new value)');
+    uni :=  String(fct.get_userData());
+    writeln(fct.get_hardwareId() + ' : ' + value + ' ' + uni + ' (new value)');
    end;
 
   Procedure sensorTimedReportCallBack(fct:TYSensor; measure:TYMeasure);
+   var
+    uni        : String;
    begin
-    writeln(fct.get_hardwareId() + ' : ' + FloatToStr(measure.get_averageValue()) + ' ' + fct.get_unit() + ' (timed report)');
+    uni :=  String(fct.get_userData());
+    writeln(fct.get_hardwareId() + ' : ' + FloatToStr(measure.get_averageValue()) + ' ' + uni + ' (timed report)');
    end;
 
   Procedure configChangeCallBack(m:TYModule);
@@ -36,7 +42,7 @@ uses
      fctcount,i : integer;
      anButton   : TYAnButton;
      sensor     : TYSensor;
-
+     uni        : string;
    begin
      serial := m.get_serialNumber();
      writeln('Device arrival : ' + serial);
@@ -64,6 +70,8 @@ uses
          begin
            hardwareId := sensor.get_hardwareId();
            writeln('- ' + hardwareId);
+           uni := sensor.get_unit();
+           sensor.set_userData(TObject(uni));
            sensor.registerValueCallback(@sensorValueChangeCallBack);
            sensor.registerTimedReportCallback(@sensorTimedReportCallBack);
          end;
@@ -76,16 +84,22 @@ uses
       Writeln('Device removal : ' + m.get_serialNumber());
    end;
 
+  Procedure logfun(line: string);
+   begin
+      Write('LOG : ' + line);
+   end;
+
 var
    errmsg:string;
 
 begin
+  yRegisterLogFunction(@logfun);
+
   if (yRegisterHub('usb',  errmsg) <> YAPI_SUCCESS) then
    begin
      WriteLn('RegisterHub error : ' + errmsg);
      halt;
    end;
-
   yRegisterDeviceArrivalCallback(@deviceArrival);
   yRegisterDeviceRemovalCallback(@deviceRemoval);
 
