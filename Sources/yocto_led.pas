@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_led.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_led.pas 36554 2019-07-29 12:21:31Z mvuilleu $
  *
  *  Implements yFindLed(), the high-level API for Led functions
  *
@@ -159,6 +159,8 @@ type
     /// <summary>
     ///   Changes the current LED intensity (in per cent).
     /// <para>
+    ///   Remember to call the
+    ///   <c>saveToFlash()</c> method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>

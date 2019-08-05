@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 36141 2019-07-08 17:51:33Z mvuilleu $
+ * $Id: yocto_api.pas 36664 2019-08-02 12:19:26Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -120,7 +120,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '36518';
+  YOCTO_API_BUILD_NO        = '36692';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -1199,14 +1199,15 @@ type
 
     ////
     /// <summary>
-    ///   Returns the hardware release version of the module.
+    ///   Returns the release number of the module hardware, preprogrammed at the factory.
     /// <para>
+    ///   The original hardware release returns value 1, revision B returns value 2, etc.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the hardware release version of the module
+    ///   an integer corresponding to the release number of the module hardware, preprogrammed at the factory
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_PRODUCTRELEASE_INVALID</c>.
@@ -1503,6 +1504,8 @@ type
     function registerValueCallback(callback: TYModuleValueCallback):LongInt; overload;
 
     function _invokeValueCallback(value: string):LongInt; override;
+
+    function get_productNameAndRevision():string; overload; virtual;
 
     ////
     /// <summary>
@@ -7267,7 +7270,7 @@ var
           else
             inc(found);
         end;
-      if(found >= length(buffer) - 4) then
+      if(found > length(buffer) - 4) then
         begin
           _throw(YAPI_IO_ERROR,'http request failed');
           setlength(result,0);
@@ -8676,7 +8679,7 @@ var
     var
       res : LongInt;
     begin
-      if self._cacheExpiration <= yGetTickCount then
+      if self._cacheExpiration = 0 then
         begin
           if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
@@ -8935,6 +8938,27 @@ var
           inherited _invokeValueCallback(value);
         end;
       result := 0;
+      exit;
+    end;
+
+
+  function TYModule.get_productNameAndRevision():string;
+    var
+      prodname : string;
+      prodrel : LongInt;
+      fullname : string;
+    begin
+      prodname := self.get_productName;
+      prodrel := self.get_productRelease;
+      if prodrel > 1 then
+        begin
+          fullname := ''+ prodname+' rev. '+chr(64+prodrel);
+        end
+      else
+        begin
+          fullname := prodname;
+        end;
+      result := fullname;
       exit;
     end;
 
@@ -11836,7 +11860,21 @@ var
           val := 0;
         end;
       self._nRows := val;
-      self._duration := self._nRows * self._dataSamplesInterval;
+      if self._nRows > 0 then
+        begin
+          if self._firstMeasureDuration > 0 then
+            begin
+              self._duration := self._firstMeasureDuration + (self._nRows - 1) * self._dataSamplesInterval;
+            end
+          else
+            begin
+              self._duration := self._nRows * self._dataSamplesInterval;
+            end;
+        end
+      else
+        begin
+          self._duration := 0;
+        end;
       // precompute decoding parameters
       iCalib := dataset._get_calibration();
       self._caltyp := iCalib[0];
