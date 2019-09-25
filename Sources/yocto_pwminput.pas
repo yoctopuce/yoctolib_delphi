@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_pwminput.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_pwminput.pas 37149 2019-09-12 21:24:53Z mvuilleu $
  *
  *  Implements yFindPwmInput(), the high-level API for PwmInput functions
  *
@@ -122,6 +122,7 @@ type
     ///   is just a string which is automatically initialized each time
     ///   the measurement mode is changed. But is can be set to an
     ///   arbitrary value.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -277,6 +278,7 @@ type
     /// <para>
     ///   The edge count value is limited to the 6 lowest digits. For values greater than one million, use
     ///   get_pulseCounter().
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -324,6 +326,7 @@ type
     ///   Changes the shortest expected pulse duration, in ms.
     /// <para>
     ///   Any shorter pulse will be automatically ignored (debounce).
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_colorledcluster.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_colorledcluster.pas 37000 2019-09-03 06:40:17Z mvuilleu $
  *
  *  Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -125,6 +125,8 @@ type
     /// <summary>
     ///   Changes the number of LEDs currently handled by the device.
     /// <para>
+    ///   Remember to call the matching module
+    ///   <c>saveToFlash()</c> method to save the setting permanently.
     /// </para>
     /// <para>
     /// </para>
@@ -165,6 +167,8 @@ type
     /// <summary>
     ///   Changes the RGB LED type currently handled by the device.
     /// <para>
+    ///   Remember to call the matching module
+    ///   <c>saveToFlash()</c> method to save the setting permanently.
     /// </para>
     /// <para>
     /// </para>

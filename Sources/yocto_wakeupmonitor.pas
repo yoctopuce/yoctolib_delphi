@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_wakeupmonitor.pas 37000 2019-09-03 06:40:17Z mvuilleu $
  *
  *  Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -126,6 +126,8 @@ type
     /// <summary>
     ///   Changes the maximal wake up time (seconds) before automatically going to sleep.
     /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
     /// </para>
     /// <para>
     /// </para>

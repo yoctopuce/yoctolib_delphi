@@ -69,7 +69,7 @@ begin
     begin
       // sample code reading MCP9804 temperature sensor
       i2cPort.set_i2cMode('400kbps');
-      i2cPort.set_voltageLevel(Y_VOLTAGELEVEL_TTL3V);
+      i2cPort.set_i2cVoltageLevel(Y_I2CVOLTAGELEVEL_3V3);
       i2cPort.reset();
       // do not forget to configure the powerOutput
       // of the Yocto-I2C as well if used

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_rangefinder.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_rangefinder.pas 37149 2019-09-12 21:24:53Z mvuilleu $
  *
  *  Implements yFindRangeFinder(), the high-level API for RangeFinder functions
  *
@@ -157,6 +157,7 @@ type
     ///   Changes the rangefinder running mode, allowing you to put priority on
     ///   precision, speed or maximum range.
     /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -206,6 +207,7 @@ type
     ///   The time frame is expressed in milliseconds. A larger timeframe
     ///   improves stability and reliability, at the cost of higher latency, but prevents
     ///   the detection of events shorter than the time frame.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>

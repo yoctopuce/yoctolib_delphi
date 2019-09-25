@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_wakeupschedule.pas 37000 2019-09-03 06:40:17Z mvuilleu $
  *
  *  Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
@@ -120,6 +120,8 @@ type
     /// <summary>
     ///   Changes the minutes in the 00-29 interval when a wake up must take place.
     /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -159,6 +161,8 @@ type
     /// <summary>
     ///   Changes the minutes in the 30-59 interval when a wake up must take place.
     /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -198,6 +202,8 @@ type
     /// <summary>
     ///   Changes the hours when a wake up must take place.
     /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -237,6 +243,8 @@ type
     /// <summary>
     ///   Changes the days of the week when a wake up must take place.
     /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -276,6 +284,8 @@ type
     /// <summary>
     ///   Changes the days of the month when a wake up must take place.
     /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -315,6 +325,8 @@ type
     /// <summary>
     ///   Changes the months when a wake up must take place.
     /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
     /// </para>
     /// <para>
     /// </para>

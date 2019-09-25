@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_refframe.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_refframe.pas 37000 2019-09-03 06:40:17Z mvuilleu $
  *
  *  Implements yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -190,8 +190,48 @@ type
 
     function set_calibrationParam(newval:string):integer;
 
+    ////
+    /// <summary>
+    ///   Returns the BNO055 fusion mode.
+    /// <para>
+    ///   Note this feature is only availabe on Yocto-3D-V2.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a value among <c>Y_FUSIONMODE_NDOF</c>, <c>Y_FUSIONMODE_NDOF_FMC_OFF</c>, <c>Y_FUSIONMODE_M4G</c>,
+    ///   <c>Y_FUSIONMODE_COMPASS</c> and <c>Y_FUSIONMODE_IMU</c> corresponding to the BNO055 fusion mode
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_FUSIONMODE_INVALID</c>.
+    /// </para>
+    ///-
     function get_fusionMode():Integer;
 
+    ////
+    /// <summary>
+    ///   Change the BNO055 fusion mode.
+    /// <para>
+    ///   Note: this feature is only availabe on Yocto-3D-V2.
+    ///   Remember to call the matching module <c>saveToFlash()</c> method to save the setting permanently.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a value among <c>Y_FUSIONMODE_NDOF</c>, <c>Y_FUSIONMODE_NDOF_FMC_OFF</c>, <c>Y_FUSIONMODE_M4G</c>,
+    ///   <c>Y_FUSIONMODE_COMPASS</c> and <c>Y_FUSIONMODE_IMU</c>
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
     function set_fusionMode(newval:Integer):integer;
 
     ////

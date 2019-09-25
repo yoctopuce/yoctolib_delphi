@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_spiport.pas 36048 2019-06-28 17:43:51Z mvuilleu $
+ *  $Id: yocto_spiport.pas 37141 2019-09-12 12:37:10Z mvuilleu $
  *
  *  Implements yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -57,6 +57,7 @@ const Y_LASTMSG_INVALID               = YAPI_INVALID_STRING;
 const Y_CURRENTJOB_INVALID            = YAPI_INVALID_STRING;
 const Y_STARTUPJOB_INVALID            = YAPI_INVALID_STRING;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
+const Y_PROTOCOL_INVALID              = YAPI_INVALID_STRING;
 const Y_VOLTAGELEVEL_OFF = 0;
 const Y_VOLTAGELEVEL_TTL3V = 1;
 const Y_VOLTAGELEVEL_TTL3VR = 2;
@@ -66,7 +67,6 @@ const Y_VOLTAGELEVEL_RS232 = 5;
 const Y_VOLTAGELEVEL_RS485 = 6;
 const Y_VOLTAGELEVEL_TTL1V8 = 7;
 const Y_VOLTAGELEVEL_INVALID = -1;
-const Y_PROTOCOL_INVALID              = YAPI_INVALID_STRING;
 const Y_SPIMODE_INVALID               = YAPI_INVALID_STRING;
 const Y_SSPOLARITY_ACTIVE_LOW = 0;
 const Y_SSPOLARITY_ACTIVE_HIGH = 1;
@@ -112,8 +112,8 @@ type
     _currentJob               : string;
     _startupJob               : string;
     _command                  : string;
-    _voltageLevel             : Integer;
     _protocol                 : string;
+    _voltageLevel             : Integer;
     _spiMode                  : string;
     _ssPolarity               : Integer;
     _shiftSampling            : Integer;
@@ -251,16 +251,16 @@ type
 
     ////
     /// <summary>
-    ///   Changes the job to use when the device is powered on.
+    ///   Selects a job file to run immediately.
     /// <para>
-    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
-    ///   modification must be kept.
+    ///   If an empty string is
+    ///   given as argument, stops running current job file.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a string corresponding to the job to use when the device is powered on
+    ///   a string
     /// </param>
     /// <para>
     /// </para>
@@ -320,56 +320,6 @@ type
 
     ////
     /// <summary>
-    ///   Returns the voltage level used on the serial line.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   a value among <c>Y_VOLTAGELEVEL_OFF</c>, <c>Y_VOLTAGELEVEL_TTL3V</c>, <c>Y_VOLTAGELEVEL_TTL3VR</c>,
-    ///   <c>Y_VOLTAGELEVEL_TTL5V</c>, <c>Y_VOLTAGELEVEL_TTL5VR</c>, <c>Y_VOLTAGELEVEL_RS232</c>,
-    ///   <c>Y_VOLTAGELEVEL_RS485</c> and <c>Y_VOLTAGELEVEL_TTL1V8</c> corresponding to the voltage level
-    ///   used on the serial line
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>Y_VOLTAGELEVEL_INVALID</c>.
-    /// </para>
-    ///-
-    function get_voltageLevel():Integer;
-
-    ////
-    /// <summary>
-    ///   Changes the voltage type used on the serial line.
-    /// <para>
-    ///   Valid
-    ///   values  will depend on the Yoctopuce device model featuring
-    ///   the serial port feature.  Check your device documentation
-    ///   to find out which values are valid for that specific model.
-    ///   Trying to set an invalid value will have no effect.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="newval">
-    ///   a value among <c>Y_VOLTAGELEVEL_OFF</c>, <c>Y_VOLTAGELEVEL_TTL3V</c>, <c>Y_VOLTAGELEVEL_TTL3VR</c>,
-    ///   <c>Y_VOLTAGELEVEL_TTL5V</c>, <c>Y_VOLTAGELEVEL_TTL5VR</c>, <c>Y_VOLTAGELEVEL_RS232</c>,
-    ///   <c>Y_VOLTAGELEVEL_RS485</c> and <c>Y_VOLTAGELEVEL_TTL1V8</c> corresponding to the voltage type used
-    ///   on the serial line
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_voltageLevel(newval:Integer):integer;
-
-    ////
-    /// <summary>
     ///   Returns the type of protocol used over the serial line, as a string.
     /// <para>
     ///   Possible values are "Line" for ASCII messages separated by CR and/or LF,
@@ -399,6 +349,8 @@ type
     ///   "Byte" for a continuous binary stream.
     ///   The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
     ///   is always at lest the specified number of milliseconds between each bytes sent.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -416,6 +368,58 @@ type
     /// </para>
     ///-
     function set_protocol(newval:string):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the voltage level used on the serial line.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a value among <c>Y_VOLTAGELEVEL_OFF</c>, <c>Y_VOLTAGELEVEL_TTL3V</c>, <c>Y_VOLTAGELEVEL_TTL3VR</c>,
+    ///   <c>Y_VOLTAGELEVEL_TTL5V</c>, <c>Y_VOLTAGELEVEL_TTL5VR</c>, <c>Y_VOLTAGELEVEL_RS232</c>,
+    ///   <c>Y_VOLTAGELEVEL_RS485</c> and <c>Y_VOLTAGELEVEL_TTL1V8</c> corresponding to the voltage level
+    ///   used on the serial line
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_VOLTAGELEVEL_INVALID</c>.
+    /// </para>
+    ///-
+    function get_voltageLevel():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the voltage type used on the serial line.
+    /// <para>
+    ///   Valid
+    ///   values  will depend on the Yoctopuce device model featuring
+    ///   the serial port feature.  Check your device documentation
+    ///   to find out which values are valid for that specific model.
+    ///   Trying to set an invalid value will have no effect.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a value among <c>Y_VOLTAGELEVEL_OFF</c>, <c>Y_VOLTAGELEVEL_TTL3V</c>, <c>Y_VOLTAGELEVEL_TTL3VR</c>,
+    ///   <c>Y_VOLTAGELEVEL_TTL5V</c>, <c>Y_VOLTAGELEVEL_TTL5VR</c>, <c>Y_VOLTAGELEVEL_RS232</c>,
+    ///   <c>Y_VOLTAGELEVEL_RS485</c> and <c>Y_VOLTAGELEVEL_TTL1V8</c> corresponding to the voltage type used
+    ///   on the serial line
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_voltageLevel(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -445,6 +449,8 @@ type
     /// <para>
     ///   The string includes the baud rate, the SPI mode (between
     ///   0 and 3) and the bit order.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -485,6 +491,8 @@ type
     /// <summary>
     ///   Changes the SS line polarity.
     /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -528,6 +536,8 @@ type
     ///   When disabled, SDI line is
     ///   sampled in the middle of data output time. When enabled, SDI line is
     ///   samples at the end of data output time.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -1146,8 +1156,8 @@ implementation
       _currentJob := Y_CURRENTJOB_INVALID;
       _startupJob := Y_STARTUPJOB_INVALID;
       _command := Y_COMMAND_INVALID;
-      _voltageLevel := Y_VOLTAGELEVEL_INVALID;
       _protocol := Y_PROTOCOL_INVALID;
+      _voltageLevel := Y_VOLTAGELEVEL_INVALID;
       _spiMode := Y_SPIMODE_INVALID;
       _ssPolarity := Y_SSPOLARITY_INVALID;
       _shiftSampling := Y_SHIFTSAMPLING_INVALID;
@@ -1221,15 +1231,15 @@ implementation
          result := 1;
          exit;
          end;
-      if (member^.name = 'voltageLevel') then
-        begin
-          _voltageLevel := integer(member^.ivalue);
-         result := 1;
-         exit;
-         end;
       if (member^.name = 'protocol') then
         begin
           _protocol := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'voltageLevel') then
+        begin
+          _voltageLevel := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -1441,32 +1451,6 @@ implementation
       result := _setAttr('command',rest_val);
     end;
 
-  function TYSpiPort.get_voltageLevel():Integer;
-    var
-      res : Integer;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
-            begin
-              result := Y_VOLTAGELEVEL_INVALID;
-              exit;
-            end;
-        end;
-      res := self._voltageLevel;
-      result := res;
-      exit;
-    end;
-
-
-  function TYSpiPort.set_voltageLevel(newval:Integer):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := inttostr(newval);
-      result := _setAttr('voltageLevel',rest_val);
-    end;
-
   function TYSpiPort.get_protocol():string;
     var
       res : string;
@@ -1491,6 +1475,32 @@ implementation
     begin
       rest_val := newval;
       result := _setAttr('protocol',rest_val);
+    end;
+
+  function TYSpiPort.get_voltageLevel():Integer;
+    var
+      res : Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_VOLTAGELEVEL_INVALID;
+              exit;
+            end;
+        end;
+      res := self._voltageLevel;
+      result := res;
+      exit;
+    end;
+
+
+  function TYSpiPort.set_voltageLevel(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('voltageLevel',rest_val);
     end;
 
   function TYSpiPort.get_spiMode():string;

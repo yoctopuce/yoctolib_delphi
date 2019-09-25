@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 36664 2019-08-02 12:19:26Z seb $
+ * $Id: yocto_api.pas 37230 2019-09-20 08:43:51Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -120,7 +120,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '36692';
+  YOCTO_API_BUILD_NO        = '37304';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -1807,6 +1807,8 @@ type
 
     function calibConvert(param: string; currentFuncValue: string; unit_name: string; sensorType: string):string; overload; virtual;
 
+    function _tryExec(url: string):LongInt; overload; virtual;
+
     ////
     /// <summary>
     ///   Restores all the settings of the device.
@@ -2223,6 +2225,7 @@ end;
     ///   the value "OFF". Note that setting the  datalogger recording frequency
     ///   to a greater value than the sensor native sampling frequency is useless,
     ///   and even counterproductive: those two frequencies are not related.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -2271,6 +2274,7 @@ end;
     ///   notification frequency to a greater value than the sensor native
     ///   sampling frequency is unless, and even counterproductive: those two
     ///   frequencies are not related.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -2312,6 +2316,7 @@ end;
     /// <summary>
     ///   Changes the measuring mode used for the advertised value pushed to the parent hub.
     /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -2342,6 +2347,7 @@ end;
     /// <para>
     ///   The resolution corresponds to the numerical precision
     ///   when displaying value. It does not change the precision of the measure itself.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -2366,6 +2372,7 @@ end;
     /// <para>
     ///   The resolution corresponds to the numerical precision
     ///   of the measures, which is not always the same as the actual precision of the sensor.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -2720,20 +2727,20 @@ end;
     //--- (generated code: YAPIContext accessors declaration)
     ////
     /// <summary>
-    ///   Change the time between each forced enumeration of the YoctoHub used.
+    ///   Modifies the delay between each forced enumeration of the used YoctoHubs.
     /// <para>
-    ///   By default, the library performs a complete enumeration every 10 seconds.
-    ///   To reduce network traffic it is possible to increase this delay.
-    ///   This is particularly useful when a YoctoHub is connected to a GSM network
-    ///   where the traffic is charged. This setting does not affect modules connected by USB,
-    ///   nor the operation of arrival/removal callbacks.
-    ///   Note: This function must be called after <c>yInitAPI</c>.
+    ///   By default, the library performs a full enumeration every 10 seconds.
+    ///   To reduce network traffic, you can increase this delay.
+    ///   It's particularly useful when a YoctoHub is connected to the GSM network
+    ///   where traffic is billed. This parameter doesn't impact modules connected by USB,
+    ///   nor the working of module arrival/removal callbacks.
+    ///   Note: you must call this function after <c>yInitAPI</c>.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="deviceListValidity">
-    ///   number of seconds between each enumeration.
+    ///   nubmer of seconds between each enumeration.
     /// @noreturn
     /// </param>
     ///-
@@ -2741,9 +2748,9 @@ end;
 
     ////
     /// <summary>
-    ///   Returns the time between each forced enumeration of the YoctoHub used.
+    ///   Returns the delay between each forced enumeration of the used YoctoHubs.
     /// <para>
-    ///   Note: This function must be called after <c>yInitAPI</c>.
+    ///   Note: you must call this function after <c>yInitAPI</c>.
     /// </para>
     /// </summary>
     /// <returns>
@@ -2751,6 +2758,43 @@ end;
     /// </returns>
     ///-
     function GetDeviceListValidity():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   M
+    /// <para>
+    ///   odifies the network connection delay for <c>YAPI.RegisterHub()</c> and
+    ///   <c>YAPI.UpdateDeviceList()</c>. This delay impacts only the YoctoHubs and VirtualHub
+    ///   which are accessible through the network. By default, this delay is of 20000 milliseconds,
+    ///   but depending or you network you may want to change this delay.
+    ///   For example if your network infrastructure uses a GSM connection.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="networkMsTimeout">
+    ///   the network connection delay in milliseconds.
+    /// @noreturn
+    /// </param>
+    ///-
+    procedure SetNetworkTimeout(networkMsTimeout: LongInt); overload; virtual;
+
+    ////
+    /// <summary>
+    ///   R
+    /// <para>
+    ///   eturns the network connection delay for <c>YAPI.RegisterHub()</c> and
+    ///   <c>YAPI.UpdateDeviceList()</c>. This delay impacts only the YoctoHubs and VirtualHub
+    ///   which are accessible through the network. By default, this delay is of 20000 milliseconds,
+    ///   but depending or you network you may want to change this delay.
+    ///   For example if your network infrastructure uses a GSM connection.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the network connection delay in milliseconds.
+    /// </returns>
+    ///-
+    function GetNetworkTimeout():LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -4378,20 +4422,20 @@ end;
 //--- (generated code: YAPIContext yapiwrapper declaration)
     ////
     /// <summary>
-    ///   Change the time between each forced enumeration of the YoctoHub used.
+    ///   Modifies the delay between each forced enumeration of the used YoctoHubs.
     /// <para>
-    ///   By default, the library performs a complete enumeration every 10 seconds.
-    ///   To reduce network traffic it is possible to increase this delay.
-    ///   This is particularly useful when a YoctoHub is connected to a GSM network
-    ///   where the traffic is charged. This setting does not affect modules connected by USB,
-    ///   nor the operation of arrival/removal callbacks.
-    ///   Note: This function must be called after <c>yInitAPI</c>.
+    ///   By default, the library performs a full enumeration every 10 seconds.
+    ///   To reduce network traffic, you can increase this delay.
+    ///   It's particularly useful when a YoctoHub is connected to the GSM network
+    ///   where traffic is billed. This parameter doesn't impact modules connected by USB,
+    ///   nor the working of module arrival/removal callbacks.
+    ///   Note: you must call this function after <c>yInitAPI</c>.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="deviceListValidity">
-    ///   number of seconds between each enumeration.
+    ///   nubmer of seconds between each enumeration.
     /// @noreturn
     /// </param>
     ///-
@@ -4399,9 +4443,9 @@ end;
 
     ////
     /// <summary>
-    ///   Returns the time between each forced enumeration of the YoctoHub used.
+    ///   Returns the delay between each forced enumeration of the used YoctoHubs.
     /// <para>
-    ///   Note: This function must be called after <c>yInitAPI</c>.
+    ///   Note: you must call this function after <c>yInitAPI</c>.
     /// </para>
     /// </summary>
     /// <returns>
@@ -4409,6 +4453,43 @@ end;
     /// </returns>
     ///-
     function yGetDeviceListValidity():LongInt;
+
+    ////
+    /// <summary>
+    ///   M
+    /// <para>
+    ///   odifies the network connection delay for <c>YAPI.RegisterHub()</c> and
+    ///   <c>YAPI.UpdateDeviceList()</c>. This delay impacts only the YoctoHubs and VirtualHub
+    ///   which are accessible through the network. By default, this delay is of 20000 milliseconds,
+    ///   but depending or you network you may want to change this delay.
+    ///   For example if your network infrastructure uses a GSM connection.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="networkMsTimeout">
+    ///   the network connection delay in milliseconds.
+    /// @noreturn
+    /// </param>
+    ///-
+    procedure ySetNetworkTimeout(networkMsTimeout: LongInt);
+
+    ////
+    /// <summary>
+    ///   R
+    /// <para>
+    ///   eturns the network connection delay for <c>YAPI.RegisterHub()</c> and
+    ///   <c>YAPI.UpdateDeviceList()</c>. This delay impacts only the YoctoHubs and VirtualHub
+    ///   which are accessible through the network. By default, this delay is of 20000 milliseconds,
+    ///   but depending or you network you may want to change this delay.
+    ///   For example if your network infrastructure uses a GSM connection.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the network connection delay in milliseconds.
+    /// </returns>
+    ///-
+    function yGetNetworkTimeout():LongInt;
 
     ////
     /// <summary>
@@ -5398,6 +5479,9 @@ const
   procedure _yapiRegisterBeaconCallback(beaconCallback:_yapiBeaconFunc); cdecl; external dllfile name 'yapiRegisterBeaconCallback';
   procedure _yapiStartStopDeviceLogCallback(serial:pansichar; start:integer); cdecl; external dllfile name 'yapiStartStopDeviceLogCallback';
   function _yapiIsModuleWritable(serial:pansichar; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiIsModuleWritable';
+  function _yapiGetDLLPath(path:pansichar; pathsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetDLLPath';
+  procedure _yapiSetNetworkTimeout(sValidity:integer); cdecl; external dllfile name 'yapiSetNetworkTimeout';
+  function _yapiGetNetworkTimeout():integer; cdecl; external dllfile name 'yapiGetNetworkTimeout';
 //--- (end of generated code: YFunction dlldef)
 
 
@@ -9332,8 +9416,7 @@ var
             end;
         end;
       // Apply settings a second time for file-dependent settings and dynamic sensor nodes
-      self.set_allSettings(_StrToByte(json_api));
-      result := YAPI_SUCCESS;
+      result := self.set_allSettings(_StrToByte(json_api));
       exit;
     end;
 
@@ -9790,6 +9873,35 @@ var
     end;
 
 
+  function TYModule._tryExec(url: string):LongInt;
+    var
+      res : LongInt;
+      done : LongInt;
+      ignoreErrMsg : string;
+    begin
+      res := YAPI_SUCCESS;
+      done := 1;
+      Try
+        self._download(url);
+      Except
+        done := 0;
+      End;
+      if done = 0 then
+        begin
+          // retry silently after a short wait
+          Try
+            ySleep(500, ignoreErrMsg);
+            self._download(url);
+          Except
+            // second failure, return error code
+            res := self.get_errorType;
+          End;
+        end;
+      result := res;
+      exit;
+    end;
+
+
   function TYModule.set_allSettings(settings: TByteArray):LongInt;
     var
       restoreLast : TStringArray;
@@ -9808,6 +9920,8 @@ var
       leng : LongInt;
       i : LongInt;
       j : LongInt;
+      subres : LongInt;
+      res : LongInt;
       njpath : string;
       jpath : string;
       fun : string;
@@ -9828,6 +9942,7 @@ var
       len_pos : LongInt;
       arr_pos : LongInt;
       i_i : LongInt;
+      ignoreErrMsg : string;
       restoreLast_pos : LongInt;
     begin
       SetLength(restoreLast, 0);
@@ -9837,6 +9952,7 @@ var
       SetLength(new_dslist, 0);
       SetLength(new_jpath, 0);
       SetLength(new_val_arr, 0);
+      res := YAPI_SUCCESS;
       tmp := _ByteToString(settings);
       tmp := self._get_json_path(tmp, 'api');
       if not((tmp = '')) then
@@ -9879,7 +9995,13 @@ var
       SetLength(old_jpath_len, len_pos);;
       SetLength(old_val_arr, arr_pos);;
 
-      actualSettings := self._download('api.json');
+      Try
+        actualSettings := self._download('api.json');
+      Except
+        // retry silently after a short wait
+        ySleep(500, ignoreErrMsg);
+        actualSettings := self._download('api.json');
+      End;
       actualSettings := self._flattenJsonStruct(actualSettings);
       new_dslist := self._json_get_array(actualSettings);
       jpath_pos := length(new_jpath);
@@ -10006,6 +10128,10 @@ var
             begin
               do_update := false;
             end;
+          if (do_update) and((attr = 'signalValue')) then
+            begin
+              do_update := false;
+            end;
           if (do_update) and((attr = 'currentValue')) then
             begin
               do_update := false;
@@ -10078,6 +10204,14 @@ var
             begin
               do_update := false;
             end;
+          if (do_update) and((attr = 'rxMsgCount')) then
+            begin
+              do_update := false;
+            end;
+          if (do_update) and((attr = 'txMsgCount')) then
+            begin
+              do_update := false;
+            end;
           if do_update then
             begin
               do_update := false;
@@ -10143,7 +10277,11 @@ var
                     end;
                   newval := self.calibConvert(old_calib,  new_val_arr[i],  unit_name, sensorType);
                   url := 'api/' + fun + '.json?' + attr + '=' + self._escapeAttr(newval);
-                  self._download(url);
+                  subres := self._tryExec(url);
+                  if (res = YAPI_SUCCESS) and(subres <> YAPI_SUCCESS) then
+                    begin
+                      res := subres;
+                    end;
                 end
               else
                 begin
@@ -10155,7 +10293,11 @@ var
                     end
                   else
                     begin
-                      self._download(url);
+                      subres := self._tryExec(url);
+                      if (res = YAPI_SUCCESS) and(subres <> YAPI_SUCCESS) then
+                        begin
+                          res := subres;
+                        end;
                     end;
                 end;
             end;
@@ -10164,10 +10306,14 @@ var
       SetLength(restoreLast, restoreLast_pos);;
       for i_i:=0 to length(restoreLast)-1 do
         begin
-          self._download(restoreLast[i_i]);
+          subres := self._tryExec(restoreLast[i_i]);
+          if (res = YAPI_SUCCESS) and(subres <> YAPI_SUCCESS) then
+            begin
+              res := subres;
+            end;
         end;
       self.clearCache;
-      result := YAPI_SUCCESS;
+      result := res;
       exit;
     end;
 
@@ -11484,6 +11630,22 @@ var
     end;
 
 
+  procedure TYAPIContext.SetNetworkTimeout(networkMsTimeout: LongInt);
+    begin
+      _yapiSetNetworkTimeout(networkMsTimeout);
+    end;
+
+
+  function TYAPIContext.GetNetworkTimeout():LongInt;
+    var
+      res : LongInt;
+    begin
+      res := _yapiGetNetworkTimeout();
+      result := res;
+      exit;
+    end;
+
+
   procedure TYAPIContext.SetCacheValidity(cacheValidityMs: u64);
     begin
       self._defaultCacheValidity := cacheValidityMs;
@@ -11519,6 +11681,18 @@ var
   function yGetDeviceListValidity():LongInt;
     begin
         result := _yapiContext.GetDeviceListValidity();
+    end;
+
+
+  procedure ySetNetworkTimeout(networkMsTimeout: LongInt);
+    begin
+        _yapiContext.SetNetworkTimeout(networkMsTimeout);
+    end;
+
+
+  function yGetNetworkTimeout():LongInt;
+    begin
+        result := _yapiContext.GetNetworkTimeout();
     end;
 
 

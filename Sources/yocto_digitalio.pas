@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_digitalio.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_digitalio.pas 37149 2019-09-12 21:24:53Z mvuilleu $
  *
  *  Implements yFindDigitalIO(), the high-level API for DigitalIO functions
  *
@@ -1004,7 +1004,7 @@ implementation
     var
       res : LongInt;
     begin
-      if self._cacheExpiration <= yGetTickCount then
+      if self._cacheExpiration = 0 then
         begin
           if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin

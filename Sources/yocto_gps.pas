@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_gps.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_gps.pas 37165 2019-09-13 16:57:27Z mvuilleu $
  *
  *  Implements yFindGps(), the high-level API for Gps functions
  *
@@ -56,6 +56,14 @@ const Y_COORDSYSTEM_GPS_DMS = 0;
 const Y_COORDSYSTEM_GPS_DM = 1;
 const Y_COORDSYSTEM_GPS_D = 2;
 const Y_COORDSYSTEM_INVALID = -1;
+const Y_CONSTELLATION_GPS = 0;
+const Y_CONSTELLATION_GLONASS = 1;
+const Y_CONSTELLATION_GALLILEO = 2;
+const Y_CONSTELLATION_GNSS = 3;
+const Y_CONSTELLATION_GPS_GLONASS = 4;
+const Y_CONSTELLATION_GPS_GALLILEO = 5;
+const Y_CONSTELLATION_GLONASS_GALLELIO = 6;
+const Y_CONSTELLATION_INVALID = -1;
 const Y_LATITUDE_INVALID              = YAPI_INVALID_STRING;
 const Y_LONGITUDE_INVALID             = YAPI_INVALID_STRING;
 const Y_DILUTION_INVALID              = YAPI_INVALID_DOUBLE;
@@ -98,6 +106,7 @@ type
     _isFixed                  : Integer;
     _satCount                 : int64;
     _coordSystem              : Integer;
+    _constellation            : Integer;
     _latitude                 : string;
     _longitude                : string;
     _dilution                 : double;
@@ -175,6 +184,8 @@ type
     /// <summary>
     ///   Changes the representation system used for positioning data.
     /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -193,6 +204,57 @@ type
     /// </para>
     ///-
     function set_coordSystem(newval:Integer):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the the satellites constellation used to compute
+    ///   positioning data.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a value among <c>Y_CONSTELLATION_GPS</c>, <c>Y_CONSTELLATION_GLONASS</c>,
+    ///   <c>Y_CONSTELLATION_GALLILEO</c>, <c>Y_CONSTELLATION_GNSS</c>, <c>Y_CONSTELLATION_GPS_GLONASS</c>,
+    ///   <c>Y_CONSTELLATION_GPS_GALLILEO</c> and <c>Y_CONSTELLATION_GLONASS_GALLELIO</c> corresponding to
+    ///   the the satellites constellation used to compute
+    ///   positioning data
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_CONSTELLATION_INVALID</c>.
+    /// </para>
+    ///-
+    function get_constellation():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the satellites constellation used to compute
+    ///   positioning data.
+    /// <para>
+    ///   Possible  constellations are GPS, Glonass, Galileo ,
+    ///   GNSS ( = GPS + Glonass + Galileo) and the 3 possible pairs. This seeting has effect on Yocto-GPS rev A.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a value among <c>Y_CONSTELLATION_GPS</c>, <c>Y_CONSTELLATION_GLONASS</c>,
+    ///   <c>Y_CONSTELLATION_GALLILEO</c>, <c>Y_CONSTELLATION_GNSS</c>, <c>Y_CONSTELLATION_GPS_GLONASS</c>,
+    ///   <c>Y_CONSTELLATION_GPS_GALLILEO</c> and <c>Y_CONSTELLATION_GLONASS_GALLELIO</c> corresponding to
+    ///   the satellites constellation used to compute
+    ///   positioning data
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_constellation(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -361,6 +423,8 @@ type
     /// <para>
     ///   The timezone is automatically rounded to the nearest multiple of 15 minutes.
     ///   If current UTC time is known, the current time is automatically be updated according to the selected time zone.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -566,6 +630,7 @@ implementation
       _isFixed := Y_ISFIXED_INVALID;
       _satCount := Y_SATCOUNT_INVALID;
       _coordSystem := Y_COORDSYSTEM_INVALID;
+      _constellation := Y_CONSTELLATION_INVALID;
       _latitude := Y_LATITUDE_INVALID;
       _longitude := Y_LONGITUDE_INVALID;
       _dilution := Y_DILUTION_INVALID;
@@ -605,6 +670,12 @@ implementation
       if (member^.name = 'coordSystem') then
         begin
           _coordSystem := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'constellation') then
+        begin
+          _constellation := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -732,6 +803,32 @@ implementation
     begin
       rest_val := inttostr(newval);
       result := _setAttr('coordSystem',rest_val);
+    end;
+
+  function TYGps.get_constellation():Integer;
+    var
+      res : Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_CONSTELLATION_INVALID;
+              exit;
+            end;
+        end;
+      res := self._constellation;
+      result := res;
+      exit;
+    end;
+
+
+  function TYGps.set_constellation(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('constellation',rest_val);
     end;
 
   function TYGps.get_latitude():string;

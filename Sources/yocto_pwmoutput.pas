@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_pwmoutput.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_pwmoutput.pas 37000 2019-09-03 06:40:17Z mvuilleu $
  *
  *  Implements yFindPwmOutput(), the high-level API for PwmOutput functions
  *
@@ -149,7 +149,8 @@ type
     ///   The duty cycle is kept unchanged thanks to an
     ///   automatic pulse width change, in other words, the change will not be applied
     ///   before the end of the current period. This can significantly affect reaction
-    ///   time at low frequencies.
+    ///   time at low frequencies. If you call the matching module <c>saveToFlash()</c>
+    ///   method, the frequency will be kept after a device power cycle.
     ///   To stop the PWM signal, do not set the frequency to zero, use the set_enabled()
     ///   method instead.
     /// </para>

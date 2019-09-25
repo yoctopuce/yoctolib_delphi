@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 35360 2019-05-09 09:02:29Z mvuilleu $
+ * $Id: yocto_display.pas 37000 2019-09-03 06:40:17Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -1745,7 +1745,7 @@ destructor TYDisplay.destroy();
     var
       res : LongInt;
     begin
-      if self._cacheExpiration <= yGetTickCount then
+      if self._cacheExpiration = 0 then
         begin
           if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
@@ -1763,7 +1763,7 @@ destructor TYDisplay.destroy();
     var
       res : LongInt;
     begin
-      if self._cacheExpiration <= yGetTickCount then
+      if self._cacheExpiration = 0 then
         begin
           if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin

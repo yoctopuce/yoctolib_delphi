@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_realtimeclock.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_realtimeclock.pas 37000 2019-09-03 06:40:17Z mvuilleu $
  *
  *  Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
@@ -175,6 +175,8 @@ type
     ///   Changes the number of seconds between current time and UTC time (time zone).
     /// <para>
     ///   The timezone is automatically rounded to the nearest multiple of 15 minutes.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
     /// </para>
     /// <para>
     /// </para>

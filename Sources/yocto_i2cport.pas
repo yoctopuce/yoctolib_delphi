@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_i2cport.pas 36207 2019-07-10 20:46:18Z mvuilleu $
+ *  $Id: yocto_i2cport.pas 37168 2019-09-13 17:25:10Z mvuilleu $
  *
  *  Implements yFindI2cPort(), the high-level API for I2cPort functions
  *
@@ -57,16 +57,11 @@ const Y_LASTMSG_INVALID               = YAPI_INVALID_STRING;
 const Y_CURRENTJOB_INVALID            = YAPI_INVALID_STRING;
 const Y_STARTUPJOB_INVALID            = YAPI_INVALID_STRING;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
-const Y_VOLTAGELEVEL_OFF = 0;
-const Y_VOLTAGELEVEL_TTL3V = 1;
-const Y_VOLTAGELEVEL_TTL3VR = 2;
-const Y_VOLTAGELEVEL_TTL5V = 3;
-const Y_VOLTAGELEVEL_TTL5VR = 4;
-const Y_VOLTAGELEVEL_RS232 = 5;
-const Y_VOLTAGELEVEL_RS485 = 6;
-const Y_VOLTAGELEVEL_TTL1V8 = 7;
-const Y_VOLTAGELEVEL_INVALID = -1;
 const Y_PROTOCOL_INVALID              = YAPI_INVALID_STRING;
+const Y_I2CVOLTAGELEVEL_OFF = 0;
+const Y_I2CVOLTAGELEVEL_3V3 = 1;
+const Y_I2CVOLTAGELEVEL_1V8 = 2;
+const Y_I2CVOLTAGELEVEL_INVALID = -1;
 const Y_I2CMODE_INVALID               = YAPI_INVALID_STRING;
 
 
@@ -106,8 +101,8 @@ type
     _currentJob               : string;
     _startupJob               : string;
     _command                  : string;
-    _voltageLevel             : Integer;
     _protocol                 : string;
+    _i2cVoltageLevel          : Integer;
     _i2cMode                  : string;
     _valueCallbackI2cPort     : TYI2cPortValueCallback;
     _rxptr                    : LongInt;
@@ -243,16 +238,16 @@ type
 
     ////
     /// <summary>
-    ///   Changes the job to use when the device is powered on.
+    ///   Selects a job file to run immediately.
     /// <para>
-    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
-    ///   modification must be kept.
+    ///   If an empty string is
+    ///   given as argument, stops running current job file.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a string corresponding to the job to use when the device is powered on
+    ///   a string
     /// </param>
     /// <para>
     /// </para>
@@ -312,57 +307,7 @@ type
 
     ////
     /// <summary>
-    ///   Returns the voltage level used on the serial line.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   a value among <c>Y_VOLTAGELEVEL_OFF</c>, <c>Y_VOLTAGELEVEL_TTL3V</c>, <c>Y_VOLTAGELEVEL_TTL3VR</c>,
-    ///   <c>Y_VOLTAGELEVEL_TTL5V</c>, <c>Y_VOLTAGELEVEL_TTL5VR</c>, <c>Y_VOLTAGELEVEL_RS232</c>,
-    ///   <c>Y_VOLTAGELEVEL_RS485</c> and <c>Y_VOLTAGELEVEL_TTL1V8</c> corresponding to the voltage level
-    ///   used on the serial line
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>Y_VOLTAGELEVEL_INVALID</c>.
-    /// </para>
-    ///-
-    function get_voltageLevel():Integer;
-
-    ////
-    /// <summary>
-    ///   Changes the voltage type used on the serial line.
-    /// <para>
-    ///   Valid
-    ///   values  will depend on the Yoctopuce device model featuring
-    ///   the serial port feature.  Check your device documentation
-    ///   to find out which values are valid for that specific model.
-    ///   Trying to set an invalid value will have no effect.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="newval">
-    ///   a value among <c>Y_VOLTAGELEVEL_OFF</c>, <c>Y_VOLTAGELEVEL_TTL3V</c>, <c>Y_VOLTAGELEVEL_TTL3VR</c>,
-    ///   <c>Y_VOLTAGELEVEL_TTL5V</c>, <c>Y_VOLTAGELEVEL_TTL5VR</c>, <c>Y_VOLTAGELEVEL_RS232</c>,
-    ///   <c>Y_VOLTAGELEVEL_RS485</c> and <c>Y_VOLTAGELEVEL_TTL1V8</c> corresponding to the voltage type used
-    ///   on the serial line
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_voltageLevel(newval:Integer):integer;
-
-    ////
-    /// <summary>
-    ///   Returns the type of protocol used over the serial line, as a string.
+    ///   Returns the type of protocol used to send I2C messages, as a string.
     /// <para>
     ///   Possible values are
     ///   "Line" for messages separated by LF or
@@ -372,7 +317,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a string corresponding to the type of protocol used over the serial line, as a string
+    ///   a string corresponding to the type of protocol used to send I2C messages, as a string
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_PROTOCOL_INVALID</c>.
@@ -382,19 +327,21 @@ type
 
     ////
     /// <summary>
-    ///   Changes the type of protocol used over the serial line.
+    ///   Changes the type of protocol used to send I2C messages.
     /// <para>
     ///   Possible values are
     ///   "Line" for messages separated by LF or
     ///   "Char" for continuous stream of codes.
     ///   The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
     ///   is always at lest the specified number of milliseconds between each message sent.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a string corresponding to the type of protocol used over the serial line
+    ///   a string corresponding to the type of protocol used to send I2C messages
     /// </param>
     /// <para>
     /// </para>
@@ -409,18 +356,63 @@ type
 
     ////
     /// <summary>
-    ///   Returns the SPI port communication parameters, as a string such as
-    ///   "400kbps,2000ms".
+    ///   Returns the voltage level used on the I2C bus.
     /// <para>
-    ///   The string includes the baud rate and  th  e recovery delay
-    ///   after communications errors.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a value among <c>Y_I2CVOLTAGELEVEL_OFF</c>, <c>Y_I2CVOLTAGELEVEL_3V3</c> and
+    ///   <c>Y_I2CVOLTAGELEVEL_1V8</c> corresponding to the voltage level used on the I2C bus
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_I2CVOLTAGELEVEL_INVALID</c>.
+    /// </para>
+    ///-
+    function get_i2cVoltageLevel():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the voltage level used on the I2C bus.
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a value among <c>Y_I2CVOLTAGELEVEL_OFF</c>, <c>Y_I2CVOLTAGELEVEL_3V3</c> and
+    ///   <c>Y_I2CVOLTAGELEVEL_1V8</c> corresponding to the voltage level used on the I2C bus
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_i2cVoltageLevel(newval:Integer):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the SPI port communication parameters, as a string such as
+    ///   "400kbps,2000ms,NoRestart".
+    /// <para>
+    ///   The string includes the baud rate, the
+    ///   recovery delay after communications errors, and if needed the option
+    ///   <c>NoRestart</c> to use a Stop/Start sequence instead of the
+    ///   Restart state when performing read on the I2C bus.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
     ///   a string corresponding to the SPI port communication parameters, as a string such as
-    ///   "400kbps,2000ms"
+    ///   "400kbps,2000ms,NoRestart"
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_I2CMODE_INVALID</c>.
@@ -433,8 +425,12 @@ type
     ///   Changes the SPI port communication parameters, with a string such as
     ///   "400kbps,2000ms".
     /// <para>
-    ///   The string includes the baud rate and the recovery delay
-    ///   after communications errors.
+    ///   The string includes the baud rate, the
+    ///   recovery delay after communications errors, and if needed the option
+    ///   <c>NoRestart</c> to use a Stop/Start sequence instead of the
+    ///   Restart state when performing read on the I2C bus.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -1063,8 +1059,8 @@ implementation
       _currentJob := Y_CURRENTJOB_INVALID;
       _startupJob := Y_STARTUPJOB_INVALID;
       _command := Y_COMMAND_INVALID;
-      _voltageLevel := Y_VOLTAGELEVEL_INVALID;
       _protocol := Y_PROTOCOL_INVALID;
+      _i2cVoltageLevel := Y_I2CVOLTAGELEVEL_INVALID;
       _i2cMode := Y_I2CMODE_INVALID;
       _valueCallbackI2cPort := nil;
       _rxptr := 0;
@@ -1136,15 +1132,15 @@ implementation
          result := 1;
          exit;
          end;
-      if (member^.name = 'voltageLevel') then
-        begin
-          _voltageLevel := integer(member^.ivalue);
-         result := 1;
-         exit;
-         end;
       if (member^.name = 'protocol') then
         begin
           _protocol := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'i2cVoltageLevel') then
+        begin
+          _i2cVoltageLevel := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -1344,32 +1340,6 @@ implementation
       result := _setAttr('command',rest_val);
     end;
 
-  function TYI2cPort.get_voltageLevel():Integer;
-    var
-      res : Integer;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
-            begin
-              result := Y_VOLTAGELEVEL_INVALID;
-              exit;
-            end;
-        end;
-      res := self._voltageLevel;
-      result := res;
-      exit;
-    end;
-
-
-  function TYI2cPort.set_voltageLevel(newval:Integer):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := inttostr(newval);
-      result := _setAttr('voltageLevel',rest_val);
-    end;
-
   function TYI2cPort.get_protocol():string;
     var
       res : string;
@@ -1394,6 +1364,32 @@ implementation
     begin
       rest_val := newval;
       result := _setAttr('protocol',rest_val);
+    end;
+
+  function TYI2cPort.get_i2cVoltageLevel():Integer;
+    var
+      res : Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_I2CVOLTAGELEVEL_INVALID;
+              exit;
+            end;
+        end;
+      res := self._i2cVoltageLevel;
+      result := res;
+      exit;
+    end;
+
+
+  function TYI2cPort.set_i2cVoltageLevel(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('i2cVoltageLevel',rest_val);
     end;
 
   function TYI2cPort.get_i2cMode():string;
@@ -1672,21 +1668,21 @@ implementation
       reply := self.queryLine(msg, 1000);
       if not(Length(reply) > 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'no response from device');
+          self._throw( YAPI_IO_ERROR, 'No response from I2C device');
           result:=YAPI_IO_ERROR;
           exit;
         end;
       idx := (pos('[N]!', reply) - 1);
       if not(idx < 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'No ACK received');
+          self._throw( YAPI_IO_ERROR, 'No I2C ACK received');
           result:=YAPI_IO_ERROR;
           exit;
         end;
       idx := (pos('!', reply) - 1);
       if not(idx < 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'Protocol error');
+          self._throw( YAPI_IO_ERROR, 'I2C protocol error');
           result:=YAPI_IO_ERROR;
           exit;
         end;
@@ -1716,21 +1712,21 @@ implementation
       reply := self.queryLine(msg, 1000);
       if not(Length(reply) > 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'no response from device');
+          self._throw( YAPI_IO_ERROR, 'No response from I2C device');
           result:=YAPI_IO_ERROR;
           exit;
         end;
       idx := (pos('[N]!', reply) - 1);
       if not(idx < 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'No ACK received');
+          self._throw( YAPI_IO_ERROR, 'No I2C ACK received');
           result:=YAPI_IO_ERROR;
           exit;
         end;
       idx := (pos('!', reply) - 1);
       if not(idx < 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'Protocol error');
+          self._throw( YAPI_IO_ERROR, 'I2C protocol error');
           result:=YAPI_IO_ERROR;
           exit;
         end;
@@ -1768,21 +1764,21 @@ implementation
       setlength(rcvbytes,0);
       if not(Length(reply) > 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'no response from device');
+          self._throw( YAPI_IO_ERROR, 'No response from I2C device');
           result:=rcvbytes;
           exit;
         end;
       idx := (pos('[N]!', reply) - 1);
       if not(idx < 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'No ACK received');
+          self._throw( YAPI_IO_ERROR, 'No I2C ACK received');
           result:=rcvbytes;
           exit;
         end;
       idx := (pos('!', reply) - 1);
       if not(idx < 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'Protocol error');
+          self._throw( YAPI_IO_ERROR, 'I2C protocol error');
           result:=rcvbytes;
           exit;
         end;
@@ -1823,21 +1819,21 @@ implementation
       reply := self.queryLine(msg, 1000);
       if not(Length(reply) > 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'no response from device');
+          self._throw( YAPI_IO_ERROR, 'No response from I2C device');
           result:=res;
           exit;
         end;
       idx := (pos('[N]!', reply) - 1);
       if not(idx < 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'No ACK received');
+          self._throw( YAPI_IO_ERROR, 'No I2C ACK received');
           result:=res;
           exit;
         end;
       idx := (pos('!', reply) - 1);
       if not(idx < 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'Protocol error');
+          self._throw( YAPI_IO_ERROR, 'I2C protocol error');
           result:=res;
           exit;
         end;
