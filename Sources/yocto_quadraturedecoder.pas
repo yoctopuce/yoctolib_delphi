@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_quadraturedecoder.pas 37619 2019-10-11 11:52:42Z mvuilleu $
  *
  *  Implements yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
  *
@@ -154,6 +154,8 @@ type
     /// <summary>
     ///   Changes the activation state of the quadrature decoder.
     /// <para>
+    ///   Remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>

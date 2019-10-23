@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_genericsensor.pas 35360 2019-05-09 09:02:29Z mvuilleu $
+ *  $Id: yocto_genericsensor.pas 37619 2019-10-11 11:52:42Z mvuilleu $
  *
  *  Implements yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -169,14 +169,14 @@ type
 
     ////
     /// <summary>
-    ///   Returns the electric signal range used by the sensor.
+    ///   Returns the input signal range used by the sensor.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a string corresponding to the electric signal range used by the sensor
+    ///   a string corresponding to the input signal range used by the sensor
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_SIGNALRANGE_INVALID</c>.
@@ -186,15 +186,27 @@ type
 
     ////
     /// <summary>
-    ///   Changes the electric signal range used by the sensor.
+    ///   Changes the input signal range used by the sensor.
     /// <para>
-    ///   Default value is "-999999.999...999999.999".
+    ///   When the input signal gets out of the planned range, the output value
+    ///   will be set to an arbitrary large value, whose sign indicates the direction
+    ///   of the range overrun.
+    /// </para>
+    /// <para>
+    ///   For a 4-20mA sensor, the default input signal range is "4...20".
+    ///   For a 0-10V sensor, the default input signal range is "0.1...10".
+    ///   For numeric communication interfaces, the default input signal range is
+    ///   "-999999.999...999999.999".
+    /// </para>
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a string corresponding to the electric signal range used by the sensor
+    ///   a string corresponding to the input signal range used by the sensor
     /// </param>
     /// <para>
     /// </para>
@@ -226,16 +238,24 @@ type
 
     ////
     /// <summary>
-    ///   Changes the physical value range measured by the sensor.
+    ///   Changes the output value range, corresponding to the physical value measured
+    ///   by the sensor.
     /// <para>
-    ///   As a side effect, the range modification may
-    ///   automatically modify the display resolution. Default value is "-999999.999...999999.999".
+    ///   The default output value range is the same as the input signal
+    ///   range (1:1 mapping), but you can change it so that the function automatically
+    ///   computes the physical value encoded by the input signal. Be aware that, as a
+    ///   side effect, the range modification may automatically modify the display resolution.
+    /// </para>
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a string corresponding to the physical value range measured by the sensor
+    ///   a string corresponding to the output value range, corresponding to the physical value measured
+    ///   by the sensor
     /// </param>
     /// <para>
     /// </para>
@@ -254,6 +274,8 @@ type
     /// <para>
     ///   If your electric signal reads positive when it should be zero, setup
     ///   a positive signalBias of the same value to fix the zero shift.
+    ///   Remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -324,6 +346,8 @@ type
     ///   The <c>LOW_NOISE</c> method uses a reduced acquisition frequency to reduce noise.
     ///   The <c>LOW_NOISE_FILTERED</c> method combines a reduced frequency with the median filter
     ///   to get measures as stable as possible when working on a noisy signal.
+    ///   Remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -368,6 +392,8 @@ type
     ///   When an input is disabled,
     ///   its value is no more updated. On some devices, disabling an input can
     ///   improve the refresh rate of the other active inputs.
+    ///   Remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -486,8 +512,8 @@ type
     ///   Adjusts the signal bias so that the current signal value is need
     ///   precisely as zero.
     /// <para>
-    /// </para>
-    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
     /// </para>
     /// </summary>
     /// <returns>

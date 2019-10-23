@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_bluetoothlink.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_bluetoothlink.pas 37619 2019-10-11 11:52:42Z mvuilleu $
  *
  *  Implements yFindBluetoothLink(), the high-level API for BluetoothLink functions
  *
@@ -196,6 +196,8 @@ type
     /// <summary>
     ///   Changes the MAC-48 address defining which remote device to connect to.
     /// <para>
+    ///   Remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -293,6 +295,8 @@ type
     /// <summary>
     ///   Changes the audio pre-amplifier volume, in per cents.
     /// <para>
+    ///   Remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>

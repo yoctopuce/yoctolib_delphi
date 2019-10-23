@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_relay.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_relay.pas 37619 2019-10-11 11:52:42Z mvuilleu $
  *
  *  Implements yFindRelay(), the high-level API for Relay functions
  *
@@ -182,7 +182,7 @@ type
 
     ////
     /// <summary>
-    ///   Preset the state of the relays at device startup (A for the idle position,
+    ///   Changes the state of the relays at device startup (A for the idle position,
     ///   B for the active position, UNCHANGED for no modification).
     /// <para>
     ///   Remember to call the matching module <c>saveToFlash()</c>
@@ -192,7 +192,9 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>Y_STATEATPOWERON_UNCHANGED</c>, <c>Y_STATEATPOWERON_A</c> and <c>Y_STATEATPOWERON_B</c>
+    ///   a value among <c>Y_STATEATPOWERON_UNCHANGED</c>, <c>Y_STATEATPOWERON_A</c> and
+    ///   <c>Y_STATEATPOWERON_B</c> corresponding to the state of the relays at device startup (A for the idle position,
+    ///   B for the active position, UNCHANGED for no modification)
     /// </param>
     /// <para>
     /// </para>
@@ -207,15 +209,17 @@ type
 
     ////
     /// <summary>
-    ///   Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically switching back in to B state.
+    ///   Returns the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state
+    ///   A before automatically switching back in to B state.
     /// <para>
-    ///   Zero means no maximum time.
+    ///   Zero means no time limit.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer
+    ///   an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state
+    ///   A before automatically switching back in to B state
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_MAXTIMEONSTATEA_INVALID</c>.
@@ -225,15 +229,19 @@ type
 
     ////
     /// <summary>
-    ///   Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A before automatically switching back in to B state.
+    ///   Changes the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A
+    ///   before automatically switching back in to B state.
     /// <para>
-    ///   Use zero for no maximum time.
+    ///   Use zero for no time limit.
+    ///   Remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer
+    ///   an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A
+    ///   before automatically switching back in to B state
     /// </param>
     /// <para>
     /// </para>
@@ -248,9 +256,10 @@ type
 
     ////
     /// <summary>
-    ///   Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically switching back in to A state.
+    ///   Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B
+    ///   before automatically switching back in to A state.
     /// <para>
-    ///   Zero means no maximum time.
+    ///   Zero means no time limit.
     /// </para>
     /// <para>
     /// </para>
@@ -266,15 +275,19 @@ type
 
     ////
     /// <summary>
-    ///   Sets the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before automatically switching back in to A state.
+    ///   Changes the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before
+    ///   automatically switching back in to A state.
     /// <para>
-    ///   Use zero for no maximum time.
+    ///   Use zero for no time limit.
+    ///   Remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer
+    ///   an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before
+    ///   automatically switching back in to A state
     /// </param>
     /// <para>
     /// </para>

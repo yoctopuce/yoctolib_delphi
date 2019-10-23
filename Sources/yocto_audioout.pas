@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_audioout.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_audioout.pas 37619 2019-10-11 11:52:42Z mvuilleu $
  *
  *  Implements yFindAudioOut(), the high-level API for AudioOut functions
  *
@@ -116,6 +116,8 @@ type
     /// <summary>
     ///   Changes audio output volume, in per cents.
     /// <para>
+    ///   Remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>

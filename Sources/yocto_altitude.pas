@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_altitude.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_altitude.pas 37619 2019-10-11 11:52:42Z mvuilleu $
  *
  *  Implements yFindAltitude(), the high-level API for Altitude functions
  *
@@ -98,6 +98,8 @@ type
     /// <para>
     ///   This allows one to compensate for
     ///   ambient pressure variations and to work in relative mode.
+    ///   Remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>
@@ -123,6 +125,8 @@ type
     /// <para>
     ///   This enables you to compensate for atmospheric pressure
     ///   changes due to weather conditions. Applicable to barometric altimeters only.
+    ///   Remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>

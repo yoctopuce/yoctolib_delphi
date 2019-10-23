@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 37230 2019-09-20 08:43:51Z seb $
+ * $Id: yocto_api.pas 37692 2019-10-14 14:58:03Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -120,7 +120,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '37304';
+  YOCTO_API_BUILD_NO        = '37780';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -2761,10 +2761,9 @@ end;
 
     ////
     /// <summary>
-    ///   M
+    ///   Modifies the network connection delay for <c>yRegisterHub()</c> and <c>yUpdateDeviceList()</c>.
     /// <para>
-    ///   odifies the network connection delay for <c>YAPI.RegisterHub()</c> and
-    ///   <c>YAPI.UpdateDeviceList()</c>. This delay impacts only the YoctoHubs and VirtualHub
+    ///   This delay impacts only the YoctoHubs and VirtualHub
     ///   which are accessible through the network. By default, this delay is of 20000 milliseconds,
     ///   but depending or you network you may want to change this delay.
     ///   For example if your network infrastructure uses a GSM connection.
@@ -2781,10 +2780,9 @@ end;
 
     ////
     /// <summary>
-    ///   R
+    ///   Returns the network connection delay for <c>yRegisterHub()</c> and <c>yUpdateDeviceList()</c>.
     /// <para>
-    ///   eturns the network connection delay for <c>YAPI.RegisterHub()</c> and
-    ///   <c>YAPI.UpdateDeviceList()</c>. This delay impacts only the YoctoHubs and VirtualHub
+    ///   This delay impacts only the YoctoHubs and VirtualHub
     ///   which are accessible through the network. By default, this delay is of 20000 milliseconds,
     ///   but depending or you network you may want to change this delay.
     ///   For example if your network infrastructure uses a GSM connection.
@@ -4456,10 +4454,9 @@ end;
 
     ////
     /// <summary>
-    ///   M
+    ///   Modifies the network connection delay for <c>yRegisterHub()</c> and <c>yUpdateDeviceList()</c>.
     /// <para>
-    ///   odifies the network connection delay for <c>YAPI.RegisterHub()</c> and
-    ///   <c>YAPI.UpdateDeviceList()</c>. This delay impacts only the YoctoHubs and VirtualHub
+    ///   This delay impacts only the YoctoHubs and VirtualHub
     ///   which are accessible through the network. By default, this delay is of 20000 milliseconds,
     ///   but depending or you network you may want to change this delay.
     ///   For example if your network infrastructure uses a GSM connection.
@@ -4476,10 +4473,9 @@ end;
 
     ////
     /// <summary>
-    ///   R
+    ///   Returns the network connection delay for <c>yRegisterHub()</c> and <c>yUpdateDeviceList()</c>.
     /// <para>
-    ///   eturns the network connection delay for <c>YAPI.RegisterHub()</c> and
-    ///   <c>YAPI.UpdateDeviceList()</c>. This delay impacts only the YoctoHubs and VirtualHub
+    ///   This delay impacts only the YoctoHubs and VirtualHub
     ///   which are accessible through the network. By default, this delay is of 20000 milliseconds,
     ///   but depending or you network you may want to change this delay.
     ///   For example if your network infrastructure uses a GSM connection.

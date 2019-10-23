@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_digitalio.pas 37149 2019-09-12 21:24:53Z mvuilleu $
+ *  $Id: yocto_digitalio.pas 37653 2019-10-11 17:37:17Z mvuilleu $
  *
  *  Implements yFindDigitalIO(), the high-level API for DigitalIO functions
  *
@@ -111,15 +111,14 @@ type
     ////
     /// <summary>
     ///   Returns the digital IO port state as an integer with each bit
-    ///   representing a channel
+    ///   representing a channel.
+    /// <para>
     ///   value 0 = <c>0b00000000</c> -> all channels are OFF
     ///   value 1 = <c>0b00000001</c> -> channel #0 is ON
     ///   value 2 = <c>0b00000010</c> -> channel #1 is ON
     ///   value 3 = <c>0b00000011</c> -> channels #0 and #1 are ON
     ///   value 4 = <c>0b00000100</c> -> channel #2 is ON
-    ///   and so on..
-    /// <para>
-    ///   .
+    ///   and so on...
     /// </para>
     /// <para>
     /// </para>
@@ -127,12 +126,6 @@ type
     /// <returns>
     ///   an integer corresponding to the digital IO port state as an integer with each bit
     ///   representing a channel
-    ///   value 0 = <c>0b00000000</c> -> all channels are OFF
-    ///   value 1 = <c>0b00000001</c> -> channel #0 is ON
-    ///   value 2 = <c>0b00000010</c> -> channel #1 is ON
-    ///   value 3 = <c>0b00000011</c> -> channels #0 and #1 are ON
-    ///   value 4 = <c>0b00000100</c> -> channel #2 is ON
-    ///   and so on.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_PORTSTATE_INVALID</c>.
@@ -142,25 +135,24 @@ type
 
     ////
     /// <summary>
-    ///   Changes the state of all digital IO port's channels at once,
-    ///   the parameter is an integer with  each bit representing a channel.
+    ///   Changes the state of all digital IO port's channels at once: the parameter
+    ///   is an integer where each bit represents a channel, with bit 0 matching channel #0.
     /// <para>
-    ///   Bit 0 matches channel #0. So:
     ///   To set all channels to  0 -> <c>0b00000000</c> -> parameter = 0
     ///   To set channel #0 to 1 -> <c>0b00000001</c> -> parameter =  1
     ///   To set channel #1 to  1 -> <c>0b00000010</c> -> parameter = 2
     ///   To set channel #0 and #1 -> <c>0b00000011</c> -> parameter =  3
     ///   To set channel #2 to 1 -> <c>0b00000100</c> -> parameter =  4
     ///   an so on....
-    ///   Only channels configured as output, thanks to <c>portDirection</c>,
-    ///   are affected.
+    ///   Only channels configured as outputs will be affecter, according to the value
+    ///   configured using <c>set_portDirection</c>.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer corresponding to the state of all digital IO port's channels at once,
-    ///   the parameter is an integer with  each bit representing a channel
+    ///   an integer corresponding to the state of all digital IO port's channels at once: the parameter
+    ///   is an integer where each bit represents a channel, with bit 0 matching channel #0
     /// </param>
     /// <para>
     /// </para>
@@ -175,15 +167,15 @@ type
 
     ////
     /// <summary>
-    ///   Returns the IO direction of all bits (i.e.
+    ///   Returns the I/O direction of all channels of the port (bitmap): 0 makes a bit an input, 1 makes it an output.
     /// <para>
-    ///   channels) of the port: 0 makes a bit an input, 1 makes it an output.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the IO direction of all bits (i.e
+    ///   an integer corresponding to the I/O direction of all channels of the port (bitmap): 0 makes a bit
+    ///   an input, 1 makes it an output
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_PORTDIRECTION_INVALID</c>.
@@ -193,16 +185,16 @@ type
 
     ////
     /// <summary>
-    ///   Changes the IO direction of all bits (i.e.
+    ///   Changes the I/O direction of all channels of the port (bitmap): 0 makes a bit an input, 1 makes it an output.
     /// <para>
-    ///   channels) of the port: 0 makes a bit an input, 1 makes it an output.
     ///   Remember to call the <c>saveToFlash()</c> method  to make sure the setting is kept after a reboot.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer corresponding to the IO direction of all bits (i.e
+    ///   an integer corresponding to the I/O direction of all channels of the port (bitmap): 0 makes a bit
+    ///   an input, 1 makes it an output
     /// </param>
     /// <para>
     /// </para>
