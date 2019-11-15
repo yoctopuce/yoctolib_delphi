@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.pas 37000 2019-09-03 06:40:17Z mvuilleu $
+ *  $Id: yocto_wakeupmonitor.pas 38030 2019-11-04 17:56:01Z mvuilleu $
  *
  *  Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -48,8 +48,8 @@ uses
 
 //--- (YWakeUpMonitor definitions)
 
-const Y_POWERDURATION_INVALID         = YAPI_INVALID_INT;
-const Y_SLEEPCOUNTDOWN_INVALID        = YAPI_INVALID_INT;
+const Y_POWERDURATION_INVALID         = YAPI_INVALID_UINT;
+const Y_SLEEPCOUNTDOWN_INVALID        = YAPI_INVALID_UINT;
 const Y_NEXTWAKEUP_INVALID            = YAPI_INVALID_LONG;
 const Y_WAKEUPREASON_USBPOWER = 0;
 const Y_WAKEUPREASON_EXTPOWER = 1;
@@ -78,8 +78,9 @@ type
   /// <summary>
   ///   TYWakeUpMonitor Class: WakeUpMonitor function interface
   /// <para>
-  ///   The WakeUpMonitor function handles globally all wake-up sources, as well
-  ///   as automated sleep mode.
+  ///   The YWakeUpMonitor class handles globally all wake-up sources, as well
+  ///   as automated sleep mode, for instance using a YoctoHub-Wireless-g, a YoctoHub-GSM-3G-NA, a
+  ///   YoctoHub-GSM-3G-EU or a YoctoHub-Wireless-SR.
   /// </para>
   /// </summary>
   ///-
@@ -308,7 +309,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YWakeUpMonitor</c> object allowing you to drive $THEFUNCTION$.
@@ -500,7 +502,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the monitor
+  ///   a string that uniquely characterizes the monitor, for instance
+  ///   <c>YHUBWLN3.wakeUpMonitor</c>.
   /// </param>
   /// <returns>
   ///   a <c>YWakeUpMonitor</c> object allowing you to drive the monitor.

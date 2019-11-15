@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_pressure.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_pressure.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindPressure(), the high-level API for Pressure functions
  *
@@ -64,8 +64,9 @@ type
   /// <summary>
   ///   TYPressure Class: Pressure function interface
   /// <para>
-  ///   The Yoctopuce class YPressure allows you to read and configure Yoctopuce pressure
-  ///   sensors. It inherits from YSensor class the core functions to read measurements,
+  ///   The YPressure class allows you to read and configure Yoctopuce pressure
+  ///   sensors, for instance using a Yocto-Meteo-V2, a Yocto-Pressure, a Yocto-CO2-V2 or a
+  ///   Yocto-Altimeter-V2. It inherits from YSensor class the core functions to read measurements,
   ///   to register callback functions, to access the autonomous datalogger.
   /// </para>
   /// </summary>
@@ -129,7 +130,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YPressure</c> object allowing you to drive $THEFUNCTION$.
@@ -254,7 +256,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the pressure sensor
+  ///   a string that uniquely characterizes the pressure sensor, for instance
+  ///   <c>METEOMK2.pressure</c>.
   /// </param>
   /// <returns>
   ///   a <c>YPressure</c> object allowing you to drive the pressure sensor.

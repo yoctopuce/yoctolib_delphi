@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.pas 37000 2019-09-03 06:40:17Z mvuilleu $
+ *  $Id: yocto_wakeupschedule.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
@@ -71,7 +71,8 @@ type
   /// <summary>
   ///   TYWakeUpSchedule Class: WakeUpSchedule function interface
   /// <para>
-  ///   The WakeUpSchedule function implements a wake up condition. The wake up time is
+  ///   The YWakeUpSchedule class implements a wake up condition, for instance using a YoctoHub-Wireless-g,
+  ///   a YoctoHub-GSM-3G-NA, a YoctoHub-GSM-3G-EU or a YoctoHub-Wireless-SR. The wake up time is
   ///   specified as a set of months and/or days and/or hours and/or minutes when the
   ///   wake up should happen.
   /// </para>
@@ -405,7 +406,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YWakeUpSchedule</c> object allowing you to drive $THEFUNCTION$.
@@ -535,7 +537,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the wake up schedule
+  ///   a string that uniquely characterizes the wake up schedule, for instance
+  ///   <c>YHUBWLN3.wakeUpSchedule1</c>.
   /// </param>
   /// <returns>
   ///   a <c>YWakeUpSchedule</c> object allowing you to drive the wake up schedule.

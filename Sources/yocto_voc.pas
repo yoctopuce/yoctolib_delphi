@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_voc.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_voc.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindVoc(), the high-level API for Voc functions
  *
@@ -64,8 +64,9 @@ type
   /// <summary>
   ///   TYVoc Class: Voc function interface
   /// <para>
-  ///   The Yoctopuce class YVoc allows you to read and configure Yoctopuce Volatile Organic
-  ///   Compound sensors. It inherits from YSensor class the core functions to read measurements,
+  ///   The YVoc class allows you to read and configure Yoctopuce Volatile Organic
+  ///   Compound sensors, for instance using a Yocto-VOC-V3. It inherits from YSensor class the core
+  ///   functions to read measurements,
   ///   to register callback functions, to access the autonomous datalogger.
   /// </para>
   /// </summary>
@@ -129,7 +130,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YVoc</c> object allowing you to drive $THEFUNCTION$.
@@ -254,7 +256,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the Volatile Organic Compound sensor
+  ///   a string that uniquely characterizes the Volatile Organic Compound sensor, for instance
+  ///   <c>YVOCMK03.voc</c>.
   /// </param>
   /// <returns>
   ///   a <c>YVoc</c> object allowing you to drive the Volatile Organic Compound sensor.

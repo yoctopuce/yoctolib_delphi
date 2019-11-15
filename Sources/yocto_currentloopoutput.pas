@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_currentloopoutput.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_currentloopoutput.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
  *
@@ -71,8 +71,8 @@ type
   /// <summary>
   ///   TYCurrentLoopOutput Class: CurrentLoopOutput function interface
   /// <para>
-  ///   The Yoctopuce application programming interface allows you to change the value of the 4-20mA
-  ///   output as well as to know the current loop state.
+  ///   The YCurrentLoopOutput class allows you to drive a 4-20mA output, for instance using a Yocto-4-20mA-Tx.
+  ///   It can also provide information about the power state of the current loop.
   /// </para>
   /// </summary>
   ///-
@@ -246,7 +246,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YCurrentLoopOutput</c> object allowing you to drive $THEFUNCTION$.
@@ -370,7 +371,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the 4-20mA output
+  ///   a string that uniquely characterizes the 4-20mA output, for instance
+  ///   <c>TX420MA1.currentLoopOutput</c>.
   /// </param>
   /// <returns>
   ///   a <c>YCurrentLoopOutput</c> object allowing you to drive the 4-20mA output.

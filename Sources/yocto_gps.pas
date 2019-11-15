@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_gps.pas 37165 2019-09-13 16:57:27Z mvuilleu $
+ *  $Id: yocto_gps.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindGps(), the high-level API for Gps functions
  *
@@ -90,10 +90,11 @@ type
   /// <summary>
   ///   TYGps Class: GPS function interface
   /// <para>
-  ///   The GPS function allows you to extract positioning
-  ///   data from the GPS device. This class can provides
-  ///   complete positioning information: However, if you
-  ///   wish to define callbacks on position changes, you
+  ///   The YGps class allows you to retrieve positioning
+  ///   data from a GPS sensor, for instance using a Yocto-GPS. This class can provides
+  ///   complete positioning information. However, if you
+  ///   wish to define callbacks on position changes or record
+  ///   the position in the datalogger, you
   ///   should use the YLatitude et YLongitude classes.
   /// </para>
   /// </summary>
@@ -490,7 +491,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YGps</c> object allowing you to drive $THEFUNCTION$.
@@ -593,7 +595,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the GPS
+  ///   a string that uniquely characterizes the GPS, for instance
+  ///   <c>YGNSSMK1.gps</c>.
   /// </param>
   /// <returns>
   ///   a <c>YGps</c> object allowing you to drive the GPS.

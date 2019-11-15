@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_powersupply.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_powersupply.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindPowerSupply(), the high-level API for PowerSupply functions
  *
@@ -81,7 +81,8 @@ type
   /// <summary>
   ///   TYPowerSupply Class: PowerSupply function interface
   /// <para>
-  ///   The Yoctopuce application programming interface allows you to change the voltage set point,
+  ///   The YPowerSupply class allows you to drive a Yoctopuce power supply$DEV_ENà.
+  ///   It can be use to change the voltage set point,
   ///   the current limit and the enable/disable the output.
   /// </para>
   /// </summary>
@@ -488,7 +489,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YPowerSupply</c> object allowing you to drive $THEFUNCTION$.
@@ -612,7 +614,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the regulated power supply
+  ///   a string that uniquely characterizes the regulated power supply, for instance
+  ///   <c>MyDevice.powerSupply</c>.
   /// </param>
   /// <returns>
   ///   a <c>YPowerSupply</c> object allowing you to drive the regulated power supply.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_bluetoothlink.pas 37619 2019-10-11 11:52:42Z mvuilleu $
+ *  $Id: yocto_bluetoothlink.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindBluetoothLink(), the high-level API for BluetoothLink functions
  *
@@ -438,7 +438,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YBluetoothLink</c> object allowing you to drive $THEFUNCTION$.
@@ -575,7 +576,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the cellular interface
+  ///   a string that uniquely characterizes the cellular interface, for instance
+  ///   <c>MyDevice.bluetoothLink1</c>.
   /// </param>
   /// <returns>
   ///   a <c>YBluetoothLink</c> object allowing you to drive the cellular interface.

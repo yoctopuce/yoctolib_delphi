@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_daisychain.pas 37619 2019-10-11 11:52:42Z mvuilleu $
+ *  $Id: yocto_daisychain.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindDaisyChain(), the high-level API for DaisyChain functions
  *
@@ -218,7 +218,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YDaisyChain</c> object allowing you to drive $THEFUNCTION$.
@@ -321,7 +322,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the module chain
+  ///   a string that uniquely characterizes the module chain, for instance
+  ///   <c>MyDevice.daisyChain</c>.
   /// </param>
   /// <returns>
   ///   a <c>YDaisyChain</c> object allowing you to drive the module chain.

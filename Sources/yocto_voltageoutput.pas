@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_voltageoutput.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_voltageoutput.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindVoltageOutput(), the high-level API for VoltageOutput functions
  *
@@ -67,7 +67,7 @@ type
   /// <summary>
   ///   TYVoltageOutput Class: VoltageOutput function interface
   /// <para>
-  ///   The Yoctopuce application programming interface allows you to change the value of the voltage output.
+  ///   The YVoltageOutput class allows you to drive a voltage output, for instance using a Yocto-0-10V-Tx.
   /// </para>
   /// </summary>
   ///-
@@ -217,7 +217,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YVoltageOutput</c> object allowing you to drive $THEFUNCTION$.
@@ -341,7 +342,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the voltage output
+  ///   a string that uniquely characterizes the voltage output, for instance
+  ///   <c>TX010V01.voltageOutput1</c>.
   /// </param>
   /// <returns>
   ///   a <c>YVoltageOutput</c> object allowing you to drive the voltage output.

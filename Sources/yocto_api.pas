@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 37692 2019-10-14 14:58:03Z seb $
+ * $Id: yocto_api.pas 38137 2019-11-14 10:23:36Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -120,7 +120,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '37780';
+  YOCTO_API_BUILD_NO        = '38155';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -820,7 +820,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YFunction</c> object allowing you to drive $THEFUNCTION$.
@@ -977,7 +978,7 @@ type
   /// <summary>
   ///   TYModule Class: Module control interface
   /// <para>
-  ///   This interface is identical for all Yoctopuce USB modules.
+  ///   The YModule class can be used with all Yoctopuce USB devices.
   ///   It can be used to control the module global parameters, and
   ///   to enumerate the functions provided by each module.
   /// </para>
@@ -1475,7 +1476,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YModule</c> object allowing you to drive $THEFUNCTION$.
@@ -2000,7 +2002,7 @@ end;
   /// <summary>
   ///   TYSensor Class: Sensor function interface
   /// <para>
-  ///   The YSensor class is the parent class for all Yoctopuce sensors. It can be
+  ///   The YSensor class is the parent class for all Yoctopuce sensor types. It can be
   ///   used to read the current value and unit of any sensor, read the min/max
   ///   value, configure autonomous recording frequency and access recorded data.
   ///   It also provide a function to register a callback invoked each time the
@@ -2448,7 +2450,8 @@ end;
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YSensor</c> object allowing you to drive $THEFUNCTION$.
@@ -3837,7 +3840,7 @@ end;
     destructor Destroy();override;
 
   //--- (generated code: YConsolidatedDataSet accessors declaration)
-    function _init(startt: double; endt: double; sensorList: TYSensorArray):LongInt; overload; virtual;
+    function imm_init(startt: double; endt: double; sensorList: TYSensorArray):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -3934,9 +3937,11 @@ end;
   /// <summary>
   ///   TYDataLogger Class: DataLogger function interface
   /// <para>
-  ///   Yoctopuce sensors include a non-volatile memory capable of storing ongoing measured
-  ///   data automatically, without requiring a permanent connection to a computer.
-  ///   The DataLogger function controls the global parameters of the internal data
+  ///   A non-volatile memory for storing ongoing measured data is available on most Yoctopuce
+  ///   sensors, for instance using a Yocto-Light-V3, a Yocto-Meteo-V2, a Yocto-Watt or a Yocto-3D-V2.
+  ///   Recording can happen automatically, without requiring a permanent
+  ///   connection to a computer.
+  ///   The YDataLogger class controls the global parameters of the internal data
   ///   logger. Recording control (start/stop) as well as data retreival is done at
   ///   sensor objects level.
   /// </para>
@@ -4248,7 +4253,8 @@ end;
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YDataLogger</c> object allowing you to drive $THEFUNCTION$.
@@ -4392,7 +4398,8 @@ end;
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the data logger
+  ///   a string that uniquely characterizes the data logger, for instance
+  ///   <c>LIGHTMK3.dataLogger</c>.
   /// </param>
   /// <returns>
   ///   a <c>YDataLogger</c> object allowing you to drive the data logger.
@@ -5031,7 +5038,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the function
+  ///   a string that uniquely characterizes the function, for instance
+  ///   <c>MyDevice.</c>.
   /// </param>
   /// <returns>
   ///   a <c>YFunction</c> object allowing you to drive the function.
@@ -5147,7 +5155,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the sensor
+  ///   a string that uniquely characterizes the sensor, for instance
+  ///   <c>MyDevice.</c>.
   /// </param>
   /// <returns>
   ///   a <c>YSensor</c> object allowing you to drive the sensor.
@@ -13099,7 +13108,7 @@ var
 
   constructor TYConsolidatedDataSet.Create(startTime,endTime: double; sensorList: TYSensorArray);
     begin
-      self._init(startTime, endTime, sensorList);
+      self.imm_init(startTime, endTime, sensorList);
     end;
 
   destructor TYConsolidatedDataSet.Destroy();
@@ -13118,7 +13127,7 @@ var
 
 //--- (generated code: YConsolidatedDataSet implementation)
 
-  function TYConsolidatedDataSet._init(startt: double; endt: double; sensorList: TYSensorArray):LongInt;
+  function TYConsolidatedDataSet.imm_init(startt: double; endt: double; sensorList: TYSensorArray):LongInt;
     begin
       self._start := startt;
       self._end := endt;

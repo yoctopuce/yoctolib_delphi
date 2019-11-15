@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 35285 2019-05-07 07:37:56Z seb $
+ * $Id: yocto_messagebox.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *
@@ -75,8 +75,9 @@ type
   /// <summary>
   ///   TYMessageBox Class: MessageBox function interface
   /// <para>
-  ///   YMessageBox functions provides SMS sending and receiving capability to
-  ///   GSM-enabled Yoctopuce devices.
+  ///   The YMessageBox class provides SMS sending and receiving capability to
+  ///   GSM-enabled Yoctopuce devices, for instance using a YoctoHub-GSM-3G-NA, a YoctoHub-GSM-3G-EU or a
+  ///   YoctoHub-GSM-2G.
   /// </para>
   /// </summary>
   ///-
@@ -269,7 +270,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YMessageBox</c> object allowing you to drive $THEFUNCTION$.
@@ -709,7 +711,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the MessageBox interface
+  ///   a string that uniquely characterizes the MessageBox interface, for instance
+  ///   <c>YHUBGSM4.messageBox</c>.
   /// </param>
   /// <returns>
   ///   a <c>YMessageBox</c> object allowing you to drive the MessageBox interface.

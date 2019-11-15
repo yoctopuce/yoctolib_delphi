@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_relay.pas 37619 2019-10-11 11:52:42Z mvuilleu $
+ *  $Id: yocto_relay.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindRelay(), the high-level API for Relay functions
  *
@@ -86,13 +86,13 @@ type
   /// <summary>
   ///   TYRelay Class: Relay function interface
   /// <para>
-  ///   The Yoctopuce application programming interface allows you to switch the relay state.
-  ///   This change is not persistent: the relay will automatically return to its idle position
-  ///   whenever power is lost or if the module is restarted.
-  ///   The library can also generate automatically short pulses of determined duration.
+  ///   The YRelay class allows you to drive a Yoctopuce Relay, for instance using a Yocto-PowerRelay-V3, a
+  ///   Yocto-Relay, a Yocto-MaxiPowerRelay or a Yocto-MaxiCoupler-V2.
+  ///   It can be used to simply switch the relay, but also to automatically generate short pulses of
+  ///   determined duration.
   ///   On devices with two output for each relay (double throw), the two outputs are named A and B,
-  ///   with output A corresponding to the idle position (at power off) and the output B corresponding to the
-  ///   active state. If you prefer the alternate default state, simply switch your cables on the board.
+  ///   with output A corresponding to the idle position (normally closed) and the output B corresponding to the
+  ///   active state (normally open).
   /// </para>
   /// </summary>
   ///-
@@ -477,7 +477,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YRelay</c> object allowing you to drive $THEFUNCTION$.
@@ -595,7 +596,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the relay
+  ///   a string that uniquely characterizes the relay, for instance
+  ///   <c>RELAYHI3.relay1</c>.
   /// </param>
   /// <returns>
   ///   a <c>YRelay</c> object allowing you to drive the relay.

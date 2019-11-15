@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_motor.pas 37619 2019-10-11 11:52:42Z mvuilleu $
+ *  $Id: yocto_motor.pas 38030 2019-11-04 17:56:01Z mvuilleu $
  *
  *  Implements yFindMotor(), the high-level API for Motor functions
  *
@@ -60,9 +60,9 @@ const Y_MOTORSTATUS_INVALID = -1;
 const Y_DRIVINGFORCE_INVALID          = YAPI_INVALID_DOUBLE;
 const Y_BRAKINGFORCE_INVALID          = YAPI_INVALID_DOUBLE;
 const Y_CUTOFFVOLTAGE_INVALID         = YAPI_INVALID_DOUBLE;
-const Y_OVERCURRENTLIMIT_INVALID      = YAPI_INVALID_INT;
+const Y_OVERCURRENTLIMIT_INVALID      = YAPI_INVALID_UINT;
 const Y_FREQUENCY_INVALID             = YAPI_INVALID_DOUBLE;
-const Y_STARTERTIME_INVALID           = YAPI_INVALID_INT;
+const Y_STARTERTIME_INVALID           = YAPI_INVALID_UINT;
 const Y_FAILSAFETIMEOUT_INVALID       = YAPI_INVALID_UINT;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
@@ -81,7 +81,8 @@ type
   /// <summary>
   ///   TYMotor Class: Motor function interface
   /// <para>
-  ///   Yoctopuce application programming interface allows you to drive the
+  ///   The YMotor class allows you to drive a DC motor, for instance using a Yocto-Motor-DC. It can be
+  ///   used to configure the
   ///   power sent to the motor to make it turn both ways, but also to drive accelerations
   ///   and decelerations. The motor will then accelerate automatically: you will not
   ///   have to monitor it. The API also allows to slow down the motor by shortening
@@ -286,6 +287,24 @@ type
     ///-
     function get_cutOffVoltage():double;
 
+    ////
+    /// <summary>
+    ///   Returns the current threshold (in mA) above which the controller automatically
+    ///   switches to error state.
+    /// <para>
+    ///   A zero value means that there is no limit.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the current threshold (in mA) above which the controller automatically
+    ///   switches to error state
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_OVERCURRENTLIMIT_INVALID</c>.
+    /// </para>
+    ///-
     function get_overCurrentLimit():LongInt;
 
     ////
@@ -503,7 +522,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YMotor</c> object allowing you to drive $THEFUNCTION$.
@@ -672,7 +692,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the motor
+  ///   a string that uniquely characterizes the motor, for instance
+  ///   <c>MOTORCTL.motor</c>.
   /// </param>
   /// <returns>
   ///   a <c>YMotor</c> object allowing you to drive the motor.

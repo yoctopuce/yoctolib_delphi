@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_compass.pas 37619 2019-10-11 11:52:42Z mvuilleu $
+ *  $Id: yocto_compass.pas 38030 2019-11-04 17:56:01Z mvuilleu $
  *
  *  Implements yFindCompass(), the high-level API for Compass functions
  *
@@ -48,7 +48,7 @@ uses
 
 //--- (YCompass definitions)
 
-const Y_BANDWIDTH_INVALID             = YAPI_INVALID_INT;
+const Y_BANDWIDTH_INVALID             = YAPI_INVALID_UINT;
 const Y_AXIS_X = 0;
 const Y_AXIS_Y = 1;
 const Y_AXIS_Z = 2;
@@ -70,15 +70,10 @@ type
   /// <summary>
   ///   TYCompass Class: Compass function interface
   /// <para>
-  ///   The YSensor class is the parent class for all Yoctopuce sensors. It can be
-  ///   used to read the current value and unit of any sensor, read the min/max
-  ///   value, configure autonomous recording frequency and access recorded data.
-  ///   It also provide a function to register a callback invoked each time the
-  ///   observed value changes, or at a predefined interval. Using this class rather
-  ///   than a specific subclass makes it possible to create generic applications
-  ///   that work with any Yoctopuce sensor, even those that do not yet exist.
-  ///   Note: The YAnButton class is the only analog input which does not inherit
-  ///   from YSensor.
+  ///   The YCompass class allows you to read and configure Yoctopuce compass
+  ///   sensors, for instance using a Yocto-3D-V2. It inherits from YSensor class the core functions to
+  ///   read measurements,
+  ///   to register callback functions, to access the autonomous datalogger.
   /// </para>
   /// </summary>
   ///-
@@ -206,7 +201,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YCompass</c> object allowing you to drive $THEFUNCTION$.
@@ -331,7 +327,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the compass
+  ///   a string that uniquely characterizes the compass, for instance
+  ///   <c>Y3DMK002.compass</c>.
   /// </param>
   /// <returns>
   ///   a <c>YCompass</c> object allowing you to drive the compass.

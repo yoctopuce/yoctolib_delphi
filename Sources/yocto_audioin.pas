@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_audioin.pas 37619 2019-10-11 11:52:42Z mvuilleu $
+ *  $Id: yocto_audioin.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindAudioIn(), the high-level API for AudioIn functions
  *
@@ -71,7 +71,7 @@ type
   /// <summary>
   ///   TYAudioIn Class: AudioIn function interface
   /// <para>
-  ///   The Yoctopuce application programming interface allows you to configure the volume of the input channel.
+  ///   The YAudioIn class allows you to configure the volume of an audio input.
   /// </para>
   /// </summary>
   ///-
@@ -275,7 +275,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YAudioIn</c> object allowing you to drive $THEFUNCTION$.
@@ -378,7 +379,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the audio input
+  ///   a string that uniquely characterizes the audio input, for instance
+  ///   <c>MyDevice.audioIn1</c>.
   /// </param>
   /// <returns>
   ///   a <c>YAudioIn</c> object allowing you to drive the audio input.

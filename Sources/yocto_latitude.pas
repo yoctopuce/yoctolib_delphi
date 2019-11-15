@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_latitude.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_latitude.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindLatitude(), the high-level API for Latitude functions
  *
@@ -64,8 +64,8 @@ type
   /// <summary>
   ///   TYLatitude Class: Latitude function interface
   /// <para>
-  ///   The Yoctopuce class YLatitude allows you to read the latitude from Yoctopuce
-  ///   geolocation sensors. It inherits from the YSensor class the core functions to
+  ///   The YLatitude class allows you to read the latitude from Yoctopuce
+  ///   geolocation sensors, for instance using a Yocto-GPS. It inherits from the YSensor class the core functions to
   ///   read measurements, to register callback functions, to access the autonomous
   ///   datalogger.
   /// </para>
@@ -130,7 +130,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YLatitude</c> object allowing you to drive $THEFUNCTION$.
@@ -255,7 +256,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the latitude sensor
+  ///   a string that uniquely characterizes the latitude sensor, for instance
+  ///   <c>YGNSSMK1.latitude</c>.
   /// </param>
   /// <returns>
   ///   a <c>YLatitude</c> object allowing you to drive the latitude sensor.

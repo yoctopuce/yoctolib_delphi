@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_audioout.pas 37619 2019-10-11 11:52:42Z mvuilleu $
+ *  $Id: yocto_audioout.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindAudioOut(), the high-level API for AudioOut functions
  *
@@ -71,7 +71,7 @@ type
   /// <summary>
   ///   TYAudioOut Class: AudioOut function interface
   /// <para>
-  ///   The Yoctopuce application programming interface allows you to configure the volume of the outout.
+  ///   The YAudioOut class allows you to configure the volume of an audio outout.
   /// </para>
   /// </summary>
   ///-
@@ -275,7 +275,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YAudioOut</c> object allowing you to drive $THEFUNCTION$.
@@ -378,7 +379,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the audio output
+  ///   a string that uniquely characterizes the audio output, for instance
+  ///   <c>MyDevice.audioOut1</c>.
   /// </param>
   /// <returns>
   ///   a <c>YAudioOut</c> object allowing you to drive the audio output.

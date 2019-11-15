@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_segmenteddisplay.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_segmenteddisplay.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindSegmentedDisplay(), the high-level API for SegmentedDisplay functions
  *
@@ -177,7 +177,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YSegmentedDisplay</c> object allowing you to drive $THEFUNCTION$.
@@ -280,7 +281,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the segmented displays
+  ///   a string that uniquely characterizes the segmented displays, for instance
+  ///   <c>MyDevice.segmentedDisplay</c>.
   /// </param>
   /// <returns>
   ///   a <c>YSegmentedDisplay</c> object allowing you to drive the segmented displays.

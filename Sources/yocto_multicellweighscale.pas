@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_multicellweighscale.pas 37165 2019-09-13 16:57:27Z mvuilleu $
+ *  $Id: yocto_multicellweighscale.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
  *
@@ -76,8 +76,9 @@ type
   /// <summary>
   ///   TYMultiCellWeighScale Class: MultiCellWeighScale function interface
   /// <para>
-  ///   The YMultiCellWeighScale class provides a weight measurement from a set of ratiometric load cells
-  ///   sensor. It can be used to control the bridge excitation parameters, in order to avoid
+  ///   The YMultiCellWeighScale class provides a weight measurement from a set of ratiometric
+  ///   sensors, for instance using a Yocto-MaxiBridge. It can be used to control the bridge excitation
+  ///   parameters, in order to avoid
   ///   measure shifts caused by temperature variation in the electronics, and can also
   ///   automatically apply an additional correction factor based on temperature to
   ///   compensate for offsets in the load cells themselves.
@@ -458,7 +459,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YMultiCellWeighScale</c> object allowing you to drive $THEFUNCTION$.
@@ -626,7 +628,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the multi-cell weighing scale sensor
+  ///   a string that uniquely characterizes the multi-cell weighing scale sensor, for instance
+  ///   <c>YWMBRDG1.multiCellWeighScale</c>.
   /// </param>
   /// <returns>
   ///   a <c>YMultiCellWeighScale</c> object allowing you to drive the multi-cell weighing scale sensor.

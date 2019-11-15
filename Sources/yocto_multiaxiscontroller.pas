@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_multiaxiscontroller.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_multiaxiscontroller.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
  *
@@ -73,7 +73,8 @@ type
   /// <summary>
   ///   TYMultiAxisController Class: MultiAxisController function interface
   /// <para>
-  ///   The Yoctopuce application programming interface allows you to drive a stepper motor.
+  ///   The YMultiAxisController class allows you to drive multiple stepper motors
+  ///   synchronously.
   /// </para>
   /// </summary>
   ///-
@@ -200,7 +201,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YMultiAxisController</c> object allowing you to drive $THEFUNCTION$.
@@ -427,7 +429,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the multi-axis controller
+  ///   a string that uniquely characterizes the multi-axis controller, for instance
+  ///   <c>MyDevice.multiAxisController</c>.
   /// </param>
   /// <returns>
   ///   a <c>YMultiAxisController</c> object allowing you to drive the multi-axis controller.

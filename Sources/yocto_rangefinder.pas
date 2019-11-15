@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_rangefinder.pas 37149 2019-09-12 21:24:53Z mvuilleu $
+ *  $Id: yocto_rangefinder.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindRangeFinder(), the high-level API for RangeFinder functions
  *
@@ -74,8 +74,9 @@ type
   /// <summary>
   ///   TYRangeFinder Class: RangeFinder function interface
   /// <para>
-  ///   The Yoctopuce class YRangeFinder allows you to use and configure Yoctopuce range finder
-  ///   sensors. It inherits from the YSensor class the core functions to read measurements,
+  ///   The YRangeFinder class allows you to use and configure Yoctopuce range finder
+  ///   sensors, for instance using a Yocto-RangeFinder. It inherits from the YSensor class the core
+  ///   functions to read measurements,
   ///   register callback functions, access the autonomous datalogger.
   ///   This class adds the ability to easily perform a one-point linear calibration
   ///   to compensate the effect of a glass or filter placed in front of the sensor.
@@ -312,7 +313,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YRangeFinder</c> object allowing you to drive $THEFUNCTION$.
@@ -540,7 +542,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the range finder
+  ///   a string that uniquely characterizes the range finder, for instance
+  ///   <c>YRNGFND1.rangeFinder1</c>.
   /// </param>
   /// <returns>
   ///   a <c>YRangeFinder</c> object allowing you to drive the range finder.

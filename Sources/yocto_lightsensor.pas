@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_lightsensor.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_lightsensor.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindLightSensor(), the high-level API for LightSensor functions
  *
@@ -70,8 +70,9 @@ type
   /// <summary>
   ///   TYLightSensor Class: LightSensor function interface
   /// <para>
-  ///   The Yoctopuce class YLightSensor allows you to read and configure Yoctopuce light
-  ///   sensors. It inherits from YSensor class the core functions to read measurements,
+  ///   The YLightSensor class allows you to read and configure Yoctopuce light
+  ///   sensors, for instance using a Yocto-Light-V3, a Yocto-RangeFinder or a Yocto-Proximity. It inherits
+  ///   from YSensor class the core functions to read measurements,
   ///   to register callback functions, to access the autonomous datalogger.
   ///   This class adds the ability to easily perform a one-point linear calibration
   ///   to compensate the effect of a glass or filter placed in front of the sensor.
@@ -217,7 +218,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YLightSensor</c> object allowing you to drive $THEFUNCTION$.
@@ -342,7 +344,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the light sensor
+  ///   a string that uniquely characterizes the light sensor, for instance
+  ///   <c>LIGHTMK3.lightSensor</c>.
   /// </param>
   /// <returns>
   ///   a <c>YLightSensor</c> object allowing you to drive the light sensor.

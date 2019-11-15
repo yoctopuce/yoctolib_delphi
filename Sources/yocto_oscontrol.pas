@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_oscontrol.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_oscontrol.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindOsControl(), the high-level API for OsControl functions
  *
@@ -65,8 +65,8 @@ type
   /// <summary>
   ///   TYOsControl Class: OS control
   /// <para>
-  ///   The OScontrol object allows some control over the operating system running a VirtualHub.
-  ///   OsControl is available on the VirtualHub software only. This feature must be activated at the VirtualHub
+  ///   The YOScontrol class provides some control over the operating system running a VirtualHub.
+  ///   YOsControl is available on VirtualHub software only. This feature must be activated at the VirtualHub
   ///   start up with -o option.
   /// </para>
   /// </summary>
@@ -151,7 +151,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YOsControl</c> object allowing you to drive $THEFUNCTION$.
@@ -272,7 +273,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the OS control
+  ///   a string that uniquely characterizes the OS control, for instance
+  ///   <c>MyDevice.osControl</c>.
   /// </param>
   /// <returns>
   ///   a <c>YOsControl</c> object allowing you to drive the OS control.

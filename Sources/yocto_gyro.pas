@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_gyro.pas 37619 2019-10-11 11:52:42Z mvuilleu $
+ * $Id: yocto_gyro.pas 38030 2019-11-04 17:56:01Z mvuilleu $
  *
  * Implements yFindGyro(), the high-level API for Gyro functions
  *
@@ -54,7 +54,7 @@ uses
 
 //--- (generated code: YGyro definitions)
 
-const Y_BANDWIDTH_INVALID             = YAPI_INVALID_INT;
+const Y_BANDWIDTH_INVALID             = YAPI_INVALID_UINT;
 const Y_XVALUE_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_YVALUE_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_ZVALUE_INVALID                = YAPI_INVALID_DOUBLE;
@@ -72,8 +72,11 @@ type
   /// <summary>
   ///   TYQt Class: Quaternion interface
   /// <para>
-  ///   The Yoctopuce API YQt class provides direct access to the Yocto3D attitude estimation
-  ///   using a quaternion. It is usually not needed to use the YQt class directly, as the
+  ///   The YQt class provides direct access to the 3D attitude estimation provided by Yoctopuce
+  ///   inertial sensors, for instance using a Yocto-3D-V2. The four instances of YQt provide direct access
+  ///   to the individual
+  ///   quaternion components representing the orientation.
+  ///   It is usually not needed to use the YQt class directly, as the
   ///   YGyro class provides a more convenient higher-level interface.
   /// </para>
   /// </summary>
@@ -137,7 +140,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YQt</c> object allowing you to drive $THEFUNCTION$.
@@ -261,7 +265,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the quaternion component
+  ///   a string that uniquely characterizes the quaternion component, for instance
+  ///   <c>Y3DMK002.qt1</c>.
   /// </param>
   /// <returns>
   ///   a <c>YQt</c> object allowing you to drive the quaternion component.
@@ -300,15 +305,10 @@ type
   /// <summary>
   ///   TYGyro Class: Gyroscope function interface
   /// <para>
-  ///   The YSensor class is the parent class for all Yoctopuce sensors. It can be
-  ///   used to read the current value and unit of any sensor, read the min/max
-  ///   value, configure autonomous recording frequency and access recorded data.
-  ///   It also provide a function to register a callback invoked each time the
-  ///   observed value changes, or at a predefined interval. Using this class rather
-  ///   than a specific subclass makes it possible to create generic applications
-  ///   that work with any Yoctopuce sensor, even those that do not yet exist.
-  ///   Note: The YAnButton class is the only analog input which does not inherit
-  ///   from YSensor.
+  ///   The YGyro class allows you to read and configure Yoctopuce angular velocity
+  ///   sensors, for instance using a Yocto-3D-V2. It inherits from YSensor class the core functions to
+  ///   read measurements,
+  ///   to register callback functions, to access the autonomous datalogger.
   /// </para>
   /// </summary>
   ///-
@@ -487,7 +487,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YGyro</c> object allowing you to drive $THEFUNCTION$.
@@ -806,7 +807,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the gyroscope
+  ///   a string that uniquely characterizes the gyroscope, for instance
+  ///   <c>Y3DMK002.gyro</c>.
   /// </param>
   /// <returns>
   ///   a <c>YGyro</c> object allowing you to drive the gyroscope.

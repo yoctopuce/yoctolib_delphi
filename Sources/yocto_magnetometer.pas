@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_magnetometer.pas 37619 2019-10-11 11:52:42Z mvuilleu $
+ *  $Id: yocto_magnetometer.pas 38030 2019-11-04 17:56:01Z mvuilleu $
  *
  *  Implements yFindMagnetometer(), the high-level API for Magnetometer functions
  *
@@ -48,7 +48,7 @@ uses
 
 //--- (YMagnetometer definitions)
 
-const Y_BANDWIDTH_INVALID             = YAPI_INVALID_INT;
+const Y_BANDWIDTH_INVALID             = YAPI_INVALID_UINT;
 const Y_XVALUE_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_YVALUE_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_ZVALUE_INVALID                = YAPI_INVALID_DOUBLE;
@@ -68,7 +68,7 @@ type
   /// <summary>
   ///   TYMagnetometer Class: Magnetometer function interface
   /// <para>
-  ///   The YSensor class is the parent class for all Yoctopuce sensors. It can be
+  ///   The YSensor class is the parent class for all Yoctopuce sensor types. It can be
   ///   used to read the current value and unit of any sensor, read the min/max
   ///   value, configure autonomous recording frequency and access recorded data.
   ///   It also provide a function to register a callback invoked each time the
@@ -237,7 +237,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YMagnetometer</c> object allowing you to drive $THEFUNCTION$.
@@ -362,7 +363,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the magnetometer
+  ///   a string that uniquely characterizes the magnetometer, for instance
+  ///   <c>Y3DMK002.magnetometer</c>.
   /// </param>
   /// <returns>
   ///   a <c>YMagnetometer</c> object allowing you to drive the magnetometer.

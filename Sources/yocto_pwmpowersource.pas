@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_pwmpowersource.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_pwmpowersource.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
  *
@@ -69,8 +69,8 @@ type
   /// <summary>
   ///   TYPwmPowerSource Class: PwmPowerSource function interface
   /// <para>
-  ///   The Yoctopuce application programming interface allows you to configure
-  ///   the voltage source used by all PWM on the same device.
+  ///   The YPwmPowerSource class allows you to configure
+  ///   the voltage source used by all PWM outputs on the same device, for instance using a Yocto-PWM-Tx.
   /// </para>
   /// </summary>
   ///-
@@ -181,7 +181,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YPwmPowerSource</c> object allowing you to drive $THEFUNCTION$.
@@ -284,7 +285,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the voltage source
+  ///   a string that uniquely characterizes the voltage source, for instance
+  ///   <c>YPWMTX01.pwmPowerSource</c>.
   /// </param>
   /// <returns>
   ///   a <c>YPwmPowerSource</c> object allowing you to drive the voltage source.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 37000 2019-09-03 06:40:17Z mvuilleu $
+ * $Id: yocto_display.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -90,6 +90,8 @@ type
   /// <summary>
   ///   TYDisplay Class: Display function interface
   /// <para>
+  ///   The YDisplay class allows to drive Yoctopuce displays, for instance using a Yocto-MaxiDisplay, a
+  ///   Yocto-MiniDisplay, a Yocto-MaxiDisplay-G or a Yocto-Display.
   ///   Yoctopuce display interface has been designed to easily
   ///   show information and images. The device provides built-in
   ///   multi-layer rendering. Layers can be drawn offline, individually,
@@ -450,7 +452,8 @@ public
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YDisplay</c> object allowing you to drive $THEFUNCTION$.
@@ -1494,7 +1497,8 @@ end;
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the display
+  ///   a string that uniquely characterizes the display, for instance
+  ///   <c>YD128X64.display</c>.
   /// </param>
   /// <returns>
   ///   a <c>YDisplay</c> object allowing you to drive the display.

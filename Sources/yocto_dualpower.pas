@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_dualpower.pas 37609 2019-10-09 16:59:35Z mvuilleu $
+ *  $Id: yocto_dualpower.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindDualPower(), the high-level API for DualPower functions
  *
@@ -223,7 +223,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YDualPower</c> object allowing you to drive $THEFUNCTION$.
@@ -326,7 +327,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the power control
+  ///   a string that uniquely characterizes the power control, for instance
+  ///   <c>SERVORC1.dualPower</c>.
   /// </param>
   /// <returns>
   ///   a <c>YDualPower</c> object allowing you to drive the power control.

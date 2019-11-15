@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_power.pas 35285 2019-05-07 07:37:56Z seb $
+ *  $Id: yocto_power.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindPower(), the high-level API for Power functions
  *
@@ -67,8 +67,9 @@ type
   /// <summary>
   ///   TYPower Class: Power function interface
   /// <para>
-  ///   The Yoctopuce class YPower allows you to read and configure Yoctopuce power
-  ///   sensors. It inherits from YSensor class the core functions to read measurements,
+  ///   The YPower class allows you to read and configure Yoctopuce power
+  ///   sensors, for instance using a Yocto-Watt. It inherits from YSensor class the core functions to read
+  ///   measurements,
   ///   to register callback functions, to access the autonomous datalogger.
   ///   This class adds the ability to access the energy counter and the power factor.
   /// </para>
@@ -193,7 +194,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YPower</c> object allowing you to drive $THEFUNCTION$.
@@ -333,7 +335,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the electrical power sensor
+  ///   a string that uniquely characterizes the electrical power sensor, for instance
+  ///   <c>YWATTMK1.power</c>.
   /// </param>
   /// <returns>
   ///   a <c>YPower</c> object allowing you to drive the electrical power sensor.

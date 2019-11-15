@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 37168 2019-09-13 17:25:10Z mvuilleu $
+ * $Id: yocto_serialport.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -124,8 +124,9 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
   /// <summary>
   ///   TYSerialPort Class: SerialPort function interface
   /// <para>
-  ///   The SerialPort function interface allows you to fully drive a Yoctopuce
-  ///   serial port, to send and receive data, and to configure communication
+  ///   The YSerialPort class allows you to fully drive a Yoctopuce serial port, for instance using a
+  ///   Yocto-RS232, a Yocto-RS485 or a Yocto-Serial.
+  ///   It can be used to send and receive data, and to configure communication
   ///   parameters (baud rate, bit count, parity, flow control and protocol).
   ///   Note that Yoctopuce serial ports are not exposed as virtual COM ports.
   ///   They are meant to be used in the same way as all Yoctopuce devices.
@@ -559,7 +560,8 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YSerialPort</c> object allowing you to drive $THEFUNCTION$.
@@ -1396,7 +1398,8 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the serial port
+  ///   a string that uniquely characterizes the serial port, for instance
+  ///   <c>RS232MK1.serialPort</c>.
   /// </param>
   /// <returns>
   ///   a <c>YSerialPort</c> object allowing you to drive the serial port.

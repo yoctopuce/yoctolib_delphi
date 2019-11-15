@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 35285 2019-05-07 07:37:56Z seb $
+ * $Id: yocto_wireless.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -164,8 +164,9 @@ TYWLANRECORDARRAY = array of TYWlanRecord;
   /// <summary>
   ///   TYWireless Class: Wireless function interface
   /// <para>
-  ///   YWireless functions provides control over wireless network parameters
-  ///   and status for devices that are wireless-enabled.
+  ///   The YWireless class provides control over wireless network parameters
+  ///   and status for devices that are wireless-enabled, for instance using a YoctoHub-Wireless-g, a
+  ///   YoctoHub-Wireless-SR or a YoctoHub-Wireless.
   /// </para>
   /// </summary>
   ///-
@@ -356,7 +357,8 @@ public
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YWireless</c> object allowing you to drive $THEFUNCTION$.
@@ -586,7 +588,8 @@ procedure freeWlanRecordArray(var list:TYWLANRECORDARRAY);
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the wireless lan interface
+  ///   a string that uniquely characterizes the wireless lan interface, for instance
+  ///   <c>YHUBWLN3.wireless</c>.
   /// </param>
   /// <returns>
   ///   a <c>YWireless</c> object allowing you to drive the wireless lan interface.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_buzzer.pas 36554 2019-07-29 12:21:31Z mvuilleu $
+ *  $Id: yocto_buzzer.pas 37827 2019-10-25 13:07:48Z mvuilleu $
  *
  *  Implements yFindBuzzer(), the high-level API for Buzzer functions
  *
@@ -70,8 +70,8 @@ type
   /// <summary>
   ///   TYBuzzer Class: Buzzer function interface
   /// <para>
-  ///   The Yoctopuce application programming interface allows you to
-  ///   choose the frequency and volume at which the buzzer must sound.
+  ///   The YBuzzer class allows you to drive a buzzer, for instance using a Yocto-Buzzer. You can
+  ///   choose the frequency and the volume at which the buzzer must sound.
   ///   You can also pre-program a play sequence.
   /// </para>
   /// </summary>
@@ -280,7 +280,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="func">
-    ///   a string that uniquely characterizes $THEFUNCTION$
+    ///   a string that uniquely characterizes $THEFUNCTION$, for instance
+    ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
     ///   a <c>YBuzzer</c> object allowing you to drive $THEFUNCTION$.
@@ -634,7 +635,8 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the buzzer
+  ///   a string that uniquely characterizes the buzzer, for instance
+  ///   <c>YBUZZER2.buzzer</c>.
   /// </param>
   /// <returns>
   ///   a <c>YBuzzer</c> object allowing you to drive the buzzer.
