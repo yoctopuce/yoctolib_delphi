@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_voltage.pas 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_voltage.pas 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements yFindVoltage(), the high-level API for Voltage functions
  *
@@ -65,12 +65,12 @@ type
 
   ////
   /// <summary>
-  ///   TYVoltage Class: Voltage function interface
+  ///   TYVoltage Class: voltage sensor control interface, available for instance in the Yocto-Motor-DC,
+  ///   the Yocto-Volt or the Yocto-Watt
   /// <para>
-  ///   The YVoltage class allows you to read and configure Yoctopuce voltage
-  ///   sensors, for instance using a Yocto-Watt, a Yocto-Volt or a Yocto-Motor-DC. It inherits from
-  ///   YSensor class the core functions to read measurements,
-  ///   to register callback functions, to access the autonomous datalogger.
+  ///   The <c>YVoltage</c> class allows you to read and configure Yoctopuce voltage sensors.
+  ///   It inherits from <c>YSensor</c> class the core functions to read measurements,
+  ///   to register callback functions, and to access the autonomous datalogger.
   /// </para>
   /// </summary>
   ///-
@@ -223,7 +223,7 @@ type
     /// </summary>
     /// <param name="callback">
     ///   the callback function to call, or a NIL pointer. The callback function should take two
-    ///   arguments: the function object of which the value has changed, and an YMeasure object describing
+    ///   arguments: the function object of which the value has changed, and an <c>YMeasure</c> object describing
     ///   the new advertised value.
     /// @noreturn
     /// </param>
@@ -306,7 +306,7 @@ type
   /// </summary>
   /// <param name="func">
   ///   a string that uniquely characterizes the voltage sensor, for instance
-  ///   <c>YWATTMK1.voltage1</c>.
+  ///   <c>MOTORCTL.voltage</c>.
   /// </param>
   /// <returns>
   ///   a <c>YVoltage</c> object allowing you to drive the voltage sensor.

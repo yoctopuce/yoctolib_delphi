@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_bluetoothlink.pas 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_bluetoothlink.pas 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements yFindBluetoothLink(), the high-level API for BluetoothLink functions
  *
@@ -80,10 +80,10 @@ type
 
   ////
   /// <summary>
-  ///   TYBluetoothLink Class: BluetoothLink function interface
+  ///   TYBluetoothLink Class: Bluetooth sound controller control interface
   /// <para>
-  ///   BluetoothLink function provides control over bluetooth link
-  ///   and status for devices that are bluetooth-enabled.
+  ///   BluetoothLink function provides control over Bluetooth link
+  ///   and status for devices that are Bluetooth-enabled.
   /// </para>
   /// </summary>
   ///-
@@ -506,17 +506,17 @@ type
 
     ////
     /// <summary>
-    ///   Continues the enumeration of cellular interfaces started using <c>yFirstBluetoothLink()</c>.
+    ///   Continues the enumeration of Bluetooth sound controllers started using <c>yFirstBluetoothLink()</c>.
     /// <para>
-    ///   Caution: You can't make any assumption about the returned cellular interfaces order.
-    ///   If you want to find a specific a cellular interface, use <c>BluetoothLink.findBluetoothLink()</c>
+    ///   Caution: You can't make any assumption about the returned Bluetooth sound controllers order.
+    ///   If you want to find a specific a Bluetooth sound controller, use <c>BluetoothLink.findBluetoothLink()</c>
     ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>
     ///   a pointer to a <c>YBluetoothLink</c> object, corresponding to
-    ///   a cellular interface currently online, or a <c>NIL</c> pointer
-    ///   if there are no more cellular interfaces to enumerate.
+    ///   a Bluetooth sound controller currently online, or a <c>NIL</c> pointer
+    ///   if there are no more Bluetooth sound controllers to enumerate.
     /// </returns>
     ///-
     function nextBluetoothLink():TYBluetoothLink;
@@ -535,7 +535,7 @@ type
 //--- (YBluetoothLink functions declaration)
   ////
   /// <summary>
-  ///   Retrieves a cellular interface for a given identifier.
+  ///   Retrieves a Bluetooth sound controller for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
   /// </para>
@@ -559,11 +559,11 @@ type
   /// <para>
   /// </para>
   /// <para>
-  ///   This function does not require that the cellular interface is online at the time
+  ///   This function does not require that the Bluetooth sound controller is online at the time
   ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YBluetoothLink.isOnline()</c> to test if the cellular interface is
+  ///   Use the method <c>YBluetoothLink.isOnline()</c> to test if the Bluetooth sound controller is
   ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   a cellular interface by logical name, no error is notified: the first instance
+  ///   a Bluetooth sound controller by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
   /// </para>
@@ -576,25 +576,25 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the cellular interface, for instance
+  ///   a string that uniquely characterizes the Bluetooth sound controller, for instance
   ///   <c>MyDevice.bluetoothLink1</c>.
   /// </param>
   /// <returns>
-  ///   a <c>YBluetoothLink</c> object allowing you to drive the cellular interface.
+  ///   a <c>YBluetoothLink</c> object allowing you to drive the Bluetooth sound controller.
   /// </returns>
   ///-
   function yFindBluetoothLink(func:string):TYBluetoothLink;
   ////
   /// <summary>
-  ///   Starts the enumeration of cellular interfaces currently accessible.
+  ///   Starts the enumeration of Bluetooth sound controllers currently accessible.
   /// <para>
   ///   Use the method <c>YBluetoothLink.nextBluetoothLink()</c> to iterate on
-  ///   next cellular interfaces.
+  ///   next Bluetooth sound controllers.
   /// </para>
   /// </summary>
   /// <returns>
   ///   a pointer to a <c>YBluetoothLink</c> object, corresponding to
-  ///   the first cellular interface currently online, or a <c>NIL</c> pointer
+  ///   the first Bluetooth sound controller currently online, or a <c>NIL</c> pointer
   ///   if there are none.
   /// </returns>
   ///-

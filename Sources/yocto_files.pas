@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 37827 2019-10-25 13:07:48Z mvuilleu $
+ * $Id: yocto_files.pas 38913 2019-12-20 18:59:49Z mvuilleu $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -62,10 +62,13 @@ type
   //--- (generated code: YFileRecord class start)
   ////
   /// <summary>
-  ///   TYFileRecord Class: Description of a file on the device filesystem
+  ///   T
   /// <para>
-  ///   YFileRecord objects are used to describe a file that is stored on a Yoctopuce device.
-  ///   These objects are used in particular in conjunction with the YFiles class.
+  ///   YFileRecord Class: Description of a file on the device filesystem, returned by <c>files.get_list</c>
+  /// </para>
+  /// <para>
+  ///   <c>YFileRecord</c> objects are used to describe a file that is stored on a Yoctopuce device.
+  ///   These objects are used in particular in conjunction with the <c>YFiles</c> class.
   /// </para>
   /// </summary>
   ///-
@@ -134,11 +137,11 @@ TYFILERECORDARRAY = array of TYFileRecord;
 
   ////
   /// <summary>
-  ///   TYFiles Class: Files function interface
+  ///   TYFiles Class: filesystem control interface, available for instance in the Yocto-Color-V2, the
+  ///   Yocto-RS232, the YoctoHub-Ethernet or the YoctoHub-Wireless-g
   /// <para>
   ///   The YFiles class is used to access the filesystem embedded on
-  ///   some Yoctopuce devices, for instance using a YoctoHub-Ethernet, a Yocto-Color-V2, a
-  ///   YoctoHub-Wireless-g or a Yocto-RS232. This filesystem makes it
+  ///   some Yoctopuce devices. This filesystem makes it
   ///   possible for instance to design a custom web UI
   ///   (for networked devices) or to add fonts (on display devices).
   /// </para>
@@ -467,7 +470,7 @@ procedure freeFileRecordArray(var list:TYFILERECORDARRAY);
   /// </summary>
   /// <param name="func">
   ///   a string that uniquely characterizes the filesystem, for instance
-  ///   <c>YHUBETH1.files</c>.
+  ///   <c>YRGBLED2.files</c>.
   /// </param>
   /// <returns>
   ///   a <c>YFiles</c> object allowing you to drive the filesystem.

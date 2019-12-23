@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_realtimeclock.pas 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_realtimeclock.pas 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
@@ -68,11 +68,11 @@ type
 
   ////
   /// <summary>
-  ///   TYRealTimeClock Class: Real Time Clock function interface
+  ///   TYRealTimeClock Class: real-time clock control interface, available for instance in the
+  ///   YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-Wireless-SR or the YoctoHub-Wireless-g
   /// <para>
-  ///   The YRealTimeClock class provide access to the embedded real-time clock available on some Yoctopuce
-  ///   devices, for instance using a YoctoHub-Wireless-g, a YoctoHub-GSM-3G-NA, a YoctoHub-GSM-3G-EU or a
-  ///   YoctoHub-Wireless-SR. It can provide current date and time, even after a power outage
+  ///   The <c>YRealTimeClock</c> class provide access to the embedded real-time clock available on some Yoctopuce
+  ///   devices. It can provide current date and time, even after a power outage
   ///   lasting several days. It is the base for automated wake-up functions provided by the WakeUpScheduler.
   ///   The current time may represent a local time as well as an UTC time, but no automatic time change
   ///   will occur to account for daylight saving time.
@@ -292,17 +292,17 @@ type
 
     ////
     /// <summary>
-    ///   Continues the enumeration of clocks started using <c>yFirstRealTimeClock()</c>.
+    ///   Continues the enumeration of real-time clocks started using <c>yFirstRealTimeClock()</c>.
     /// <para>
-    ///   Caution: You can't make any assumption about the returned clocks order.
-    ///   If you want to find a specific a clock, use <c>RealTimeClock.findRealTimeClock()</c>
+    ///   Caution: You can't make any assumption about the returned real-time clocks order.
+    ///   If you want to find a specific a real-time clock, use <c>RealTimeClock.findRealTimeClock()</c>
     ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>
     ///   a pointer to a <c>YRealTimeClock</c> object, corresponding to
-    ///   a clock currently online, or a <c>NIL</c> pointer
-    ///   if there are no more clocks to enumerate.
+    ///   a real-time clock currently online, or a <c>NIL</c> pointer
+    ///   if there are no more real-time clocks to enumerate.
     /// </returns>
     ///-
     function nextRealTimeClock():TYRealTimeClock;
@@ -321,7 +321,7 @@ type
 //--- (YRealTimeClock functions declaration)
   ////
   /// <summary>
-  ///   Retrieves a clock for a given identifier.
+  ///   Retrieves a real-time clock for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
   /// </para>
@@ -345,11 +345,11 @@ type
   /// <para>
   /// </para>
   /// <para>
-  ///   This function does not require that the clock is online at the time
+  ///   This function does not require that the real-time clock is online at the time
   ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YRealTimeClock.isOnline()</c> to test if the clock is
+  ///   Use the method <c>YRealTimeClock.isOnline()</c> to test if the real-time clock is
   ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   a clock by logical name, no error is notified: the first instance
+  ///   a real-time clock by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
   /// </para>
@@ -362,25 +362,25 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the clock, for instance
-  ///   <c>YHUBWLN3.realTimeClock</c>.
+  ///   a string that uniquely characterizes the real-time clock, for instance
+  ///   <c>YHUBGSM3.realTimeClock</c>.
   /// </param>
   /// <returns>
-  ///   a <c>YRealTimeClock</c> object allowing you to drive the clock.
+  ///   a <c>YRealTimeClock</c> object allowing you to drive the real-time clock.
   /// </returns>
   ///-
   function yFindRealTimeClock(func:string):TYRealTimeClock;
   ////
   /// <summary>
-  ///   Starts the enumeration of clocks currently accessible.
+  ///   Starts the enumeration of real-time clocks currently accessible.
   /// <para>
   ///   Use the method <c>YRealTimeClock.nextRealTimeClock()</c> to iterate on
-  ///   next clocks.
+  ///   next real-time clocks.
   /// </para>
   /// </summary>
   /// <returns>
   ///   a pointer to a <c>YRealTimeClock</c> object, corresponding to
-  ///   the first clock currently online, or a <c>NIL</c> pointer
+  ///   the first real-time clock currently online, or a <c>NIL</c> pointer
   ///   if there are none.
   /// </returns>
   ///-

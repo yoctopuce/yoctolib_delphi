@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 37827 2019-10-25 13:07:48Z mvuilleu $
+ * $Id: yocto_messagebox.pas 38913 2019-12-20 18:59:49Z mvuilleu $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *
@@ -73,11 +73,11 @@ type
 
   ////
   /// <summary>
-  ///   TYMessageBox Class: MessageBox function interface
+  ///   TYMessageBox Class: SMS message box interface control interface, available for instance in the
+  ///   YoctoHub-GSM-2G, the YoctoHub-GSM-3G-EU or the YoctoHub-GSM-3G-NA
   /// <para>
-  ///   The YMessageBox class provides SMS sending and receiving capability to
-  ///   GSM-enabled Yoctopuce devices, for instance using a YoctoHub-GSM-3G-NA, a YoctoHub-GSM-3G-EU or a
-  ///   YoctoHub-GSM-2G.
+  ///   The <c>YMessageBox</c> class provides SMS sending and receiving capability for
+  ///   GSM-enabled Yoctopuce devices.
   /// </para>
   /// </summary>
   ///-
@@ -428,17 +428,17 @@ type
 
     ////
     /// <summary>
-    ///   Continues the enumeration of MessageBox interfaces started using <c>yFirstMessageBox()</c>.
+    ///   Continues the enumeration of SMS message box interfaces started using <c>yFirstMessageBox()</c>.
     /// <para>
-    ///   Caution: You can't make any assumption about the returned MessageBox interfaces order.
-    ///   If you want to find a specific a MessageBox interface, use <c>MessageBox.findMessageBox()</c>
+    ///   Caution: You can't make any assumption about the returned SMS message box interfaces order.
+    ///   If you want to find a specific a SMS message box interface, use <c>MessageBox.findMessageBox()</c>
     ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>
     ///   a pointer to a <c>YMessageBox</c> object, corresponding to
-    ///   a MessageBox interface currently online, or a <c>NIL</c> pointer
-    ///   if there are no more MessageBox interfaces to enumerate.
+    ///   a SMS message box interface currently online, or a <c>NIL</c> pointer
+    ///   if there are no more SMS message box interfaces to enumerate.
     /// </returns>
     ///-
     function nextMessageBox():TYMessageBox;
@@ -459,10 +459,13 @@ type
   //--- (generated code: YSms class start)
   ////
   /// <summary>
-  ///   TYSms Class: SMS message sent or received
+  ///   TYSms Class: SMS message sent or received, returned by <c>messageBox.get_messages</c> or <c>messageBox.
   /// <para>
-  ///   YSms objects are used to describe a SMS.
-  ///   These objects are used in particular in conjunction with the YMessageBox class.
+  ///   newMessage</c>
+  /// </para>
+  /// <para>
+  ///   <c>YSms</c> objects are used to describe an SMS message, received or to be sent.
+  ///   These objects are used in particular in conjunction with the <c>YMessageBox</c> class.
   /// </para>
   /// </summary>
   ///-
@@ -670,7 +673,7 @@ type
 //--- (generated code: YMessageBox functions declaration)
   ////
   /// <summary>
-  ///   Retrieves a MessageBox interface for a given identifier.
+  ///   Retrieves a SMS message box interface for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
   /// </para>
@@ -694,11 +697,11 @@ type
   /// <para>
   /// </para>
   /// <para>
-  ///   This function does not require that the MessageBox interface is online at the time
+  ///   This function does not require that the SMS message box interface is online at the time
   ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YMessageBox.isOnline()</c> to test if the MessageBox interface is
+  ///   Use the method <c>YMessageBox.isOnline()</c> to test if the SMS message box interface is
   ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   a MessageBox interface by logical name, no error is notified: the first instance
+  ///   a SMS message box interface by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
   /// </para>
@@ -711,25 +714,25 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the MessageBox interface, for instance
-  ///   <c>YHUBGSM4.messageBox</c>.
+  ///   a string that uniquely characterizes the SMS message box interface, for instance
+  ///   <c>YHUBGSM1.messageBox</c>.
   /// </param>
   /// <returns>
-  ///   a <c>YMessageBox</c> object allowing you to drive the MessageBox interface.
+  ///   a <c>YMessageBox</c> object allowing you to drive the SMS message box interface.
   /// </returns>
   ///-
   function yFindMessageBox(func:string):TYMessageBox;
   ////
   /// <summary>
-  ///   Starts the enumeration of MessageBox interfaces currently accessible.
+  ///   Starts the enumeration of SMS message box interfaces currently accessible.
   /// <para>
   ///   Use the method <c>YMessageBox.nextMessageBox()</c> to iterate on
-  ///   next MessageBox interfaces.
+  ///   next SMS message box interfaces.
   /// </para>
   /// </summary>
   /// <returns>
   ///   a pointer to a <c>YMessageBox</c> object, corresponding to
-  ///   the first MessageBox interface currently online, or a <c>NIL</c> pointer
+  ///   the first SMS message box interface currently online, or a <c>NIL</c> pointer
   ///   if there are none.
   /// </returns>
   ///-

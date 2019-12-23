@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_multiaxiscontroller.pas 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_multiaxiscontroller.pas 38913 2019-12-20 18:59:49Z mvuilleu $
  *
  *  Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
  *
@@ -73,7 +73,7 @@ type
   /// <summary>
   ///   TYMultiAxisController Class: MultiAxisController function interface
   /// <para>
-  ///   The YMultiAxisController class allows you to drive multiple stepper motors
+  ///   The <c>YMultiAxisController</c> class allows you to drive multiple stepper motors
   ///   synchronously.
   /// </para>
   /// </summary>

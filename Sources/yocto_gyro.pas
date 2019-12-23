@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_gyro.pas 38030 2019-11-04 17:56:01Z mvuilleu $
+ * $Id: yocto_gyro.pas 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  * Implements yFindGyro(), the high-level API for Gyro functions
  *
@@ -70,14 +70,14 @@ type
 
   ////
   /// <summary>
-  ///   TYQt Class: Quaternion interface
+  ///   TYQt Class: Base interface to access quaternion components, available for instance in the Yocto-3D-V2
   /// <para>
-  ///   The YQt class provides direct access to the 3D attitude estimation provided by Yoctopuce
-  ///   inertial sensors, for instance using a Yocto-3D-V2. The four instances of YQt provide direct access
-  ///   to the individual
-  ///   quaternion components representing the orientation.
-  ///   It is usually not needed to use the YQt class directly, as the
-  ///   YGyro class provides a more convenient higher-level interface.
+  ///   The <c>YQt</c> class provides direct access to the 3D attitude estimation
+  ///   provided by Yoctopuce inertial sensors. The four instances of <c>YQt</c>
+  ///   provide direct access to the individual quaternion components representing the
+  ///   orientation. It is usually not needed to use the <c>YQt</c> class
+  ///   directly, as the <c>YGyro</c> class provides a more convenient higher-level
+  ///   interface.
   /// </para>
   /// </summary>
   ///-
@@ -184,7 +184,7 @@ type
     /// </summary>
     /// <param name="callback">
     ///   the callback function to call, or a NIL pointer. The callback function should take two
-    ///   arguments: the function object of which the value has changed, and an YMeasure object describing
+    ///   arguments: the function object of which the value has changed, and an <c>YMeasure</c> object describing
     ///   the new advertised value.
     /// @noreturn
     /// </param>
@@ -303,12 +303,14 @@ type
 
   ////
   /// <summary>
-  ///   TYGyro Class: Gyroscope function interface
+  ///   TYGyro Class: gyroscope control interface, available for instance in the Yocto-3D-V2
   /// <para>
-  ///   The YGyro class allows you to read and configure Yoctopuce angular velocity
-  ///   sensors, for instance using a Yocto-3D-V2. It inherits from YSensor class the core functions to
-  ///   read measurements,
-  ///   to register callback functions, to access the autonomous datalogger.
+  ///   The <c>YGyro</c> class allows you to read and configure Yoctopuce gyroscopes.
+  ///   It inherits from <c>YSensor</c> class the core functions to read measurements,
+  ///   to register callback functions, and to access the autonomous datalogger.
+  ///   This class adds the possibility to access x, y and z components of the rotation
+  ///   vector separately, as well as the possibility to deal with quaternion-based
+  ///   orientation estimates.
   /// </para>
   /// </summary>
   ///-
@@ -531,7 +533,7 @@ type
     /// </summary>
     /// <param name="callback">
     ///   the callback function to call, or a NIL pointer. The callback function should take two
-    ///   arguments: the function object of which the value has changed, and an YMeasure object describing
+    ///   arguments: the function object of which the value has changed, and an <c>YMeasure</c> object describing
     ///   the new advertised value.
     /// @noreturn
     /// </param>

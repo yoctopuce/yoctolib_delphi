@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_powersupply.pas 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_powersupply.pas 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements yFindPowerSupply(), the high-level API for PowerSupply functions
  *
@@ -79,9 +79,9 @@ type
 
   ////
   /// <summary>
-  ///   TYPowerSupply Class: PowerSupply function interface
+  ///   TYPowerSupply Class: regulated power supply control interface
   /// <para>
-  ///   The YPowerSupply class allows you to drive a Yoctopuce power supply$DEV_ENà.
+  ///   The <c>YPowerSupply</c> class allows you to drive a Yoctopuce power supply.
   ///   It can be use to change the voltage set point,
   ///   the current limit and the enable/disable the output.
   /// </para>

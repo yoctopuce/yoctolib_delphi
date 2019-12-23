@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_spiport.pas 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_spiport.pas 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -56,6 +56,8 @@ const Y_TXMSGCOUNT_INVALID            = YAPI_INVALID_UINT;
 const Y_LASTMSG_INVALID               = YAPI_INVALID_STRING;
 const Y_CURRENTJOB_INVALID            = YAPI_INVALID_STRING;
 const Y_STARTUPJOB_INVALID            = YAPI_INVALID_STRING;
+const Y_JOBMAXTASK_INVALID            = YAPI_INVALID_UINT;
+const Y_JOBMAXSIZE_INVALID            = YAPI_INVALID_UINT;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 const Y_PROTOCOL_INVALID              = YAPI_INVALID_STRING;
 const Y_VOLTAGELEVEL_OFF = 0;
@@ -88,9 +90,9 @@ type
 
   ////
   /// <summary>
-  ///   TYSpiPort Class: SPI Port function interface
+  ///   TYSpiPort Class: SPI port control interface, available for instance in the Yocto-SPI
   /// <para>
-  ///   The YSpiPort class allows you to fully drive a Yoctopuce SPI port, for instance using a Yocto-SPI.
+  ///   The <c>YSpiPort</c> class allows you to fully drive a Yoctopuce SPI port.
   ///   It can be used to send and receive data, and to configure communication
   ///   parameters (baud rate, bit count, parity, flow control and protocol).
   ///   Note that Yoctopuce SPI ports are not exposed as virtual COM ports.
@@ -111,6 +113,8 @@ type
     _lastMsg                  : string;
     _currentJob               : string;
     _startupJob               : string;
+    _jobMaxTask               : LongInt;
+    _jobMaxSize               : LongInt;
     _command                  : string;
     _protocol                 : string;
     _voltageLevel             : Integer;
@@ -313,6 +317,40 @@ type
     /// </para>
     ///-
     function set_startupJob(newval:string):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the maximum number of tasks in a job that the device can handle.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the maximum number of tasks in a job that the device can handle
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_JOBMAXTASK_INVALID</c>.
+    /// </para>
+    ///-
+    function get_jobMaxTask():LongInt;
+
+    ////
+    /// <summary>
+    ///   Returns maximum size allowed for job files.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to maximum size allowed for job files
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_JOBMAXSIZE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_jobMaxSize():LongInt;
 
     function get_command():string;
 
@@ -1157,6 +1195,8 @@ implementation
       _lastMsg := Y_LASTMSG_INVALID;
       _currentJob := Y_CURRENTJOB_INVALID;
       _startupJob := Y_STARTUPJOB_INVALID;
+      _jobMaxTask := Y_JOBMAXTASK_INVALID;
+      _jobMaxSize := Y_JOBMAXSIZE_INVALID;
       _command := Y_COMMAND_INVALID;
       _protocol := Y_PROTOCOL_INVALID;
       _voltageLevel := Y_VOLTAGELEVEL_INVALID;
@@ -1224,6 +1264,18 @@ implementation
       if (member^.name = 'startupJob') then
         begin
           _startupJob := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'jobMaxTask') then
+        begin
+          _jobMaxTask := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'jobMaxSize') then
+        begin
+          _jobMaxSize := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -1426,6 +1478,42 @@ implementation
       rest_val := newval;
       result := _setAttr('startupJob',rest_val);
     end;
+
+  function TYSpiPort.get_jobMaxTask():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration = 0 then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_JOBMAXTASK_INVALID;
+              exit;
+            end;
+        end;
+      res := self._jobMaxTask;
+      result := res;
+      exit;
+    end;
+
+
+  function TYSpiPort.get_jobMaxSize():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration = 0 then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_JOBMAXSIZE_INVALID;
+              exit;
+            end;
+        end;
+      res := self._jobMaxSize;
+      result := res;
+      exit;
+    end;
+
 
   function TYSpiPort.get_command():string;
     var

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_pressure.pas 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_pressure.pas 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements yFindPressure(), the high-level API for Pressure functions
  *
@@ -62,12 +62,12 @@ type
 
   ////
   /// <summary>
-  ///   TYPressure Class: Pressure function interface
+  ///   TYPressure Class: pressure sensor control interface, available for instance in the
+  ///   Yocto-Altimeter-V2, the Yocto-CO2-V2, the Yocto-Meteo-V2 or the Yocto-Pressure
   /// <para>
-  ///   The YPressure class allows you to read and configure Yoctopuce pressure
-  ///   sensors, for instance using a Yocto-Meteo-V2, a Yocto-Pressure, a Yocto-CO2-V2 or a
-  ///   Yocto-Altimeter-V2. It inherits from YSensor class the core functions to read measurements,
-  ///   to register callback functions, to access the autonomous datalogger.
+  ///   The <c>YPressure</c> class allows you to read and configure Yoctopuce pressure sensors.
+  ///   It inherits from <c>YSensor</c> class the core functions to read measurements,
+  ///   to register callback functions, and to access the autonomous datalogger.
   /// </para>
   /// </summary>
   ///-
@@ -174,7 +174,7 @@ type
     /// </summary>
     /// <param name="callback">
     ///   the callback function to call, or a NIL pointer. The callback function should take two
-    ///   arguments: the function object of which the value has changed, and an YMeasure object describing
+    ///   arguments: the function object of which the value has changed, and an <c>YMeasure</c> object describing
     ///   the new advertised value.
     /// @noreturn
     /// </param>
@@ -257,7 +257,7 @@ type
   /// </summary>
   /// <param name="func">
   ///   a string that uniquely characterizes the pressure sensor, for instance
-  ///   <c>METEOMK2.pressure</c>.
+  ///   <c>YALTIMK2.pressure</c>.
   /// </param>
   /// <returns>
   ///   a <c>YPressure</c> object allowing you to drive the pressure sensor.

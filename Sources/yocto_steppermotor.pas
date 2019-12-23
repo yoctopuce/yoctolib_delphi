@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_steppermotor.pas 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_steppermotor.pas 38913 2019-12-20 18:59:49Z mvuilleu $
  *
  *  Implements yFindStepperMotor(), the high-level API for StepperMotor functions
  *
@@ -88,9 +88,9 @@ type
 
   ////
   /// <summary>
-  ///   TYStepperMotor Class: StepperMotor function interface
+  ///   TYStepperMotor Class: stepper motor control interface
   /// <para>
-  ///   The YStepperMotor class allows you to drive a stepper motor.
+  ///   The <c>YStepperMotor</c> class allows you to drive a stepper motor.
   /// </para>
   /// </summary>
   ///-

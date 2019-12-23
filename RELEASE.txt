@@ -1,5 +1,3 @@
-Delphi v1.10.38168
+Delphi v1.10.38914
 
-- Improve every class description (add sample product name)
-- Add version number to assembly
-- Add warning if Raspberry Pi 4 use old boot EEPROM
+- Documentation improvements

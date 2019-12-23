@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_magnetometer.pas 38030 2019-11-04 17:56:01Z mvuilleu $
+ *  $Id: yocto_magnetometer.pas 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements yFindMagnetometer(), the high-level API for Magnetometer functions
  *
@@ -66,17 +66,17 @@ type
 
   ////
   /// <summary>
-  ///   TYMagnetometer Class: Magnetometer function interface
+  ///   TYMagnetometer Class: magnetometer control interface, available for instance in the Yocto-3D-V2
   /// <para>
-  ///   The YSensor class is the parent class for all Yoctopuce sensor types. It can be
+  ///   The <c>YSensor</c> class is the parent class for all Yoctopuce sensor types. It can be
   ///   used to read the current value and unit of any sensor, read the min/max
   ///   value, configure autonomous recording frequency and access recorded data.
   ///   It also provide a function to register a callback invoked each time the
   ///   observed value changes, or at a predefined interval. Using this class rather
   ///   than a specific subclass makes it possible to create generic applications
   ///   that work with any Yoctopuce sensor, even those that do not yet exist.
-  ///   Note: The YAnButton class is the only analog input which does not inherit
-  ///   from YSensor.
+  ///   Note: The <c>YAnButton</c> class is the only analog input which does not inherit
+  ///   from <c>YSensor</c>.
   /// </para>
   /// </summary>
   ///-
@@ -281,7 +281,7 @@ type
     /// </summary>
     /// <param name="callback">
     ///   the callback function to call, or a NIL pointer. The callback function should take two
-    ///   arguments: the function object of which the value has changed, and an YMeasure object describing
+    ///   arguments: the function object of which the value has changed, and an <c>YMeasure</c> object describing
     ///   the new advertised value.
     /// @noreturn
     /// </param>

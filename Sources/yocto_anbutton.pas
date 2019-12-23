@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_anbutton.pas 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_anbutton.pas 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements yFindAnButton(), the high-level API for AnButton functions
  *
@@ -77,11 +77,11 @@ type
 
   ////
   /// <summary>
-  ///   TYAnButton Class: AnButton function interface
+  ///   TYAnButton Class: analog input control interface, available for instance in the Yocto-Buzzer, the
+  ///   Yocto-Display, the Yocto-Knob or the Yocto-MaxiDisplay
   /// <para>
-  ///   The YAnButton class allows you to access simple resistive inputs on Yoctopuce
-  ///   devices, for instance using a Yocto-Knob, a Yocto-MaxiDisplay, a Yocto-Buzzer or a
-  ///   Yocto-MaxiDisplay-G. Such inputs can be used to measure the state
+  ///   The <c>YAnButton</c> class provide access to basic resistive inputs.
+  ///   Such inputs can be used to measure the state
   ///   of a simple button as well as to read an analog potentiometer (variable resistance).
   ///   This can be use for instance with a continuous rotating knob, a throttle grip
   ///   or a joystick. The module is capable to calibrate itself on min and max values,
@@ -581,7 +581,7 @@ type
   /// </summary>
   /// <param name="func">
   ///   a string that uniquely characterizes the analog input, for instance
-  ///   <c>YBUTTON1.anButton1</c>.
+  ///   <c>YBUZZER2.anButton1</c>.
   /// </param>
   /// <returns>
   ///   a <c>YAnButton</c> object allowing you to drive the analog input.

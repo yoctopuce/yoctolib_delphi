@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_gps.pas 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_gps.pas 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements yFindGps(), the high-level API for Gps functions
  *
@@ -52,17 +52,19 @@ const Y_ISFIXED_FALSE = 0;
 const Y_ISFIXED_TRUE = 1;
 const Y_ISFIXED_INVALID = -1;
 const Y_SATCOUNT_INVALID              = YAPI_INVALID_LONG;
+const Y_SATPERCONST_INVALID           = YAPI_INVALID_LONG;
+const Y_GPSREFRESHRATE_INVALID        = YAPI_INVALID_DOUBLE;
 const Y_COORDSYSTEM_GPS_DMS = 0;
 const Y_COORDSYSTEM_GPS_DM = 1;
 const Y_COORDSYSTEM_GPS_D = 2;
 const Y_COORDSYSTEM_INVALID = -1;
-const Y_CONSTELLATION_GPS = 0;
-const Y_CONSTELLATION_GLONASS = 1;
-const Y_CONSTELLATION_GALLILEO = 2;
-const Y_CONSTELLATION_GNSS = 3;
+const Y_CONSTELLATION_GNSS = 0;
+const Y_CONSTELLATION_GPS = 1;
+const Y_CONSTELLATION_GLONASS = 2;
+const Y_CONSTELLATION_GALILEO = 3;
 const Y_CONSTELLATION_GPS_GLONASS = 4;
-const Y_CONSTELLATION_GPS_GALLILEO = 5;
-const Y_CONSTELLATION_GLONASS_GALLELIO = 6;
+const Y_CONSTELLATION_GPS_GALILEO = 5;
+const Y_CONSTELLATION_GLONASS_GALILEO = 6;
 const Y_CONSTELLATION_INVALID = -1;
 const Y_LATITUDE_INVALID              = YAPI_INVALID_STRING;
 const Y_LONGITUDE_INVALID             = YAPI_INVALID_STRING;
@@ -88,14 +90,17 @@ type
 
   ////
   /// <summary>
-  ///   TYGps Class: GPS function interface
+  ///   TYGps Class: Geolocalization control interface (GPS, GNSS, ..
   /// <para>
-  ///   The YGps class allows you to retrieve positioning
-  ///   data from a GPS sensor, for instance using a Yocto-GPS. This class can provides
+  ///   .), available for instance in the Yocto-GPS
+  /// </para>
+  /// <para>
+  ///   The <c>YGps</c> class allows you to retrieve positioning
+  ///   data from a GPS/GNSS sensor. This class can provides
   ///   complete positioning information. However, if you
   ///   wish to define callbacks on position changes or record
   ///   the position in the datalogger, you
-  ///   should use the YLatitude et YLongitude classes.
+  ///   should use the <c>YLatitude</c> et <c>YLongitude</c> classes.
   /// </para>
   /// </summary>
   ///-
@@ -106,6 +111,8 @@ type
     // Attributes (function value cache)
     _isFixed                  : Integer;
     _satCount                 : int64;
+    _satPerConst              : int64;
+    _gpsRefreshRate           : double;
     _coordSystem              : Integer;
     _constellation            : Integer;
     _latitude                 : string;
@@ -148,20 +155,59 @@ type
 
     ////
     /// <summary>
-    ///   Returns the count of visible satellites.
+    ///   Returns the total count of satellites used to compute GPS position.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the count of visible satellites
+    ///   an integer corresponding to the total count of satellites used to compute GPS position
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_SATCOUNT_INVALID</c>.
     /// </para>
     ///-
     function get_satCount():int64;
+
+    ////
+    /// <summary>
+    ///   Returns the count of visible satellites per constellation encoded
+    ///   on a 32 bit integer: bits 0..
+    /// <para>
+    ///   5: GPS satellites count,  bits 6..11 : Glonass, bits 12..17 : Galileo.
+    ///   this value is refreshed every 5 seconds only.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the count of visible satellites per constellation encoded
+    ///   on a 32 bit integer: bits 0.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_SATPERCONST_INVALID</c>.
+    /// </para>
+    ///-
+    function get_satPerConst():int64;
+
+    ////
+    /// <summary>
+    ///   Returns effective GPS data refresh frequency.
+    /// <para>
+    ///   this value is refreshed every 5 seconds only.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a floating point number corresponding to effective GPS data refresh frequency
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_GPSREFRESHRATE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_gpsRefreshRate():double;
 
     ////
     /// <summary>
@@ -216,10 +262,10 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_CONSTELLATION_GPS</c>, <c>Y_CONSTELLATION_GLONASS</c>,
-    ///   <c>Y_CONSTELLATION_GALLILEO</c>, <c>Y_CONSTELLATION_GNSS</c>, <c>Y_CONSTELLATION_GPS_GLONASS</c>,
-    ///   <c>Y_CONSTELLATION_GPS_GALLILEO</c> and <c>Y_CONSTELLATION_GLONASS_GALLELIO</c> corresponding to
-    ///   the the satellites constellation used to compute
+    ///   a value among <c>Y_CONSTELLATION_GNSS</c>, <c>Y_CONSTELLATION_GPS</c>,
+    ///   <c>Y_CONSTELLATION_GLONASS</c>, <c>Y_CONSTELLATION_GALILEO</c>, <c>Y_CONSTELLATION_GPS_GLONASS</c>,
+    ///   <c>Y_CONSTELLATION_GPS_GALILEO</c> and <c>Y_CONSTELLATION_GLONASS_GALILEO</c> corresponding to the
+    ///   the satellites constellation used to compute
     ///   positioning data
     /// </returns>
     /// <para>
@@ -233,17 +279,17 @@ type
     ///   Changes the satellites constellation used to compute
     ///   positioning data.
     /// <para>
-    ///   Possible  constellations are GPS, Glonass, Galileo ,
-    ///   GNSS ( = GPS + Glonass + Galileo) and the 3 possible pairs. This seeting has effect on Yocto-GPS rev A.
+    ///   Possible  constellations are GNSS ( = all supported constellations),
+    ///   GPS, Glonass, Galileo , and the 3 possible pairs. This setting has  no effect on Yocto-GPS (V1).
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>Y_CONSTELLATION_GPS</c>, <c>Y_CONSTELLATION_GLONASS</c>,
-    ///   <c>Y_CONSTELLATION_GALLILEO</c>, <c>Y_CONSTELLATION_GNSS</c>, <c>Y_CONSTELLATION_GPS_GLONASS</c>,
-    ///   <c>Y_CONSTELLATION_GPS_GALLILEO</c> and <c>Y_CONSTELLATION_GLONASS_GALLELIO</c> corresponding to
-    ///   the satellites constellation used to compute
+    ///   a value among <c>Y_CONSTELLATION_GNSS</c>, <c>Y_CONSTELLATION_GPS</c>,
+    ///   <c>Y_CONSTELLATION_GLONASS</c>, <c>Y_CONSTELLATION_GALILEO</c>, <c>Y_CONSTELLATION_GPS_GLONASS</c>,
+    ///   <c>Y_CONSTELLATION_GPS_GALILEO</c> and <c>Y_CONSTELLATION_GLONASS_GALILEO</c> corresponding to the
+    ///   satellites constellation used to compute
     ///   positioning data
     /// </param>
     /// <para>
@@ -525,17 +571,17 @@ type
 
     ////
     /// <summary>
-    ///   Continues the enumeration of GPS started using <c>yFirstGps()</c>.
+    ///   Continues the enumeration of geolocalization modules started using <c>yFirstGps()</c>.
     /// <para>
-    ///   Caution: You can't make any assumption about the returned GPS order.
-    ///   If you want to find a specific a GPS, use <c>Gps.findGps()</c>
+    ///   Caution: You can't make any assumption about the returned geolocalization modules order.
+    ///   If you want to find a specific a geolocalization module, use <c>Gps.findGps()</c>
     ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>
     ///   a pointer to a <c>YGps</c> object, corresponding to
-    ///   a GPS currently online, or a <c>NIL</c> pointer
-    ///   if there are no more GPS to enumerate.
+    ///   a geolocalization module currently online, or a <c>NIL</c> pointer
+    ///   if there are no more geolocalization modules to enumerate.
     /// </returns>
     ///-
     function nextGps():TYGps;
@@ -554,7 +600,7 @@ type
 //--- (YGps functions declaration)
   ////
   /// <summary>
-  ///   Retrieves a GPS for a given identifier.
+  ///   Retrieves a geolocalization module for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
   /// </para>
@@ -578,11 +624,11 @@ type
   /// <para>
   /// </para>
   /// <para>
-  ///   This function does not require that the GPS is online at the time
+  ///   This function does not require that the geolocalization module is online at the time
   ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YGps.isOnline()</c> to test if the GPS is
+  ///   Use the method <c>YGps.isOnline()</c> to test if the geolocalization module is
   ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   a GPS by logical name, no error is notified: the first instance
+  ///   a geolocalization module by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
   /// </para>
@@ -595,25 +641,25 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the GPS, for instance
+  ///   a string that uniquely characterizes the geolocalization module, for instance
   ///   <c>YGNSSMK1.gps</c>.
   /// </param>
   /// <returns>
-  ///   a <c>YGps</c> object allowing you to drive the GPS.
+  ///   a <c>YGps</c> object allowing you to drive the geolocalization module.
   /// </returns>
   ///-
   function yFindGps(func:string):TYGps;
   ////
   /// <summary>
-  ///   Starts the enumeration of GPS currently accessible.
+  ///   Starts the enumeration of geolocalization modules currently accessible.
   /// <para>
   ///   Use the method <c>YGps.nextGps()</c> to iterate on
-  ///   next GPS.
+  ///   next geolocalization modules.
   /// </para>
   /// </summary>
   /// <returns>
   ///   a pointer to a <c>YGps</c> object, corresponding to
-  ///   the first GPS currently online, or a <c>NIL</c> pointer
+  ///   the first geolocalization module currently online, or a <c>NIL</c> pointer
   ///   if there are none.
   /// </returns>
   ///-
@@ -632,6 +678,8 @@ implementation
       //--- (YGps accessors initialization)
       _isFixed := Y_ISFIXED_INVALID;
       _satCount := Y_SATCOUNT_INVALID;
+      _satPerConst := Y_SATPERCONST_INVALID;
+      _gpsRefreshRate := Y_GPSREFRESHRATE_INVALID;
       _coordSystem := Y_COORDSYSTEM_INVALID;
       _constellation := Y_CONSTELLATION_INVALID;
       _latitude := Y_LATITUDE_INVALID;
@@ -667,6 +715,18 @@ implementation
       if (member^.name = 'satCount') then
         begin
           _satCount := member^.ivalue;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'satPerConst') then
+        begin
+          _satPerConst := member^.ivalue;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'gpsRefreshRate') then
+        begin
+          _gpsRefreshRate := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
@@ -777,6 +837,42 @@ implementation
             end;
         end;
       res := self._satCount;
+      result := res;
+      exit;
+    end;
+
+
+  function TYGps.get_satPerConst():int64;
+    var
+      res : int64;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_SATPERCONST_INVALID;
+              exit;
+            end;
+        end;
+      res := self._satPerConst;
+      result := res;
+      exit;
+    end;
+
+
+  function TYGps.get_gpsRefreshRate():double;
+    var
+      res : double;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_GPSREFRESHRATE_INVALID;
+              exit;
+            end;
+        end;
+      res := self._gpsRefreshRate;
       result := res;
       exit;
     end;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_lightsensor.pas 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_lightsensor.pas 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements yFindLightSensor(), the high-level API for LightSensor functions
  *
@@ -68,12 +68,12 @@ type
 
   ////
   /// <summary>
-  ///   TYLightSensor Class: LightSensor function interface
+  ///   TYLightSensor Class: light sensor control interface, available for instance in the Yocto-Light-V3,
+  ///   the Yocto-Proximity or the Yocto-RangeFinder
   /// <para>
-  ///   The YLightSensor class allows you to read and configure Yoctopuce light
-  ///   sensors, for instance using a Yocto-Light-V3, a Yocto-RangeFinder or a Yocto-Proximity. It inherits
-  ///   from YSensor class the core functions to read measurements,
-  ///   to register callback functions, to access the autonomous datalogger.
+  ///   The <c>YLightSensor</c> class allows you to read and configure Yoctopuce light sensors.
+  ///   It inherits from <c>YSensor</c> class the core functions to read measurements,
+  ///   to register callback functions, and to access the autonomous datalogger.
   ///   This class adds the ability to easily perform a one-point linear calibration
   ///   to compensate the effect of a glass or filter placed in front of the sensor.
   ///   For some light sensors with several working modes, this class can select the
@@ -262,7 +262,7 @@ type
     /// </summary>
     /// <param name="callback">
     ///   the callback function to call, or a NIL pointer. The callback function should take two
-    ///   arguments: the function object of which the value has changed, and an YMeasure object describing
+    ///   arguments: the function object of which the value has changed, and an <c>YMeasure</c> object describing
     ///   the new advertised value.
     /// @noreturn
     /// </param>

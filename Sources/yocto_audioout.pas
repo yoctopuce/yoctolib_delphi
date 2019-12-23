@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_audioout.pas 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_audioout.pas 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements yFindAudioOut(), the high-level API for AudioOut functions
  *
@@ -69,9 +69,9 @@ type
 
   ////
   /// <summary>
-  ///   TYAudioOut Class: AudioOut function interface
+  ///   TYAudioOut Class: audio output control interface
   /// <para>
-  ///   The YAudioOut class allows you to configure the volume of an audio outout.
+  ///   The <c>YAudioOut</c> class allows you to configure the volume of an audio output.
   /// </para>
   /// </summary>
   ///-

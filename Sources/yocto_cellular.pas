@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 37827 2019-10-25 13:07:48Z mvuilleu $
+ * $Id: yocto_cellular.pas 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -95,11 +95,12 @@ type
 
   ////
   /// <summary>
-  ///   TYCellular Class: Cellular function interface
+  ///   TYCellular Class: cellular interface control interface, available for instance in the
+  ///   YoctoHub-GSM-2G, the YoctoHub-GSM-3G-EU or the YoctoHub-GSM-3G-NA
   /// <para>
-  ///   The YCellular class provides control over cellular network parameters
-  ///   and status for devices that are GSM-enabled, for instance using a YoctoHub-GSM-3G-NA, a
-  ///   YoctoHub-GSM-3G-EU or a YoctoHub-GSM-2G.
+  ///   The <c>YCellular</c> class provides control over cellular network parameters
+  ///   and status for devices that are GSM-enabled.
+  ///   Note that TCP/IP parameters are configured separately, using class <c>YNetwork</c>.
   /// </para>
   /// </summary>
   ///-
@@ -814,7 +815,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a list of YCellRecords.
+    ///   a list of <c>YCellRecords</c>.
     /// </returns>
     ///-
     function quickCellSurvey():TYCellRecordArray; overload; virtual;
@@ -853,10 +854,14 @@ type
   //--- (generated code: YCellRecord class start)
   ////
   /// <summary>
-  ///   TYCellRecord Class: Description of a cellular antenna
+  ///   T
   /// <para>
+  ///   YCellRecord Class: Cellular antenna description, returned by <c>cellular.quickCellSurvey</c> method
   /// </para>
   /// <para>
+  ///   <c>YCellRecord</c> objects are used to describe a wireless network.
+  ///   These objects are used in particular in conjunction with the
+  ///   <c>YCellular</c> class.
   /// </para>
   /// </summary>
   ///-
@@ -877,18 +882,98 @@ type
 
   public
     //--- (generated code: YCellRecord accessors declaration)
+    ////
+    /// <summary>
+    ///   Returns the name of the the cell operator, as received from the network.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string with the name of the the cell operator.
+    /// </returns>
+    ///-
     function get_cellOperator():string; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the Mobile Country Code (MCC).
+    /// <para>
+    ///   The MCC is a unique identifier for each country.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the Mobile Country Code (MCC).
+    /// </returns>
+    ///-
     function get_mobileCountryCode():LongInt; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the Mobile Network Code (MNC).
+    /// <para>
+    ///   The MNC is a unique identifier for each phone
+    ///   operator within a country.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the Mobile Network Code (MNC).
+    /// </returns>
+    ///-
     function get_mobileNetworkCode():LongInt; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the Location Area Code (LAC).
+    /// <para>
+    ///   The LAC is a unique identifier for each
+    ///   place within a country.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the Location Area Code (LAC).
+    /// </returns>
+    ///-
     function get_locationAreaCode():LongInt; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the Cell ID.
+    /// <para>
+    ///   The Cell ID is a unique identifier for each
+    ///   base transmission station within a LAC.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the Cell Id.
+    /// </returns>
+    ///-
     function get_cellId():LongInt; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the signal strength, measured in dBm.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the signal strength.
+    /// </returns>
+    ///-
     function get_signalStrength():LongInt; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the Timing Advance (TA).
+    /// <para>
+    ///   The TA corresponds to the time necessary
+    ///   for the signal to reach the base station from the device.
+    ///   Each increment corresponds about to 550m of distance.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the Timing Advance (TA).
+    /// </returns>
+    ///-
     function get_timingAdvance():LongInt; overload; virtual;
 
 
@@ -941,7 +1026,7 @@ type
   /// </summary>
   /// <param name="func">
   ///   a string that uniquely characterizes the cellular interface, for instance
-  ///   <c>YHUBGSM4.cellular</c>.
+  ///   <c>YHUBGSM1.cellular</c>.
   /// </param>
   /// <returns>
   ///   a <c>YCellular</c> object allowing you to drive the cellular interface.

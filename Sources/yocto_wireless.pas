@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 37827 2019-10-25 13:07:48Z mvuilleu $
+ * $Id: yocto_wireless.pas 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -76,11 +76,14 @@ TYWlanRecordArr = array of TYWlanRecord;
   //--- (generated code: YWlanRecord class start)
   ////
   /// <summary>
-  ///   TYWlanRecord Class: Description of a wireless network
+  ///   T
   /// <para>
-  ///   YWlanRecord objects are used to describe a wireless network.
+  ///   YWlanRecord Class: Wireless network description, returned by <c>wireless.get_detectedWlans</c> method
+  /// </para>
+  /// <para>
+  ///   <c>YWlanRecord</c> objects are used to describe a wireless network.
   ///   These objects are  used in particular in conjunction with the
-  ///   YWireless class.
+  ///   <c>YWireless</c> class.
   /// </para>
   /// </summary>
   ///-
@@ -115,12 +118,12 @@ public
 
     ////
     /// <summary>
-    ///   Returns the 802.11 channel.
+    ///   Returns the 802.11 b/g/n channel number used by this network.
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   the 802.11 channel.
+    ///   an integer corresponding to the channel.
     /// </returns>
     ///-
     function get_channel():LongInt; overload; virtual;
@@ -129,6 +132,7 @@ public
     /// <summary>
     ///   Returns the security algorithm used by the wireless network.
     /// <para>
+    ///   If the network implements to security, the value is <c>"OPEN"</c>.
     /// </para>
     /// </summary>
     /// <returns>
@@ -144,7 +148,7 @@ public
     /// </para>
     /// </summary>
     /// <returns>
-    ///   the quality of the wireless network link, in per cents.
+    ///   an integer between 0 and 100 corresponding to the signal quality.
     /// </returns>
     ///-
     function get_linkQuality():LongInt; overload; virtual;
@@ -162,11 +166,12 @@ TYWLANRECORDARRAY = array of TYWlanRecord;
 
   ////
   /// <summary>
-  ///   TYWireless Class: Wireless function interface
+  ///   TYWireless Class: wireless LAN interface control interface, available for instance in the
+  ///   YoctoHub-Wireless, the YoctoHub-Wireless-SR, the YoctoHub-Wireless-g or the YoctoHub-Wireless-n
   /// <para>
   ///   The YWireless class provides control over wireless network parameters
-  ///   and status for devices that are wireless-enabled, for instance using a YoctoHub-Wireless-g, a
-  ///   YoctoHub-Wireless-SR or a YoctoHub-Wireless.
+  ///   and status for devices that are wireless-enabled.
+  ///   Note that TCP/IP parameters are configured separately, using class <c>YNetwork</c>.
   /// </para>
   /// </summary>
   ///-
@@ -433,8 +438,9 @@ public
     ///   Changes the configuration of the wireless lan interface to create an ad-hoc
     ///   wireless network, without using an access point.
     /// <para>
-    ///   On the YoctoHub-Wireless-g,
-    ///   it is best to use softAPNetworkInstead(), which emulates an access point
+    ///   On the YoctoHub-Wireless-g
+    ///   and YoctoHub-Wireless-n,
+    ///   you should use <c>softAPNetwork()</c> instead, which emulates an access point
     ///   (Soft AP) which is more efficient and more widely supported than ad-hoc networks.
     /// </para>
     /// <para>
@@ -467,13 +473,19 @@ public
     ///   network by emulating a WiFi access point (Soft AP).
     /// <para>
     ///   This function can only be
-    ///   used with the YoctoHub-Wireless-g.
+    ///   used with the YoctoHub-Wireless-g and the YoctoHub-Wireless-n.
     /// </para>
     /// <para>
-    ///   When a security key is specified for a SoftAP network, the network is protected
-    ///   by a WEP40 key (5 characters or 10 hexadecimal digits) or WEP128 key (13 characters
-    ///   or 26 hexadecimal digits). It is recommended to use a well-randomized WEP128 key
-    ///   using 26 hexadecimal digits to maximize security.
+    ///   On the YoctoHub-Wireless-g, when a security key is specified for a SoftAP network,
+    ///   the network is protected by a WEP40 key (5 characters or 10 hexadecimal digits) or
+    ///   WEP128 key (13 characters or 26 hexadecimal digits). It is recommended to use a
+    ///   well-randomized WEP128 key using 26 hexadecimal digits to maximize security.
+    /// </para>
+    /// <para>
+    ///   On the YoctoHub-Wireless-n, when a security key is specified for a SoftAP network,
+    ///   the network will be protected by WPA2.
+    /// </para>
+    /// <para>
     ///   Remember to call the <c>saveToFlash()</c> method and then to reboot the module to apply this setting.
     /// </para>
     /// </summary>
@@ -494,7 +506,7 @@ public
 
     ////
     /// <summary>
-    ///   Returns a list of YWlanRecord objects that describe detected Wireless networks.
+    ///   Returns a list of <c>YWlanRecord</c> objects that describe detected Wireless networks.
     /// <para>
     ///   This list is not updated when the module is already connected to an access point (infrastructure mode).
     ///   To force an update of this list, <c>startWlanScan()</c> must be called.
@@ -516,17 +528,17 @@ public
 
     ////
     /// <summary>
-    ///   Continues the enumeration of wireless lan interfaces started using <c>yFirstWireless()</c>.
+    ///   Continues the enumeration of wireless LAN interfaces started using <c>yFirstWireless()</c>.
     /// <para>
-    ///   Caution: You can't make any assumption about the returned wireless lan interfaces order.
-    ///   If you want to find a specific a wireless lan interface, use <c>Wireless.findWireless()</c>
+    ///   Caution: You can't make any assumption about the returned wireless LAN interfaces order.
+    ///   If you want to find a specific a wireless LAN interface, use <c>Wireless.findWireless()</c>
     ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>
     ///   a pointer to a <c>YWireless</c> object, corresponding to
-    ///   a wireless lan interface currently online, or a <c>NIL</c> pointer
-    ///   if there are no more wireless lan interfaces to enumerate.
+    ///   a wireless LAN interface currently online, or a <c>NIL</c> pointer
+    ///   if there are no more wireless LAN interfaces to enumerate.
     /// </returns>
     ///-
     function nextWireless():TYWireless;
@@ -547,7 +559,7 @@ procedure freeWlanRecordArray(var list:TYWLANRECORDARRAY);
 //--- (generated code: YWireless functions declaration)
   ////
   /// <summary>
-  ///   Retrieves a wireless lan interface for a given identifier.
+  ///   Retrieves a wireless LAN interface for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
   /// </para>
@@ -571,11 +583,11 @@ procedure freeWlanRecordArray(var list:TYWLANRECORDARRAY);
   /// <para>
   /// </para>
   /// <para>
-  ///   This function does not require that the wireless lan interface is online at the time
+  ///   This function does not require that the wireless LAN interface is online at the time
   ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YWireless.isOnline()</c> to test if the wireless lan interface is
+  ///   Use the method <c>YWireless.isOnline()</c> to test if the wireless LAN interface is
   ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   a wireless lan interface by logical name, no error is notified: the first instance
+  ///   a wireless LAN interface by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
   /// </para>
@@ -588,25 +600,25 @@ procedure freeWlanRecordArray(var list:TYWLANRECORDARRAY);
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the wireless lan interface, for instance
-  ///   <c>YHUBWLN3.wireless</c>.
+  ///   a string that uniquely characterizes the wireless LAN interface, for instance
+  ///   <c>YHUBWLN1.wireless</c>.
   /// </param>
   /// <returns>
-  ///   a <c>YWireless</c> object allowing you to drive the wireless lan interface.
+  ///   a <c>YWireless</c> object allowing you to drive the wireless LAN interface.
   /// </returns>
   ///-
   function yFindWireless(func:string):TYWireless;
   ////
   /// <summary>
-  ///   Starts the enumeration of wireless lan interfaces currently accessible.
+  ///   Starts the enumeration of wireless LAN interfaces currently accessible.
   /// <para>
   ///   Use the method <c>YWireless.nextWireless()</c> to iterate on
-  ///   next wireless lan interfaces.
+  ///   next wireless LAN interfaces.
   /// </para>
   /// </summary>
   /// <returns>
   ///   a pointer to a <c>YWireless</c> object, corresponding to
-  ///   the first wireless lan interface currently online, or a <c>NIL</c> pointer
+  ///   the first wireless LAN interface currently online, or a <c>NIL</c> pointer
   ///   if there are none.
   /// </returns>
   ///-

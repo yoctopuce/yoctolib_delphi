@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_network.pas 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_network.pas 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements yFindNetwork(), the high-level API for Network functions
  *
@@ -108,11 +108,11 @@ type
 
   ////
   /// <summary>
-  ///   TYNetwork Class: Network function interface
+  ///   TYNetwork Class: network interface control interface, available for instance in the
+  ///   YoctoHub-Ethernet, the YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA or the YoctoHub-Wireless-g
   /// <para>
-  ///   YNetwork objects provide access to TCP/IP parameters of Yoctopuce
-  ///   devices that include a built-in network interface, for instance using a YoctoHub-Ethernet, a
-  ///   YoctoHub-Wireless-g, a YoctoHub-GSM-3G-NA or a YoctoHub-GSM-3G-EU.
+  ///   <c>YNetwork</c> objects provide access to TCP/IP parameters of Yoctopuce
+  ///   devices that include a built-in network interface.
   /// </para>
   /// </summary>
   ///-

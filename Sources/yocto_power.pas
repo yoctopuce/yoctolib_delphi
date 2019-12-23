@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_power.pas 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_power.pas 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements yFindPower(), the high-level API for Power functions
  *
@@ -65,12 +65,11 @@ type
 
   ////
   /// <summary>
-  ///   TYPower Class: Power function interface
+  ///   TYPower Class: electrical power sensor control interface, available for instance in the Yocto-Watt
   /// <para>
-  ///   The YPower class allows you to read and configure Yoctopuce power
-  ///   sensors, for instance using a Yocto-Watt. It inherits from YSensor class the core functions to read
-  ///   measurements,
-  ///   to register callback functions, to access the autonomous datalogger.
+  ///   The <c>YPower</c> class allows you to read and configure Yoctopuce electrical power sensors.
+  ///   It inherits from <c>YSensor</c> class the core functions to read measurements,
+  ///   to register callback functions, and to access the autonomous datalogger.
   ///   This class adds the ability to access the energy counter and the power factor.
   /// </para>
   /// </summary>
@@ -238,7 +237,7 @@ type
     /// </summary>
     /// <param name="callback">
     ///   the callback function to call, or a NIL pointer. The callback function should take two
-    ///   arguments: the function object of which the value has changed, and an YMeasure object describing
+    ///   arguments: the function object of which the value has changed, and an <c>YMeasure</c> object describing
     ///   the new advertised value.
     /// @noreturn
     /// </param>

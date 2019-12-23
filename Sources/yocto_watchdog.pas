@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_watchdog.pas 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_watchdog.pas 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements yFindWatchdog(), the high-level API for Watchdog functions
  *
@@ -92,15 +92,15 @@ type
 
   ////
   /// <summary>
-  ///   TYWatchdog Class: Watchdog function interface
+  ///   TYWatchdog Class: watchdog control interface, available for instance in the Yocto-WatchdogDC
   /// <para>
-  ///   The YWatchdog class allows you to drive a Yoctopuce watchdog, for instance using a Yocto-WatchdogDC.
+  ///   The <c>YWatchdog</c> class allows you to drive a Yoctopuce watchdog.
   ///   A watchdog works like a relay, with an extra timer that can automatically
   ///   trigger a brief power cycle to an appliance after a preset delay, to force this
   ///   appliance to reset if a problem occurs. During normal use, the watchdog timer
   ///   is reset periodically by the application to prevent the automated power cycle.
   ///   Whenever the application dies, the watchdog will automatically trigger the power cycle.
-  ///   The watchdog can also be driven directly with <i>pulse</i> and <i>delayedPulse</i>
+  ///   The watchdog can also be driven directly with <c>pulse</c> and <c>delayedPulse</c>
   ///   methods to switch off an appliance for a given duration.
   /// </para>
   /// </summary>
@@ -176,7 +176,8 @@ type
 
     ////
     /// <summary>
-    ///   Returns the state of the watchdog at device startup (A for the idle position, B for the active position, UNCHANGED for no change).
+    ///   Returns the state of the watchdog at device startup (A for the idle position,
+    ///   B for the active position, UNCHANGED to leave the relay state as is).
     /// <para>
     /// </para>
     /// <para>
@@ -184,8 +185,8 @@ type
     /// </summary>
     /// <returns>
     ///   a value among <c>Y_STATEATPOWERON_UNCHANGED</c>, <c>Y_STATEATPOWERON_A</c> and
-    ///   <c>Y_STATEATPOWERON_B</c> corresponding to the state of the watchdog at device startup (A for the
-    ///   idle position, B for the active position, UNCHANGED for no change)
+    ///   <c>Y_STATEATPOWERON_B</c> corresponding to the state of the watchdog at device startup (A for the idle position,
+    ///   B for the active position, UNCHANGED to leave the relay state as is)
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_STATEATPOWERON_INVALID</c>.
@@ -196,7 +197,7 @@ type
     ////
     /// <summary>
     ///   Changes the state of the watchdog at device startup (A for the idle position,
-    ///   B for the active position, UNCHANGED for no modification).
+    ///   B for the active position, UNCHANGED to leave the relay state as is).
     /// <para>
     ///   Remember to call the matching module <c>saveToFlash()</c>
     ///   method, otherwise this call will have no effect.
@@ -207,7 +208,7 @@ type
     /// <param name="newval">
     ///   a value among <c>Y_STATEATPOWERON_UNCHANGED</c>, <c>Y_STATEATPOWERON_A</c> and
     ///   <c>Y_STATEATPOWERON_B</c> corresponding to the state of the watchdog at device startup (A for the idle position,
-    ///   B for the active position, UNCHANGED for no modification)
+    ///   B for the active position, UNCHANGED to leave the relay state as is)
     /// </param>
     /// <para>
     /// </para>
@@ -222,7 +223,7 @@ type
 
     ////
     /// <summary>
-    ///   Returns the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state
+    ///   Returns the maximum time (ms) allowed for the watchdog to stay in state
     ///   A before automatically switching back in to B state.
     /// <para>
     ///   Zero means no time limit.
@@ -231,7 +232,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state
+    ///   an integer corresponding to the maximum time (ms) allowed for the watchdog to stay in state
     ///   A before automatically switching back in to B state
     /// </returns>
     /// <para>
@@ -242,7 +243,7 @@ type
 
     ////
     /// <summary>
-    ///   Changes the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A
+    ///   Changes the maximum time (ms) allowed for the watchdog to stay in state A
     ///   before automatically switching back in to B state.
     /// <para>
     ///   Use zero for no time limit.
@@ -253,7 +254,7 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state A
+    ///   an integer corresponding to the maximum time (ms) allowed for the watchdog to stay in state A
     ///   before automatically switching back in to B state
     /// </param>
     /// <para>
@@ -269,7 +270,7 @@ type
 
     ////
     /// <summary>
-    ///   Retourne the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B
+    ///   Retourne the maximum time (ms) allowed for the watchdog to stay in state B
     ///   before automatically switching back in to A state.
     /// <para>
     ///   Zero means no time limit.
@@ -288,7 +289,7 @@ type
 
     ////
     /// <summary>
-    ///   Changes the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before
+    ///   Changes the maximum time (ms) allowed for the watchdog to stay in state B before
     ///   automatically switching back in to A state.
     /// <para>
     ///   Use zero for no time limit.
@@ -299,7 +300,7 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer corresponding to the maximum time (ms) allowed for $THEFUNCTIONS$ to stay in state B before
+    ///   an integer corresponding to the maximum time (ms) allowed for the watchdog to stay in state B before
     ///   automatically switching back in to A state
     /// </param>
     /// <para>

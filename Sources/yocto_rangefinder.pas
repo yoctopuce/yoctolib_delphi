@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_rangefinder.pas 37827 2019-10-25 13:07:48Z mvuilleu $
+ *  $Id: yocto_rangefinder.pas 38899 2019-12-20 17:21:03Z mvuilleu $
  *
  *  Implements yFindRangeFinder(), the high-level API for RangeFinder functions
  *
@@ -72,12 +72,11 @@ type
 
   ////
   /// <summary>
-  ///   TYRangeFinder Class: RangeFinder function interface
+  ///   TYRangeFinder Class: range finder control interface, available for instance in the Yocto-RangeFinder
   /// <para>
-  ///   The YRangeFinder class allows you to use and configure Yoctopuce range finder
-  ///   sensors, for instance using a Yocto-RangeFinder. It inherits from the YSensor class the core
-  ///   functions to read measurements,
-  ///   register callback functions, access the autonomous datalogger.
+  ///   The <c>YRangeFinder</c> class allows you to read and configure Yoctopuce range finders.
+  ///   It inherits from <c>YSensor</c> class the core functions to read measurements,
+  ///   to register callback functions, and to access the autonomous datalogger.
   ///   This class adds the ability to easily perform a one-point linear calibration
   ///   to compensate the effect of a glass or filter placed in front of the sensor.
   /// </para>
@@ -357,7 +356,7 @@ type
     /// </summary>
     /// <param name="callback">
     ///   the callback function to call, or a NIL pointer. The callback function should take two
-    ///   arguments: the function object of which the value has changed, and an YMeasure object describing
+    ///   arguments: the function object of which the value has changed, and an <c>YMeasure</c> object describing
     ///   the new advertised value.
     /// @noreturn
     /// </param>
