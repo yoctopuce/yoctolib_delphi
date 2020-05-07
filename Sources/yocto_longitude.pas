@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_longitude.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_longitude.pas 39658 2020-03-12 15:36:29Z seb $
  *
  *  Implements yFindLongitude(), the high-level API for Longitude functions
  *
@@ -62,7 +62,7 @@ type
 
   ////
   /// <summary>
-  ///   TYLongitude Class: longitude sensor control interface, available for instance in the Yocto-GPS
+  ///   TYLongitude Class: longitude sensor control interface, available for instance in the Yocto-GPS-V2
   /// <para>
   ///   The <c>YLongitude</c> class allows you to read and configure Yoctopuce longitude sensors.
   ///   It inherits from <c>YSensor</c> class the core functions to read measurements,
@@ -256,7 +256,7 @@ type
   /// </summary>
   /// <param name="func">
   ///   a string that uniquely characterizes the longitude sensor, for instance
-  ///   <c>YGNSSMK1.longitude</c>.
+  ///   <c>YGNSSMK2.longitude</c>.
   /// </param>
   /// <returns>
   ///   a <c>YLongitude</c> object allowing you to drive the longitude sensor.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 38913 2019-12-20 18:59:49Z mvuilleu $
+ * $Id: yocto_files.pas 38934 2019-12-23 09:29:53Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -137,8 +137,8 @@ TYFILERECORDARRAY = array of TYFileRecord;
 
   ////
   /// <summary>
-  ///   TYFiles Class: filesystem control interface, available for instance in the Yocto-Color-V2, the
-  ///   Yocto-RS232, the YoctoHub-Ethernet or the YoctoHub-Wireless-g
+  ///   TYFiles Class: filesystem control interface, available for instance in the Yocto-Buzzer, the
+  ///   Yocto-Color-V2, the YoctoHub-Ethernet or the YoctoHub-Wireless-g
   /// <para>
   ///   The YFiles class is used to access the filesystem embedded on
   ///   some Yoctopuce devices. This filesystem makes it
@@ -470,7 +470,7 @@ procedure freeFileRecordArray(var list:TYFILERECORDARRAY);
   /// </summary>
   /// <param name="func">
   ///   a string that uniquely characterizes the filesystem, for instance
-  ///   <c>YRGBLED2.files</c>.
+  ///   <c>YBUZZER2.files</c>.
   /// </param>
   /// <returns>
   ///   a <c>YFiles</c> object allowing you to drive the filesystem.

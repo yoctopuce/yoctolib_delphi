@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_groundspeed.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_groundspeed.pas 39658 2020-03-12 15:36:29Z seb $
  *
  *  Implements yFindGroundSpeed(), the high-level API for GroundSpeed functions
  *
@@ -62,7 +62,7 @@ type
 
   ////
   /// <summary>
-  ///   TYGroundSpeed Class: ground speed sensor control interface, available for instance in the Yocto-GPS
+  ///   TYGroundSpeed Class: ground speed sensor control interface, available for instance in the Yocto-GPS-V2
   /// <para>
   ///   The <c>YGroundSpeed</c> class allows you to read and configure Yoctopuce ground speed sensors.
   ///   It inherits from <c>YSensor</c> class the core functions to read measurements,
@@ -256,7 +256,7 @@ type
   /// </summary>
   /// <param name="func">
   ///   a string that uniquely characterizes the ground speed sensor, for instance
-  ///   <c>YGNSSMK1.groundSpeed</c>.
+  ///   <c>YGNSSMK2.groundSpeed</c>.
   /// </param>
   /// <returns>
   ///   a <c>YGroundSpeed</c> object allowing you to drive the ground speed sensor.

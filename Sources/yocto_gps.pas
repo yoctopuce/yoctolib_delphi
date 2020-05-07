@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_gps.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_gps.pas 39658 2020-03-12 15:36:29Z seb $
  *
  *  Implements yFindGps(), the high-level API for Gps functions
  *
@@ -92,7 +92,7 @@ type
   /// <summary>
   ///   TYGps Class: Geolocalization control interface (GPS, GNSS, ..
   /// <para>
-  ///   .), available for instance in the Yocto-GPS
+  ///   .), available for instance in the Yocto-GPS-V2
   /// </para>
   /// <para>
   ///   The <c>YGps</c> class allows you to retrieve positioning
@@ -642,7 +642,7 @@ type
   /// </summary>
   /// <param name="func">
   ///   a string that uniquely characterizes the geolocalization module, for instance
-  ///   <c>YGNSSMK1.gps</c>.
+  ///   <c>YGNSSMK2.gps</c>.
   /// </param>
   /// <returns>
   ///   a <c>YGps</c> object allowing you to drive the geolocalization module.

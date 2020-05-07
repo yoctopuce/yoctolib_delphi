@@ -1,3 +1,6 @@
-Delphi v1.10.38914
+Delphi v1.10.40411
 
-- Documentation improvements
+- Add definitions for temperature type "CHANNEL_OFF" and callback encoding "INFLUXDB_V2"
+- Add example for Yocto-MaxiBuzzer
+- Add fallback to HTTP protocol on old YoctoHubs
+- Fix doc for queryHex method

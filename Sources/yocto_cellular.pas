@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ * $Id: yocto_cellular.pas 40298 2020-05-05 08:37:49Z seb $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -57,10 +57,14 @@ const Y_CELLTYPE_WCDMA = 2;
 const Y_CELLTYPE_HSDPA = 3;
 const Y_CELLTYPE_NONE = 4;
 const Y_CELLTYPE_CDMA = 5;
+const Y_CELLTYPE_LTE_M = 6;
+const Y_CELLTYPE_NB_IOT = 7;
+const Y_CELLTYPE_EC_GSM_IOT = 8;
 const Y_CELLTYPE_INVALID = -1;
 const Y_IMSI_INVALID                  = YAPI_INVALID_STRING;
 const Y_MESSAGE_INVALID               = YAPI_INVALID_STRING;
 const Y_PIN_INVALID                   = YAPI_INVALID_STRING;
+const Y_RADIOCONFIG_INVALID           = YAPI_INVALID_STRING;
 const Y_LOCKEDOPERATOR_INVALID        = YAPI_INVALID_STRING;
 const Y_AIRPLANEMODE_OFF = 0;
 const Y_AIRPLANEMODE_ON = 1;
@@ -116,6 +120,7 @@ type
     _imsi                     : string;
     _message                  : string;
     _pin                      : string;
+    _radioConfig              : string;
     _lockedOperator           : string;
     _airplaneMode             : Integer;
     _enableData               : Integer;
@@ -196,7 +201,8 @@ type
     /// </summary>
     /// <returns>
     ///   a value among <c>Y_CELLTYPE_GPRS</c>, <c>Y_CELLTYPE_EGPRS</c>, <c>Y_CELLTYPE_WCDMA</c>,
-    ///   <c>Y_CELLTYPE_HSDPA</c>, <c>Y_CELLTYPE_NONE</c> and <c>Y_CELLTYPE_CDMA</c>
+    ///   <c>Y_CELLTYPE_HSDPA</c>, <c>Y_CELLTYPE_NONE</c>, <c>Y_CELLTYPE_CDMA</c>, <c>Y_CELLTYPE_LTE_M</c>,
+    ///   <c>Y_CELLTYPE_NB_IOT</c> and <c>Y_CELLTYPE_EC_GSM_IOT</c>
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_CELLTYPE_INVALID</c>.
@@ -206,18 +212,19 @@ type
 
     ////
     /// <summary>
-    ///   Returns an opaque string if a PIN code has been configured in the device to access
-    ///   the SIM card, or an empty string if none has been configured or if the code provided
-    ///   was rejected by the SIM card.
+    ///   Returns the International Mobile Subscriber Identity (MSI) that uniquely identifies
+    ///   the SIM card.
     /// <para>
+    ///   The first 3 digits represent the mobile country code (MCC), which
+    ///   is followed by the mobile network code (MNC), either 2-digit (European standard)
+    ///   or 3-digit (North American standard)
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a string corresponding to an opaque string if a PIN code has been configured in the device to access
-    ///   the SIM card, or an empty string if none has been configured or if the code provided
-    ///   was rejected by the SIM card
+    ///   a string corresponding to the International Mobile Subscriber Identity (MSI) that uniquely identifies
+    ///   the SIM card
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_IMSI_INVALID</c>.
@@ -295,6 +302,57 @@ type
     /// </para>
     ///-
     function set_pin(newval:string):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the type of protocol used over the serial line, as a string.
+    /// <para>
+    ///   Possible values are "Line" for ASCII messages separated by CR and/or LF,
+    ///   "Frame:[timeout]ms" for binary messages separated by a delay time,
+    ///   "Char" for a continuous ASCII stream or
+    ///   "Byte" for a continuous binary stream.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the type of protocol used over the serial line, as a string
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_RADIOCONFIG_INVALID</c>.
+    /// </para>
+    ///-
+    function get_radioConfig():string;
+
+    ////
+    /// <summary>
+    ///   Changes the type of protocol used over the serial line.
+    /// <para>
+    ///   Possible values are "Line" for ASCII messages separated by CR and/or LF,
+    ///   "Frame:[timeout]ms" for binary messages separated by a delay time,
+    ///   "Char" for a continuous ASCII stream or
+    ///   "Byte" for a continuous binary stream.
+    ///   The suffix "/[wait]ms" can be added to reduce the transmit rate so that there
+    ///   is always at lest the specified number of milliseconds between each bytes sent.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a string corresponding to the type of protocol used over the serial line
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_radioConfig(newval:string):integer;
 
     ////
     /// <summary>
@@ -1071,6 +1129,7 @@ implementation
       _imsi := Y_IMSI_INVALID;
       _message := Y_MESSAGE_INVALID;
       _pin := Y_PIN_INVALID;
+      _radioConfig := Y_RADIOCONFIG_INVALID;
       _lockedOperator := Y_LOCKEDOPERATOR_INVALID;
       _airplaneMode := Y_AIRPLANEMODE_INVALID;
       _enableData := Y_ENABLEDATA_INVALID;
@@ -1131,6 +1190,12 @@ implementation
       if (member^.name = 'pin') then
         begin
           _pin := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'radioConfig') then
+        begin
+          _radioConfig := string(member^.svalue);
          result := 1;
          exit;
          end;
@@ -1324,6 +1389,32 @@ implementation
     begin
       rest_val := newval;
       result := _setAttr('pin',rest_val);
+    end;
+
+  function TYCellular.get_radioConfig():string;
+    var
+      res : string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_RADIOCONFIG_INVALID;
+              exit;
+            end;
+        end;
+      res := self._radioConfig;
+      result := res;
+      exit;
+    end;
+
+
+  function TYCellular.set_radioConfig(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('radioConfig',rest_val);
     end;
 
   function TYCellular.get_lockedOperator():string;

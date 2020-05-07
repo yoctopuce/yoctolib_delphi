@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_spiport.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_spiport.pas 40298 2020-05-05 08:37:49Z seb $
  *
  *  Implements yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -791,6 +791,30 @@ type
     /// </para>
     ///-
     function queryLine(query: string; maxWait: LongInt):string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Sends a binary message to the serial port, and reads the reply, if any.
+    /// <para>
+    ///   This function is intended to be used when the serial port is configured for
+    ///   Frame-based protocol.
+    /// </para>
+    /// </summary>
+    /// <param name="hexString">
+    ///   the message to send, coded in hexadecimal
+    /// </param>
+    /// <param name="maxWait">
+    ///   the maximum number of milliseconds to wait for a reply.
+    /// </param>
+    /// <returns>
+    ///   the next frame received after sending the message, as a hex string.
+    ///   Additional frames can be obtained by calling readHex or readMessages.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty string.
+    /// </para>
+    ///-
+    function queryHex(hexString: string; maxWait: LongInt):string; overload; virtual;
 
     ////
     /// <summary>
@@ -1852,6 +1876,39 @@ implementation
       SetLength(msgarr, 0);
 
       url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=!'+self._escapeAttr(query);
+      msgbin := self._download(url);
+      msgarr := self._json_get_array(msgbin);
+      msglen := length(msgarr);
+      if msglen = 0 then
+        begin
+          result := '';
+          exit;
+        end;
+      // last element of array is the new position
+      msglen := msglen - 1;
+      self._rxptr := _atoi(msgarr[msglen]);
+      if msglen = 0 then
+        begin
+          result := '';
+          exit;
+        end;
+      res := self._json_get_string(_StrToByte(msgarr[0]));
+      result := res;
+      exit;
+    end;
+
+
+  function TYSpiPort.queryHex(hexString: string; maxWait: LongInt):string;
+    var
+      url : string;
+      msgbin : TByteArray;
+      msgarr : TStringArray;
+      msglen : LongInt;
+      res : string;
+    begin
+      SetLength(msgarr, 0);
+
+      url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=$'+hexString;
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
       msglen := length(msgarr);

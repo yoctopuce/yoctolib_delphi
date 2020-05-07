@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_network.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_network.pas 39573 2020-03-10 17:20:22Z seb $
  *
  *  Implements yFindNetwork(), the high-level API for Network functions
  *
@@ -87,6 +87,7 @@ const Y_CALLBACKENCODING_INFLUXDB = 8;
 const Y_CALLBACKENCODING_MQTT = 9;
 const Y_CALLBACKENCODING_YOCTO_API_JZON = 10;
 const Y_CALLBACKENCODING_PRTG = 11;
+const Y_CALLBACKENCODING_INFLUXDB_V2 = 12;
 const Y_CALLBACKENCODING_INVALID = -1;
 const Y_CALLBACKCREDENTIALS_INVALID   = YAPI_INVALID_STRING;
 const Y_CALLBACKINITIALDELAY_INVALID  = YAPI_INVALID_UINT;
@@ -792,8 +793,9 @@ type
     ///   <c>Y_CALLBACKENCODING_YOCTO_API</c>, <c>Y_CALLBACKENCODING_JSON_NUM</c>,
     ///   <c>Y_CALLBACKENCODING_EMONCMS</c>, <c>Y_CALLBACKENCODING_AZURE</c>,
     ///   <c>Y_CALLBACKENCODING_INFLUXDB</c>, <c>Y_CALLBACKENCODING_MQTT</c>,
-    ///   <c>Y_CALLBACKENCODING_YOCTO_API_JZON</c> and <c>Y_CALLBACKENCODING_PRTG</c> corresponding to the
-    ///   encoding standard to use for representing notification values
+    ///   <c>Y_CALLBACKENCODING_YOCTO_API_JZON</c>, <c>Y_CALLBACKENCODING_PRTG</c> and
+    ///   <c>Y_CALLBACKENCODING_INFLUXDB_V2</c> corresponding to the encoding standard to use for
+    ///   representing notification values
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_CALLBACKENCODING_INVALID</c>.
@@ -817,8 +819,9 @@ type
     ///   <c>Y_CALLBACKENCODING_YOCTO_API</c>, <c>Y_CALLBACKENCODING_JSON_NUM</c>,
     ///   <c>Y_CALLBACKENCODING_EMONCMS</c>, <c>Y_CALLBACKENCODING_AZURE</c>,
     ///   <c>Y_CALLBACKENCODING_INFLUXDB</c>, <c>Y_CALLBACKENCODING_MQTT</c>,
-    ///   <c>Y_CALLBACKENCODING_YOCTO_API_JZON</c> and <c>Y_CALLBACKENCODING_PRTG</c> corresponding to the
-    ///   encoding standard to use for representing notification values
+    ///   <c>Y_CALLBACKENCODING_YOCTO_API_JZON</c>, <c>Y_CALLBACKENCODING_PRTG</c> and
+    ///   <c>Y_CALLBACKENCODING_INFLUXDB_V2</c> corresponding to the encoding standard to use for
+    ///   representing notification values
     /// </param>
     /// <para>
     /// </para>

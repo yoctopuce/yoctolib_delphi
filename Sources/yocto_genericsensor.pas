@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_genericsensor.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_genericsensor.pas 39573 2020-03-10 17:20:22Z seb $
  *
  *  Implements yFindGenericSensor(), the high-level API for GenericSensor functions
  *

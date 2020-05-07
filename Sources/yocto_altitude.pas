@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_altitude.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_altitude.pas 39658 2020-03-12 15:36:29Z seb $
  *
  *  Implements yFindAltitude(), the high-level API for Altitude functions
  *
@@ -64,7 +64,8 @@ type
 
   ////
   /// <summary>
-  ///   TYAltitude Class: altimeter control interface, available for instance in the Yocto-Altimeter-V2 or the Yocto-GPS
+  ///   TYAltitude Class: altimeter control interface, available for instance in the Yocto-Altimeter-V2 or
+  ///   the Yocto-GPS-V2
   /// <para>
   ///   The <c>YAltitude</c> class allows you to read and configure Yoctopuce altimeters.
   ///   It inherits from <c>YSensor</c> class the core functions to read measurements,
