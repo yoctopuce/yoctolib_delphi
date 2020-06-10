@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 38914 2019-12-20 19:14:33Z mvuilleu $
+ * $Id: yocto_api.pas 40894 2020-06-09 16:39:55Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -120,7 +120,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '40411';
+  YOCTO_API_BUILD_NO        = '40924';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -4612,11 +4612,27 @@ end;
 
   ////
   /// <summary>
-  ///   Frees dynamically allocated memory blocks used by the Yoctopuce library.
+  ///   Waits for all pending communications with Yoctopuce devices to be
+  ///   completed then frees dynamically allocated resources used by
+  ///   the Yoctopuce library.
   /// <para>
-  ///   It is generally not required to call this function, unless you
-  ///   want to free all dynamically allocated memory blocks in order to
-  ///   track a memory leak for instance.
+  /// </para>
+  /// <para>
+  ///   From an operating system standpoint, it is generally not required to call
+  ///   this function since the OS will automatically free allocated resources
+  ///   once your program is completed. However there are two situations when
+  ///   you may really want to use that function:
+  /// </para>
+  /// <para>
+  ///   - Free all dynamically allocated memory blocks in order to
+  ///   track a memory leak.
+  /// </para>
+  /// <para>
+  ///   - Send commands to devices right before the end
+  ///   of the program. Since commands are sent in an asynchronous way
+  ///   the program could exit before all commands are effectively sent.
+  /// </para>
+  /// <para>
   ///   You should not call any other library function after calling
   ///   <c>yFreeAPI()</c>, or your program will crash.
   /// </para>
@@ -8041,13 +8057,18 @@ var
       res : LongInt;
     begin
       size := length(json);
-      getmem(bigbuff, size);
-      res := _yapiJsonDecodeString(pansichar(ansistring(json)), bigbuff);
-      if (res>0) then
-        _decode_json_string := string(bigbuff)
+      if size = 0 then
+         _decode_json_string := ''
       else
-        _decode_json_string := '';
-      freemem(bigbuff);
+        begin
+          getmem(bigbuff, size);
+          res := _yapiJsonDecodeString(pansichar(ansistring(json)), bigbuff);
+          if (res>0) then
+            _decode_json_string := string(bigbuff)
+          else
+            _decode_json_string := '';
+          freemem(bigbuff);
+        end;
     end;
 
   function   TYFunction._json_get_string(data: TByteArray):string;
@@ -9394,6 +9415,8 @@ var
       json_api : string;
       json_files : string;
       json_extra : string;
+      fuperror : LongInt;
+      globalres : LongInt;
         files : TStringArray;
         res : string;
         name : string;
@@ -9401,6 +9424,7 @@ var
       i_i : LongInt;
     begin
       SetLength(files, 0);
+      fuperror := 0;
       json := _ByteToString(settings);
       json_api := self._get_json_path(json, 'api');
       if (json_api = '') then
@@ -9433,11 +9457,25 @@ var
               name := self._decode_json_string(name);
               data := self._get_json_path( files[i_i], 'data');
               data := self._decode_json_string(data);
-              self._upload(name, _hexStrToBin(data));
+              if (name = '') then
+                begin
+                  fuperror := fuperror + 1;
+                end
+              else
+                begin
+                  self._upload(name, _hexStrToBin(data));
+                end;
             end;
         end;
       // Apply settings a second time for file-dependent settings and dynamic sensor nodes
-      result := self.set_allSettings(_StrToByte(json_api));
+      globalres := self.set_allSettings(_StrToByte(json_api));
+      if not(fuperror = 0) then
+        begin
+          self._throw( YAPI_IO_ERROR, 'Error during file upload');
+          result:=YAPI_IO_ERROR;
+          exit;
+        end;
+      result := globalres;
       exit;
     end;
 
