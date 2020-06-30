@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_relay.pas 39434 2020-02-25 08:53:55Z seb $
+ *  $Id: yocto_relay.pas 41109 2020-06-29 12:40:42Z seb $
  *
  *  Implements yFindRelay(), the high-level API for Relay functions
  *
@@ -84,7 +84,7 @@ type
 
   ////
   /// <summary>
-  ///   TYRelay Class: relay control interface, available for instance in the Yocto-MaxiCoupler-V2, the
+  ///   TYRelay Class: relay control interface, available for instance in the Yocto-LatchedRelay, the
   ///   Yocto-MaxiPowerRelay, the Yocto-PowerRelay-V3 or the Yocto-Relay
   /// <para>
   ///   The <c>YRelay</c> class allows you to drive a Yoctopuce relay or optocoupled output.
@@ -598,7 +598,7 @@ type
   /// </summary>
   /// <param name="func">
   ///   a string that uniquely characterizes the relay, for instance
-  ///   <c>MXCOUPL2.relay1</c>.
+  ///   <c>YLTCHRL1.relay1</c>.
   /// </param>
   /// <returns>
   ///   a <c>YRelay</c> object allowing you to drive the relay.
