@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_pwminput.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_pwminput.pas 41348 2020-08-10 15:12:57Z seb $
  *
  *  Implements yFindPwmInput(), the high-level API for PwmInput functions
  *
@@ -64,8 +64,11 @@ const Y_PWMREPORTMODE_PWM_CPM = 6;
 const Y_PWMREPORTMODE_PWM_STATE = 7;
 const Y_PWMREPORTMODE_PWM_FREQ_CPS = 8;
 const Y_PWMREPORTMODE_PWM_FREQ_CPM = 9;
+const Y_PWMREPORTMODE_PWM_PERIODCOUNT = 10;
 const Y_PWMREPORTMODE_INVALID = -1;
 const Y_DEBOUNCEPERIOD_INVALID        = YAPI_INVALID_UINT;
+const Y_BANDWIDTH_INVALID             = YAPI_INVALID_UINT;
+const Y_EDGESPERPERIOD_INVALID        = YAPI_INVALID_UINT;
 
 
 //--- (end of YPwmInput definitions)
@@ -103,6 +106,8 @@ type
     _pulseTimer               : int64;
     _pwmReportMode            : Integer;
     _debouncePeriod           : LongInt;
+    _bandwidth                : LongInt;
+    _edgesPerPeriod           : LongInt;
     _valueCallbackPwmInput    : TYPwmInputValueCallback;
     _timedReportCallbackPwmInput : TYPwmInputTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
@@ -262,9 +267,9 @@ type
     ///   <c>Y_PWMREPORTMODE_PWM_PULSEDURATION</c>, <c>Y_PWMREPORTMODE_PWM_EDGECOUNT</c>,
     ///   <c>Y_PWMREPORTMODE_PWM_PULSECOUNT</c>, <c>Y_PWMREPORTMODE_PWM_CPS</c>,
     ///   <c>Y_PWMREPORTMODE_PWM_CPM</c>, <c>Y_PWMREPORTMODE_PWM_STATE</c>,
-    ///   <c>Y_PWMREPORTMODE_PWM_FREQ_CPS</c> and <c>Y_PWMREPORTMODE_PWM_FREQ_CPM</c> corresponding to the
-    ///   parameter (frequency/duty cycle, pulse width, edges count) returned by the get_currentValue
-    ///   function and callbacks
+    ///   <c>Y_PWMREPORTMODE_PWM_FREQ_CPS</c>, <c>Y_PWMREPORTMODE_PWM_FREQ_CPM</c> and
+    ///   <c>Y_PWMREPORTMODE_PWM_PERIODCOUNT</c> corresponding to the parameter (frequency/duty cycle, pulse
+    ///   width, edges count) returned by the get_currentValue function and callbacks
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_PWMREPORTMODE_INVALID</c>.
@@ -288,9 +293,9 @@ type
     ///   <c>Y_PWMREPORTMODE_PWM_PULSEDURATION</c>, <c>Y_PWMREPORTMODE_PWM_EDGECOUNT</c>,
     ///   <c>Y_PWMREPORTMODE_PWM_PULSECOUNT</c>, <c>Y_PWMREPORTMODE_PWM_CPS</c>,
     ///   <c>Y_PWMREPORTMODE_PWM_CPM</c>, <c>Y_PWMREPORTMODE_PWM_STATE</c>,
-    ///   <c>Y_PWMREPORTMODE_PWM_FREQ_CPS</c> and <c>Y_PWMREPORTMODE_PWM_FREQ_CPM</c> corresponding to the 
-    ///   parameter  type (frequency/duty cycle, pulse width, or edge count) returned by the get_currentValue
-    ///   function and callbacks
+    ///   <c>Y_PWMREPORTMODE_PWM_FREQ_CPS</c>, <c>Y_PWMREPORTMODE_PWM_FREQ_CPM</c> and
+    ///   <c>Y_PWMREPORTMODE_PWM_PERIODCOUNT</c> corresponding to the  parameter  type (frequency/duty cycle,
+    ///   pulse width, or edge count) returned by the get_currentValue function and callbacks
     /// </param>
     /// <para>
     /// </para>
@@ -344,6 +349,68 @@ type
     /// </para>
     ///-
     function set_debouncePeriod(newval:LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the input signal sampling rate, in kHz.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the input signal sampling rate, in kHz
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_BANDWIDTH_INVALID</c>.
+    /// </para>
+    ///-
+    function get_bandwidth():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the input signal sampling rate, measured in kHz.
+    /// <para>
+    ///   A lower sampling frequency can be used to hide hide-frequency bounce effects,
+    ///   for instance on electromechanical contacts, but limits the measure resolution.
+    ///   Remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the input signal sampling rate, measured in kHz
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_bandwidth(newval:LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the number of edges detected per preiod.
+    /// <para>
+    ///   For a clean PWM signal, this should be exactly two,
+    ///   but in cas the signal is created by a mechanical contact with bounces, it can get higher.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the number of edges detected per preiod
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_EDGESPERPERIOD_INVALID</c>.
+    /// </para>
+    ///-
+    function get_edgesPerPeriod():LongInt;
 
     ////
     /// <summary>
@@ -572,6 +639,8 @@ implementation
       _pulseTimer := Y_PULSETIMER_INVALID;
       _pwmReportMode := Y_PWMREPORTMODE_INVALID;
       _debouncePeriod := Y_DEBOUNCEPERIOD_INVALID;
+      _bandwidth := Y_BANDWIDTH_INVALID;
+      _edgesPerPeriod := Y_EDGESPERPERIOD_INVALID;
       _valueCallbackPwmInput := nil;
       _timedReportCallbackPwmInput := nil;
       //--- (end of YPwmInput accessors initialization)
@@ -632,6 +701,18 @@ implementation
       if (member^.name = 'debouncePeriod') then
         begin
           _debouncePeriod := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'bandwidth') then
+        begin
+          _bandwidth := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'edgesPerPeriod') then
+        begin
+          _edgesPerPeriod := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -814,6 +895,50 @@ implementation
       rest_val := inttostr(newval);
       result := _setAttr('debouncePeriod',rest_val);
     end;
+
+  function TYPwmInput.get_bandwidth():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_BANDWIDTH_INVALID;
+              exit;
+            end;
+        end;
+      res := self._bandwidth;
+      result := res;
+      exit;
+    end;
+
+
+  function TYPwmInput.set_bandwidth(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('bandwidth',rest_val);
+    end;
+
+  function TYPwmInput.get_edgesPerPeriod():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_EDGESPERPERIOD_INVALID;
+              exit;
+            end;
+        end;
+      res := self._edgesPerPeriod;
+      result := res;
+      exit;
+    end;
+
 
   class function TYPwmInput.FindPwmInput(func: string):TYPwmInput;
     var

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 40894 2020-06-09 16:39:55Z seb $
+ * $Id: yocto_api.pas 41171 2020-07-02 17:49:00Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -120,7 +120,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '41115';
+  YOCTO_API_BUILD_NO        = '42060';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -4419,7 +4419,7 @@ end;
   /// </summary>
   /// <param name="func">
   ///   a string that uniquely characterizes the data logger, for instance
-  ///   <c>Y3DMK002.dataLogger</c>.
+  ///   <c>LIGHTMK3.dataLogger</c>.
   /// </param>
   /// <returns>
   ///   a <c>YDataLogger</c> object allowing you to drive the data logger.

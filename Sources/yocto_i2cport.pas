@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_i2cport.pas 39333 2020-01-30 10:05:40Z mvuilleu $
+ *  $Id: yocto_i2cport.pas 41187 2020-07-03 10:15:40Z seb $
  *
  *  Implements yFindI2cPort(), the high-level API for I2cPort functions
  *
@@ -46,7 +46,7 @@ interface
 uses
   sysutils, classes, windows, yocto_api, yjson;
 
-//--- (YI2cPort definitions)
+//--- (generated code: YI2cPort definitions)
 
 const Y_RXCOUNT_INVALID               = YAPI_INVALID_UINT;
 const Y_TXCOUNT_INVALID               = YAPI_INVALID_UINT;
@@ -67,13 +67,88 @@ const Y_I2CVOLTAGELEVEL_INVALID = -1;
 const Y_I2CMODE_INVALID               = YAPI_INVALID_STRING;
 
 
-//--- (end of YI2cPort definitions)
-//--- (YI2cPort yapiwrapper declaration)
-//--- (end of YI2cPort yapiwrapper declaration)
+//--- (end of generated code: YI2cPort definitions)
+//--- (generated code: YI2cPort yapiwrapper declaration)
+//--- (end of generated code: YI2cPort yapiwrapper declaration)
 
 type
   TYI2cPort = class;
-  //--- (YI2cPort class start)
+  TYI2cSnoopingRecord = class;
+
+  //--- (generated code: YI2cSnoopingRecord class start)
+  ////
+  /// <summary>
+  ///   T
+  /// <para>
+  ///   YI2cSnoopingRecord Class: Intercepted I2C message description, returned by <c>i2cPort.snoopMessages</c> method
+  /// </para>
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  ///-
+  TYI2cSnoopingRecord=class(TObject)
+  //--- (end of generated code: YI2cSnoopingRecord class start)
+  protected
+
+    //--- (generated code: YI2cSnoopingRecord declaration)
+    // Attributes (function value cache)
+    _tim                      : LongInt;
+    _dir                      : LongInt;
+    _msg                      : string;
+
+    //--- (end of generated code: YI2cSnoopingRecord declaration)
+public
+   constructor create(data:string);
+
+
+   //--- (generated code: YI2cSnoopingRecord accessors declaration)
+    ////
+    /// <summary>
+    ///   Returns the elapsed time, in ms, since the beginning of the preceding message.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the elapsed time, in ms, since the beginning of the preceding message.
+    /// </returns>
+    ///-
+    function get_time():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the message direction (RX=0, TX=1).
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the message direction (RX=0, TX=1).
+    /// </returns>
+    ///-
+    function get_direction():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the message content.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the message content.
+    /// </returns>
+    ///-
+    function get_message():string; overload; virtual;
+
+
+  //--- (end of generated code: YI2cSnoopingRecord accessors declaration)
+end;
+
+
+TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
+
+
+  //--- (generated code: YI2cPort class start)
   TYI2cPortValueCallback = procedure(func: TYI2cPort; value:string);
   TYI2cPortTimedReportCallback = procedure(func: TYI2cPort; value:TYMeasure);
 
@@ -90,9 +165,9 @@ type
   /// </summary>
   ///-
   TYI2cPort=class(TYFunction)
-  //--- (end of YI2cPort class start)
+  //--- (end of generated code: YI2cPort class start)
   protected
-  //--- (YI2cPort declaration)
+  //--- (generated code: YI2cPort declaration)
     // Attributes (function value cache)
     _rxCount                  : LongInt;
     _txCount                  : LongInt;
@@ -115,10 +190,10 @@ type
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
 
-    //--- (end of YI2cPort declaration)
+    //--- (end of generated code: YI2cPort declaration)
 
   public
-    //--- (YI2cPort accessors declaration)
+    //--- (generated code: YI2cPort accessors declaration)
     constructor Create(func:string);
 
     ////
@@ -1006,6 +1081,29 @@ type
     ///-
     function writeArray(byteList: TLongIntArray):LongInt; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Retrieves messages (both direction) in the I2C port buffer, starting at current position.
+    /// <para>
+    /// </para>
+    /// <para>
+    ///   If no message is found, the search waits for one up to the specified maximum timeout
+    ///   (in milliseconds).
+    /// </para>
+    /// </summary>
+    /// <param name="maxWait">
+    ///   the maximum number of milliseconds to wait for a message if none is found
+    ///   in the receive buffer.
+    /// </param>
+    /// <returns>
+    ///   an array of <c>YI2cSnoopingRecord</c> objects containing the messages found, if any.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty array.
+    /// </para>
+    ///-
+    function snoopMessages(maxWait: LongInt):TYI2cSnoopingRecordArray; overload; virtual;
+
 
     ////
     /// <summary>
@@ -1032,10 +1130,10 @@ type
     /// </summary>
     ///-
     class function FirstI2cPort():TYI2cPort;
-  //--- (end of YI2cPort accessors declaration)
+  //--- (end of generated code: YI2cPort accessors declaration)
   end;
 
-//--- (YI2cPort functions declaration)
+//--- (generated code: YI2cPort functions declaration)
   ////
   /// <summary>
   ///   Retrieves an I2C port for a given identifier.
@@ -1103,17 +1201,17 @@ type
   ///-
   function yFirstI2cPort():TYI2cPort;
 
-//--- (end of YI2cPort functions declaration)
+//--- (end of generated code: YI2cPort functions declaration)
 
 implementation
-//--- (YI2cPort dlldef)
-//--- (end of YI2cPort dlldef)
+//--- (generated code: YI2cPort dlldef)
+//--- (end of generated code: YI2cPort dlldef)
 
   constructor TYI2cPort.Create(func:string);
     begin
       inherited Create(func);
       _className := 'I2cPort';
-      //--- (YI2cPort accessors initialization)
+      //--- (generated code: YI2cPort accessors initialization)
       _rxCount := Y_RXCOUNT_INVALID;
       _txCount := Y_TXCOUNT_INVALID;
       _errCount := Y_ERRCOUNT_INVALID;
@@ -1131,13 +1229,13 @@ implementation
       _valueCallbackI2cPort := nil;
       _rxptr := 0;
       _rxbuffptr := 0;
-      //--- (end of YI2cPort accessors initialization)
+      //--- (end of generated code: YI2cPort accessors initialization)
     end;
 
-//--- (YI2cPort yapiwrapper)
-//--- (end of YI2cPort yapiwrapper)
+//--- (generated code: YI2cPort yapiwrapper)
+//--- (end of generated code: YI2cPort yapiwrapper)
 
-//--- (YI2cPort implementation)
+//--- (generated code: YI2cPort implementation)
 {$HINTS OFF}
   function TYI2cPort._parseAttr(member:PJSONRECORD):integer;
     var
@@ -2127,6 +2225,45 @@ implementation
     end;
 
 
+  function TYI2cPort.snoopMessages(maxWait: LongInt):TYI2cSnoopingRecordArray;
+    var
+      url : string;
+      msgbin : TByteArray;
+      msgarr : TStringArray;
+      msglen : LongInt;
+      res : TYI2cSnoopingRecordArray;
+      idx : LongInt;
+      res_pos : LongInt;
+    begin
+      SetLength(msgarr, 0);
+
+      url := 'rxmsg.json?pos='+inttostr( self._rxptr)+'&maxw='+inttostr(maxWait)+'&t=0';
+      msgbin := self._download(url);
+      msgarr := self._json_get_array(msgbin);
+      msglen := length(msgarr);
+      if msglen = 0 then
+        begin
+          result := res;
+          exit;
+        end;
+      // last element of array is the new position
+      msglen := msglen - 1;
+      self._rxptr := _atoi(msgarr[msglen]);
+      idx := 0;
+      res_pos := length(res);
+      SetLength(res, res_pos+msglen);;
+      while idx < msglen do
+        begin
+          res[res_pos] := TYI2cSnoopingRecord.create(msgarr[idx]);
+          inc(res_pos);
+          idx := idx + 1;
+        end;
+      SetLength(res, res_pos);;
+      result := res;
+      exit;
+    end;
+
+
   function TYI2cPort.nextI2cPort(): TYI2cPort;
     var
       hwid: string;
@@ -2165,9 +2302,9 @@ implementation
      result := TYI2cPort.FindI2cPort(serial+'.'+funcId);
     end;
 
-//--- (end of YI2cPort implementation)
+//--- (end of generated code: YI2cPort implementation)
 
-//--- (YI2cPort functions)
+//--- (generated code: YI2cPort functions)
 
   function yFindI2cPort(func:string): TYI2cPort;
     begin
@@ -2183,14 +2320,87 @@ implementation
     begin
     end;
 
-//--- (end of YI2cPort functions)
+//--- (end of generated code: YI2cPort functions)
+
+
+
+
+//--- (generated code: YI2cSnoopingRecord implementation)
+
+  function TYI2cSnoopingRecord.get_time():LongInt;
+    begin
+      result := self._tim;
+      exit;
+    end;
+
+
+  function TYI2cSnoopingRecord.get_direction():LongInt;
+    begin
+      result := self._dir;
+      exit;
+    end;
+
+
+  function TYI2cSnoopingRecord.get_message():string;
+    begin
+      result := self._msg;
+      exit;
+    end;
+
+
+//--- (end of generated code: YI2cSnoopingRecord implementation)
+
+
+constructor TYI2cSnoopingRecord.create(data:string);
+ var
+   p : TJSONparser;
+   node : PJSONRECORD;
+   tmp : string;
+   c: char;
+ begin
+   p := TJsonParser.create(data,false);
+   node:= p.GetChildNode(nil,'t');
+   self._tim:=node^.ivalue;
+   node:= p.GetChildNode(nil,'m');
+   tmp := string(node^.svalue);
+   c := tmp[1];
+   if (c = '<') then
+     self._dir := 1
+   else
+     self._dir := 0;
+   self._msg:=Copy(tmp, 2, Length(tmp)-1);
+   p.free;
+ end;
+
+//--- (generated code: YI2cSnoopingRecord functions)
+
+  procedure _I2cSnoopingRecordCleanup();
+    begin
+    end;
+
+//--- (end of generated code: YI2cSnoopingRecord functions)
+
+procedure freeI2cSnoopingRecordArray(var list:TYI2cSnoopingRecordARRAY);
+ var i:integer;
+ begin
+  for i:=0 to length(list)-1 do
+   list[i].free();
+  setLength(list,0);
+ end;
+
+
 
 initialization
-  //--- (YI2cPort initialization)
-  //--- (end of YI2cPort initialization)
+  //--- (generated code: YI2cPort initialization)
+  //--- (end of generated code: YI2cPort initialization)
+  //--- (generated code: YI2cSnoopingRecord initialization)
+  //--- (end of generated code: YI2cSnoopingRecord initialization)
 
 finalization
-  //--- (YI2cPort cleanup)
+  //--- (generated code: YI2cPort cleanup)
   _I2cPortCleanup();
-  //--- (end of YI2cPort cleanup)
+  //--- (end of generated code: YI2cPort cleanup)
+  //--- (generated code: YI2cSnoopingRecord cleanup)
+  //--- (end of generated code: YI2cSnoopingRecord cleanup)
+
 end.

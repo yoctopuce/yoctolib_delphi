@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_spiport.pas 40298 2020-05-05 08:37:49Z seb $
+ *  $Id: yocto_spiport.pas 41187 2020-07-03 10:15:40Z seb $
  *
  *  Implements yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -46,7 +46,7 @@ interface
 uses
   sysutils, classes, windows, yocto_api, yjson;
 
-//--- (YSpiPort definitions)
+//--- (generated code: YSpiPort definitions)
 
 const Y_RXCOUNT_INVALID               = YAPI_INVALID_UINT;
 const Y_TXCOUNT_INVALID               = YAPI_INVALID_UINT;
@@ -78,13 +78,88 @@ const Y_SHIFTSAMPLING_ON = 1;
 const Y_SHIFTSAMPLING_INVALID = -1;
 
 
-//--- (end of YSpiPort definitions)
-//--- (YSpiPort yapiwrapper declaration)
-//--- (end of YSpiPort yapiwrapper declaration)
+//--- (end of generated code: YSpiPort definitions)
+//--- (generated code: YSpiPort yapiwrapper declaration)
+//--- (end of generated code: YSpiPort yapiwrapper declaration)
 
 type
   TYSpiPort = class;
-  //--- (YSpiPort class start)
+  TYSpiSnoopingRecord = class;
+
+  //--- (generated code: YSpiSnoopingRecord class start)
+  ////
+  /// <summary>
+  ///   T
+  /// <para>
+  ///   YSpiSnoopingRecord Class: Intercepted SPI message description, returned by <c>spiPort.snoopMessages</c> method
+  /// </para>
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  ///-
+  TYSpiSnoopingRecord=class(TObject)
+  //--- (end of generated code: YSpiSnoopingRecord class start)
+  protected
+
+    //--- (generated code: YSpiSnoopingRecord declaration)
+    // Attributes (function value cache)
+    _tim                      : LongInt;
+    _dir                      : LongInt;
+    _msg                      : string;
+
+    //--- (end of generated code: YSpiSnoopingRecord declaration)
+public
+   constructor create(data:string);
+
+
+   //--- (generated code: YSpiSnoopingRecord accessors declaration)
+    ////
+    /// <summary>
+    ///   Returns the elapsed time, in ms, since the beginning of the preceding message.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the elapsed time, in ms, since the beginning of the preceding message.
+    /// </returns>
+    ///-
+    function get_time():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the message direction (RX=0, TX=1).
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the message direction (RX=0, TX=1).
+    /// </returns>
+    ///-
+    function get_direction():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the message content.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the message content.
+    /// </returns>
+    ///-
+    function get_message():string; overload; virtual;
+
+
+  //--- (end of generated code: YSpiSnoopingRecord accessors declaration)
+end;
+
+
+TYSpiSnoopingRecordARRAY = array of TYSpiSnoopingRecord;
+
+
+  //--- (generated code: YSpiPort class start)
   TYSpiPortValueCallback = procedure(func: TYSpiPort; value:string);
   TYSpiPortTimedReportCallback = procedure(func: TYSpiPort; value:TYMeasure);
 
@@ -101,9 +176,9 @@ type
   /// </summary>
   ///-
   TYSpiPort=class(TYFunction)
-  //--- (end of YSpiPort class start)
+  //--- (end of generated code: YSpiPort class start)
   protected
-  //--- (YSpiPort declaration)
+  //--- (generated code: YSpiPort declaration)
     // Attributes (function value cache)
     _rxCount                  : LongInt;
     _txCount                  : LongInt;
@@ -128,10 +203,10 @@ type
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
 
-    //--- (end of YSpiPort declaration)
+    //--- (end of generated code: YSpiPort declaration)
 
   public
-    //--- (YSpiPort accessors declaration)
+    //--- (generated code: YSpiPort accessors declaration)
     constructor Create(func:string);
 
     ////
@@ -1103,6 +1178,29 @@ type
     ///-
     function set_SS(val: LongInt):LongInt; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Retrieves messages (both direction) in the SPI port buffer, starting at current position.
+    /// <para>
+    /// </para>
+    /// <para>
+    ///   If no message is found, the search waits for one up to the specified maximum timeout
+    ///   (in milliseconds).
+    /// </para>
+    /// </summary>
+    /// <param name="maxWait">
+    ///   the maximum number of milliseconds to wait for a message if none is found
+    ///   in the receive buffer.
+    /// </param>
+    /// <returns>
+    ///   an array of <c>YSpiSnoopingRecord</c> objects containing the messages found, if any.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty array.
+    /// </para>
+    ///-
+    function snoopMessages(maxWait: LongInt):TYSpiSnoopingRecordArray; overload; virtual;
+
 
     ////
     /// <summary>
@@ -1129,10 +1227,10 @@ type
     /// </summary>
     ///-
     class function FirstSpiPort():TYSpiPort;
-  //--- (end of YSpiPort accessors declaration)
+  //--- (end of generated code: YSpiPort accessors declaration)
   end;
 
-//--- (YSpiPort functions declaration)
+//--- (generated code: YSpiPort functions declaration)
   ////
   /// <summary>
   ///   Retrieves a SPI port for a given identifier.
@@ -1200,17 +1298,17 @@ type
   ///-
   function yFirstSpiPort():TYSpiPort;
 
-//--- (end of YSpiPort functions declaration)
+//--- (end of generated code: YSpiPort functions declaration)
 
 implementation
-//--- (YSpiPort dlldef)
-//--- (end of YSpiPort dlldef)
+//--- (generated code: YSpiPort dlldef)
+//--- (end of generated code: YSpiPort dlldef)
 
   constructor TYSpiPort.Create(func:string);
     begin
       inherited Create(func);
       _className := 'SpiPort';
-      //--- (YSpiPort accessors initialization)
+      //--- (generated code: YSpiPort accessors initialization)
       _rxCount := Y_RXCOUNT_INVALID;
       _txCount := Y_TXCOUNT_INVALID;
       _errCount := Y_ERRCOUNT_INVALID;
@@ -1230,13 +1328,13 @@ implementation
       _valueCallbackSpiPort := nil;
       _rxptr := 0;
       _rxbuffptr := 0;
-      //--- (end of YSpiPort accessors initialization)
+      //--- (end of generated code: YSpiPort accessors initialization)
     end;
 
-//--- (YSpiPort yapiwrapper)
-//--- (end of YSpiPort yapiwrapper)
+//--- (generated code: YSpiPort yapiwrapper)
+//--- (end of generated code: YSpiPort yapiwrapper)
 
-//--- (YSpiPort implementation)
+//--- (generated code: YSpiPort implementation)
 {$HINTS OFF}
   function TYSpiPort._parseAttr(member:PJSONRECORD):integer;
     var
@@ -2331,6 +2429,45 @@ implementation
     end;
 
 
+  function TYSpiPort.snoopMessages(maxWait: LongInt):TYSpiSnoopingRecordArray;
+    var
+      url : string;
+      msgbin : TByteArray;
+      msgarr : TStringArray;
+      msglen : LongInt;
+      res : TYSpiSnoopingRecordArray;
+      idx : LongInt;
+      res_pos : LongInt;
+    begin
+      SetLength(msgarr, 0);
+
+      url := 'rxmsg.json?pos='+inttostr( self._rxptr)+'&maxw='+inttostr(maxWait)+'&t=0';
+      msgbin := self._download(url);
+      msgarr := self._json_get_array(msgbin);
+      msglen := length(msgarr);
+      if msglen = 0 then
+        begin
+          result := res;
+          exit;
+        end;
+      // last element of array is the new position
+      msglen := msglen - 1;
+      self._rxptr := _atoi(msgarr[msglen]);
+      idx := 0;
+      res_pos := length(res);
+      SetLength(res, res_pos+msglen);;
+      while idx < msglen do
+        begin
+          res[res_pos] := TYSpiSnoopingRecord.create(msgarr[idx]);
+          inc(res_pos);
+          idx := idx + 1;
+        end;
+      SetLength(res, res_pos);;
+      result := res;
+      exit;
+    end;
+
+
   function TYSpiPort.nextSpiPort(): TYSpiPort;
     var
       hwid: string;
@@ -2369,9 +2506,9 @@ implementation
      result := TYSpiPort.FindSpiPort(serial+'.'+funcId);
     end;
 
-//--- (end of YSpiPort implementation)
+//--- (end of generated code: YSpiPort implementation)
 
-//--- (YSpiPort functions)
+//--- (generated code: YSpiPort functions)
 
   function yFindSpiPort(func:string): TYSpiPort;
     begin
@@ -2387,14 +2524,87 @@ implementation
     begin
     end;
 
-//--- (end of YSpiPort functions)
+//--- (end of generated code: YSpiPort functions)
+
+
+
+//--- (generated code: YSpiSnoopingRecord implementation)
+
+  function TYSpiSnoopingRecord.get_time():LongInt;
+    begin
+      result := self._tim;
+      exit;
+    end;
+
+
+  function TYSpiSnoopingRecord.get_direction():LongInt;
+    begin
+      result := self._dir;
+      exit;
+    end;
+
+
+  function TYSpiSnoopingRecord.get_message():string;
+    begin
+      result := self._msg;
+      exit;
+    end;
+
+
+//--- (end of generated code: YSpiSnoopingRecord implementation)
+
+
+constructor TYSpiSnoopingRecord.create(data:string);
+ var
+   p : TJSONparser;
+   node : PJSONRECORD;
+   tmp : string;
+   c: char;
+ begin
+   p := TJsonParser.create(data,false);
+   node:= p.GetChildNode(nil,'t');
+   self._tim:=node^.ivalue;
+   node:= p.GetChildNode(nil,'m');
+   tmp := string(node^.svalue);
+   c := tmp[1];
+   if (c = '<') then
+     self._dir := 1
+   else
+     self._dir := 0;
+   self._msg:=Copy(tmp, 2, Length(tmp)-1);
+   p.free;
+ end;
+
+//--- (generated code: YSpiSnoopingRecord functions)
+
+  procedure _SpiSnoopingRecordCleanup();
+    begin
+    end;
+
+//--- (end of generated code: YSpiSnoopingRecord functions)
+
+procedure freeSpiSnoopingRecordArray(var list:TYSpiSnoopingRecordARRAY);
+ var i:integer;
+ begin
+  for i:=0 to length(list)-1 do
+   list[i].free();
+  setLength(list,0);
+ end;
+
+
+
 
 initialization
-  //--- (YSpiPort initialization)
-  //--- (end of YSpiPort initialization)
+  //--- (generated code: YSpiPort initialization)
+  //--- (end of generated code: YSpiPort initialization)
+  //--- (generated code: YSpiSnoopingRecord initialization)
+  //--- (end of generated code: YSpiSnoopingRecord initialization)
 
 finalization
-  //--- (YSpiPort cleanup)
+  //--- (generated code: YSpiPort cleanup)
   _SpiPortCleanup();
-  //--- (end of YSpiPort cleanup)
+  //--- (end of generated code: YSpiPort cleanup)
+  //--- (generated code: YSpiSnoopingRecord cleanup)
+  //--- (end of generated code: YSpiSnoopingRecord cleanup)
+
 end.

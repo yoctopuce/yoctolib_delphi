@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_power.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_power.pas 41290 2020-07-24 10:02:23Z mvuilleu $
  *
  *  Implements yFindPower(), the high-level API for Power functions
  *
@@ -50,6 +50,8 @@ uses
 
 const Y_COSPHI_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_METER_INVALID                 = YAPI_INVALID_DOUBLE;
+const Y_DELIVEREDENERGYMETER_INVALID  = YAPI_INVALID_DOUBLE;
+const Y_RECEIVEDENERGYMETER_INVALID   = YAPI_INVALID_DOUBLE;
 const Y_METERTIMER_INVALID            = YAPI_INVALID_UINT;
 
 
@@ -81,6 +83,8 @@ type
     // Attributes (function value cache)
     _cosPhi                   : double;
     _meter                    : double;
+    _deliveredEnergyMeter     : double;
+    _receivedEnergyMeter      : double;
     _meterTimer               : LongInt;
     _valueCallbackPower       : TYPowerValueCallback;
     _timedReportCallbackPower : TYPowerTimedReportCallback;
@@ -116,7 +120,8 @@ type
 
     ////
     /// <summary>
-    ///   Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time.
+    ///   Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time,
+    ///   but only when positive.
     /// <para>
     ///   Note that this counter is reset at each start of the device.
     /// </para>
@@ -125,13 +130,56 @@ type
     /// </summary>
     /// <returns>
     ///   a floating point number corresponding to the energy counter, maintained by the wattmeter by
-    ///   integrating the power consumption over time
+    ///   integrating the power consumption over time,
+    ///   but only when positive
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_METER_INVALID</c>.
     /// </para>
     ///-
     function get_meter():double;
+
+    ////
+    /// <summary>
+    ///   Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time,
+    ///   but only when positive.
+    /// <para>
+    ///   Note that this counter is reset at each start of the device.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a floating point number corresponding to the energy counter, maintained by the wattmeter by
+    ///   integrating the power consumption over time,
+    ///   but only when positive
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_DELIVEREDENERGYMETER_INVALID</c>.
+    /// </para>
+    ///-
+    function get_deliveredEnergyMeter():double;
+
+    ////
+    /// <summary>
+    ///   Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time,
+    ///   but only when negative.
+    /// <para>
+    ///   Note that this counter is reset at each start of the device.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a floating point number corresponding to the energy counter, maintained by the wattmeter by
+    ///   integrating the power consumption over time,
+    ///   but only when negative
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_RECEIVEDENERGYMETER_INVALID</c>.
+    /// </para>
+    ///-
+    function get_receivedEnergyMeter():double;
 
     ////
     /// <summary>
@@ -248,7 +296,7 @@ type
 
     ////
     /// <summary>
-    ///   Resets the energy counter.
+    ///   Resets the energy counters.
     /// <para>
     /// </para>
     /// </summary>
@@ -371,6 +419,8 @@ implementation
       //--- (YPower accessors initialization)
       _cosPhi := Y_COSPHI_INVALID;
       _meter := Y_METER_INVALID;
+      _deliveredEnergyMeter := Y_DELIVEREDENERGYMETER_INVALID;
+      _receivedEnergyMeter := Y_RECEIVEDENERGYMETER_INVALID;
       _meterTimer := Y_METERTIMER_INVALID;
       _valueCallbackPower := nil;
       _timedReportCallbackPower := nil;
@@ -396,6 +446,18 @@ implementation
       if (member^.name = 'meter') then
         begin
           _meter := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'deliveredEnergyMeter') then
+        begin
+          _deliveredEnergyMeter := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'receivedEnergyMeter') then
+        begin
+          _receivedEnergyMeter := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
          result := 1;
          exit;
          end;
@@ -448,6 +510,42 @@ implementation
             end;
         end;
       res := self._meter;
+      result := res;
+      exit;
+    end;
+
+
+  function TYPower.get_deliveredEnergyMeter():double;
+    var
+      res : double;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_DELIVEREDENERGYMETER_INVALID;
+              exit;
+            end;
+        end;
+      res := self._deliveredEnergyMeter;
+      result := res;
+      exit;
+    end;
+
+
+  function TYPower.get_receivedEnergyMeter():double;
+    var
+      res : double;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_RECEIVEDENERGYMETER_INVALID;
+              exit;
+            end;
+        end;
+      res := self._receivedEnergyMeter;
       result := res;
       exit;
     end;

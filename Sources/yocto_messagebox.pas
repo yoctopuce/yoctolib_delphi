@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 38913 2019-12-20 18:59:49Z mvuilleu $
+ * $Id: yocto_messagebox.pas 42060 2020-10-14 10:02:12Z seb $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *
@@ -74,7 +74,7 @@ type
   ////
   /// <summary>
   ///   TYMessageBox Class: SMS message box interface control interface, available for instance in the
-  ///   YoctoHub-GSM-2G, the YoctoHub-GSM-3G-EU or the YoctoHub-GSM-3G-NA
+  ///   YoctoHub-GSM-2G, the YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA or the YoctoHub-GSM-4G
   /// <para>
   ///   The <c>YMessageBox</c> class provides SMS sending and receiving capability for
   ///   GSM-enabled Yoctopuce devices.

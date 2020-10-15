@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_anbutton.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_anbutton.pas 42060 2020-10-14 10:02:12Z seb $
  *
  *  Implements yFindAnButton(), the high-level API for AnButton functions
  *
@@ -63,6 +63,9 @@ const Y_LASTTIMEPRESSED_INVALID       = YAPI_INVALID_LONG;
 const Y_LASTTIMERELEASED_INVALID      = YAPI_INVALID_LONG;
 const Y_PULSECOUNTER_INVALID          = YAPI_INVALID_LONG;
 const Y_PULSETIMER_INVALID            = YAPI_INVALID_LONG;
+const Y_INPUTTYPE_ANALOG = 0;
+const Y_INPUTTYPE_DIGITAL4 = 1;
+const Y_INPUTTYPE_INVALID = -1;
 
 
 //--- (end of YAnButton definitions)
@@ -78,7 +81,7 @@ type
   ////
   /// <summary>
   ///   TYAnButton Class: analog input control interface, available for instance in the Yocto-Buzzer, the
-  ///   Yocto-Display, the Yocto-Knob or the Yocto-MaxiDisplay
+  ///   Yocto-Knob, the Yocto-MaxiBuzzer or the Yocto-MaxiDisplay
   /// <para>
   ///   The <c>YAnButton</c> class provide access to basic resistive inputs.
   ///   Such inputs can be used to measure the state
@@ -106,6 +109,7 @@ type
     _lastTimeReleased         : int64;
     _pulseCounter             : int64;
     _pulseTimer               : int64;
+    _inputType                : Integer;
     _valueCallbackAnButton    : TYAnButtonValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
@@ -420,6 +424,48 @@ type
 
     ////
     /// <summary>
+    ///   Returns the decoding method applied to the input (analog or multiplexed binary switches).
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   either <c>Y_INPUTTYPE_ANALOG</c> or <c>Y_INPUTTYPE_DIGITAL4</c>, according to the decoding method
+    ///   applied to the input (analog or multiplexed binary switches)
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>Y_INPUTTYPE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_inputType():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the decoding method applied to the input (analog or multiplexed binary switches).
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   either <c>Y_INPUTTYPE_ANALOG</c> or <c>Y_INPUTTYPE_DIGITAL4</c>, according to the decoding method
+    ///   applied to the input (analog or multiplexed binary switches)
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_inputType(newval:Integer):integer;
+
+    ////
+    /// <summary>
     ///   Retrieves $AFUNCTION$ for a given identifier.
     /// <para>
     ///   The identifier can be specified using several formats:
@@ -626,6 +672,7 @@ implementation
       _lastTimeReleased := Y_LASTTIMERELEASED_INVALID;
       _pulseCounter := Y_PULSECOUNTER_INVALID;
       _pulseTimer := Y_PULSETIMER_INVALID;
+      _inputType := Y_INPUTTYPE_INVALID;
       _valueCallbackAnButton := nil;
       //--- (end of YAnButton accessors initialization)
     end;
@@ -703,6 +750,12 @@ implementation
       if (member^.name = 'pulseTimer') then
         begin
           _pulseTimer := member^.ivalue;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'inputType') then
+        begin
+          _inputType := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -947,6 +1000,32 @@ implementation
       exit;
     end;
 
+
+  function TYAnButton.get_inputType():Integer;
+    var
+      res : Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_INPUTTYPE_INVALID;
+              exit;
+            end;
+        end;
+      res := self._inputType;
+      result := res;
+      exit;
+    end;
+
+
+  function TYAnButton.set_inputType(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('inputType',rest_val);
+    end;
 
   class function TYAnButton.FindAnButton(func: string):TYAnButton;
     var

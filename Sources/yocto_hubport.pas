@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_hubport.pas 41109 2020-06-29 12:40:42Z seb $
+ *  $Id: yocto_hubport.pas 42060 2020-10-14 10:02:12Z seb $
  *
  *  Implements yFindHubPort(), the high-level API for HubPort functions
  *
@@ -73,7 +73,7 @@ type
   ////
   /// <summary>
   ///   TYHubPort Class: YoctoHub slave port control interface, available for instance in the
-  ///   YoctoHub-Ethernet, the YoctoHub-Shield, the YoctoHub-Wireless-g or the YoctoHub-Wireless-n
+  ///   YoctoHub-Ethernet, the YoctoHub-GSM-3G-EU, the YoctoHub-Shield or the YoctoHub-Wireless-n
   /// <para>
   ///   The <c>YHubPort</c> class provides control over the power supply for slave ports
   ///   on a YoctoHub. It provide information about the device connected to it.
