@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_tilt.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_tilt.pas 42965 2020-12-14 13:23:37Z seb $
  *
  *  Implements yFindTilt(), the high-level API for Tilt functions
  *
@@ -101,14 +101,14 @@ type
 
     ////
     /// <summary>
-    ///   Returns the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+    ///   Returns the measure update frequency, measured in Hz.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+    ///   an integer corresponding to the measure update frequency, measured in Hz
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_BANDWIDTH_INVALID</c>.
@@ -118,7 +118,7 @@ type
 
     ////
     /// <summary>
-    ///   Changes the measure update frequency, measured in Hz (Yocto-3D-V2 only).
+    ///   Changes the measure update frequency, measured in Hz.
     /// <para>
     ///   When the
     ///   frequency is lower, the device performs averaging.
@@ -129,7 +129,7 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer corresponding to the measure update frequency, measured in Hz (Yocto-3D-V2 only)
+    ///   an integer corresponding to the measure update frequency, measured in Hz
     /// </param>
     /// <para>
     /// </para>
@@ -239,6 +239,40 @@ type
     function registerTimedReportCallback(callback: TYTiltTimedReportCallback):LongInt; overload;
 
     function _invokeTimedReportCallback(value: TYMeasure):LongInt; override;
+
+    ////
+    /// <summary>
+    ///   Performs a zero calibration for the tilt measurement (Yocto-Inclinometer only).
+    /// <para>
+    ///   When this method is invoked, a simple shift (translation)
+    ///   is applied so that the current position is reported as a zero angle.
+    ///   Be aware that this shift will also affect the measurement boundaries.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function calibrateToZero():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Cancels any previous zero calibration for the tilt measurement (Yocto-Inclinometer only).
+    /// <para>
+    ///   This function restores the factory zero calibration.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function restoreZeroCalibration():LongInt; overload; virtual;
 
 
     ////
@@ -512,6 +546,37 @@ implementation
           inherited _invokeTimedReportCallback(value);
         end;
       result := 0;
+      exit;
+    end;
+
+
+  function TYTilt.calibrateToZero():LongInt;
+    var
+      currentRawVal : double;
+      rawVals : TDoubleArray;
+      refVals : TDoubleArray;
+      rawVals_pos : LongInt;
+      refVals_pos : LongInt;
+    begin
+      currentRawVal := self.get_currentRawValue;
+      rawVals_pos := 0;
+      SetLength(rawVals, 1);;
+      refVals_pos := 0;
+      SetLength(refVals, 1);;
+      rawVals[rawVals_pos] := currentRawVal;
+      inc(rawVals_pos);
+      refVals[refVals_pos] := 0.0;
+      inc(refVals_pos);
+      SetLength(rawVals, rawVals_pos);;
+      SetLength(refVals, refVals_pos);;
+      result := self.calibrateFromPoints(rawVals, refVals);
+      exit;
+    end;
+
+
+  function TYTilt.restoreZeroCalibration():LongInt;
+    begin
+      result := self._setAttr('calibrationParam', '0');
       exit;
     end;
 

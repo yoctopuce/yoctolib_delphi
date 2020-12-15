@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_lightsensor.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_lightsensor.pas 42951 2020-12-14 09:43:29Z seb $
  *
  *  Implements yFindLightSensor(), the high-level API for LightSensor functions
  *
@@ -53,6 +53,7 @@ const Y_MEASURETYPE_WIDE_SPECTRUM = 1;
 const Y_MEASURETYPE_INFRARED = 2;
 const Y_MEASURETYPE_HIGH_RATE = 3;
 const Y_MEASURETYPE_HIGH_ENERGY = 4;
+const Y_MEASURETYPE_HIGH_RESOLUTION = 5;
 const Y_MEASURETYPE_INVALID = -1;
 
 
@@ -137,8 +138,8 @@ type
     /// </summary>
     /// <returns>
     ///   a value among <c>Y_MEASURETYPE_HUMAN_EYE</c>, <c>Y_MEASURETYPE_WIDE_SPECTRUM</c>,
-    ///   <c>Y_MEASURETYPE_INFRARED</c>, <c>Y_MEASURETYPE_HIGH_RATE</c> and <c>Y_MEASURETYPE_HIGH_ENERGY</c>
-    ///   corresponding to the type of light measure
+    ///   <c>Y_MEASURETYPE_INFRARED</c>, <c>Y_MEASURETYPE_HIGH_RATE</c>, <c>Y_MEASURETYPE_HIGH_ENERGY</c> and
+    ///   <c>Y_MEASURETYPE_HIGH_RESOLUTION</c> corresponding to the type of light measure
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>Y_MEASURETYPE_INVALID</c>.
@@ -161,8 +162,8 @@ type
     /// </summary>
     /// <param name="newval">
     ///   a value among <c>Y_MEASURETYPE_HUMAN_EYE</c>, <c>Y_MEASURETYPE_WIDE_SPECTRUM</c>,
-    ///   <c>Y_MEASURETYPE_INFRARED</c>, <c>Y_MEASURETYPE_HIGH_RATE</c> and <c>Y_MEASURETYPE_HIGH_ENERGY</c>
-    ///   corresponding to the light sensor type used in the device
+    ///   <c>Y_MEASURETYPE_INFRARED</c>, <c>Y_MEASURETYPE_HIGH_RATE</c>, <c>Y_MEASURETYPE_HIGH_ENERGY</c> and
+    ///   <c>Y_MEASURETYPE_HIGH_RESOLUTION</c> corresponding to the light sensor type used in the device
     /// </param>
     /// <para>
     /// </para>

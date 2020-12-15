@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ * $Id: yocto_display.pas 42265 2020-11-02 15:38:26Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -81,6 +81,8 @@ type  TYALIGN = (Y_ALIGN_TOP_LEFT,Y_ALIGN_CENTER_LEFT,Y_ALIGN_BASELINE_LEFT,Y_AL
 type
  TYDisplayLayer = class;
  TYDisplay = class;
+ TYDisplayLayerArray = array of TYDisplayLayer;
+
 
   //--- (generated code: YDisplay class start)
   TYDisplayValueCallback = procedure(func: TYDisplay; value:string);
@@ -123,13 +125,13 @@ type
     _layerCount               : LongInt;
     _command                  : string;
     _valueCallbackDisplay     : TYDisplayValueCallback;
+    _allDisplayLayers         : TYDisplayLayerArray;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
 
     //--- (end of generated code: YDisplay declaration)
 
 private
-   _allDisplayLayers :  array of TYDisplayLayer;
    _recording : boolean;
    _sequence : string;
 
@@ -704,6 +706,27 @@ public
     ///-
     function swapLayerContent(layerIdA: LongInt; layerIdB: LongInt):LongInt; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns a YDisplayLayer object that can be used to draw on the specified
+    ///   layer.
+    /// <para>
+    ///   The content is displayed only when the layer is active on the
+    ///   screen (and not masked by other overlapping layers).
+    /// </para>
+    /// </summary>
+    /// <param name="layerId">
+    ///   the identifier of the layer (a number in range 0..layerCount-1)
+    /// </param>
+    /// <returns>
+    ///   an <c>YDisplayLayer</c> object
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>NIL</c>.
+    /// </para>
+    ///-
+    function get_displayLayer(layerId: LongInt):TYDisplayLayer; overload; virtual;
+
 
     ////
     /// <summary>
@@ -732,26 +755,6 @@ public
     class function FirstDisplay():TYDisplay;
   //--- (end of generated code: YDisplay accessors declaration)
 
-    ////
-    /// <summary>
-    ///   Returns a YDisplayLayer object that can be used to draw on the specified
-    ///   layer.
-    /// <para>
-    ///   The content is displayed only when the layer is active on the
-    ///   screen (and not masked by other overlapping layers).
-    /// </para>
-    /// </summary>
-    /// <param name="layerId">
-    ///   the identifier of the layer (a number in range 0..layerCount-1)
-    /// </param>
-    /// <returns>
-    ///   an <c>YDisplayLayer</c> object
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>NIL</c>.
-    /// </para>
-    ///-
-    function get_displayLayer(layerId:integer):TYDisplayLayer;
 
 end;
 
@@ -787,7 +790,7 @@ private
    _hidden:boolean;
 
 public
-   constructor Create(parent: TYdisplay; id :string);
+   constructor Create(parent: TYdisplay; id :integer);
 
    function command_push(cmd:string):integer;
    function command_flush(cmd:string):integer;
@@ -2030,6 +2033,37 @@ destructor TYDisplay.destroy();
     end;
 
 
+  function TYDisplay.get_displayLayer(layerId: LongInt):TYDisplayLayer;
+    var
+      layercount : LongInt;
+      idx : LongInt;
+      allDisplayLayers_pos : LongInt;
+    begin
+      layercount := self.get_layerCount;
+      if not((layerId >= 0) and(layerId < layercount)) then
+        begin
+          self._throw( YAPI_INVALID_ARGUMENT, 'invalid DisplayLayer index');
+          result:=nil;
+          exit;
+        end;
+      if length(self._allDisplayLayers) = 0 then
+        begin
+          allDisplayLayers_pos := length(self._allDisplayLayers);
+          SetLength(self._allDisplayLayers, allDisplayLayers_pos+layercount);
+          idx := 0;
+          while idx < layercount do
+            begin
+              self._allDisplayLayers[allDisplayLayers_pos] := TYDisplayLayer.create(self, idx);
+              inc(allDisplayLayers_pos);
+              idx := idx + 1;
+            end;
+          SetLength(self._allDisplayLayers, allDisplayLayers_pos);
+        end;
+      result := self._allDisplayLayers[layerId];
+      exit;
+    end;
+
+
   function TYDisplay.nextDisplay(): TYDisplay;
     var
       hwid: string;
@@ -2133,60 +2167,11 @@ procedure TYDisplay.resetHiddenLayerFlags();
 
 //--- (end of generated code: YDisplay functions)
 
-////
-/// <summary>
-///   Returns a YDisplayLayer object that can be used to draw on the specified
-///   layer. The content will only be displayed when the layer is active on the
-///   screen (and not masked by other overlapping layers).
-/// <para>
-/// </para>
-/// <param name="layerId">
-///   the identifier of the layer (a string containing one character)
-/// </param>
-/// </summary>
-/// <returns>
-///   an YDisplayLayer object
-/// </returns>
-/// <para>
-///    On failure, throws an exception or returns nil.
-/// </para>
-///-
-function TYDisplay.get_displayLayer(layerId:integer):TYDisplayLayer;
-  var
-  layercount : integer;
-  i:integer;
-   begin
-      if (layerId<0) then
-         begin
-            _throw(YAPI_INVALID_ARGUMENT,'Negative layer number are not allowed');
-            get_displayLayer:=nil;
-            exit;
-         end;
-
-      layercount :=  get_layerCount();
-      if (layerId>=layercount) then
-        begin
-          _throw(YAPI_INVALID_ARGUMENT,'This display only have '+inttostr(layercount)+' layers');
-          get_displayLayer:=nil;
-          exit;
-        end;
-
-       if  (length(_allDisplayLayers)<=0) then
-        begin
-          setlength(_allDisplayLayers,layercount);
-           for i:=0 to layercount-1 do
-             _allDisplayLayers[i] :=TYDisplayLayer.create(self, inttostr(i));
-        end;
-
-
-       get_displayLayer := _allDisplayLayers[layerId];
-   end;
-
- constructor TYDisplayLayer.Create(parent: TYdisplay; id :string);
+ constructor TYDisplayLayer.Create(parent: TYdisplay; id :integer);
  begin
     inherited create();
     self._display := parent;
-    self._id := strtoint(id);
+    self._id := id;
     self._cmdbuff:='';
  end;
 
