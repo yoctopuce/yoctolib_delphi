@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_buzzer.pas 41109 2020-06-29 12:40:42Z seb $
+ *  $Id: yocto_buzzer.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindBuzzer(), the high-level API for Buzzer functions
  *
@@ -112,7 +112,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -132,7 +132,7 @@ type
     ///   a floating point number corresponding to the  frequency of the signal sent to the buzzer/speaker
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_FREQUENCY_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YBuzzer.FREQUENCY_INVALID</c>.
     /// </para>
     ///-
     function get_frequency():double;
@@ -149,7 +149,7 @@ type
     ///   an integer corresponding to the volume of the signal sent to the buzzer/speaker
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_VOLUME_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YBuzzer.VOLUME_INVALID</c>.
     /// </para>
     ///-
     function get_volume():LongInt;
@@ -170,7 +170,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -190,7 +190,7 @@ type
     ///   an integer corresponding to the current length of the playing sequence
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PLAYSEQSIZE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YBuzzer.PLAYSEQSIZE_INVALID</c>.
     /// </para>
     ///-
     function get_playSeqSize():LongInt;
@@ -207,7 +207,7 @@ type
     ///   an integer corresponding to the maximum length of the playing sequence
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PLAYSEQMAXSIZE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YBuzzer.PLAYSEQMAXSIZE_INVALID</c>.
     /// </para>
     ///-
     function get_playSeqMaxSize():LongInt;
@@ -228,7 +228,7 @@ type
     ///   an integer corresponding to the playing sequence signature
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PLAYSEQSIGNATURE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YBuzzer.PLAYSEQSIGNATURE_INVALID</c>.
     /// </para>
     ///-
     function get_playSeqSignature():LongInt;
@@ -326,7 +326,7 @@ type
     ///   duration of the frequency transition, in milliseconds.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -345,7 +345,7 @@ type
     ///   pulse duration, in milliseconds.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -368,7 +368,7 @@ type
     ///   duration of the volume transition, in milliseconds.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -390,7 +390,7 @@ type
     ///   notes to be played, as a text string.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -406,7 +406,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -419,7 +419,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -432,7 +432,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -445,7 +445,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -458,7 +458,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -471,7 +471,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -490,7 +490,7 @@ type
     ///   pulse duration in milliseconds
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -511,7 +511,7 @@ type
     ///   pulse duration in milliseconds
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -532,7 +532,7 @@ type
     ///   change duration in milliseconds
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -556,7 +556,7 @@ type
     ///   notes to be played, as a text string.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-

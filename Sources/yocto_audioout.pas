@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_audioout.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_audioout.pas 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements yFindAudioOut(), the high-level API for AudioOut functions
  *
@@ -107,7 +107,7 @@ type
     ///   an integer corresponding to audio output volume, in per cents
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_VOLUME_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAudioOut.VOLUME_INVALID</c>.
     /// </para>
     ///-
     function get_volume():LongInt;
@@ -128,7 +128,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -145,10 +145,10 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_MUTE_FALSE</c> or <c>Y_MUTE_TRUE</c>, according to the state of the mute function
+    ///   either <c>YAudioOut.MUTE_FALSE</c> or <c>YAudioOut.MUTE_TRUE</c>, according to the state of the mute function
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_MUTE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAudioOut.MUTE_INVALID</c>.
     /// </para>
     ///-
     function get_mute():Integer;
@@ -164,12 +164,12 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_MUTE_FALSE</c> or <c>Y_MUTE_TRUE</c>, according to the state of the mute function
+    ///   either <c>YAudioOut.MUTE_FALSE</c> or <c>YAudioOut.MUTE_TRUE</c>, according to the state of the mute function
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -193,7 +193,7 @@ type
     ///   a string corresponding to the supported volume range
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_VOLUMERANGE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAudioOut.VOLUMERANGE_INVALID</c>.
     /// </para>
     ///-
     function get_volumeRange():string;
@@ -210,7 +210,7 @@ type
     ///   an integer corresponding to the detected output current level
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SIGNAL_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAudioOut.SIGNAL_INVALID</c>.
     /// </para>
     ///-
     function get_signal():LongInt;
@@ -227,7 +227,7 @@ type
     ///   an integer corresponding to the number of seconds elapsed without detecting a signal
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_NOSIGNALFOR_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAudioOut.NOSIGNALFOR_INVALID</c>.
     /// </para>
     ///-
     function get_noSignalFor():LongInt;

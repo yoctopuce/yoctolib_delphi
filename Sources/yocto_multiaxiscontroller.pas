@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_multiaxiscontroller.pas 38913 2019-12-20 18:59:49Z mvuilleu $
+ *  $Id: yocto_multiaxiscontroller.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
  *
@@ -108,7 +108,7 @@ type
     ///   an integer corresponding to the number of synchronized controllers
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_NAXIS_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMultiAxisController.NAXIS_INVALID</c>.
     /// </para>
     ///-
     function get_nAxis():LongInt;
@@ -127,7 +127,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -144,12 +144,13 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_GLOBALSTATE_ABSENT</c>, <c>Y_GLOBALSTATE_ALERT</c>, <c>Y_GLOBALSTATE_HI_Z</c>,
-    ///   <c>Y_GLOBALSTATE_STOP</c>, <c>Y_GLOBALSTATE_RUN</c> and <c>Y_GLOBALSTATE_BATCH</c> corresponding to
-    ///   the stepper motor set overall state
+    ///   a value among <c>YMultiAxisController.GLOBALSTATE_ABSENT</c>,
+    ///   <c>YMultiAxisController.GLOBALSTATE_ALERT</c>, <c>YMultiAxisController.GLOBALSTATE_HI_Z</c>,
+    ///   <c>YMultiAxisController.GLOBALSTATE_STOP</c>, <c>YMultiAxisController.GLOBALSTATE_RUN</c> and
+    ///   <c>YMultiAxisController.GLOBALSTATE_BATCH</c> corresponding to the stepper motor set overall state
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_GLOBALSTATE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMultiAxisController.GLOBALSTATE_INVALID</c>.
     /// </para>
     ///-
     function get_globalState():Integer;
@@ -241,7 +242,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -257,7 +258,7 @@ type
     ///   desired speed for all axis, in steps per second.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -276,7 +277,7 @@ type
     ///   absolute position, measured in steps from each origin.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -295,7 +296,7 @@ type
     ///   relative position, measured in steps from the current position.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -311,7 +312,7 @@ type
     ///   wait time, specified in milliseconds.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -324,7 +325,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -337,7 +338,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -350,7 +351,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -640,7 +641,7 @@ implementation
       //may throw an exception
       retBin := self._download(url);
       res := retBin[0];
-      if res = 49 then
+      if res < 58 then
         begin
           if not(res = 48) then
             begin

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 41171 2020-07-02 17:49:00Z mvuilleu $
+ * $Id: yocto_serialport.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -213,7 +213,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   an integer corresponding to the total number of bytes received since last reset
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_RXCOUNT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSerialPort.RXCOUNT_INVALID</c>.
     /// </para>
     ///-
     function get_rxCount():LongInt;
@@ -230,7 +230,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   an integer corresponding to the total number of bytes transmitted since last reset
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_TXCOUNT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSerialPort.TXCOUNT_INVALID</c>.
     /// </para>
     ///-
     function get_txCount():LongInt;
@@ -247,7 +247,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   an integer corresponding to the total number of communication errors detected since last reset
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ERRCOUNT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSerialPort.ERRCOUNT_INVALID</c>.
     /// </para>
     ///-
     function get_errCount():LongInt;
@@ -264,7 +264,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   an integer corresponding to the total number of messages received since last reset
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_RXMSGCOUNT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSerialPort.RXMSGCOUNT_INVALID</c>.
     /// </para>
     ///-
     function get_rxMsgCount():LongInt;
@@ -281,7 +281,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   an integer corresponding to the total number of messages send since last reset
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_TXMSGCOUNT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSerialPort.TXMSGCOUNT_INVALID</c>.
     /// </para>
     ///-
     function get_txMsgCount():LongInt;
@@ -298,7 +298,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   a string corresponding to the latest message fully received (for Line, Frame and Modbus protocols)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_LASTMSG_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSerialPort.LASTMSG_INVALID</c>.
     /// </para>
     ///-
     function get_lastMsg():string;
@@ -315,7 +315,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   a string corresponding to the name of the job file currently in use
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CURRENTJOB_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSerialPort.CURRENTJOB_INVALID</c>.
     /// </para>
     ///-
     function get_currentJob():string;
@@ -336,7 +336,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -356,7 +356,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   a string corresponding to the job file to use when the device is powered on
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_STARTUPJOB_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSerialPort.STARTUPJOB_INVALID</c>.
     /// </para>
     ///-
     function get_startupJob():string;
@@ -377,7 +377,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -397,7 +397,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   an integer corresponding to the maximum number of tasks in a job that the device can handle
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_JOBMAXTASK_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSerialPort.JOBMAXTASK_INVALID</c>.
     /// </para>
     ///-
     function get_jobMaxTask():LongInt;
@@ -414,7 +414,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   an integer corresponding to maximum size allowed for job files
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_JOBMAXSIZE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSerialPort.JOBMAXSIZE_INVALID</c>.
     /// </para>
     ///-
     function get_jobMaxSize():LongInt;
@@ -444,7 +444,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   a string corresponding to the type of protocol used over the serial line, as a string
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PROTOCOL_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSerialPort.PROTOCOL_INVALID</c>.
     /// </para>
     ///-
     function get_protocol():string;
@@ -476,7 +476,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -493,13 +493,14 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_VOLTAGELEVEL_OFF</c>, <c>Y_VOLTAGELEVEL_TTL3V</c>, <c>Y_VOLTAGELEVEL_TTL3VR</c>,
-    ///   <c>Y_VOLTAGELEVEL_TTL5V</c>, <c>Y_VOLTAGELEVEL_TTL5VR</c>, <c>Y_VOLTAGELEVEL_RS232</c>,
-    ///   <c>Y_VOLTAGELEVEL_RS485</c> and <c>Y_VOLTAGELEVEL_TTL1V8</c> corresponding to the voltage level
-    ///   used on the serial line
+    ///   a value among <c>YSerialPort.VOLTAGELEVEL_OFF</c>, <c>YSerialPort.VOLTAGELEVEL_TTL3V</c>,
+    ///   <c>YSerialPort.VOLTAGELEVEL_TTL3VR</c>, <c>YSerialPort.VOLTAGELEVEL_TTL5V</c>,
+    ///   <c>YSerialPort.VOLTAGELEVEL_TTL5VR</c>, <c>YSerialPort.VOLTAGELEVEL_RS232</c>,
+    ///   <c>YSerialPort.VOLTAGELEVEL_RS485</c> and <c>YSerialPort.VOLTAGELEVEL_TTL1V8</c> corresponding to
+    ///   the voltage level used on the serial line
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_VOLTAGELEVEL_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSerialPort.VOLTAGELEVEL_INVALID</c>.
     /// </para>
     ///-
     function get_voltageLevel():Integer;
@@ -520,15 +521,16 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>Y_VOLTAGELEVEL_OFF</c>, <c>Y_VOLTAGELEVEL_TTL3V</c>, <c>Y_VOLTAGELEVEL_TTL3VR</c>,
-    ///   <c>Y_VOLTAGELEVEL_TTL5V</c>, <c>Y_VOLTAGELEVEL_TTL5VR</c>, <c>Y_VOLTAGELEVEL_RS232</c>,
-    ///   <c>Y_VOLTAGELEVEL_RS485</c> and <c>Y_VOLTAGELEVEL_TTL1V8</c> corresponding to the voltage type used
-    ///   on the serial line
+    ///   a value among <c>YSerialPort.VOLTAGELEVEL_OFF</c>, <c>YSerialPort.VOLTAGELEVEL_TTL3V</c>,
+    ///   <c>YSerialPort.VOLTAGELEVEL_TTL3VR</c>, <c>YSerialPort.VOLTAGELEVEL_TTL5V</c>,
+    ///   <c>YSerialPort.VOLTAGELEVEL_TTL5VR</c>, <c>YSerialPort.VOLTAGELEVEL_RS232</c>,
+    ///   <c>YSerialPort.VOLTAGELEVEL_RS485</c> and <c>YSerialPort.VOLTAGELEVEL_TTL1V8</c> corresponding to
+    ///   the voltage type used on the serial line
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -555,7 +557,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   "9600,8N1"
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SERIALMODE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSerialPort.SERIALMODE_INVALID</c>.
     /// </para>
     ///-
     function get_serialMode():string;
@@ -583,7 +585,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -827,7 +829,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   a string containing a JSON definition of the job
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -850,7 +852,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   name of the job file (on the device filesystem)
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -867,7 +869,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -885,7 +887,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   the byte to send
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -903,7 +905,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   the text string to send
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -921,7 +923,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   the binary buffer to send
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -939,7 +941,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   a list of byte codes
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -957,7 +959,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   a string of hexadecimal byte codes
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -975,7 +977,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   the text string to send
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1094,7 +1096,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   1 to turn RTS on, 0 to turn RTS off
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1158,7 +1160,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   the text string to send
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1178,7 +1180,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   a hexadecimal message string, including device address but no CRC/LRC
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.

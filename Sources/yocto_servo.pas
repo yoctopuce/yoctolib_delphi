@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_servo.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_servo.pas 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements yFindServo(), the high-level API for Servo functions
  *
@@ -124,7 +124,7 @@ type
     ///   an integer corresponding to the current servo position
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_POSITION_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YServo.POSITION_INVALID</c>.
     /// </para>
     ///-
     function get_position():LongInt;
@@ -143,7 +143,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -160,10 +160,10 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_ENABLED_FALSE</c> or <c>Y_ENABLED_TRUE</c>, according to the state of the RC servo motors
+    ///   either <c>YServo.ENABLED_FALSE</c> or <c>YServo.ENABLED_TRUE</c>, according to the state of the RC servo motors
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ENABLED_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YServo.ENABLED_INVALID</c>.
     /// </para>
     ///-
     function get_enabled():Integer;
@@ -177,12 +177,12 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_ENABLED_FALSE</c> or <c>Y_ENABLED_TRUE</c>
+    ///   either <c>YServo.ENABLED_FALSE</c> or <c>YServo.ENABLED_TRUE</c>
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -202,7 +202,7 @@ type
     ///   an integer corresponding to the current range of use of the servo
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_RANGE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YServo.RANGE_INVALID</c>.
     /// </para>
     ///-
     function get_range():LongInt;
@@ -227,7 +227,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -247,7 +247,7 @@ type
     ///   an integer corresponding to the duration in microseconds of a neutral pulse for the servo
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_NEUTRAL_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YServo.NEUTRAL_INVALID</c>.
     /// </para>
     ///-
     function get_neutral():LongInt;
@@ -271,7 +271,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -300,7 +300,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -320,7 +320,7 @@ type
     ///   an integer corresponding to the servo position at device power up
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_POSITIONATPOWERON_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YServo.POSITIONATPOWERON_INVALID</c>.
     /// </para>
     ///-
     function get_positionAtPowerOn():LongInt;
@@ -341,7 +341,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -358,11 +358,11 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_ENABLEDATPOWERON_FALSE</c> or <c>Y_ENABLEDATPOWERON_TRUE</c>, according to the servo
-    ///   signal generator state at power up
+    ///   either <c>YServo.ENABLEDATPOWERON_FALSE</c> or <c>YServo.ENABLEDATPOWERON_TRUE</c>, according to
+    ///   the servo signal generator state at power up
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ENABLEDATPOWERON_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YServo.ENABLEDATPOWERON_INVALID</c>.
     /// </para>
     ///-
     function get_enabledAtPowerOn():Integer;
@@ -378,12 +378,12 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_ENABLEDATPOWERON_FALSE</c> or <c>Y_ENABLEDATPOWERON_TRUE</c>
+    ///   either <c>YServo.ENABLEDATPOWERON_FALSE</c> or <c>YServo.ENABLEDATPOWERON_TRUE</c>
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -806,7 +806,7 @@ implementation
   /// <para>
   /// </para>
   /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
+  ///   YAPI.SUCCESS if the call succeeds.
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns a negative error code.

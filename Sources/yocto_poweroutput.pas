@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_poweroutput.pas 38913 2019-12-20 18:59:49Z mvuilleu $
+ *  $Id: yocto_poweroutput.pas 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements yFindPowerOutput(), the high-level API for PowerOutput functions
  *
@@ -101,12 +101,12 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_VOLTAGE_OFF</c>, <c>Y_VOLTAGE_OUT3V3</c>, <c>Y_VOLTAGE_OUT5V</c>,
-    ///   <c>Y_VOLTAGE_OUT4V7</c> and <c>Y_VOLTAGE_OUT1V8</c> corresponding to the voltage on the power
-    ///   output featured by the module
+    ///   a value among <c>YPowerOutput.VOLTAGE_OFF</c>, <c>YPowerOutput.VOLTAGE_OUT3V3</c>,
+    ///   <c>YPowerOutput.VOLTAGE_OUT5V</c>, <c>YPowerOutput.VOLTAGE_OUT4V7</c> and
+    ///   <c>YPowerOutput.VOLTAGE_OUT1V8</c> corresponding to the voltage on the power output featured by the module
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_VOLTAGE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YPowerOutput.VOLTAGE_INVALID</c>.
     /// </para>
     ///-
     function get_voltage():Integer;
@@ -123,15 +123,15 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>Y_VOLTAGE_OFF</c>, <c>Y_VOLTAGE_OUT3V3</c>, <c>Y_VOLTAGE_OUT5V</c>,
-    ///   <c>Y_VOLTAGE_OUT4V7</c> and <c>Y_VOLTAGE_OUT1V8</c> corresponding to the voltage on the power
-    ///   output provided by the
+    ///   a value among <c>YPowerOutput.VOLTAGE_OFF</c>, <c>YPowerOutput.VOLTAGE_OUT3V3</c>,
+    ///   <c>YPowerOutput.VOLTAGE_OUT5V</c>, <c>YPowerOutput.VOLTAGE_OUT4V7</c> and
+    ///   <c>YPowerOutput.VOLTAGE_OUT1V8</c> corresponding to the voltage on the power output provided by the
     ///   module
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.

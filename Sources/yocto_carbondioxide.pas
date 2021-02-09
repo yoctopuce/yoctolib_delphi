@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_carbondioxide.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_carbondioxide.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
@@ -105,7 +105,7 @@ type
     ///   an integer corresponding to the Automatic Baseline Calibration period, in hours
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ABCPERIOD_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCarbonDioxide.ABCPERIOD_INVALID</c>.
     /// </para>
     ///-
     function get_abcPeriod():LongInt;
@@ -129,7 +129,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -253,7 +253,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -281,7 +281,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_altitude.pas 39658 2020-03-12 15:36:29Z seb $
+ *  $Id: yocto_altitude.pas 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements yFindAltitude(), the high-level API for Altitude functions
  *
@@ -111,7 +111,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -139,7 +139,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -162,7 +162,7 @@ type
     ///   the altitude (QNH)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_QNH_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAltitude.QNH_INVALID</c>.
     /// </para>
     ///-
     function get_qnh():double;
@@ -182,7 +182,7 @@ type
     ///   altitude
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_TECHNOLOGY_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAltitude.TECHNOLOGY_INVALID</c>.
     /// </para>
     ///-
     function get_technology():string;

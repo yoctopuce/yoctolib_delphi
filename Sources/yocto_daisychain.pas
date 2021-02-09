@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_daisychain.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_daisychain.pas 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements yFindDaisyChain(), the high-level API for DaisyChain functions
  *
@@ -105,12 +105,12 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_DAISYSTATE_READY</c>, <c>Y_DAISYSTATE_IS_CHILD</c>,
-    ///   <c>Y_DAISYSTATE_FIRMWARE_MISMATCH</c>, <c>Y_DAISYSTATE_CHILD_MISSING</c> and
-    ///   <c>Y_DAISYSTATE_CHILD_LOST</c> corresponding to the state of the daisy-link between modules
+    ///   a value among <c>YDaisyChain.DAISYSTATE_READY</c>, <c>YDaisyChain.DAISYSTATE_IS_CHILD</c>,
+    ///   <c>YDaisyChain.DAISYSTATE_FIRMWARE_MISMATCH</c>, <c>YDaisyChain.DAISYSTATE_CHILD_MISSING</c> and
+    ///   <c>YDaisyChain.DAISYSTATE_CHILD_LOST</c> corresponding to the state of the daisy-link between modules
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_DAISYSTATE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDaisyChain.DAISYSTATE_INVALID</c>.
     /// </para>
     ///-
     function get_daisyState():Integer;
@@ -127,7 +127,7 @@ type
     ///   an integer corresponding to the number of child nodes currently detected
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CHILDCOUNT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDaisyChain.CHILDCOUNT_INVALID</c>.
     /// </para>
     ///-
     function get_childCount():LongInt;
@@ -144,7 +144,7 @@ type
     ///   an integer corresponding to the number of child nodes expected in normal conditions
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_REQUIREDCHILDCOUNT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDaisyChain.REQUIREDCHILDCOUNT_INVALID</c>.
     /// </para>
     ///-
     function get_requiredChildCount():LongInt;
@@ -167,7 +167,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_currentloopoutput.pas 38913 2019-12-20 18:59:49Z mvuilleu $
+ *  $Id: yocto_currentloopoutput.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
  *
@@ -113,7 +113,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -133,7 +133,7 @@ type
     ///   a floating point number corresponding to the loop current set point in mA
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CURRENT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCurrentLoopOutput.CURRENT_INVALID</c>.
     /// </para>
     ///-
     function get_current():double;
@@ -158,7 +158,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -178,7 +178,7 @@ type
     ///   a floating point number corresponding to the current in the loop at device startup, in mA
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CURRENTATSTARTUP_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCurrentLoopOutput.CURRENTATSTARTUP_INVALID</c>.
     /// </para>
     ///-
     function get_currentAtStartUp():double;
@@ -195,11 +195,11 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_LOOPPOWER_NOPWR</c>, <c>Y_LOOPPOWER_LOWPWR</c> and <c>Y_LOOPPOWER_POWEROK</c>
-    ///   corresponding to the loop powerstate
+    ///   a value among <c>YCurrentLoopOutput.LOOPPOWER_NOPWR</c>, <c>YCurrentLoopOutput.LOOPPOWER_LOWPWR</c>
+    ///   and <c>YCurrentLoopOutput.LOOPPOWER_POWEROK</c> corresponding to the loop powerstate
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_LOOPPOWER_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCurrentLoopOutput.LOOPPOWER_INVALID</c>.
     /// </para>
     ///-
     function get_loopPower():Integer;
@@ -294,7 +294,7 @@ type
     ///   total duration of the transition, in milliseconds
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     ///-
     function currentMove(mA_target: double; ms_duration: LongInt):LongInt; overload; virtual;

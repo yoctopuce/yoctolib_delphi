@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_digitalio.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_digitalio.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindDigitalIO(), the high-level API for DigitalIO functions
  *
@@ -131,7 +131,7 @@ type
     ///   representing a channel
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PORTSTATE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDigitalIO.PORTSTATE_INVALID</c>.
     /// </para>
     ///-
     function get_portState():LongInt;
@@ -160,7 +160,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -181,7 +181,7 @@ type
     ///   an input, 1 makes it an output
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PORTDIRECTION_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDigitalIO.PORTDIRECTION_INVALID</c>.
     /// </para>
     ///-
     function get_portDirection():LongInt;
@@ -202,7 +202,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -224,7 +224,7 @@ type
     ///   an integer corresponding to the electrical interface for each bit of the port
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PORTOPENDRAIN_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDigitalIO.PORTOPENDRAIN_INVALID</c>.
     /// </para>
     ///-
     function get_portOpenDrain():LongInt;
@@ -246,7 +246,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -268,7 +268,7 @@ type
     ///   an integer corresponding to the polarity of all the bits of the port
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PORTPOLARITY_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDigitalIO.PORTPOLARITY_INVALID</c>.
     /// </para>
     ///-
     function get_portPolarity():LongInt;
@@ -291,7 +291,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -314,7 +314,7 @@ type
     ///   an integer corresponding to the port state diagnostics (Yocto-IO and Yocto-MaxiIO-V2 only)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PORTDIAGS_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDigitalIO.PORTDIAGS_INVALID</c>.
     /// </para>
     ///-
     function get_portDiags():LongInt;
@@ -332,7 +332,7 @@ type
     ///   an integer corresponding to the number of bits (i.e
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PORTSIZE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDigitalIO.PORTSIZE_INVALID</c>.
     /// </para>
     ///-
     function get_portSize():LongInt;
@@ -346,11 +346,11 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_OUTPUTVOLTAGE_USB_5V</c>, <c>Y_OUTPUTVOLTAGE_USB_3V</c> and
-    ///   <c>Y_OUTPUTVOLTAGE_EXT_V</c> corresponding to the voltage source used to drive output bits
+    ///   a value among <c>YDigitalIO.OUTPUTVOLTAGE_USB_5V</c>, <c>YDigitalIO.OUTPUTVOLTAGE_USB_3V</c> and
+    ///   <c>YDigitalIO.OUTPUTVOLTAGE_EXT_V</c> corresponding to the voltage source used to drive output bits
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_OUTPUTVOLTAGE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDigitalIO.OUTPUTVOLTAGE_INVALID</c>.
     /// </para>
     ///-
     function get_outputVoltage():Integer;
@@ -365,13 +365,13 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>Y_OUTPUTVOLTAGE_USB_5V</c>, <c>Y_OUTPUTVOLTAGE_USB_3V</c> and
-    ///   <c>Y_OUTPUTVOLTAGE_EXT_V</c> corresponding to the voltage source used to drive output bits
+    ///   a value among <c>YDigitalIO.OUTPUTVOLTAGE_USB_5V</c>, <c>YDigitalIO.OUTPUTVOLTAGE_USB_3V</c> and
+    ///   <c>YDigitalIO.OUTPUTVOLTAGE_EXT_V</c> corresponding to the voltage source used to drive output bits
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -471,7 +471,7 @@ type
     ///   the state of the bit (1 or 0)
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -509,7 +509,7 @@ type
     ///   the bit number; lowest bit has index 0
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -532,7 +532,7 @@ type
     ///   Remember to call the   <c>saveToFlash()</c> method to make sure the setting is kept after a reboot.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -551,7 +551,7 @@ type
     ///   the bit number; lowest bit has index 0
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -573,7 +573,7 @@ type
     ///   Remember to call the   <c>saveToFlash()</c> method to make sure the setting is kept after a reboot.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -591,7 +591,7 @@ type
     ///   the bit number; lowest bit has index 0
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -614,7 +614,7 @@ type
     ///   <c>saveToFlash()</c> method to make sure the setting is kept after a reboot.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -658,7 +658,7 @@ type
     ///   resolution is not guaranteed up to the millisecond.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -685,7 +685,7 @@ type
     ///   resolution is not guaranteed up to the millisecond.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.

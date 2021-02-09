@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_colorledcluster.pas 41109 2020-06-29 12:40:42Z seb $
+ *  $Id: yocto_colorledcluster.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -117,7 +117,7 @@ type
     ///   an integer corresponding to the number of LEDs currently handled by the device
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ACTIVELEDCOUNT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YColorLedCluster.ACTIVELEDCOUNT_INVALID</c>.
     /// </para>
     ///-
     function get_activeLedCount():LongInt;
@@ -138,7 +138,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -155,11 +155,11 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_LEDTYPE_RGB</c> or <c>Y_LEDTYPE_RGBW</c>, according to the RGB LED type currently
-    ///   handled by the device
+    ///   either <c>YColorLedCluster.LEDTYPE_RGB</c> or <c>YColorLedCluster.LEDTYPE_RGBW</c>, according to
+    ///   the RGB LED type currently handled by the device
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_LEDTYPE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YColorLedCluster.LEDTYPE_INVALID</c>.
     /// </para>
     ///-
     function get_ledType():Integer;
@@ -175,13 +175,13 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_LEDTYPE_RGB</c> or <c>Y_LEDTYPE_RGBW</c>, according to the RGB LED type currently
-    ///   handled by the device
+    ///   either <c>YColorLedCluster.LEDTYPE_RGB</c> or <c>YColorLedCluster.LEDTYPE_RGBW</c>, according to
+    ///   the RGB LED type currently handled by the device
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -201,7 +201,7 @@ type
     ///   an integer corresponding to the maximum number of LEDs that the device can handle
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_MAXLEDCOUNT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YColorLedCluster.MAXLEDCOUNT_INVALID</c>.
     /// </para>
     ///-
     function get_maxLedCount():LongInt;
@@ -218,7 +218,7 @@ type
     ///   an integer corresponding to the maximum number of sequences that the device can handle
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_BLINKSEQMAXCOUNT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YColorLedCluster.BLINKSEQMAXCOUNT_INVALID</c>.
     /// </para>
     ///-
     function get_blinkSeqMaxCount():LongInt;
@@ -235,7 +235,7 @@ type
     ///   an integer corresponding to the maximum length of sequences
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_BLINKSEQMAXSIZE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YColorLedCluster.BLINKSEQMAXSIZE_INVALID</c>.
     /// </para>
     ///-
     function get_blinkSeqMaxSize():LongInt;
@@ -337,7 +337,7 @@ type
     ///   new color.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -363,7 +363,7 @@ type
     ///   new color.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -389,7 +389,7 @@ type
     ///   new color.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -414,7 +414,7 @@ type
     ///   new color.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -443,7 +443,7 @@ type
     ///   transition duration in ms
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -476,7 +476,7 @@ type
     ///   transition duration in ms
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -503,7 +503,7 @@ type
     ///   transition duration in ms
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -530,7 +530,7 @@ type
     ///   transition duration in ms
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -553,7 +553,7 @@ type
     ///   sequence index.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -577,7 +577,7 @@ type
     ///   index of the sequence to chain.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -598,7 +598,7 @@ type
     ///   sequence index.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -629,7 +629,7 @@ type
     ///   execution offset in ms.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -660,7 +660,7 @@ type
     ///   execution offset in ms.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -691,7 +691,7 @@ type
     ///   number of periods to show on LEDs.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -712,7 +712,7 @@ type
     ///   affected LED count.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -732,7 +732,7 @@ type
     ///   index of the sequence to start.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -752,7 +752,7 @@ type
     ///   index of the sequence to stop.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -772,7 +772,7 @@ type
     ///   index of the sequence to reset
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -797,7 +797,7 @@ type
     ///   0 to keep the sequence turned off and 1 to start it automatically.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -821,7 +821,7 @@ type
     ///   sequence running speed (-1000...1000).
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -839,7 +839,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -862,7 +862,7 @@ type
     ///   index of the sequence to start.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -885,7 +885,7 @@ type
     ///   the binary buffer to send
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -908,7 +908,7 @@ type
     ///   a list of 24bit RGB codes, in the form 0xRRGGBB
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -935,7 +935,7 @@ type
     ///   transition duration in ms
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -959,7 +959,7 @@ type
     ///   transition duration in ms
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -982,7 +982,7 @@ type
     ///   the binary buffer to send
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1005,7 +1005,7 @@ type
     ///   a list of 24bit HSL codes, in the form 0xHHSSLL
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1029,7 +1029,7 @@ type
     ///   transition duration in ms
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1056,7 +1056,7 @@ type
     ///   transition duration in ms
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.

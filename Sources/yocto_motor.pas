@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_motor.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_motor.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindMotor(), the high-level API for Motor functions
  *
@@ -135,12 +135,13 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_MOTORSTATUS_IDLE</c>, <c>Y_MOTORSTATUS_BRAKE</c>, <c>Y_MOTORSTATUS_FORWD</c>,
-    ///   <c>Y_MOTORSTATUS_BACKWD</c>, <c>Y_MOTORSTATUS_LOVOLT</c>, <c>Y_MOTORSTATUS_HICURR</c>,
-    ///   <c>Y_MOTORSTATUS_HIHEAT</c> and <c>Y_MOTORSTATUS_FAILSF</c>
+    ///   a value among <c>YMotor.MOTORSTATUS_IDLE</c>, <c>YMotor.MOTORSTATUS_BRAKE</c>,
+    ///   <c>YMotor.MOTORSTATUS_FORWD</c>, <c>YMotor.MOTORSTATUS_BACKWD</c>,
+    ///   <c>YMotor.MOTORSTATUS_LOVOLT</c>, <c>YMotor.MOTORSTATUS_HICURR</c>,
+    ///   <c>YMotor.MOTORSTATUS_HIHEAT</c> and <c>YMotor.MOTORSTATUS_FAILSF</c>
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_MOTORSTATUS_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMotor.MOTORSTATUS_INVALID</c>.
     /// </para>
     ///-
     function get_motorStatus():Integer;
@@ -166,7 +167,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -186,7 +187,7 @@ type
     ///   a floating point number corresponding to the power sent to the motor, as a percentage between -100% and +100%
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_DRIVINGFORCE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMotor.DRIVINGFORCE_INVALID</c>.
     /// </para>
     ///-
     function get_drivingForce():double;
@@ -207,7 +208,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -228,7 +229,7 @@ type
     ///   a floating point number corresponding to the braking force applied to the motor, as a percentage
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_BRAKINGFORCE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMotor.BRAKINGFORCE_INVALID</c>.
     /// </para>
     ///-
     function get_brakingForce():double;
@@ -256,7 +257,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -281,7 +282,7 @@ type
     ///   and prevents further current draw
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CUTOFFVOLTAGE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMotor.CUTOFFVOLTAGE_INVALID</c>.
     /// </para>
     ///-
     function get_cutOffVoltage():double;
@@ -301,7 +302,7 @@ type
     ///   switches to error state
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_OVERCURRENTLIMIT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMotor.OVERCURRENTLIMIT_INVALID</c>.
     /// </para>
     ///-
     function get_overCurrentLimit():LongInt;
@@ -326,7 +327,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -353,7 +354,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -373,7 +374,7 @@ type
     ///   a floating point number corresponding to the PWM frequency used to control the motor
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_FREQUENCY_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMotor.FREQUENCY_INVALID</c>.
     /// </para>
     ///-
     function get_frequency():double;
@@ -392,7 +393,7 @@ type
     ///   it start up
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_STARTERTIME_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMotor.STARTERTIME_INVALID</c>.
     /// </para>
     ///-
     function get_starterTime():LongInt;
@@ -415,7 +416,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -440,7 +441,7 @@ type
     ///   receiving any instruction from the control process
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_FAILSAFETIMEOUT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMotor.FAILSAFETIMEOUT_INVALID</c>.
     /// </para>
     ///-
     function get_failSafeTimeout():LongInt;
@@ -466,7 +467,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -589,7 +590,7 @@ type
     ///   duration (in ms) of the transition
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -610,7 +611,7 @@ type
     ///   duration (in ms) of the transition
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.

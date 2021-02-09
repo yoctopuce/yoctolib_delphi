@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_hubport.pas 42060 2020-10-14 10:02:12Z seb $
+ *  $Id: yocto_hubport.pas 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements yFindHubPort(), the high-level API for HubPort functions
  *
@@ -73,7 +73,7 @@ type
   ////
   /// <summary>
   ///   TYHubPort Class: YoctoHub slave port control interface, available for instance in the
-  ///   YoctoHub-Ethernet, the YoctoHub-GSM-3G-EU, the YoctoHub-Shield or the YoctoHub-Wireless-n
+  ///   YoctoHub-Ethernet, the YoctoHub-GSM-4G, the YoctoHub-Shield or the YoctoHub-Wireless-n
   /// <para>
   ///   The <c>YHubPort</c> class provides control over the power supply for slave ports
   ///   on a YoctoHub. It provide information about the device connected to it.
@@ -109,11 +109,11 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_ENABLED_FALSE</c> or <c>Y_ENABLED_TRUE</c>, according to true if the YoctoHub port is
-    ///   powered, false otherwise
+    ///   either <c>YHubPort.ENABLED_FALSE</c> or <c>YHubPort.ENABLED_TRUE</c>, according to true if the
+    ///   YoctoHub port is powered, false otherwise
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ENABLED_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YHubPort.ENABLED_INVALID</c>.
     /// </para>
     ///-
     function get_enabled():Integer;
@@ -129,12 +129,13 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_ENABLED_FALSE</c> or <c>Y_ENABLED_TRUE</c>, according to the activation of the YoctoHub port
+    ///   either <c>YHubPort.ENABLED_FALSE</c> or <c>YHubPort.ENABLED_TRUE</c>, according to the activation
+    ///   of the YoctoHub port
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -151,11 +152,12 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_PORTSTATE_OFF</c>, <c>Y_PORTSTATE_OVRLD</c>, <c>Y_PORTSTATE_ON</c>,
-    ///   <c>Y_PORTSTATE_RUN</c> and <c>Y_PORTSTATE_PROG</c> corresponding to the current state of the YoctoHub port
+    ///   a value among <c>YHubPort.PORTSTATE_OFF</c>, <c>YHubPort.PORTSTATE_OVRLD</c>,
+    ///   <c>YHubPort.PORTSTATE_ON</c>, <c>YHubPort.PORTSTATE_RUN</c> and <c>YHubPort.PORTSTATE_PROG</c>
+    ///   corresponding to the current state of the YoctoHub port
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PORTSTATE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YHubPort.PORTSTATE_INVALID</c>.
     /// </para>
     ///-
     function get_portState():Integer;
@@ -174,7 +176,7 @@ type
     ///   an integer corresponding to the current baud rate used by this YoctoHub port, in kbps
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_BAUDRATE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YHubPort.BAUDRATE_INVALID</c>.
     /// </para>
     ///-
     function get_baudRate():LongInt;

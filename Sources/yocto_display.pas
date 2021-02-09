@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 42265 2020-11-02 15:38:26Z seb $
+ * $Id: yocto_display.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -153,11 +153,11 @@ public
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_ENABLED_FALSE</c> or <c>Y_ENABLED_TRUE</c>, according to true if the screen is powered,
-    ///   false otherwise
+    ///   either <c>YDisplay.ENABLED_FALSE</c> or <c>YDisplay.ENABLED_TRUE</c>, according to true if the
+    ///   screen is powered, false otherwise
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ENABLED_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDisplay.ENABLED_INVALID</c>.
     /// </para>
     ///-
     function get_enabled():Integer;
@@ -171,12 +171,13 @@ public
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_ENABLED_FALSE</c> or <c>Y_ENABLED_TRUE</c>, according to the power state of the display
+    ///   either <c>YDisplay.ENABLED_FALSE</c> or <c>YDisplay.ENABLED_TRUE</c>, according to the power state
+    ///   of the display
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -196,7 +197,7 @@ public
     ///   a string corresponding to the name of the sequence to play when the displayed is powered on
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_STARTUPSEQ_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDisplay.STARTUPSEQ_INVALID</c>.
     /// </para>
     ///-
     function get_startupSeq():string;
@@ -217,7 +218,7 @@ public
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -237,7 +238,7 @@ public
     ///   an integer corresponding to the luminosity of the  module informative LEDs (from 0 to 100)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_BRIGHTNESS_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDisplay.BRIGHTNESS_INVALID</c>.
     /// </para>
     ///-
     function get_brightness():LongInt;
@@ -259,7 +260,7 @@ public
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -276,11 +277,12 @@ public
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_ORIENTATION_LEFT</c>, <c>Y_ORIENTATION_UP</c>, <c>Y_ORIENTATION_RIGHT</c> and
-    ///   <c>Y_ORIENTATION_DOWN</c> corresponding to the currently selected display orientation
+    ///   a value among <c>YDisplay.ORIENTATION_LEFT</c>, <c>YDisplay.ORIENTATION_UP</c>,
+    ///   <c>YDisplay.ORIENTATION_RIGHT</c> and <c>YDisplay.ORIENTATION_DOWN</c> corresponding to the
+    ///   currently selected display orientation
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ORIENTATION_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDisplay.ORIENTATION_INVALID</c>.
     /// </para>
     ///-
     function get_orientation():Integer;
@@ -296,13 +298,13 @@ public
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>Y_ORIENTATION_LEFT</c>, <c>Y_ORIENTATION_UP</c>, <c>Y_ORIENTATION_RIGHT</c> and
-    ///   <c>Y_ORIENTATION_DOWN</c> corresponding to the display orientation
+    ///   a value among <c>YDisplay.ORIENTATION_LEFT</c>, <c>YDisplay.ORIENTATION_UP</c>,
+    ///   <c>YDisplay.ORIENTATION_RIGHT</c> and <c>YDisplay.ORIENTATION_DOWN</c> corresponding to the display orientation
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -322,7 +324,7 @@ public
     ///   an integer corresponding to the display width, in pixels
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_DISPLAYWIDTH_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDisplay.DISPLAYWIDTH_INVALID</c>.
     /// </para>
     ///-
     function get_displayWidth():LongInt;
@@ -339,7 +341,7 @@ public
     ///   an integer corresponding to the display height, in pixels
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_DISPLAYHEIGHT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDisplay.DISPLAYHEIGHT_INVALID</c>.
     /// </para>
     ///-
     function get_displayHeight():LongInt;
@@ -353,11 +355,11 @@ public
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_DISPLAYTYPE_MONO</c>, <c>Y_DISPLAYTYPE_GRAY</c> and <c>Y_DISPLAYTYPE_RGB</c>
-    ///   corresponding to the display type: monochrome, gray levels or full color
+    ///   a value among <c>YDisplay.DISPLAYTYPE_MONO</c>, <c>YDisplay.DISPLAYTYPE_GRAY</c> and
+    ///   <c>YDisplay.DISPLAYTYPE_RGB</c> corresponding to the display type: monochrome, gray levels or full color
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_DISPLAYTYPE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDisplay.DISPLAYTYPE_INVALID</c>.
     /// </para>
     ///-
     function get_displayType():Integer;
@@ -374,7 +376,7 @@ public
     ///   an integer corresponding to the width of the layers to draw on, in pixels
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_LAYERWIDTH_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDisplay.LAYERWIDTH_INVALID</c>.
     /// </para>
     ///-
     function get_layerWidth():LongInt;
@@ -391,7 +393,7 @@ public
     ///   an integer corresponding to the height of the layers to draw on, in pixels
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_LAYERHEIGHT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDisplay.LAYERHEIGHT_INVALID</c>.
     /// </para>
     ///-
     function get_layerHeight():LongInt;
@@ -408,7 +410,7 @@ public
     ///   an integer corresponding to the number of available layers to draw on
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_LAYERCOUNT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDisplay.LAYERCOUNT_INVALID</c>.
     /// </para>
     ///-
     function get_layerCount():LongInt;
@@ -502,7 +504,7 @@ public
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -524,7 +526,7 @@ public
     ///   duration of the brightness transition, in milliseconds.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -541,7 +543,7 @@ public
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -562,7 +564,7 @@ public
     ///   the name of the newly created sequence
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -581,7 +583,7 @@ public
     ///   the name of the newly created sequence
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -605,7 +607,7 @@ public
     ///   the duration to wait, in milliseconds
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -621,7 +623,7 @@ public
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -645,7 +647,7 @@ public
     ///   binary buffer with the content to set
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -671,7 +673,7 @@ public
     ///   the identifier of the destination layer (a number in range 0..layerCount-1)
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -698,7 +700,7 @@ public
     ///   the second layer (a number in range 0..layerCount-1)
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -808,7 +810,7 @@ public
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -826,7 +828,7 @@ public
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -848,7 +850,7 @@ public
     ///   the desired pen color, as a 24-bit RGB value
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -872,7 +874,7 @@ public
     ///   the desired gray level, from 0 to 255
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -891,7 +893,7 @@ public
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -916,7 +918,7 @@ public
     ///   disable it.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -937,7 +939,7 @@ public
     ///   the distance from top of layer, in pixels
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -964,7 +966,7 @@ public
     ///   the distance from top of layer to the bottom border of the rectangle, in pixels
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -991,7 +993,7 @@ public
     ///   the distance from top of layer to the bottom border of the rectangle, in pixels
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1015,7 +1017,7 @@ public
     ///   the radius of the circle, in pixels
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1039,7 +1041,7 @@ public
     ///   the radius of the disc, in pixels
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1063,7 +1065,7 @@ public
     ///   Yocto-MiniDisplay).
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1087,21 +1089,21 @@ public
     ///   the distance from top of layer to the text anchor point, in pixels
     /// </param>
     /// <param name="anchor">
-    ///   the text anchor point, chosen among the <c>Y_ALIGN</c> enumeration:
-    ///   <c>Y_ALIGN_TOP_LEFT</c>,    <c>Y_ALIGN_CENTER_LEFT</c>,    <c>Y_ALIGN_BASELINE_LEFT</c>,   
-    ///   <c>Y_ALIGN_BOTTOM_LEFT</c>,
-    ///   <c>Y_ALIGN_TOP_CENTER</c>,  <c>Y_ALIGN_CENTER</c>,         <c>Y_ALIGN_BASELINE_CENTER</c>, 
-    ///   <c>Y_ALIGN_BOTTOM_CENTER</c>,
-    ///   <c>Y_ALIGN_TOP_DECIMAL</c>, <c>Y_ALIGN_CENTER_DECIMAL</c>, <c>Y_ALIGN_BASELINE_DECIMAL</c>,
-    ///   <c>Y_ALIGN_BOTTOM_DECIMAL</c>,
-    ///   <c>Y_ALIGN_TOP_RIGHT</c>,   <c>Y_ALIGN_CENTER_RIGHT</c>,   <c>Y_ALIGN_BASELINE_RIGHT</c>,  
-    ///   <c>Y_ALIGN_BOTTOM_RIGHT</c>.
+    ///   the text anchor point, chosen among the <c>YDisplayLayer.ALIGN</c> enumeration:
+    ///   <c>YDisplayLayer.ALIGN_TOP_LEFT</c>,         <c>YDisplayLayer.ALIGN_CENTER_LEFT</c>,
+    ///   <c>YDisplayLayer.ALIGN_BASELINE_LEFT</c>,    <c>YDisplayLayer.ALIGN_BOTTOM_LEFT</c>,
+    ///   <c>YDisplayLayer.ALIGN_TOP_CENTER</c>,       <c>YDisplayLayer.ALIGN_CENTER</c>,
+    ///   <c>YDisplayLayer.ALIGN_BASELINE_CENTER</c>,  <c>YDisplayLayer.ALIGN_BOTTOM_CENTER</c>,
+    ///   <c>YDisplayLayer.ALIGN_TOP_DECIMAL</c>,      <c>YDisplayLayer.ALIGN_CENTER_DECIMAL</c>,
+    ///   <c>YDisplayLayer.ALIGN_BASELINE_DECIMAL</c>, <c>YDisplayLayer.ALIGN_BOTTOM_DECIMAL</c>,
+    ///   <c>YDisplayLayer.ALIGN_TOP_RIGHT</c>,        <c>YDisplayLayer.ALIGN_CENTER_RIGHT</c>,
+    ///   <c>YDisplayLayer.ALIGN_BASELINE_RIGHT</c>,   <c>YDisplayLayer.ALIGN_BOTTOM_RIGHT</c>.
     /// </param>
     /// <param name="text">
     ///   the text string to draw
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1129,7 +1131,7 @@ public
     ///   the GIF file name
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1167,7 +1169,7 @@ public
     ///   255 = white), or -1 to leave the pixels unchanged
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1188,7 +1190,7 @@ public
     ///   the distance from top of layer, in pixels
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1211,7 +1213,7 @@ public
     ///   the distance from top of layer to the end point of the line, in pixels
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1233,7 +1235,7 @@ public
     ///   the message to display
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1260,7 +1262,7 @@ public
     ///   the distance from top of layer to the bottom margin, in pixels
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1280,7 +1282,7 @@ public
     ///   255 = white), or -1 for transparent
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1299,7 +1301,7 @@ public
     ///   <c>false</c> to wrap on the last column anyway.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1315,7 +1317,7 @@ public
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1342,7 +1344,7 @@ public
     ///   0 if the scrolling should be immediate.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1361,7 +1363,7 @@ public
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1377,7 +1379,7 @@ public
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.

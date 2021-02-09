@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_colorled.pas 41109 2020-06-29 12:40:42Z seb $
+ *  $Id: yocto_colorled.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindColorLed(), the high-level API for ColorLed functions
  *
@@ -126,7 +126,7 @@ type
     ///   an integer corresponding to the current RGB color of the LED
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_RGBCOLOR_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YColorLed.RGBCOLOR_INVALID</c>.
     /// </para>
     ///-
     function get_rgbColor():LongInt;
@@ -146,7 +146,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -166,7 +166,7 @@ type
     ///   an integer corresponding to the current HSL color of the LED
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_HSLCOLOR_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YColorLed.HSLCOLOR_INVALID</c>.
     /// </para>
     ///-
     function get_hslColor():LongInt;
@@ -186,7 +186,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -215,7 +215,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -244,7 +244,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -264,7 +264,7 @@ type
     ///   an integer corresponding to the configured color to be displayed when the module is turned on
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_RGBCOLORATPOWERON_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YColorLed.RGBCOLORATPOWERON_INVALID</c>.
     /// </para>
     ///-
     function get_rgbColorAtPowerOn():LongInt;
@@ -285,7 +285,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -305,7 +305,7 @@ type
     ///   an integer corresponding to the current length of the blinking sequence
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_BLINKSEQSIZE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YColorLed.BLINKSEQSIZE_INVALID</c>.
     /// </para>
     ///-
     function get_blinkSeqSize():LongInt;
@@ -322,7 +322,7 @@ type
     ///   an integer corresponding to the maximum length of the blinking sequence
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_BLINKSEQMAXSIZE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YColorLed.BLINKSEQMAXSIZE_INVALID</c>.
     /// </para>
     ///-
     function get_blinkSeqMaxSize():LongInt;
@@ -343,7 +343,7 @@ type
     ///   an integer
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_BLINKSEQSIGNATURE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YColorLed.BLINKSEQSIGNATURE_INVALID</c>.
     /// </para>
     ///-
     function get_blinkSeqSignature():LongInt;
@@ -442,7 +442,7 @@ type
     ///   duration of the color transition, in milliseconds.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -462,7 +462,7 @@ type
     ///   duration of the color transition, in milliseconds.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -478,7 +478,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -491,7 +491,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -504,7 +504,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -825,7 +825,7 @@ implementation
   /// <para>
   /// </para>
   /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
+  ///   YAPI.SUCCESS if the call succeeds.
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns a negative error code.
@@ -882,7 +882,7 @@ implementation
   /// <para>
   /// </para>
   /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
+  ///   YAPI.SUCCESS if the call succeeds.
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns a negative error code.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_gyro.pas 42951 2020-12-14 09:43:29Z seb $
+ * $Id: yocto_gyro.pas 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  * Implements yFindGyro(), the high-level API for Gyro functions
  *
@@ -361,7 +361,7 @@ type
     ///   an integer corresponding to the measure update frequency, measured in Hz
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_BANDWIDTH_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YGyro.BANDWIDTH_INVALID</c>.
     /// </para>
     ///-
     function get_bandwidth():LongInt;
@@ -384,7 +384,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -405,7 +405,7 @@ type
     ///   floating point number
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_XVALUE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YGyro.XVALUE_INVALID</c>.
     /// </para>
     ///-
     function get_xValue():double;
@@ -423,7 +423,7 @@ type
     ///   floating point number
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_YVALUE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YGyro.YVALUE_INVALID</c>.
     /// </para>
     ///-
     function get_yValue():double;
@@ -441,7 +441,7 @@ type
     ///   floating point number
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ZVALUE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YGyro.ZVALUE_INVALID</c>.
     /// </para>
     ///-
     function get_zValue():double;

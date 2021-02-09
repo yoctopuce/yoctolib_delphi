@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 42060 2020-10-14 10:02:12Z seb $
+ * $Id: yocto_messagebox.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *
@@ -121,7 +121,7 @@ type
     ///   an integer corresponding to the number of message storage slots currently in use
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SLOTSINUSE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMessageBox.SLOTSINUSE_INVALID</c>.
     /// </para>
     ///-
     function get_slotsInUse():LongInt;
@@ -138,7 +138,7 @@ type
     ///   an integer corresponding to the total number of message storage slots on the SIM card
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SLOTSCOUNT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMessageBox.SLOTSCOUNT_INVALID</c>.
     /// </para>
     ///-
     function get_slotsCount():LongInt;
@@ -157,7 +157,7 @@ type
     ///   an integer corresponding to the number of SMS units sent so far
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PDUSENT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMessageBox.PDUSENT_INVALID</c>.
     /// </para>
     ///-
     function get_pduSent():LongInt;
@@ -176,7 +176,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -196,7 +196,7 @@ type
     ///   an integer corresponding to the number of SMS units received so far
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PDURECEIVED_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMessageBox.PDURECEIVED_INVALID</c>.
     /// </para>
     ///-
     function get_pduReceived():LongInt;
@@ -215,7 +215,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -326,7 +326,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -353,7 +353,7 @@ type
     ///   the text to be sent in the message
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -381,7 +381,7 @@ type
     ///   the text to be sent in the message
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -400,7 +400,7 @@ type
     ///   national number, or in international format starting with a plus sign
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -596,7 +596,7 @@ type
     ///   the text to be sent in the message
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     ///-
     function addText(val: string):LongInt; overload; virtual;
@@ -615,7 +615,7 @@ type
     ///   an array of special unicode characters
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     ///-
     function addUnicodeData(val: TLongIntArray):LongInt; overload; virtual;
@@ -655,7 +655,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 41171 2020-07-02 17:49:00Z mvuilleu $
+ * $Id: yocto_api.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -120,7 +120,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '42982';
+  YOCTO_API_BUILD_NO        = '43781';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -615,7 +615,7 @@ type
     ///   loaded function parameters, in milliseconds
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -668,7 +668,7 @@ type
     ///   an identifier of type <c>YFUN_DESCR</c>.
     /// </returns>
     /// <para>
-    ///   If the function has never been contacted, the returned value is <c>Y_FUNCTIONDESCRIPTOR_INVALID</c>.
+    ///   If the function has never been contacted, the returned value is <c>Y$CLASSNAME$.FUNCTIONDESCRIPTOR_INVALID</c>.
     /// </para>
     ///-
     function get_functionDescriptor():YFUN_DESCR;
@@ -727,7 +727,7 @@ type
     ///   a string corresponding to the logical name of the function
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_LOGICALNAME_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YFunction.LOGICALNAME_INVALID</c>.
     /// </para>
     ///-
     function get_logicalName():string;
@@ -750,7 +750,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -770,7 +770,7 @@ type
     ///   a string corresponding to a short string representing the current state of the function
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ADVERTISEDVALUE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YFunction.ADVERTISEDVALUE_INVALID</c>.
     /// </para>
     ///-
     function get_advertisedValue():string;
@@ -862,7 +862,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -880,7 +880,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -935,7 +935,7 @@ type
     ///   a string corresponding to the serial number of the module, as set by the factory.
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns YModule.SERIALNUMBER_INVALID.
+    ///   On failure, throws an exception or returns YFunction.SERIALNUMBER_INVALID.
     /// </para>
     ///-
     function get_serialNumber():string; overload; virtual;
@@ -1159,7 +1159,7 @@ type
     ///   a string corresponding to the commercial name of the module, as set by the factory
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PRODUCTNAME_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YModule.PRODUCTNAME_INVALID</c>.
     /// </para>
     ///-
     function get_productName():string;
@@ -1176,7 +1176,7 @@ type
     ///   a string corresponding to the serial number of the module, as set by the factory
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SERIALNUMBER_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YModule.SERIALNUMBER_INVALID</c>.
     /// </para>
     ///-
     function get_serialNumber():string; override;
@@ -1193,7 +1193,7 @@ type
     ///   an integer corresponding to the USB device identifier of the module
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PRODUCTID_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YModule.PRODUCTID_INVALID</c>.
     /// </para>
     ///-
     function get_productId():LongInt;
@@ -1211,7 +1211,7 @@ type
     ///   an integer corresponding to the release number of the module hardware, preprogrammed at the factory
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PRODUCTRELEASE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YModule.PRODUCTRELEASE_INVALID</c>.
     /// </para>
     ///-
     function get_productRelease():LongInt;
@@ -1228,7 +1228,7 @@ type
     ///   a string corresponding to the version of the firmware embedded in the module
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_FIRMWARERELEASE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YModule.FIRMWARERELEASE_INVALID</c>.
     /// </para>
     ///-
     function get_firmwareRelease():string;
@@ -1242,11 +1242,11 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_PERSISTENTSETTINGS_LOADED</c>, <c>Y_PERSISTENTSETTINGS_SAVED</c> and
-    ///   <c>Y_PERSISTENTSETTINGS_MODIFIED</c> corresponding to the current state of persistent module settings
+    ///   a value among <c>YModule.PERSISTENTSETTINGS_LOADED</c>, <c>YModule.PERSISTENTSETTINGS_SAVED</c> and
+    ///   <c>YModule.PERSISTENTSETTINGS_MODIFIED</c> corresponding to the current state of persistent module settings
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PERSISTENTSETTINGS_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YModule.PERSISTENTSETTINGS_INVALID</c>.
     /// </para>
     ///-
     function get_persistentSettings():Integer;
@@ -1265,7 +1265,7 @@ type
     ///   an integer corresponding to the luminosity of the  module informative LEDs (from 0 to 100)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_LUMINOSITY_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YModule.LUMINOSITY_INVALID</c>.
     /// </para>
     ///-
     function get_luminosity():LongInt;
@@ -1288,7 +1288,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1305,10 +1305,10 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_BEACON_OFF</c> or <c>Y_BEACON_ON</c>, according to the state of the localization beacon
+    ///   either <c>YModule.BEACON_OFF</c> or <c>YModule.BEACON_ON</c>, according to the state of the localization beacon
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_BEACON_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YModule.BEACON_INVALID</c>.
     /// </para>
     ///-
     function get_beacon():Integer;
@@ -1322,12 +1322,12 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_BEACON_OFF</c> or <c>Y_BEACON_ON</c>
+    ///   either <c>YModule.BEACON_OFF</c> or <c>YModule.BEACON_ON</c>
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1347,7 +1347,7 @@ type
     ///   an integer corresponding to the number of milliseconds spent since the module was powered on
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_UPTIME_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YModule.UPTIME_INVALID</c>.
     /// </para>
     ///-
     function get_upTime():int64;
@@ -1364,7 +1364,7 @@ type
     ///   an integer corresponding to the current consumed by the module on the USB bus, in milli-amps
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_USBCURRENT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YModule.USBCURRENT_INVALID</c>.
     /// </para>
     ///-
     function get_usbCurrent():LongInt;
@@ -1383,7 +1383,7 @@ type
     ///   reboot has been scheduled
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_REBOOTCOUNTDOWN_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YModule.REBOOTCOUNTDOWN_INVALID</c>.
     /// </para>
     ///-
     function get_rebootCountdown():LongInt;
@@ -1403,7 +1403,7 @@ type
     ///   an integer corresponding to the value previously stored in this attribute
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_USERVAR_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YModule.USERVAR_INVALID</c>.
     /// </para>
     ///-
     function get_userVar():LongInt;
@@ -1425,7 +1425,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1518,7 +1518,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1534,7 +1534,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1552,7 +1552,7 @@ type
     ///   number of seconds before rebooting
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1570,7 +1570,7 @@ type
     ///   number of seconds before rebooting
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1755,7 +1755,7 @@ type
     ///   a binary buffer with all the settings.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1826,7 +1826,7 @@ type
     ///   a binary buffer with all the settings.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1915,7 +1915,7 @@ type
     ///   the string to append to the logs.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -2066,7 +2066,7 @@ end;
     ///   a string corresponding to the measuring unit for the measure
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_UNIT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSensor.UNIT_INVALID</c>.
     /// </para>
     ///-
     function get_unit():string;
@@ -2092,7 +2092,7 @@ end;
     ///   as a floating point number
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CURRENTVALUE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSensor.CURRENTVALUE_INVALID</c>.
     /// </para>
     ///-
     function get_currentValue():double;
@@ -2113,7 +2113,7 @@ end;
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -2134,7 +2134,7 @@ end;
     ///   a floating point number corresponding to the minimal value observed for the measure since the device was started
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_LOWESTVALUE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSensor.LOWESTVALUE_INVALID</c>.
     /// </para>
     ///-
     function get_lowestValue():double;
@@ -2155,7 +2155,7 @@ end;
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -2176,7 +2176,7 @@ end;
     ///   a floating point number corresponding to the maximal value observed for the measure since the device was started
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_HIGHESTVALUE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSensor.HIGHESTVALUE_INVALID</c>.
     /// </para>
     ///-
     function get_highestValue():double;
@@ -2195,7 +2195,7 @@ end;
     ///   sensor, in the specified unit, as a floating point number
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CURRENTRAWVALUE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSensor.CURRENTRAWVALUE_INVALID</c>.
     /// </para>
     ///-
     function get_currentRawValue():double;
@@ -2214,7 +2214,7 @@ end;
     ///   when measures are not stored in the data logger flash memory
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_LOGFREQUENCY_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSensor.LOGFREQUENCY_INVALID</c>.
     /// </para>
     ///-
     function get_logFrequency():string;
@@ -2240,7 +2240,7 @@ end;
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -2262,7 +2262,7 @@ end;
     ///   value notifications are disabled for this function
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_REPORTFREQUENCY_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSensor.REPORTFREQUENCY_INVALID</c>.
     /// </para>
     ///-
     function get_reportFrequency():string;
@@ -2289,7 +2289,7 @@ end;
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -2306,12 +2306,12 @@ end;
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_ADVMODE_IMMEDIATE</c>, <c>Y_ADVMODE_PERIOD_AVG</c>, <c>Y_ADVMODE_PERIOD_MIN</c>
-    ///   and <c>Y_ADVMODE_PERIOD_MAX</c> corresponding to the measuring mode used for the advertised value
-    ///   pushed to the parent hub
+    ///   a value among <c>YSensor.ADVMODE_IMMEDIATE</c>, <c>YSensor.ADVMODE_PERIOD_AVG</c>,
+    ///   <c>YSensor.ADVMODE_PERIOD_MIN</c> and <c>YSensor.ADVMODE_PERIOD_MAX</c> corresponding to the
+    ///   measuring mode used for the advertised value pushed to the parent hub
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ADVMODE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSensor.ADVMODE_INVALID</c>.
     /// </para>
     ///-
     function get_advMode():Integer;
@@ -2326,14 +2326,14 @@ end;
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>Y_ADVMODE_IMMEDIATE</c>, <c>Y_ADVMODE_PERIOD_AVG</c>, <c>Y_ADVMODE_PERIOD_MIN</c>
-    ///   and <c>Y_ADVMODE_PERIOD_MAX</c> corresponding to the measuring mode used for the advertised value
-    ///   pushed to the parent hub
+    ///   a value among <c>YSensor.ADVMODE_IMMEDIATE</c>, <c>YSensor.ADVMODE_PERIOD_AVG</c>,
+    ///   <c>YSensor.ADVMODE_PERIOD_MIN</c> and <c>YSensor.ADVMODE_PERIOD_MAX</c> corresponding to the
+    ///   measuring mode used for the advertised value pushed to the parent hub
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -2362,7 +2362,7 @@ end;
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -2385,7 +2385,7 @@ end;
     ///   a floating point number corresponding to the resolution of the measured values
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_RESOLUTION_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSensor.RESOLUTION_INVALID</c>.
     /// </para>
     ///-
     function get_resolution():double;
@@ -2404,7 +2404,7 @@ end;
     ///   available or a positive code if the sensor is not able to provide a measure right now
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SENSORSTATE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YSensor.SENSORSTATE_INVALID</c>.
     /// </para>
     ///-
     function get_sensorState():LongInt;
@@ -2529,7 +2529,7 @@ end;
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     ///-
     function startDataLogger():LongInt; overload; virtual;
@@ -2541,7 +2541,7 @@ end;
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     ///-
     function stopDataLogger():LongInt; overload; virtual;
@@ -2636,7 +2636,7 @@ end;
     ///   values for the correction points.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -2662,7 +2662,7 @@ end;
     ///   function with the desired values for the correction points.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -3561,7 +3561,7 @@ end;
     ///   a string that uniquely identifies the function (ex: <c>THRMCPL1-123456.temperature1</c>)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns  <c>Y_HARDWAREID_INVALID</c>.
+    ///   On failure, throws an exception or returns  <c>YDataSet.HARDWAREID_INVALID</c>.
     /// </para>
     ///-
     function get_hardwareId():string; overload; virtual;
@@ -3594,7 +3594,7 @@ end;
     ///   a string that represents a physical unit.
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns  <c>Y_UNIT_INVALID</c>.
+    ///   On failure, throws an exception or returns  <c>YDataSet.UNIT_INVALID</c>.
     /// </para>
     ///-
     function get_unit():string; overload; virtual;
@@ -4036,7 +4036,7 @@ end;
     ///   powered on with the dataLogger enabled at some point
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CURRENTRUNINDEX_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDataLogger.CURRENTRUNINDEX_INVALID</c>.
     /// </para>
     ///-
     function get_currentRunIndex():LongInt;
@@ -4053,7 +4053,7 @@ end;
     ///   an integer corresponding to the Unix timestamp for current UTC time, if known
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_TIMEUTC_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDataLogger.TIMEUTC_INVALID</c>.
     /// </para>
     ///-
     function get_timeUTC():int64;
@@ -4072,7 +4072,7 @@ end;
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -4089,11 +4089,11 @@ end;
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_RECORDING_OFF</c>, <c>Y_RECORDING_ON</c> and <c>Y_RECORDING_PENDING</c>
-    ///   corresponding to the current activation state of the data logger
+    ///   a value among <c>YDataLogger.RECORDING_OFF</c>, <c>YDataLogger.RECORDING_ON</c> and
+    ///   <c>YDataLogger.RECORDING_PENDING</c> corresponding to the current activation state of the data logger
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_RECORDING_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDataLogger.RECORDING_INVALID</c>.
     /// </para>
     ///-
     function get_recording():Integer;
@@ -4107,13 +4107,14 @@ end;
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>Y_RECORDING_OFF</c>, <c>Y_RECORDING_ON</c> and <c>Y_RECORDING_PENDING</c>
-    ///   corresponding to the activation state of the data logger to start/stop recording data
+    ///   a value among <c>YDataLogger.RECORDING_OFF</c>, <c>YDataLogger.RECORDING_ON</c> and
+    ///   <c>YDataLogger.RECORDING_PENDING</c> corresponding to the activation state of the data logger to
+    ///   start/stop recording data
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -4130,11 +4131,11 @@ end;
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_AUTOSTART_OFF</c> or <c>Y_AUTOSTART_ON</c>, according to the default activation state
-    ///   of the data logger on power up
+    ///   either <c>YDataLogger.AUTOSTART_OFF</c> or <c>YDataLogger.AUTOSTART_ON</c>, according to the
+    ///   default activation state of the data logger on power up
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_AUTOSTART_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDataLogger.AUTOSTART_INVALID</c>.
     /// </para>
     ///-
     function get_autoStart():Integer;
@@ -4152,13 +4153,13 @@ end;
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_AUTOSTART_OFF</c> or <c>Y_AUTOSTART_ON</c>, according to the default activation state
-    ///   of the data logger on power up
+    ///   either <c>YDataLogger.AUTOSTART_OFF</c> or <c>YDataLogger.AUTOSTART_ON</c>, according to the
+    ///   default activation state of the data logger on power up
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -4175,11 +4176,11 @@ end;
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_BEACONDRIVEN_OFF</c> or <c>Y_BEACONDRIVEN_ON</c>, according to true if the data logger
-    ///   is synchronised with the localization beacon
+    ///   either <c>YDataLogger.BEACONDRIVEN_OFF</c> or <c>YDataLogger.BEACONDRIVEN_ON</c>, according to true
+    ///   if the data logger is synchronised with the localization beacon
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_BEACONDRIVEN_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDataLogger.BEACONDRIVEN_INVALID</c>.
     /// </para>
     ///-
     function get_beaconDriven():Integer;
@@ -4195,13 +4196,13 @@ end;
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_BEACONDRIVEN_OFF</c> or <c>Y_BEACONDRIVEN_ON</c>, according to the type of
-    ///   synchronisation of the data logger
+    ///   either <c>YDataLogger.BEACONDRIVEN_OFF</c> or <c>YDataLogger.BEACONDRIVEN_ON</c>, according to the
+    ///   type of synchronisation of the data logger
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -4221,7 +4222,7 @@ end;
     ///   an integer corresponding to the percentage of datalogger memory in use
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_USAGE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YDataLogger.USAGE_INVALID</c>.
     /// </para>
     ///-
     function get_usage():LongInt;
@@ -4312,7 +4313,7 @@ end;
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -4419,7 +4420,7 @@ end;
   /// </summary>
   /// <param name="func">
   ///   a string that uniquely characterizes the data logger, for instance
-  ///   <c>LIGHTMK3.dataLogger</c>.
+  ///   <c>RX420MA1.dataLogger</c>.
   /// </param>
   /// <returns>
   ///   a <c>YDataLogger</c> object allowing you to drive the data logger.
@@ -4587,7 +4588,7 @@ end;
   ///   first time.
   /// </para>
   /// <para>
-  ///   When <c>Y_DETECT_NONE</c> is used as detection <c>mode</c>,
+  ///   When <c>YAPI.DETECT_NONE</c> is used as detection <c>mode</c>,
   ///   you must explicitly use <c>yRegisterHub()</c> to point the API to the
   ///   VirtualHub on which your devices are connected before trying to access them.
   /// </para>
@@ -4595,14 +4596,14 @@ end;
   /// <param name="mode">
   ///   an integer corresponding to the type of automatic
   ///   device detection to use. Possible values are
-  ///   <c>Y_DETECT_NONE</c>, <c>Y_DETECT_USB</c>, <c>Y_DETECT_NET</c>,
-  ///   and <c>Y_DETECT_ALL</c>.
+  ///   <c>YAPI.DETECT_NONE</c>, <c>YAPI.DETECT_USB</c>, <c>YAPI.DETECT_NET</c>,
+  ///   and <c>YAPI.DETECT_ALL</c>.
   /// </param>
   /// <param name="errmsg">
   ///   a string passed by reference to receive any error message.
   /// </param>
   /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  ///   <c>YAPI.SUCCESS</c> when the call succeeds.
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns a negative error code.
@@ -4788,7 +4789,7 @@ type
   ///   a string passed by reference to receive any error message.
   /// </param>
   /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  ///   <c>YAPI.SUCCESS</c> when the call succeeds.
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns a negative error code.
@@ -4817,7 +4818,7 @@ type
   ///   a string passed by reference to receive any error message.
   /// </param>
   /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  ///   <c>YAPI.SUCCESS</c> when the call succeeds.
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns a negative error code.
@@ -4862,7 +4863,7 @@ type
   ///   a string passed by reference to receive any error message.
   /// </param>
   /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  ///   <c>YAPI.SUCCESS</c> when the call succeeds.
   /// </returns>
   /// <para>
   ///   On failure returns a negative error code.
@@ -4890,7 +4891,7 @@ type
   ///   a string passed by reference to receive any error message.
   /// </param>
   /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  ///   <c>YAPI.SUCCESS</c> when the call succeeds.
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns a negative error code.
@@ -4917,7 +4918,7 @@ type
   ///   a string passed by reference to receive any error message.
   /// </param>
   /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  ///   <c>YAPI.SUCCESS</c> when the call succeeds.
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns a negative error code.
@@ -4948,7 +4949,7 @@ type
   ///   a string passed by reference to receive any error message.
   /// </param>
   /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  ///   <c>YAPI.SUCCESS</c> when the call succeeds.
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns a negative error code.
@@ -5020,7 +5021,7 @@ type
   ///   a string passed by reference to receive any error message.
   /// </param>
   /// <returns>
-  ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+  ///   <c>YAPI.SUCCESS</c> when the call succeeds.
   ///   On failure, throws an exception or returns a negative error code.
   /// </returns>
   ///-

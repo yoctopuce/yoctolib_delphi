@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_voltageoutput.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_voltageoutput.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindVoltageOutput(), the high-level API for VoltageOutput functions
  *
@@ -104,7 +104,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -124,7 +124,7 @@ type
     ///   a floating point number corresponding to the output voltage set point, in V
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CURRENTVOLTAGE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YVoltageOutput.CURRENTVOLTAGE_INVALID</c>.
     /// </para>
     ///-
     function get_currentVoltage():double;
@@ -149,7 +149,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -169,7 +169,7 @@ type
     ///   a floating point number corresponding to the selected voltage output at device startup, in V
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_VOLTAGEATSTARTUP_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YVoltageOutput.VOLTAGEATSTARTUP_INVALID</c>.
     /// </para>
     ///-
     function get_voltageAtStartUp():double;
@@ -264,7 +264,7 @@ type
     ///   total duration of the transition, in milliseconds
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     ///-
     function voltageMove(V_target: double; ms_duration: LongInt):LongInt; overload; virtual;

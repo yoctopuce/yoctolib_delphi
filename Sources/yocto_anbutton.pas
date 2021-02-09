@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_anbutton.pas 42060 2020-10-14 10:02:12Z seb $
+ *  $Id: yocto_anbutton.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindAnButton(), the high-level API for AnButton functions
  *
@@ -63,8 +63,9 @@ const Y_LASTTIMEPRESSED_INVALID       = YAPI_INVALID_LONG;
 const Y_LASTTIMERELEASED_INVALID      = YAPI_INVALID_LONG;
 const Y_PULSECOUNTER_INVALID          = YAPI_INVALID_LONG;
 const Y_PULSETIMER_INVALID            = YAPI_INVALID_LONG;
-const Y_INPUTTYPE_ANALOG = 0;
+const Y_INPUTTYPE_ANALOG_FAST = 0;
 const Y_INPUTTYPE_DIGITAL4 = 1;
+const Y_INPUTTYPE_ANALOG_SMOOTH = 2;
 const Y_INPUTTYPE_INVALID = -1;
 
 
@@ -132,7 +133,7 @@ type
     ///   an integer corresponding to the current calibrated input value (between 0 and 1000, included)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CALIBRATEDVALUE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAnButton.CALIBRATEDVALUE_INVALID</c>.
     /// </para>
     ///-
     function get_calibratedValue():LongInt;
@@ -149,7 +150,7 @@ type
     ///   an integer corresponding to the current measured input value as-is (between 0 and 4095, included)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_RAWVALUE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAnButton.RAWVALUE_INVALID</c>.
     /// </para>
     ///-
     function get_rawValue():LongInt;
@@ -163,10 +164,10 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_ANALOGCALIBRATION_OFF</c> or <c>Y_ANALOGCALIBRATION_ON</c>
+    ///   either <c>YAnButton.ANALOGCALIBRATION_OFF</c> or <c>YAnButton.ANALOGCALIBRATION_ON</c>
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ANALOGCALIBRATION_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAnButton.ANALOGCALIBRATION_INVALID</c>.
     /// </para>
     ///-
     function get_analogCalibration():Integer;
@@ -182,12 +183,12 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_ANALOGCALIBRATION_OFF</c> or <c>Y_ANALOGCALIBRATION_ON</c>
+    ///   either <c>YAnButton.ANALOGCALIBRATION_OFF</c> or <c>YAnButton.ANALOGCALIBRATION_ON</c>
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -207,7 +208,7 @@ type
     ///   an integer corresponding to the maximal value measured during the calibration (between 0 and 4095, included)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CALIBRATIONMAX_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAnButton.CALIBRATIONMAX_INVALID</c>.
     /// </para>
     ///-
     function get_calibrationMax():LongInt;
@@ -231,7 +232,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -251,7 +252,7 @@ type
     ///   an integer corresponding to the minimal value measured during the calibration (between 0 and 4095, included)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CALIBRATIONMIN_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAnButton.CALIBRATIONMIN_INVALID</c>.
     /// </para>
     ///-
     function get_calibrationMin():LongInt;
@@ -275,7 +276,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -295,7 +296,7 @@ type
     ///   an integer corresponding to the sensibility for the input (between 1 and 1000) for triggering user callbacks
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SENSITIVITY_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAnButton.SENSITIVITY_INVALID</c>.
     /// </para>
     ///-
     function get_sensitivity():LongInt;
@@ -319,7 +320,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -336,11 +337,11 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_ISPRESSED_FALSE</c> or <c>Y_ISPRESSED_TRUE</c>, according to true if the input
-    ///   (considered as binary) is active (closed contact), and false otherwise
+    ///   either <c>YAnButton.ISPRESSED_FALSE</c> or <c>YAnButton.ISPRESSED_TRUE</c>, according to true if
+    ///   the input (considered as binary) is active (closed contact), and false otherwise
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ISPRESSED_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAnButton.ISPRESSED_INVALID</c>.
     /// </para>
     ///-
     function get_isPressed():Integer;
@@ -359,7 +360,7 @@ type
     ///   the input button was pressed (the input contact transitioned from open to closed)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_LASTTIMEPRESSED_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAnButton.LASTTIMEPRESSED_INVALID</c>.
     /// </para>
     ///-
     function get_lastTimePressed():int64;
@@ -378,7 +379,7 @@ type
     ///   the input button was released (the input contact transitioned from closed to open)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_LASTTIMERELEASED_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAnButton.LASTTIMERELEASED_INVALID</c>.
     /// </para>
     ///-
     function get_lastTimeReleased():int64;
@@ -398,7 +399,7 @@ type
     ///   an integer corresponding to the pulse counter value
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PULSECOUNTER_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAnButton.PULSECOUNTER_INVALID</c>.
     /// </para>
     ///-
     function get_pulseCounter():int64;
@@ -417,7 +418,7 @@ type
     ///   an integer corresponding to the timer of the pulses counter (ms)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PULSETIMER_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAnButton.PULSETIMER_INVALID</c>.
     /// </para>
     ///-
     function get_pulseTimer():int64;
@@ -431,11 +432,12 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_INPUTTYPE_ANALOG</c> or <c>Y_INPUTTYPE_DIGITAL4</c>, according to the decoding method
-    ///   applied to the input (analog or multiplexed binary switches)
+    ///   a value among <c>YAnButton.INPUTTYPE_ANALOG_FAST</c>, <c>YAnButton.INPUTTYPE_DIGITAL4</c> and
+    ///   <c>YAnButton.INPUTTYPE_ANALOG_SMOOTH</c> corresponding to the decoding method applied to the input
+    ///   (analog or multiplexed binary switches)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_INPUTTYPE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAnButton.INPUTTYPE_INVALID</c>.
     /// </para>
     ///-
     function get_inputType():Integer;
@@ -450,13 +452,14 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_INPUTTYPE_ANALOG</c> or <c>Y_INPUTTYPE_DIGITAL4</c>, according to the decoding method
-    ///   applied to the input (analog or multiplexed binary switches)
+    ///   a value among <c>YAnButton.INPUTTYPE_ANALOG_FAST</c>, <c>YAnButton.INPUTTYPE_DIGITAL4</c> and
+    ///   <c>YAnButton.INPUTTYPE_ANALOG_SMOOTH</c> corresponding to the decoding method applied to the input
+    ///   (analog or multiplexed binary switches)
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -545,7 +548,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.

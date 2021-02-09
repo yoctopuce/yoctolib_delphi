@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_pwmpowersource.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_pwmpowersource.pas 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
  *
@@ -99,11 +99,12 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_POWERMODE_USB_5V</c>, <c>Y_POWERMODE_USB_3V</c>, <c>Y_POWERMODE_EXT_V</c> and
-    ///   <c>Y_POWERMODE_OPNDRN</c> corresponding to the selected power source for the PWM on the same device
+    ///   a value among <c>YPwmPowerSource.POWERMODE_USB_5V</c>, <c>YPwmPowerSource.POWERMODE_USB_3V</c>,
+    ///   <c>YPwmPowerSource.POWERMODE_EXT_V</c> and <c>YPwmPowerSource.POWERMODE_OPNDRN</c> corresponding to
+    ///   the selected power source for the PWM on the same device
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_POWERMODE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YPwmPowerSource.POWERMODE_INVALID</c>.
     /// </para>
     ///-
     function get_powerMode():Integer;
@@ -124,13 +125,14 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>Y_POWERMODE_USB_5V</c>, <c>Y_POWERMODE_USB_3V</c>, <c>Y_POWERMODE_EXT_V</c> and
-    ///   <c>Y_POWERMODE_OPNDRN</c> corresponding to  the PWM power source
+    ///   a value among <c>YPwmPowerSource.POWERMODE_USB_5V</c>, <c>YPwmPowerSource.POWERMODE_USB_3V</c>,
+    ///   <c>YPwmPowerSource.POWERMODE_EXT_V</c> and <c>YPwmPowerSource.POWERMODE_OPNDRN</c> corresponding to
+    ///    the PWM power source
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.

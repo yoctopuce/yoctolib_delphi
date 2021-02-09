@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_accelerometer.pas 42951 2020-12-14 09:43:29Z seb $
+ *  $Id: yocto_accelerometer.pas 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements yFindAccelerometer(), the high-level API for Accelerometer functions
  *
@@ -70,6 +70,7 @@ type
   ////
   /// <summary>
   ///   TYAccelerometer Class: accelerometer control interface, available for instance in the Yocto-3D-V2
+  ///   or the Yocto-Inclinometer
   /// <para>
   ///   The <c>YAccelerometer</c> class allows you to read and configure Yoctopuce accelerometers.
   ///   It inherits from <c>YSensor</c> class the core functions to read measurements,
@@ -112,7 +113,7 @@ type
     ///   an integer corresponding to the measure update frequency, measured in Hz
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_BANDWIDTH_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAccelerometer.BANDWIDTH_INVALID</c>.
     /// </para>
     ///-
     function get_bandwidth():LongInt;
@@ -135,7 +136,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -155,7 +156,7 @@ type
     ///   a floating point number corresponding to the X component of the acceleration, as a floating point number
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_XVALUE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAccelerometer.XVALUE_INVALID</c>.
     /// </para>
     ///-
     function get_xValue():double;
@@ -172,7 +173,7 @@ type
     ///   a floating point number corresponding to the Y component of the acceleration, as a floating point number
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_YVALUE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAccelerometer.YVALUE_INVALID</c>.
     /// </para>
     ///-
     function get_yValue():double;
@@ -189,7 +190,7 @@ type
     ///   a floating point number corresponding to the Z component of the acceleration, as a floating point number
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ZVALUE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YAccelerometer.ZVALUE_INVALID</c>.
     /// </para>
     ///-
     function get_zValue():double;

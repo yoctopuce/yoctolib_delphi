@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_genericsensor.pas 41109 2020-06-29 12:40:42Z seb $
+ *  $Id: yocto_genericsensor.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -77,7 +77,7 @@ type
   ////
   /// <summary>
   ///   TYGenericSensor Class: GenericSensor control interface, available for instance in the
-  ///   Yocto-0-10V-Rx, the Yocto-4-20mA-Rx, the Yocto-RS485-V2 or the Yocto-milliVolt-Rx
+  ///   Yocto-0-10V-Rx, the Yocto-4-20mA-Rx, the Yocto-Serial or the Yocto-milliVolt-Rx
   /// <para>
   ///   The <c>YGenericSensor</c> class allows you to read and configure Yoctopuce signal
   ///   transducers. It inherits from <c>YSensor</c> class the core functions to read measurements,
@@ -126,7 +126,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -146,7 +146,7 @@ type
     ///   a floating point number corresponding to the current value of the electrical signal measured by the sensor
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SIGNALVALUE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YGenericSensor.SIGNALVALUE_INVALID</c>.
     /// </para>
     ///-
     function get_signalValue():double;
@@ -163,7 +163,7 @@ type
     ///   a string corresponding to the measuring unit of the electrical signal used by the sensor
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SIGNALUNIT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YGenericSensor.SIGNALUNIT_INVALID</c>.
     /// </para>
     ///-
     function get_signalUnit():string;
@@ -180,7 +180,7 @@ type
     ///   a string corresponding to the input signal range used by the sensor
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SIGNALRANGE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YGenericSensor.SIGNALRANGE_INVALID</c>.
     /// </para>
     ///-
     function get_signalRange():string;
@@ -212,7 +212,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -232,7 +232,7 @@ type
     ///   a string corresponding to the physical value range measured by the sensor
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_VALUERANGE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YGenericSensor.VALUERANGE_INVALID</c>.
     /// </para>
     ///-
     function get_valueRange():string;
@@ -261,7 +261,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -287,7 +287,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -309,7 +309,7 @@ type
     ///   a floating point number corresponding to the electric signal bias for zero shift adjustment
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SIGNALBIAS_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YGenericSensor.SIGNALBIAS_INVALID</c>.
     /// </para>
     ///-
     function get_signalBias():double;
@@ -328,12 +328,13 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_SIGNALSAMPLING_HIGH_RATE</c>, <c>Y_SIGNALSAMPLING_HIGH_RATE_FILTERED</c>,
-    ///   <c>Y_SIGNALSAMPLING_LOW_NOISE</c>, <c>Y_SIGNALSAMPLING_LOW_NOISE_FILTERED</c> and
-    ///   <c>Y_SIGNALSAMPLING_HIGHEST_RATE</c> corresponding to the electric signal sampling method to use
+    ///   a value among <c>YGenericSensor.SIGNALSAMPLING_HIGH_RATE</c>,
+    ///   <c>YGenericSensor.SIGNALSAMPLING_HIGH_RATE_FILTERED</c>, <c>YGenericSensor.SIGNALSAMPLING_LOW_NOISE</c>,
+    ///   <c>YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED</c> and <c>YGenericSensor.SIGNALSAMPLING_HIGHEST_RATE</c>
+    ///   corresponding to the electric signal sampling method to use
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SIGNALSAMPLING_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YGenericSensor.SIGNALSAMPLING_INVALID</c>.
     /// </para>
     ///-
     function get_signalSampling():Integer;
@@ -354,14 +355,15 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>Y_SIGNALSAMPLING_HIGH_RATE</c>, <c>Y_SIGNALSAMPLING_HIGH_RATE_FILTERED</c>,
-    ///   <c>Y_SIGNALSAMPLING_LOW_NOISE</c>, <c>Y_SIGNALSAMPLING_LOW_NOISE_FILTERED</c> and
-    ///   <c>Y_SIGNALSAMPLING_HIGHEST_RATE</c> corresponding to the electric signal sampling method to use
+    ///   a value among <c>YGenericSensor.SIGNALSAMPLING_HIGH_RATE</c>,
+    ///   <c>YGenericSensor.SIGNALSAMPLING_HIGH_RATE_FILTERED</c>, <c>YGenericSensor.SIGNALSAMPLING_LOW_NOISE</c>,
+    ///   <c>YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED</c> and <c>YGenericSensor.SIGNALSAMPLING_HIGHEST_RATE</c>
+    ///   corresponding to the electric signal sampling method to use
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -378,10 +380,11 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_ENABLED_FALSE</c> or <c>Y_ENABLED_TRUE</c>, according to the activation state of this input
+    ///   either <c>YGenericSensor.ENABLED_FALSE</c> or <c>YGenericSensor.ENABLED_TRUE</c>, according to the
+    ///   activation state of this input
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ENABLED_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YGenericSensor.ENABLED_INVALID</c>.
     /// </para>
     ///-
     function get_enabled():Integer;
@@ -400,12 +403,13 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_ENABLED_FALSE</c> or <c>Y_ENABLED_TRUE</c>, according to the activation state of this input
+    ///   either <c>YGenericSensor.ENABLED_FALSE</c> or <c>YGenericSensor.ENABLED_TRUE</c>, according to the
+    ///   activation state of this input
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -519,7 +523,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.

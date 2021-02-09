@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_compass.pas 42951 2020-12-14 09:43:29Z seb $
+ *  $Id: yocto_compass.pas 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements yFindCompass(), the high-level API for Compass functions
  *
@@ -107,7 +107,7 @@ type
     ///   an integer corresponding to the measure update frequency, measured in Hz
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_BANDWIDTH_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCompass.BANDWIDTH_INVALID</c>.
     /// </para>
     ///-
     function get_bandwidth():LongInt;
@@ -130,7 +130,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -152,7 +152,7 @@ type
     ///   a floating point number corresponding to the magnetic heading, regardless of the configured bearing
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_MAGNETICHEADING_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCompass.MAGNETICHEADING_INVALID</c>.
     /// </para>
     ///-
     function get_magneticHeading():double;

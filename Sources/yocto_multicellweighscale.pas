@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_multicellweighscale.pas 41108 2020-06-29 12:29:07Z seb $
+ *  $Id: yocto_multicellweighscale.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
  *
@@ -49,6 +49,9 @@ uses
 //--- (YMultiCellWeighScale definitions)
 
 const Y_CELLCOUNT_INVALID             = YAPI_INVALID_UINT;
+const Y_EXTERNALSENSE_FALSE = 0;
+const Y_EXTERNALSENSE_TRUE = 1;
+const Y_EXTERNALSENSE_INVALID = -1;
 const Y_EXCITATION_OFF = 0;
 const Y_EXCITATION_DC = 1;
 const Y_EXCITATION_AC = 2;
@@ -91,6 +94,7 @@ type
   //--- (YMultiCellWeighScale declaration)
     // Attributes (function value cache)
     _cellCount                : LongInt;
+    _externalSense            : Integer;
     _excitation               : Integer;
     _tempAvgAdaptRatio        : double;
     _tempChgAdaptRatio        : double;
@@ -126,7 +130,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -146,7 +150,7 @@ type
     ///   an integer corresponding to the number of load cells in use
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CELLCOUNT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMultiCellWeighScale.CELLCOUNT_INVALID</c>.
     /// </para>
     ///-
     function get_cellCount():LongInt;
@@ -167,13 +171,58 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
     function set_cellCount(newval:LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns true if entry 4 is used as external sense for 6-wires load cells.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   either <c>YMultiCellWeighScale.EXTERNALSENSE_FALSE</c> or <c>YMultiCellWeighScale.EXTERNALSENSE_TRUE</c>,
+    ///   according to true if entry 4 is used as external sense for 6-wires load cells
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YMultiCellWeighScale.EXTERNALSENSE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_externalSense():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the configuration to tell if entry 4 is used as external sense for
+    ///   6-wires load cells.
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the
+    ///   module if the modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   either <c>YMultiCellWeighScale.EXTERNALSENSE_FALSE</c> or <c>YMultiCellWeighScale.EXTERNALSENSE_TRUE</c>,
+    ///   according to the configuration to tell if entry 4 is used as external sense for
+    ///   6-wires load cells
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_externalSense(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -184,11 +233,11 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_EXCITATION_OFF</c>, <c>Y_EXCITATION_DC</c> and <c>Y_EXCITATION_AC</c>
-    ///   corresponding to the current load cell bridge excitation method
+    ///   a value among <c>YMultiCellWeighScale.EXCITATION_OFF</c>, <c>YMultiCellWeighScale.EXCITATION_DC</c>
+    ///   and <c>YMultiCellWeighScale.EXCITATION_AC</c> corresponding to the current load cell bridge excitation method
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_EXCITATION_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMultiCellWeighScale.EXCITATION_INVALID</c>.
     /// </para>
     ///-
     function get_excitation():Integer;
@@ -204,13 +253,13 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>Y_EXCITATION_OFF</c>, <c>Y_EXCITATION_DC</c> and <c>Y_EXCITATION_AC</c>
-    ///   corresponding to the current load cell bridge excitation method
+    ///   a value among <c>YMultiCellWeighScale.EXCITATION_OFF</c>, <c>YMultiCellWeighScale.EXCITATION_DC</c>
+    ///   and <c>YMultiCellWeighScale.EXCITATION_AC</c> corresponding to the current load cell bridge excitation method
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -238,7 +287,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -262,7 +311,7 @@ type
     ///   a floating point number corresponding to the averaged temperature update rate, in per mille
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_TEMPAVGADAPTRATIO_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMultiCellWeighScale.TEMPAVGADAPTRATIO_INVALID</c>.
     /// </para>
     ///-
     function get_tempAvgAdaptRatio():double;
@@ -286,7 +335,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -309,7 +358,7 @@ type
     ///   a floating point number corresponding to the temperature change update rate, in per mille
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_TEMPCHGADAPTRATIO_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMultiCellWeighScale.TEMPCHGADAPTRATIO_INVALID</c>.
     /// </para>
     ///-
     function get_tempChgAdaptRatio():double;
@@ -326,7 +375,7 @@ type
     ///   a floating point number corresponding to the current averaged temperature, used for thermal compensation
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_COMPTEMPAVG_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMultiCellWeighScale.COMPTEMPAVG_INVALID</c>.
     /// </para>
     ///-
     function get_compTempAvg():double;
@@ -343,7 +392,7 @@ type
     ///   a floating point number corresponding to the current temperature variation, used for thermal compensation
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_COMPTEMPCHG_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMultiCellWeighScale.COMPTEMPCHG_INVALID</c>.
     /// </para>
     ///-
     function get_compTempChg():double;
@@ -360,7 +409,7 @@ type
     ///   a floating point number corresponding to the current current thermal compensation value
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_COMPENSATION_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMultiCellWeighScale.COMPENSATION_INVALID</c>.
     /// </para>
     ///-
     function get_compensation():double;
@@ -384,7 +433,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -407,7 +456,7 @@ type
     ///   a floating point number corresponding to the zero tracking threshold value
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ZEROTRACKING_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YMultiCellWeighScale.ZEROTRACKING_INVALID</c>.
     /// </para>
     ///-
     function get_zeroTracking():double;
@@ -524,7 +573,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -548,7 +597,7 @@ type
     ///   maximum weight to be expected on the load cell.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -666,6 +715,7 @@ implementation
       _className := 'MultiCellWeighScale';
       //--- (YMultiCellWeighScale accessors initialization)
       _cellCount := Y_CELLCOUNT_INVALID;
+      _externalSense := Y_EXTERNALSENSE_INVALID;
       _excitation := Y_EXCITATION_INVALID;
       _tempAvgAdaptRatio := Y_TEMPAVGADAPTRATIO_INVALID;
       _tempChgAdaptRatio := Y_TEMPCHGADAPTRATIO_INVALID;
@@ -692,6 +742,12 @@ implementation
       if (member^.name = 'cellCount') then
         begin
           _cellCount := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'externalSense') then
+        begin
+          _externalSense := member^.ivalue;
          result := 1;
          exit;
          end;
@@ -779,6 +835,32 @@ implementation
     begin
       rest_val := inttostr(newval);
       result := _setAttr('cellCount',rest_val);
+    end;
+
+  function TYMultiCellWeighScale.get_externalSense():Integer;
+    var
+      res : Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_EXTERNALSENSE_INVALID;
+              exit;
+            end;
+        end;
+      res := self._externalSense;
+      result := res;
+      exit;
+    end;
+
+
+  function TYMultiCellWeighScale.set_externalSense(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      if(newval>0) then rest_val := '1' else rest_val := '0';
+      result := _setAttr('externalSense',rest_val);
     end;
 
   function TYMultiCellWeighScale.get_excitation():Integer;

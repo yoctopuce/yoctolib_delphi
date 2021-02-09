@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_network.pas 42060 2020-10-14 10:02:12Z seb $
+ *  $Id: yocto_network.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindNetwork(), the high-level API for Network functions
  *
@@ -110,7 +110,7 @@ type
   ////
   /// <summary>
   ///   TYNetwork Class: network interface control interface, available for instance in the
-  ///   YoctoHub-Ethernet, the YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA or the YoctoHub-Wireless-n
+  ///   YoctoHub-Ethernet, the YoctoHub-GSM-3G-NA, the YoctoHub-GSM-4G or the YoctoHub-Wireless-n
   /// <para>
   ///   <c>YNetwork</c> objects provide access to TCP/IP parameters of Yoctopuce
   ///   devices that include a built-in network interface.
@@ -178,12 +178,12 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_READINESS_DOWN</c>, <c>Y_READINESS_EXISTS</c>, <c>Y_READINESS_LINKED</c>,
-    ///   <c>Y_READINESS_LAN_OK</c> and <c>Y_READINESS_WWW_OK</c> corresponding to the current established
-    ///   working mode of the network interface
+    ///   a value among <c>YNetwork.READINESS_DOWN</c>, <c>YNetwork.READINESS_EXISTS</c>,
+    ///   <c>YNetwork.READINESS_LINKED</c>, <c>YNetwork.READINESS_LAN_OK</c> and
+    ///   <c>YNetwork.READINESS_WWW_OK</c> corresponding to the current established working mode of the network interface
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_READINESS_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.READINESS_INVALID</c>.
     /// </para>
     ///-
     function get_readiness():Integer;
@@ -202,7 +202,7 @@ type
     ///   a string corresponding to the MAC address of the network interface
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_MACADDRESS_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.MACADDRESS_INVALID</c>.
     /// </para>
     ///-
     function get_macAddress():string;
@@ -221,7 +221,7 @@ type
     ///   a string corresponding to the IP address currently in use by the device
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_IPADDRESS_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.IPADDRESS_INVALID</c>.
     /// </para>
     ///-
     function get_ipAddress():string;
@@ -238,7 +238,7 @@ type
     ///   a string corresponding to the subnet mask currently used by the device
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SUBNETMASK_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.SUBNETMASK_INVALID</c>.
     /// </para>
     ///-
     function get_subnetMask():string;
@@ -255,7 +255,7 @@ type
     ///   a string corresponding to the IP address of the router on the device subnet (default gateway)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ROUTER_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.ROUTER_INVALID</c>.
     /// </para>
     ///-
     function get_router():string;
@@ -286,7 +286,7 @@ type
     ///   a string corresponding to the IP configuration of the network interface
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_IPCONFIG_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.IPCONFIG_INVALID</c>.
     /// </para>
     ///-
     function get_ipConfig():string;
@@ -305,7 +305,7 @@ type
     ///   a string corresponding to the IP address of the primary name server to be used by the module
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PRIMARYDNS_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.PRIMARYDNS_INVALID</c>.
     /// </para>
     ///-
     function get_primaryDNS():string;
@@ -326,7 +326,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -346,7 +346,7 @@ type
     ///   a string corresponding to the IP address of the secondary name server to be used by the module
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SECONDARYDNS_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.SECONDARYDNS_INVALID</c>.
     /// </para>
     ///-
     function get_secondaryDNS():string;
@@ -367,7 +367,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -387,7 +387,7 @@ type
     ///   a string corresponding to the IP address of the NTP server to be used by the device
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_NTPSERVER_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.NTPSERVER_INVALID</c>.
     /// </para>
     ///-
     function get_ntpServer():string;
@@ -409,7 +409,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -431,7 +431,7 @@ type
     ///   or an empty string otherwise
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_USERPASSWORD_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.USERPASSWORD_INVALID</c>.
     /// </para>
     ///-
     function get_userPassword():string;
@@ -455,7 +455,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -477,7 +477,7 @@ type
     ///   or an empty string otherwise
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ADMINPASSWORD_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.ADMINPASSWORD_INVALID</c>.
     /// </para>
     ///-
     function get_adminPassword():string;
@@ -501,7 +501,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -521,7 +521,7 @@ type
     ///   an integer corresponding to the TCP port used to serve the hub web UI
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_HTTPPORT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.HTTPPORT_INVALID</c>.
     /// </para>
     ///-
     function get_httpPort():LongInt;
@@ -545,7 +545,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -565,7 +565,7 @@ type
     ///   a string corresponding to the HTML page to serve for the URL "/"" of the hub
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_DEFAULTPAGE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.DEFAULTPAGE_INVALID</c>.
     /// </para>
     ///-
     function get_defaultPage():string;
@@ -589,7 +589,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -607,12 +607,12 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_DISCOVERABLE_FALSE</c> or <c>Y_DISCOVERABLE_TRUE</c>, according to the activation state
-    ///   of the multicast announce protocols to allow easy
+    ///   either <c>YNetwork.DISCOVERABLE_FALSE</c> or <c>YNetwork.DISCOVERABLE_TRUE</c>, according to the
+    ///   activation state of the multicast announce protocols to allow easy
     ///   discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_DISCOVERABLE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.DISCOVERABLE_INVALID</c>.
     /// </para>
     ///-
     function get_discoverable():Integer;
@@ -629,14 +629,14 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_DISCOVERABLE_FALSE</c> or <c>Y_DISCOVERABLE_TRUE</c>, according to the activation state
-    ///   of the multicast announce protocols to allow easy
+    ///   either <c>YNetwork.DISCOVERABLE_FALSE</c> or <c>YNetwork.DISCOVERABLE_TRUE</c>, according to the
+    ///   activation state of the multicast announce protocols to allow easy
     ///   discovery of the module in the network neighborhood (uPnP/Bonjour protocol)
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -660,7 +660,7 @@ type
     ///   reboot to try to recover Internet connectivity
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_WWWWATCHDOGDELAY_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.WWWWATCHDOGDELAY_INVALID</c>.
     /// </para>
     ///-
     function get_wwwWatchdogDelay():LongInt;
@@ -685,7 +685,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -705,7 +705,7 @@ type
     ///   a string corresponding to the callback URL to notify of significant state changes
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CALLBACKURL_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.CALLBACKURL_INVALID</c>.
     /// </para>
     ///-
     function get_callbackUrl():string;
@@ -726,7 +726,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -743,12 +743,12 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_CALLBACKMETHOD_POST</c>, <c>Y_CALLBACKMETHOD_GET</c> and
-    ///   <c>Y_CALLBACKMETHOD_PUT</c> corresponding to the HTTP method used to notify callbacks for
+    ///   a value among <c>YNetwork.CALLBACKMETHOD_POST</c>, <c>YNetwork.CALLBACKMETHOD_GET</c> and
+    ///   <c>YNetwork.CALLBACKMETHOD_PUT</c> corresponding to the HTTP method used to notify callbacks for
     ///   significant state changes
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CALLBACKMETHOD_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.CALLBACKMETHOD_INVALID</c>.
     /// </para>
     ///-
     function get_callbackMethod():Integer;
@@ -764,14 +764,14 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>Y_CALLBACKMETHOD_POST</c>, <c>Y_CALLBACKMETHOD_GET</c> and
-    ///   <c>Y_CALLBACKMETHOD_PUT</c> corresponding to the HTTP method used to notify callbacks for
+    ///   a value among <c>YNetwork.CALLBACKMETHOD_POST</c>, <c>YNetwork.CALLBACKMETHOD_GET</c> and
+    ///   <c>YNetwork.CALLBACKMETHOD_PUT</c> corresponding to the HTTP method used to notify callbacks for
     ///   significant state changes
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -788,17 +788,17 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_CALLBACKENCODING_FORM</c>, <c>Y_CALLBACKENCODING_JSON</c>,
-    ///   <c>Y_CALLBACKENCODING_JSON_ARRAY</c>, <c>Y_CALLBACKENCODING_CSV</c>,
-    ///   <c>Y_CALLBACKENCODING_YOCTO_API</c>, <c>Y_CALLBACKENCODING_JSON_NUM</c>,
-    ///   <c>Y_CALLBACKENCODING_EMONCMS</c>, <c>Y_CALLBACKENCODING_AZURE</c>,
-    ///   <c>Y_CALLBACKENCODING_INFLUXDB</c>, <c>Y_CALLBACKENCODING_MQTT</c>,
-    ///   <c>Y_CALLBACKENCODING_YOCTO_API_JZON</c>, <c>Y_CALLBACKENCODING_PRTG</c> and
-    ///   <c>Y_CALLBACKENCODING_INFLUXDB_V2</c> corresponding to the encoding standard to use for
+    ///   a value among <c>YNetwork.CALLBACKENCODING_FORM</c>, <c>YNetwork.CALLBACKENCODING_JSON</c>,
+    ///   <c>YNetwork.CALLBACKENCODING_JSON_ARRAY</c>, <c>YNetwork.CALLBACKENCODING_CSV</c>,
+    ///   <c>YNetwork.CALLBACKENCODING_YOCTO_API</c>, <c>YNetwork.CALLBACKENCODING_JSON_NUM</c>,
+    ///   <c>YNetwork.CALLBACKENCODING_EMONCMS</c>, <c>YNetwork.CALLBACKENCODING_AZURE</c>,
+    ///   <c>YNetwork.CALLBACKENCODING_INFLUXDB</c>, <c>YNetwork.CALLBACKENCODING_MQTT</c>,
+    ///   <c>YNetwork.CALLBACKENCODING_YOCTO_API_JZON</c>, <c>YNetwork.CALLBACKENCODING_PRTG</c> and
+    ///   <c>YNetwork.CALLBACKENCODING_INFLUXDB_V2</c> corresponding to the encoding standard to use for
     ///   representing notification values
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CALLBACKENCODING_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.CALLBACKENCODING_INVALID</c>.
     /// </para>
     ///-
     function get_callbackEncoding():Integer;
@@ -814,19 +814,19 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>Y_CALLBACKENCODING_FORM</c>, <c>Y_CALLBACKENCODING_JSON</c>,
-    ///   <c>Y_CALLBACKENCODING_JSON_ARRAY</c>, <c>Y_CALLBACKENCODING_CSV</c>,
-    ///   <c>Y_CALLBACKENCODING_YOCTO_API</c>, <c>Y_CALLBACKENCODING_JSON_NUM</c>,
-    ///   <c>Y_CALLBACKENCODING_EMONCMS</c>, <c>Y_CALLBACKENCODING_AZURE</c>,
-    ///   <c>Y_CALLBACKENCODING_INFLUXDB</c>, <c>Y_CALLBACKENCODING_MQTT</c>,
-    ///   <c>Y_CALLBACKENCODING_YOCTO_API_JZON</c>, <c>Y_CALLBACKENCODING_PRTG</c> and
-    ///   <c>Y_CALLBACKENCODING_INFLUXDB_V2</c> corresponding to the encoding standard to use for
+    ///   a value among <c>YNetwork.CALLBACKENCODING_FORM</c>, <c>YNetwork.CALLBACKENCODING_JSON</c>,
+    ///   <c>YNetwork.CALLBACKENCODING_JSON_ARRAY</c>, <c>YNetwork.CALLBACKENCODING_CSV</c>,
+    ///   <c>YNetwork.CALLBACKENCODING_YOCTO_API</c>, <c>YNetwork.CALLBACKENCODING_JSON_NUM</c>,
+    ///   <c>YNetwork.CALLBACKENCODING_EMONCMS</c>, <c>YNetwork.CALLBACKENCODING_AZURE</c>,
+    ///   <c>YNetwork.CALLBACKENCODING_INFLUXDB</c>, <c>YNetwork.CALLBACKENCODING_MQTT</c>,
+    ///   <c>YNetwork.CALLBACKENCODING_YOCTO_API_JZON</c>, <c>YNetwork.CALLBACKENCODING_PRTG</c> and
+    ///   <c>YNetwork.CALLBACKENCODING_INFLUXDB_V2</c> corresponding to the encoding standard to use for
     ///   representing notification values
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -848,7 +848,7 @@ type
     ///   or an empty string otherwise
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CALLBACKCREDENTIALS_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.CALLBACKCREDENTIALS_INVALID</c>.
     /// </para>
     ///-
     function get_callbackCredentials():string;
@@ -876,7 +876,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -905,7 +905,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -925,7 +925,7 @@ type
     ///   an integer corresponding to the initial waiting time before first callback notifications, in seconds
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CALLBACKINITIALDELAY_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.CALLBACKINITIALDELAY_INVALID</c>.
     /// </para>
     ///-
     function get_callbackInitialDelay():LongInt;
@@ -945,7 +945,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -965,7 +965,7 @@ type
     ///   a string corresponding to the HTTP callback schedule strategy, as a text string
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CALLBACKSCHEDULE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.CALLBACKSCHEDULE_INVALID</c>.
     /// </para>
     ///-
     function get_callbackSchedule():string;
@@ -986,7 +986,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1006,7 +1006,7 @@ type
     ///   an integer corresponding to the minimum waiting time between two HTTP callbacks, in seconds
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CALLBACKMINDELAY_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.CALLBACKMINDELAY_INVALID</c>.
     /// </para>
     ///-
     function get_callbackMinDelay():LongInt;
@@ -1026,7 +1026,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1046,7 +1046,7 @@ type
     ///   an integer corresponding to the waiting time between two HTTP callbacks when there is nothing new
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CALLBACKMAXDELAY_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.CALLBACKMAXDELAY_INVALID</c>.
     /// </para>
     ///-
     function get_callbackMaxDelay():LongInt;
@@ -1066,7 +1066,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1088,7 +1088,7 @@ type
     ///   an integer corresponding to the current consumed by the module from Power-over-Ethernet (PoE), in milliamps
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_POECURRENT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YNetwork.POECURRENT_INVALID</c>.
     /// </para>
     ///-
     function get_poeCurrent():LongInt;
@@ -1188,7 +1188,7 @@ type
     ///   fallback router IP address, to be used when no DHCP reply is received
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1207,7 +1207,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1232,7 +1232,7 @@ type
     ///   router IP address (default gateway)
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1271,7 +1271,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1295,7 +1295,7 @@ type
     ///   24h, an offset of 7 will make the callback occur each day at 7AM.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -2084,7 +2084,7 @@ implementation
   /// <para>
   /// </para>
   /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
+  ///   YAPI.SUCCESS if the call succeeds.
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns a negative error code.

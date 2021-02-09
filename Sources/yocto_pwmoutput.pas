@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_pwmoutput.pas 38913 2019-12-20 18:59:49Z mvuilleu $
+ *  $Id: yocto_pwmoutput.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindPwmOutput(), the high-level API for PwmOutput functions
  *
@@ -114,10 +114,11 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_ENABLED_FALSE</c> or <c>Y_ENABLED_TRUE</c>, according to the state of the PWM generators
+    ///   either <c>YPwmOutput.ENABLED_FALSE</c> or <c>YPwmOutput.ENABLED_TRUE</c>, according to the state of
+    ///   the PWM generators
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ENABLED_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YPwmOutput.ENABLED_INVALID</c>.
     /// </para>
     ///-
     function get_enabled():Integer;
@@ -131,12 +132,12 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_ENABLED_FALSE</c> or <c>Y_ENABLED_TRUE</c>
+    ///   either <c>YPwmOutput.ENABLED_FALSE</c> or <c>YPwmOutput.ENABLED_TRUE</c>
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -165,7 +166,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -185,7 +186,7 @@ type
     ///   a floating point number corresponding to the PWM frequency in Hz
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_FREQUENCY_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YPwmOutput.FREQUENCY_INVALID</c>.
     /// </para>
     ///-
     function get_frequency():double;
@@ -209,7 +210,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -229,7 +230,7 @@ type
     ///   a floating point number corresponding to the PWM period in milliseconds
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PERIOD_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YPwmOutput.PERIOD_INVALID</c>.
     /// </para>
     ///-
     function get_period():double;
@@ -248,7 +249,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -268,7 +269,7 @@ type
     ///   a floating point number corresponding to the PWM duty cycle, in per cents
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_DUTYCYCLE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YPwmOutput.DUTYCYCLE_INVALID</c>.
     /// </para>
     ///-
     function get_dutyCycle():double;
@@ -288,7 +289,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -308,7 +309,7 @@ type
     ///   a floating point number corresponding to the PWM pulse length in milliseconds, as a floating point number
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PULSEDURATION_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YPwmOutput.PULSEDURATION_INVALID</c>.
     /// </para>
     ///-
     function get_pulseDuration():double;
@@ -326,11 +327,11 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_ENABLEDATPOWERON_FALSE</c> or <c>Y_ENABLEDATPOWERON_TRUE</c>, according to the state of
-    ///   the PWM at device power on
+    ///   either <c>YPwmOutput.ENABLEDATPOWERON_FALSE</c> or <c>YPwmOutput.ENABLEDATPOWERON_TRUE</c>,
+    ///   according to the state of the PWM at device power on
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ENABLEDATPOWERON_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YPwmOutput.ENABLEDATPOWERON_INVALID</c>.
     /// </para>
     ///-
     function get_enabledAtPowerOn():Integer;
@@ -346,13 +347,13 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_ENABLEDATPOWERON_FALSE</c> or <c>Y_ENABLEDATPOWERON_TRUE</c>, according to the state of
-    ///   the PWM at device power on
+    ///   either <c>YPwmOutput.ENABLEDATPOWERON_FALSE</c> or <c>YPwmOutput.ENABLEDATPOWERON_TRUE</c>,
+    ///   according to the state of the PWM at device power on
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -376,7 +377,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -397,7 +398,7 @@ type
     ///   floating point number between 0 and 100
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_DUTYCYCLEATPOWERON_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YPwmOutput.DUTYCYCLEATPOWERON_INVALID</c>.
     /// </para>
     ///-
     function get_dutyCycleAtPowerOn():double;
@@ -491,7 +492,7 @@ type
     ///   total duration of the transition, in milliseconds
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -514,7 +515,7 @@ type
     ///   total duration of the transition, in milliseconds
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -536,7 +537,7 @@ type
     ///   total duration of the transition, in milliseconds
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -562,7 +563,7 @@ type
     ///   total duration of the transition, in milliseconds
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -585,7 +586,7 @@ type
     ///   desired pulse count
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -608,7 +609,7 @@ type
     ///   desired pulse count
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -630,7 +631,7 @@ type
     ///   desired pulse count
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.

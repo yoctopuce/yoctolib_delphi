@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_proximity.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_proximity.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindProximity(), the high-level API for Proximity functions
  *
@@ -127,7 +127,7 @@ type
     ///   a floating point number corresponding to the current value of signal measured by the proximity sensor
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SIGNALVALUE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YProximity.SIGNALVALUE_INVALID</c>.
     /// </para>
     ///-
     function get_signalValue():double;
@@ -147,7 +147,7 @@ type
     ///   as a binary input (on/off)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_DETECTIONTHRESHOLD_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YProximity.DETECTIONTHRESHOLD_INVALID</c>.
     /// </para>
     ///-
     function get_detectionThreshold():LongInt;
@@ -170,7 +170,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -193,7 +193,7 @@ type
     ///   as a binary input (on/off)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_DETECTIONHYSTERESIS_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YProximity.DETECTIONHYSTERESIS_INVALID</c>.
     /// </para>
     ///-
     function get_detectionHysteresis():LongInt;
@@ -216,7 +216,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -238,7 +238,7 @@ type
     ///   an integer corresponding to the minimal detection duration before signalling a presence event
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PRESENCEMINTIME_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YProximity.PRESENCEMINTIME_INVALID</c>.
     /// </para>
     ///-
     function get_presenceMinTime():LongInt;
@@ -260,7 +260,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -282,7 +282,7 @@ type
     ///   an integer corresponding to the minimal detection duration before signalling a removal event
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_REMOVALMINTIME_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YProximity.REMOVALMINTIME_INVALID</c>.
     /// </para>
     ///-
     function get_removalMinTime():LongInt;
@@ -304,7 +304,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -321,12 +321,12 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_ISPRESENT_FALSE</c> or <c>Y_ISPRESENT_TRUE</c>, according to true if the input
-    ///   (considered as binary) is active (detection value is smaller than the specified <c>threshold</c>),
-    ///   and false otherwise
+    ///   either <c>YProximity.ISPRESENT_FALSE</c> or <c>YProximity.ISPRESENT_TRUE</c>, according to true if
+    ///   the input (considered as binary) is active (detection value is smaller than the specified
+    ///   <c>threshold</c>), and false otherwise
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ISPRESENT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YProximity.ISPRESENT_INVALID</c>.
     /// </para>
     ///-
     function get_isPresent():Integer;
@@ -345,7 +345,7 @@ type
     ///   detection (the input contact transitioned from absent to present)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_LASTTIMEAPPROACHED_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YProximity.LASTTIMEAPPROACHED_INVALID</c>.
     /// </para>
     ///-
     function get_lastTimeApproached():int64;
@@ -364,7 +364,7 @@ type
     ///   detection (the input contact transitioned from present to absent)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_LASTTIMEREMOVED_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YProximity.LASTTIMEREMOVED_INVALID</c>.
     /// </para>
     ///-
     function get_lastTimeRemoved():int64;
@@ -384,7 +384,7 @@ type
     ///   an integer corresponding to the pulse counter value
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PULSECOUNTER_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YProximity.PULSECOUNTER_INVALID</c>.
     /// </para>
     ///-
     function get_pulseCounter():int64;
@@ -403,7 +403,7 @@ type
     ///   an integer corresponding to the timer of the pulse counter (ms)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PULSETIMER_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YProximity.PULSETIMER_INVALID</c>.
     /// </para>
     ///-
     function get_pulseTimer():int64;
@@ -417,12 +417,13 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_PROXIMITYREPORTMODE_NUMERIC</c>, <c>Y_PROXIMITYREPORTMODE_PRESENCE</c> and
-    ///   <c>Y_PROXIMITYREPORTMODE_PULSECOUNT</c> corresponding to the parameter (sensor value, presence or
-    ///   pulse count) returned by the get_currentValue function and callbacks
+    ///   a value among <c>YProximity.PROXIMITYREPORTMODE_NUMERIC</c>,
+    ///   <c>YProximity.PROXIMITYREPORTMODE_PRESENCE</c> and <c>YProximity.PROXIMITYREPORTMODE_PULSECOUNT</c>
+    ///   corresponding to the parameter (sensor value, presence or pulse count) returned by the
+    ///   get_currentValue function and callbacks
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PROXIMITYREPORTMODE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YProximity.PROXIMITYREPORTMODE_INVALID</c>.
     /// </para>
     ///-
     function get_proximityReportMode():Integer;
@@ -439,14 +440,15 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>Y_PROXIMITYREPORTMODE_NUMERIC</c>, <c>Y_PROXIMITYREPORTMODE_PRESENCE</c> and
-    ///   <c>Y_PROXIMITYREPORTMODE_PULSECOUNT</c> corresponding to the  parameter  type (sensor value,
-    ///   presence or pulse count) returned by the get_currentValue function and callbacks
+    ///   a value among <c>YProximity.PROXIMITYREPORTMODE_NUMERIC</c>,
+    ///   <c>YProximity.PROXIMITYREPORTMODE_PRESENCE</c> and <c>YProximity.PROXIMITYREPORTMODE_PULSECOUNT</c>
+    ///   corresponding to the  parameter  type (sensor value, presence or pulse count) returned by the
+    ///   get_currentValue function and callbacks
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -557,7 +559,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.

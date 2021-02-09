@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_relay.pas 41109 2020-06-29 12:40:42Z seb $
+ *  $Id: yocto_relay.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindRelay(), the high-level API for Relay functions
  *
@@ -129,11 +129,11 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_STATE_A</c> or <c>Y_STATE_B</c>, according to the state of the relays (A for the idle
-    ///   position, B for the active position)
+    ///   either <c>YRelay.STATE_A</c> or <c>YRelay.STATE_B</c>, according to the state of the relays (A for
+    ///   the idle position, B for the active position)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_STATE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YRelay.STATE_INVALID</c>.
     /// </para>
     ///-
     function get_state():Integer;
@@ -147,13 +147,13 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_STATE_A</c> or <c>Y_STATE_B</c>, according to the state of the relays (A for the idle
-    ///   position, B for the active position)
+    ///   either <c>YRelay.STATE_A</c> or <c>YRelay.STATE_B</c>, according to the state of the relays (A for
+    ///   the idle position, B for the active position)
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -171,12 +171,13 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_STATEATPOWERON_UNCHANGED</c>, <c>Y_STATEATPOWERON_A</c> and
-    ///   <c>Y_STATEATPOWERON_B</c> corresponding to the state of the relays at device startup (A for the idle position,
+    ///   a value among <c>YRelay.STATEATPOWERON_UNCHANGED</c>, <c>YRelay.STATEATPOWERON_A</c> and
+    ///   <c>YRelay.STATEATPOWERON_B</c> corresponding to the state of the relays at device startup (A for
+    ///   the idle position,
     ///   B for the active position, UNCHANGED to leave the relay state as is)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_STATEATPOWERON_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YRelay.STATEATPOWERON_INVALID</c>.
     /// </para>
     ///-
     function get_stateAtPowerOn():Integer;
@@ -193,14 +194,15 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>Y_STATEATPOWERON_UNCHANGED</c>, <c>Y_STATEATPOWERON_A</c> and
-    ///   <c>Y_STATEATPOWERON_B</c> corresponding to the state of the relays at device startup (A for the idle position,
+    ///   a value among <c>YRelay.STATEATPOWERON_UNCHANGED</c>, <c>YRelay.STATEATPOWERON_A</c> and
+    ///   <c>YRelay.STATEATPOWERON_B</c> corresponding to the state of the relays at device startup (A for
+    ///   the idle position,
     ///   B for the active position, UNCHANGED to leave the relay state as is)
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -223,7 +225,7 @@ type
     ///   A before automatically switching back in to B state
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_MAXTIMEONSTATEA_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YRelay.MAXTIMEONSTATEA_INVALID</c>.
     /// </para>
     ///-
     function get_maxTimeOnStateA():int64;
@@ -247,7 +249,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -269,7 +271,7 @@ type
     ///   an integer
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_MAXTIMEONSTATEB_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YRelay.MAXTIMEONSTATEB_INVALID</c>.
     /// </para>
     ///-
     function get_maxTimeOnStateB():int64;
@@ -293,7 +295,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -310,11 +312,11 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_OUTPUT_OFF</c> or <c>Y_OUTPUT_ON</c>, according to the output state of the relays, when
-    ///   used as a simple switch (single throw)
+    ///   either <c>YRelay.OUTPUT_OFF</c> or <c>YRelay.OUTPUT_ON</c>, according to the output state of the
+    ///   relays, when used as a simple switch (single throw)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_OUTPUT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YRelay.OUTPUT_INVALID</c>.
     /// </para>
     ///-
     function get_output():Integer;
@@ -328,13 +330,13 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_OUTPUT_OFF</c> or <c>Y_OUTPUT_ON</c>, according to the output state of the relays, when
-    ///   used as a simple switch (single throw)
+    ///   either <c>YRelay.OUTPUT_OFF</c> or <c>YRelay.OUTPUT_ON</c>, according to the output state of the
+    ///   relays, when used as a simple switch (single throw)
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -357,7 +359,7 @@ type
     ///   (state A), during a measured pulse generation
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PULSETIMER_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YRelay.PULSETIMER_INVALID</c>.
     /// </para>
     ///-
     function get_pulseTimer():int64;
@@ -379,7 +381,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -408,7 +410,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -430,7 +432,7 @@ type
     ///   When there is no scheduled pulse, returns zero
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_COUNTDOWN_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YRelay.COUNTDOWN_INVALID</c>.
     /// </para>
     ///-
     function get_countdown():int64;
@@ -516,7 +518,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -897,7 +899,7 @@ implementation
   /// <para>
   /// </para>
   /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
+  ///   YAPI.SUCCESS if the call succeeds.
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns a negative error code.
@@ -954,7 +956,7 @@ implementation
   /// <para>
   /// </para>
   /// <returns>
-  ///   YAPI_SUCCESS if the call succeeds.
+  ///   YAPI.SUCCESS if the call succeeds.
   /// </returns>
   /// <para>
   ///   On failure, throws an exception or returns a negative error code.

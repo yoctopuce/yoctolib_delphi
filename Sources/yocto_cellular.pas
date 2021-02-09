@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 42060 2020-10-14 10:02:12Z seb $
+ * $Id: yocto_cellular.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -152,7 +152,7 @@ type
     ///   an integer corresponding to the link quality, expressed in percent
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_LINKQUALITY_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCellular.LINKQUALITY_INVALID</c>.
     /// </para>
     ///-
     function get_linkQuality():LongInt;
@@ -169,7 +169,7 @@ type
     ///   a string corresponding to the name of the cell operator currently in use
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CELLOPERATOR_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCellular.CELLOPERATOR_INVALID</c>.
     /// </para>
     ///-
     function get_cellOperator():string;
@@ -186,7 +186,7 @@ type
     ///   a string corresponding to the unique identifier of the cellular antenna in use: MCC, MNC, LAC and Cell ID
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CELLIDENTIFIER_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCellular.CELLIDENTIFIER_INVALID</c>.
     /// </para>
     ///-
     function get_cellIdentifier():string;
@@ -200,12 +200,13 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_CELLTYPE_GPRS</c>, <c>Y_CELLTYPE_EGPRS</c>, <c>Y_CELLTYPE_WCDMA</c>,
-    ///   <c>Y_CELLTYPE_HSDPA</c>, <c>Y_CELLTYPE_NONE</c>, <c>Y_CELLTYPE_CDMA</c>, <c>Y_CELLTYPE_LTE_M</c>,
-    ///   <c>Y_CELLTYPE_NB_IOT</c> and <c>Y_CELLTYPE_EC_GSM_IOT</c>
+    ///   a value among <c>YCellular.CELLTYPE_GPRS</c>, <c>YCellular.CELLTYPE_EGPRS</c>,
+    ///   <c>YCellular.CELLTYPE_WCDMA</c>, <c>YCellular.CELLTYPE_HSDPA</c>, <c>YCellular.CELLTYPE_NONE</c>,
+    ///   <c>YCellular.CELLTYPE_CDMA</c>, <c>YCellular.CELLTYPE_LTE_M</c>, <c>YCellular.CELLTYPE_NB_IOT</c>
+    ///   and <c>YCellular.CELLTYPE_EC_GSM_IOT</c>
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CELLTYPE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCellular.CELLTYPE_INVALID</c>.
     /// </para>
     ///-
     function get_cellType():Integer;
@@ -227,7 +228,7 @@ type
     ///   the SIM card
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_IMSI_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCellular.IMSI_INVALID</c>.
     /// </para>
     ///-
     function get_imsi():string;
@@ -244,7 +245,7 @@ type
     ///   a string corresponding to the latest status message from the wireless interface
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_MESSAGE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCellular.MESSAGE_INVALID</c>.
     /// </para>
     ///-
     function get_message():string;
@@ -265,7 +266,7 @@ type
     ///   was rejected by the SIM card
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PIN_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCellular.PIN_INVALID</c>.
     /// </para>
     ///-
     function get_pin():string;
@@ -295,7 +296,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -319,7 +320,7 @@ type
     ///   a string corresponding to the type of protocol used over the serial line, as a string
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_RADIOCONFIG_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCellular.RADIOCONFIG_INVALID</c>.
     /// </para>
     ///-
     function get_radioConfig():string;
@@ -346,7 +347,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -370,7 +371,7 @@ type
     ///   cell operators
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_LOCKEDOPERATOR_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCellular.LOCKEDOPERATOR_INVALID</c>.
     /// </para>
     ///-
     function get_lockedOperator():string;
@@ -394,7 +395,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -411,11 +412,11 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_AIRPLANEMODE_OFF</c> or <c>Y_AIRPLANEMODE_ON</c>, according to true if the airplane
-    ///   mode is active (radio turned off)
+    ///   either <c>YCellular.AIRPLANEMODE_OFF</c> or <c>YCellular.AIRPLANEMODE_ON</c>, according to true if
+    ///   the airplane mode is active (radio turned off)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_AIRPLANEMODE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCellular.AIRPLANEMODE_INVALID</c>.
     /// </para>
     ///-
     function get_airplaneMode():Integer;
@@ -429,13 +430,13 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_AIRPLANEMODE_OFF</c> or <c>Y_AIRPLANEMODE_ON</c>, according to the activation state of
-    ///   airplane mode (radio turned off)
+    ///   either <c>YCellular.AIRPLANEMODE_OFF</c> or <c>YCellular.AIRPLANEMODE_ON</c>, according to the
+    ///   activation state of airplane mode (radio turned off)
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -453,12 +454,12 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_ENABLEDATA_HOMENETWORK</c>, <c>Y_ENABLEDATA_ROAMING</c>,
-    ///   <c>Y_ENABLEDATA_NEVER</c> and <c>Y_ENABLEDATA_NEUTRALITY</c> corresponding to the condition for
-    ///   enabling IP data services (GPRS)
+    ///   a value among <c>YCellular.ENABLEDATA_HOMENETWORK</c>, <c>YCellular.ENABLEDATA_ROAMING</c>,
+    ///   <c>YCellular.ENABLEDATA_NEVER</c> and <c>YCellular.ENABLEDATA_NEUTRALITY</c> corresponding to the
+    ///   condition for enabling IP data services (GPRS)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ENABLEDATA_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCellular.ENABLEDATA_INVALID</c>.
     /// </para>
     ///-
     function get_enableData():Integer;
@@ -480,14 +481,14 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>Y_ENABLEDATA_HOMENETWORK</c>, <c>Y_ENABLEDATA_ROAMING</c>,
-    ///   <c>Y_ENABLEDATA_NEVER</c> and <c>Y_ENABLEDATA_NEUTRALITY</c> corresponding to the condition for
-    ///   enabling IP data services (GPRS)
+    ///   a value among <c>YCellular.ENABLEDATA_HOMENETWORK</c>, <c>YCellular.ENABLEDATA_ROAMING</c>,
+    ///   <c>YCellular.ENABLEDATA_NEVER</c> and <c>YCellular.ENABLEDATA_NEUTRALITY</c> corresponding to the
+    ///   condition for enabling IP data services (GPRS)
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -508,7 +509,7 @@ type
     ///   a string corresponding to the Access Point Name (APN) to be used, if needed
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_APN_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCellular.APN_INVALID</c>.
     /// </para>
     ///-
     function get_apn():string;
@@ -530,7 +531,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -553,7 +554,7 @@ type
     ///   in the device, or an empty string otherwise
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_APNSECRET_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCellular.APNSECRET_INVALID</c>.
     /// </para>
     ///-
     function get_apnSecret():string;
@@ -572,7 +573,7 @@ type
     ///   an integer corresponding to the automated connectivity check interval, in seconds
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PINGINTERVAL_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCellular.PINGINTERVAL_INVALID</c>.
     /// </para>
     ///-
     function get_pingInterval():LongInt;
@@ -593,7 +594,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -613,7 +614,7 @@ type
     ///   an integer corresponding to the number of bytes sent so far
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_DATASENT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCellular.DATASENT_INVALID</c>.
     /// </para>
     ///-
     function get_dataSent():LongInt;
@@ -632,7 +633,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -652,7 +653,7 @@ type
     ///   an integer corresponding to the number of bytes received so far
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_DATARECEIVED_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCellular.DATARECEIVED_INVALID</c>.
     /// </para>
     ///-
     function get_dataReceived():LongInt;
@@ -671,7 +672,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -777,7 +778,7 @@ type
     ///   new PIN code to configure into the SIM card
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -802,7 +803,7 @@ type
     ///   APN password
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -817,7 +818,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.

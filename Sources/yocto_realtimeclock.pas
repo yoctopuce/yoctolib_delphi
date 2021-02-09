@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_realtimeclock.pas 39434 2020-02-25 08:53:55Z seb $
+ *  $Id: yocto_realtimeclock.pas 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
@@ -69,7 +69,7 @@ type
   ////
   /// <summary>
   ///   TYRealTimeClock Class: real-time clock control interface, available for instance in the
-  ///   YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-Wireless-g or the YoctoHub-Wireless-n
+  ///   YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-GSM-4G or the YoctoHub-Wireless-n
   /// <para>
   ///   The <c>YRealTimeClock</c> class provide access to the embedded real-time clock available on some Yoctopuce
   ///   devices. It can provide current date and time, even after a power outage
@@ -110,7 +110,7 @@ type
     ///   an integer corresponding to the current time in Unix format (number of elapsed seconds since Jan 1st, 1970)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_UNIXTIME_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YRealTimeClock.UNIXTIME_INVALID</c>.
     /// </para>
     ///-
     function get_unixTime():int64;
@@ -130,7 +130,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -150,7 +150,7 @@ type
     ///   a string corresponding to the current time in the form "YYYY/MM/DD hh:mm:ss"
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_DATETIME_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YRealTimeClock.DATETIME_INVALID</c>.
     /// </para>
     ///-
     function get_dateTime():string;
@@ -167,7 +167,7 @@ type
     ///   an integer corresponding to the number of seconds between current time and UTC time (time zone)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_UTCOFFSET_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YRealTimeClock.UTCOFFSET_INVALID</c>.
     /// </para>
     ///-
     function get_utcOffset():LongInt;
@@ -189,7 +189,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -206,11 +206,11 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_TIMESET_FALSE</c> or <c>Y_TIMESET_TRUE</c>, according to true if the clock has been
-    ///   set, and false otherwise
+    ///   either <c>YRealTimeClock.TIMESET_FALSE</c> or <c>YRealTimeClock.TIMESET_TRUE</c>, according to true
+    ///   if the clock has been set, and false otherwise
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_TIMESET_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YRealTimeClock.TIMESET_INVALID</c>.
     /// </para>
     ///-
     function get_timeSet():Integer;

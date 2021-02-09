@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_current.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_current.pas 43580 2021-01-26 17:46:01Z mvuilleu $
  *
  *  Implements yFindCurrent(), the high-level API for Current functions
  *
@@ -100,10 +100,11 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_ENABLED_FALSE</c> or <c>Y_ENABLED_TRUE</c>, according to the activation state of this input
+    ///   either <c>YCurrent.ENABLED_FALSE</c> or <c>YCurrent.ENABLED_TRUE</c>, according to the activation
+    ///   state of this input
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ENABLED_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YCurrent.ENABLED_INVALID</c>.
     /// </para>
     ///-
     function get_enabled():Integer;
@@ -123,12 +124,13 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>Y_ENABLED_FALSE</c> or <c>Y_ENABLED_TRUE</c>, according to the activation state of this voltage input
+    ///   either <c>YCurrent.ENABLED_FALSE</c> or <c>YCurrent.ENABLED_TRUE</c>, according to the activation
+    ///   state of this voltage input
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.

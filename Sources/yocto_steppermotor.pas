@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_steppermotor.pas 38913 2019-12-20 18:59:49Z mvuilleu $
+ *  $Id: yocto_steppermotor.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindStepperMotor(), the high-level API for StepperMotor functions
  *
@@ -133,12 +133,13 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_MOTORSTATE_ABSENT</c>, <c>Y_MOTORSTATE_ALERT</c>, <c>Y_MOTORSTATE_HI_Z</c>,
-    ///   <c>Y_MOTORSTATE_STOP</c>, <c>Y_MOTORSTATE_RUN</c> and <c>Y_MOTORSTATE_BATCH</c> corresponding to
-    ///   the motor working state
+    ///   a value among <c>YStepperMotor.MOTORSTATE_ABSENT</c>, <c>YStepperMotor.MOTORSTATE_ALERT</c>,
+    ///   <c>YStepperMotor.MOTORSTATE_HI_Z</c>, <c>YStepperMotor.MOTORSTATE_STOP</c>,
+    ///   <c>YStepperMotor.MOTORSTATE_RUN</c> and <c>YStepperMotor.MOTORSTATE_BATCH</c> corresponding to the
+    ///   motor working state
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_MOTORSTATE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YStepperMotor.MOTORSTATE_INVALID</c>.
     /// </para>
     ///-
     function get_motorState():Integer;
@@ -155,7 +156,7 @@ type
     ///   an integer corresponding to the stepper motor controller diagnostics, as a bitmap
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_DIAGS_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YStepperMotor.DIAGS_INVALID</c>.
     /// </para>
     ///-
     function get_diags():LongInt;
@@ -179,7 +180,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -200,7 +201,7 @@ type
     ///   a floating point number corresponding to the current logical motor position, measured in steps
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_STEPPOS_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YStepperMotor.STEPPOS_INVALID</c>.
     /// </para>
     ///-
     function get_stepPos():double;
@@ -218,7 +219,7 @@ type
     ///   a floating point number corresponding to current motor speed, measured in steps per second
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SPEED_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YStepperMotor.SPEED_INVALID</c>.
     /// </para>
     ///-
     function get_speed():double;
@@ -238,7 +239,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -259,7 +260,7 @@ type
     ///   measured in steps per second
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PULLINSPEED_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YStepperMotor.PULLINSPEED_INVALID</c>.
     /// </para>
     ///-
     function get_pullinSpeed():double;
@@ -278,7 +279,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -298,7 +299,7 @@ type
     ///   a floating point number corresponding to the maximal motor acceleration, measured in steps per second^2
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_MAXACCEL_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YStepperMotor.MAXACCEL_INVALID</c>.
     /// </para>
     ///-
     function get_maxAccel():double;
@@ -317,7 +318,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -337,7 +338,7 @@ type
     ///   a floating point number corresponding to the maximal motor speed, measured in steps per second
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_MAXSPEED_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YStepperMotor.MAXSPEED_INVALID</c>.
     /// </para>
     ///-
     function get_maxSpeed():double;
@@ -351,12 +352,12 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_STEPPING_MICROSTEP16</c>, <c>Y_STEPPING_MICROSTEP8</c>,
-    ///   <c>Y_STEPPING_MICROSTEP4</c>, <c>Y_STEPPING_HALFSTEP</c> and <c>Y_STEPPING_FULLSTEP</c>
-    ///   corresponding to the stepping mode used to drive the motor
+    ///   a value among <c>YStepperMotor.STEPPING_MICROSTEP16</c>, <c>YStepperMotor.STEPPING_MICROSTEP8</c>,
+    ///   <c>YStepperMotor.STEPPING_MICROSTEP4</c>, <c>YStepperMotor.STEPPING_HALFSTEP</c> and
+    ///   <c>YStepperMotor.STEPPING_FULLSTEP</c> corresponding to the stepping mode used to drive the motor
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_STEPPING_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YStepperMotor.STEPPING_INVALID</c>.
     /// </para>
     ///-
     function get_stepping():Integer;
@@ -370,14 +371,14 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>Y_STEPPING_MICROSTEP16</c>, <c>Y_STEPPING_MICROSTEP8</c>,
-    ///   <c>Y_STEPPING_MICROSTEP4</c>, <c>Y_STEPPING_HALFSTEP</c> and <c>Y_STEPPING_FULLSTEP</c>
-    ///   corresponding to the stepping mode used to drive the motor
+    ///   a value among <c>YStepperMotor.STEPPING_MICROSTEP16</c>, <c>YStepperMotor.STEPPING_MICROSTEP8</c>,
+    ///   <c>YStepperMotor.STEPPING_MICROSTEP4</c>, <c>YStepperMotor.STEPPING_HALFSTEP</c> and
+    ///   <c>YStepperMotor.STEPPING_FULLSTEP</c> corresponding to the stepping mode used to drive the motor
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -397,7 +398,7 @@ type
     ///   an integer corresponding to the overcurrent alert and emergency stop threshold, measured in mA
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_OVERCURRENT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YStepperMotor.OVERCURRENT_INVALID</c>.
     /// </para>
     ///-
     function get_overcurrent():LongInt;
@@ -416,7 +417,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -436,7 +437,7 @@ type
     ///   an integer corresponding to the torque regulation current when the motor is stopped, measured in mA
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_TCURRSTOP_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YStepperMotor.TCURRSTOP_INVALID</c>.
     /// </para>
     ///-
     function get_tCurrStop():LongInt;
@@ -455,7 +456,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -475,7 +476,7 @@ type
     ///   an integer corresponding to the torque regulation current when the motor is running, measured in mA
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_TCURRRUN_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YStepperMotor.TCURRRUN_INVALID</c>.
     /// </para>
     ///-
     function get_tCurrRun():LongInt;
@@ -494,7 +495,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -522,7 +523,7 @@ type
     ///   an integer corresponding to the current value of the signal generated on the auxiliary output
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_AUXSIGNAL_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YStepperMotor.AUXSIGNAL_INVALID</c>.
     /// </para>
     ///-
     function get_auxSignal():LongInt;
@@ -542,7 +543,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -637,7 +638,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -653,7 +654,7 @@ type
     ///   desired speed, in steps per second.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -672,7 +673,7 @@ type
     ///   is 0.001 pulse per second.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -691,7 +692,7 @@ type
     ///   absolute position, measured in steps from the origin.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -710,7 +711,7 @@ type
     ///   relative position, measured in steps from the current position.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -732,7 +733,7 @@ type
     ///   limit speed, in steps per second.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -748,7 +749,7 @@ type
     ///   wait time, specified in milliseconds.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -761,7 +762,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -776,7 +777,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -794,7 +795,7 @@ type
     ///   Value +1 or -1, according to the desired direction of the move
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -807,7 +808,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -820,7 +821,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-
@@ -1493,7 +1494,7 @@ implementation
       //may throw an exception
       retBin := self._download(url);
       res := retBin[0];
-      if res = 49 then
+      if res < 58 then
         begin
           if not(res = 48) then
             begin

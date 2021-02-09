@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_i2cport.pas 41187 2020-07-03 10:15:40Z seb $
+ *  $Id: yocto_i2cport.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindI2cPort(), the high-level API for I2cPort functions
  *
@@ -208,7 +208,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   an integer corresponding to the total number of bytes received since last reset
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_RXCOUNT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YI2cPort.RXCOUNT_INVALID</c>.
     /// </para>
     ///-
     function get_rxCount():LongInt;
@@ -225,7 +225,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   an integer corresponding to the total number of bytes transmitted since last reset
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_TXCOUNT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YI2cPort.TXCOUNT_INVALID</c>.
     /// </para>
     ///-
     function get_txCount():LongInt;
@@ -242,7 +242,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   an integer corresponding to the total number of communication errors detected since last reset
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_ERRCOUNT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YI2cPort.ERRCOUNT_INVALID</c>.
     /// </para>
     ///-
     function get_errCount():LongInt;
@@ -259,7 +259,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   an integer corresponding to the total number of messages received since last reset
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_RXMSGCOUNT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YI2cPort.RXMSGCOUNT_INVALID</c>.
     /// </para>
     ///-
     function get_rxMsgCount():LongInt;
@@ -276,7 +276,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   an integer corresponding to the total number of messages send since last reset
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_TXMSGCOUNT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YI2cPort.TXMSGCOUNT_INVALID</c>.
     /// </para>
     ///-
     function get_txMsgCount():LongInt;
@@ -293,7 +293,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   a string corresponding to the latest message fully received (for Line and Frame protocols)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_LASTMSG_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YI2cPort.LASTMSG_INVALID</c>.
     /// </para>
     ///-
     function get_lastMsg():string;
@@ -310,7 +310,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   a string corresponding to the name of the job file currently in use
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CURRENTJOB_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YI2cPort.CURRENTJOB_INVALID</c>.
     /// </para>
     ///-
     function get_currentJob():string;
@@ -331,7 +331,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -351,7 +351,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   a string corresponding to the job file to use when the device is powered on
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_STARTUPJOB_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YI2cPort.STARTUPJOB_INVALID</c>.
     /// </para>
     ///-
     function get_startupJob():string;
@@ -372,7 +372,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -392,7 +392,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   an integer corresponding to the maximum number of tasks in a job that the device can handle
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_JOBMAXTASK_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YI2cPort.JOBMAXTASK_INVALID</c>.
     /// </para>
     ///-
     function get_jobMaxTask():LongInt;
@@ -409,7 +409,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   an integer corresponding to maximum size allowed for job files
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_JOBMAXSIZE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YI2cPort.JOBMAXSIZE_INVALID</c>.
     /// </para>
     ///-
     function get_jobMaxSize():LongInt;
@@ -433,7 +433,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   a string corresponding to the type of protocol used to send I2C messages, as a string
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_PROTOCOL_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YI2cPort.PROTOCOL_INVALID</c>.
     /// </para>
     ///-
     function get_protocol():string;
@@ -459,7 +459,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -476,11 +476,11 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_I2CVOLTAGELEVEL_OFF</c>, <c>Y_I2CVOLTAGELEVEL_3V3</c> and
-    ///   <c>Y_I2CVOLTAGELEVEL_1V8</c> corresponding to the voltage level used on the I2C bus
+    ///   a value among <c>YI2cPort.I2CVOLTAGELEVEL_OFF</c>, <c>YI2cPort.I2CVOLTAGELEVEL_3V3</c> and
+    ///   <c>YI2cPort.I2CVOLTAGELEVEL_1V8</c> corresponding to the voltage level used on the I2C bus
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_I2CVOLTAGELEVEL_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YI2cPort.I2CVOLTAGELEVEL_INVALID</c>.
     /// </para>
     ///-
     function get_i2cVoltageLevel():Integer;
@@ -496,13 +496,13 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>Y_I2CVOLTAGELEVEL_OFF</c>, <c>Y_I2CVOLTAGELEVEL_3V3</c> and
-    ///   <c>Y_I2CVOLTAGELEVEL_1V8</c> corresponding to the voltage level used on the I2C bus
+    ///   a value among <c>YI2cPort.I2CVOLTAGELEVEL_OFF</c>, <c>YI2cPort.I2CVOLTAGELEVEL_3V3</c> and
+    ///   <c>YI2cPort.I2CVOLTAGELEVEL_1V8</c> corresponding to the voltage level used on the I2C bus
     /// </param>
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -528,7 +528,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   "400kbps,2000ms,NoRestart"
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_I2CMODE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YI2cPort.I2CMODE_INVALID</c>.
     /// </para>
     ///-
     function get_i2cMode():string;
@@ -555,7 +555,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -799,7 +799,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   a string containing a JSON definition of the job
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -822,7 +822,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   name of the job file (on the device filesystem)
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -839,7 +839,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -861,7 +861,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   the binary buffer to be sent
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -883,7 +883,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   a list of data bytes to be sent
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -964,7 +964,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   the code stream to send
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -993,7 +993,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   the code stream to send
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1013,7 +1013,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   the byte to send
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1033,7 +1033,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   a string of hexadecimal byte codes
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1053,7 +1053,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   the binary buffer to send
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -1073,7 +1073,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     ///   a list of byte codes
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.

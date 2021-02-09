@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ * $Id: yocto_wireless.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -209,7 +209,7 @@ public
     ///   an integer corresponding to the link quality, expressed in percent
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_LINKQUALITY_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YWireless.LINKQUALITY_INVALID</c>.
     /// </para>
     ///-
     function get_linkQuality():LongInt;
@@ -226,7 +226,7 @@ public
     ///   a string corresponding to the wireless network name (SSID)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SSID_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YWireless.SSID_INVALID</c>.
     /// </para>
     ///-
     function get_ssid():string;
@@ -243,7 +243,7 @@ public
     ///   an integer corresponding to the 802.11 channel currently used, or 0 when the selected network has not been found
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_CHANNEL_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YWireless.CHANNEL_INVALID</c>.
     /// </para>
     ///-
     function get_channel():LongInt;
@@ -257,12 +257,12 @@ public
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_SECURITY_UNKNOWN</c>, <c>Y_SECURITY_OPEN</c>, <c>Y_SECURITY_WEP</c>,
-    ///   <c>Y_SECURITY_WPA</c> and <c>Y_SECURITY_WPA2</c> corresponding to the security algorithm used by
-    ///   the selected wireless network
+    ///   a value among <c>YWireless.SECURITY_UNKNOWN</c>, <c>YWireless.SECURITY_OPEN</c>,
+    ///   <c>YWireless.SECURITY_WEP</c>, <c>YWireless.SECURITY_WPA</c> and <c>YWireless.SECURITY_WPA2</c>
+    ///   corresponding to the security algorithm used by the selected wireless network
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SECURITY_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YWireless.SECURITY_INVALID</c>.
     /// </para>
     ///-
     function get_security():Integer;
@@ -279,7 +279,7 @@ public
     ///   a string corresponding to the latest status message from the wireless interface
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_MESSAGE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YWireless.MESSAGE_INVALID</c>.
     /// </para>
     ///-
     function get_message():string;
@@ -292,17 +292,17 @@ public
     /// <summary>
     ///   Returns the current state of the wireless interface.
     /// <para>
-    ///   The state <c>Y_WLANSTATE_DOWN</c> means that the network interface is
-    ///   not connected to a network. The state <c>Y_WLANSTATE_SCANNING</c> means that the network interface
-    ///   is scanning available
+    ///   The state <c>YWireless.WLANSTATE_DOWN</c> means that the network interface is
+    ///   not connected to a network. The state <c>YWireless.WLANSTATE_SCANNING</c> means that the network
+    ///   interface is scanning available
     ///   frequencies. During this stage, the device is not reachable, and the network settings are not yet
     ///   applied. The state
-    ///   <c>Y_WLANSTATE_CONNECTED</c> means that the network settings have been successfully applied ant
-    ///   that the device is reachable
+    ///   <c>YWireless.WLANSTATE_CONNECTED</c> means that the network settings have been successfully applied
+    ///   ant that the device is reachable
     ///   from the wireless network. If the device is configured to use ad-hoc or Soft AP mode, it means that
     ///   the wireless network
-    ///   is up and that other devices can join the network. The state <c>Y_WLANSTATE_REJECTED</c> means that
-    ///   the network interface has
+    ///   is up and that other devices can join the network. The state <c>YWireless.WLANSTATE_REJECTED</c>
+    ///   means that the network interface has
     ///   not been able to join the requested network. The description of the error can be obtain with the
     ///   <c>get_message()</c> method.
     /// </para>
@@ -310,11 +310,12 @@ public
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_WLANSTATE_DOWN</c>, <c>Y_WLANSTATE_SCANNING</c>, <c>Y_WLANSTATE_CONNECTED</c>
-    ///   and <c>Y_WLANSTATE_REJECTED</c> corresponding to the current state of the wireless interface
+    ///   a value among <c>YWireless.WLANSTATE_DOWN</c>, <c>YWireless.WLANSTATE_SCANNING</c>,
+    ///   <c>YWireless.WLANSTATE_CONNECTED</c> and <c>YWireless.WLANSTATE_REJECTED</c> corresponding to the
+    ///   current state of the wireless interface
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_WLANSTATE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YWireless.WLANSTATE_INVALID</c>.
     /// </para>
     ///-
     function get_wlanState():Integer;
@@ -399,8 +400,10 @@ public
     /// <para>
     ///   The scan forces a disconnection from the current network. At then end of the process, the
     ///   the network interface attempts to reconnect to the previous network. During the scan, the <c>wlanState</c>
-    ///   switches to <c>Y_WLANSTATE_DOWN</c>, then to <c>Y_WLANSTATE_SCANNING</c>. When the scan is completed,
-    ///   <c>get_wlanState()</c> returns either <c>Y_WLANSTATE_DOWN</c> or <c>Y_WLANSTATE_SCANNING</c>. At this
+    ///   switches to <c>YWireless.WLANSTATE_DOWN</c>, then to <c>YWireless.WLANSTATE_SCANNING</c>. When the
+    ///   scan is completed,
+    ///   <c>get_wlanState()</c> returns either <c>YWireless.WLANSTATE_DOWN</c> or
+    ///   <c>YWireless.WLANSTATE_SCANNING</c>. At this
     ///   point, the list of detected network can be retrieved with the <c>get_detectedWlans()</c> method.
     /// </para>
     /// <para>
@@ -425,7 +428,7 @@ public
     ///   the network key, as a character string
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -459,7 +462,7 @@ public
     ///   the network key, as a character string
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -496,7 +499,7 @@ public
     ///   the network key, as a character string
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> when the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.

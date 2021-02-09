@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.pas 39434 2020-02-25 08:53:55Z seb $
+ *  $Id: yocto_wakeupmonitor.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -77,7 +77,7 @@ type
   ////
   /// <summary>
   ///   TYWakeUpMonitor Class: wake-up monitor control interface, available for instance in the
-  ///   YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-Wireless-g or the YoctoHub-Wireless-n
+  ///   YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-GSM-4G or the YoctoHub-Wireless-n
   /// <para>
   ///   The <c>YWakeUpMonitor</c> class handles globally all wake-up sources, as well
   ///   as automated sleep mode.
@@ -118,7 +118,7 @@ type
     ///   an integer corresponding to the maximal wake up time (in seconds) before automatically going to sleep
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_POWERDURATION_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YWakeUpMonitor.POWERDURATION_INVALID</c>.
     /// </para>
     ///-
     function get_powerDuration():LongInt;
@@ -139,7 +139,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -159,7 +159,7 @@ type
     ///   an integer corresponding to the delay before the  next sleep period
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_SLEEPCOUNTDOWN_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YWakeUpMonitor.SLEEPCOUNTDOWN_INVALID</c>.
     /// </para>
     ///-
     function get_sleepCountdown():LongInt;
@@ -178,7 +178,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -198,7 +198,7 @@ type
     ///   an integer corresponding to the next scheduled wake up date/time (UNIX format)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_NEXTWAKEUP_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YWakeUpMonitor.NEXTWAKEUP_INVALID</c>.
     /// </para>
     ///-
     function get_nextWakeUp():int64;
@@ -217,7 +217,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -234,12 +234,13 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>Y_WAKEUPREASON_USBPOWER</c>, <c>Y_WAKEUPREASON_EXTPOWER</c>,
-    ///   <c>Y_WAKEUPREASON_ENDOFSLEEP</c>, <c>Y_WAKEUPREASON_EXTSIG1</c>, <c>Y_WAKEUPREASON_SCHEDULE1</c>
-    ///   and <c>Y_WAKEUPREASON_SCHEDULE2</c> corresponding to the latest wake up reason
+    ///   a value among <c>YWakeUpMonitor.WAKEUPREASON_USBPOWER</c>, <c>YWakeUpMonitor.WAKEUPREASON_EXTPOWER</c>,
+    ///   <c>YWakeUpMonitor.WAKEUPREASON_ENDOFSLEEP</c>, <c>YWakeUpMonitor.WAKEUPREASON_EXTSIG1</c>,
+    ///   <c>YWakeUpMonitor.WAKEUPREASON_SCHEDULE1</c> and <c>YWakeUpMonitor.WAKEUPREASON_SCHEDULE2</c>
+    ///   corresponding to the latest wake up reason
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_WAKEUPREASON_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YWakeUpMonitor.WAKEUPREASON_INVALID</c>.
     /// </para>
     ///-
     function get_wakeUpReason():Integer;
@@ -253,11 +254,11 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>Y_WAKEUPSTATE_SLEEPING</c> or <c>Y_WAKEUPSTATE_AWAKE</c>, according to  the current state
-    ///   of the monitor
+    ///   either <c>YWakeUpMonitor.WAKEUPSTATE_SLEEPING</c> or <c>YWakeUpMonitor.WAKEUPSTATE_AWAKE</c>,
+    ///   according to  the current state of the monitor
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_WAKEUPSTATE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YWakeUpMonitor.WAKEUPSTATE_INVALID</c>.
     /// </para>
     ///-
     function get_wakeUpState():Integer;
@@ -360,7 +361,7 @@ type
     ///   number of seconds before going into sleep mode,
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -384,7 +385,7 @@ type
     ///   number of seconds before going into sleep mode
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -408,7 +409,7 @@ type
     ///   number of seconds before going into sleep mode
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -423,7 +424,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     ///   On failure, throws an exception or returns a negative error code.
     /// </returns>
     ///-

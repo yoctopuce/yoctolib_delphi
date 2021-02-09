@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 42060 2020-10-14 10:02:12Z seb $
+ * $Id: yocto_files.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -137,8 +137,8 @@ TYFILERECORDARRAY = array of TYFileRecord;
 
   ////
   /// <summary>
-  ///   TYFiles Class: filesystem control interface, available for instance in the Yocto-Buzzer, the
-  ///   Yocto-Color-V2, the YoctoHub-Ethernet or the YoctoHub-Wireless-n
+  ///   TYFiles Class: filesystem control interface, available for instance in the Yocto-Color-V2, the
+  ///   Yocto-Serial, the YoctoHub-Ethernet or the YoctoHub-Wireless-n
   /// <para>
   ///   The YFiles class is used to access the filesystem embedded on
   ///   some Yoctopuce devices. This filesystem makes it
@@ -176,7 +176,7 @@ public
     ///   an integer corresponding to the number of files currently loaded in the filesystem
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_FILESCOUNT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YFiles.FILESCOUNT_INVALID</c>.
     /// </para>
     ///-
     function get_filesCount():LongInt;
@@ -193,7 +193,7 @@ public
     ///   an integer corresponding to the free space for uploading new files to the filesystem, in bytes
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_FREESPACE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YFiles.FREESPACE_INVALID</c>.
     /// </para>
     ///-
     function get_freeSpace():LongInt;
@@ -282,7 +282,7 @@ public
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -362,7 +362,7 @@ public
     ///   binary buffer with the content to set
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -385,7 +385,7 @@ public
     ///   path and name of the file to remove.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -470,7 +470,7 @@ procedure freeFileRecordArray(var list:TYFILERECORDARRAY);
   /// </summary>
   /// <param name="func">
   ///   a string that uniquely characterizes the filesystem, for instance
-  ///   <c>YBUZZER2.files</c>.
+  ///   <c>YRGBLED2.files</c>.
   /// </param>
   /// <returns>
   ///   a <c>YFiles</c> object allowing you to drive the filesystem.

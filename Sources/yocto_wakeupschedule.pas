@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.pas 39434 2020-02-25 08:53:55Z seb $
+ *  $Id: yocto_wakeupschedule.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
@@ -70,7 +70,7 @@ type
   ////
   /// <summary>
   ///   TYWakeUpSchedule Class: wake up schedule control interface, available for instance in the
-  ///   YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-Wireless-g or the YoctoHub-Wireless-n
+  ///   YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-GSM-4G or the YoctoHub-Wireless-n
   /// <para>
   ///   The <c>YWakeUpSchedule</c> class implements a wake up condition. The wake up time is
   ///   specified as a set of months and/or days and/or hours and/or minutes when the
@@ -112,7 +112,7 @@ type
     ///   an integer corresponding to the minutes in the 00-29 interval of each hour scheduled for wake up
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_MINUTESA_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YWakeUpSchedule.MINUTESA_INVALID</c>.
     /// </para>
     ///-
     function get_minutesA():LongInt;
@@ -133,7 +133,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -153,7 +153,7 @@ type
     ///   an integer corresponding to the minutes in the 30-59 interval of each hour scheduled for wake up
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_MINUTESB_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YWakeUpSchedule.MINUTESB_INVALID</c>.
     /// </para>
     ///-
     function get_minutesB():LongInt;
@@ -174,7 +174,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -194,7 +194,7 @@ type
     ///   an integer corresponding to the hours scheduled for wake up
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_HOURS_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YWakeUpSchedule.HOURS_INVALID</c>.
     /// </para>
     ///-
     function get_hours():LongInt;
@@ -215,7 +215,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -235,7 +235,7 @@ type
     ///   an integer corresponding to the days of the week scheduled for wake up
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_WEEKDAYS_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YWakeUpSchedule.WEEKDAYS_INVALID</c>.
     /// </para>
     ///-
     function get_weekDays():LongInt;
@@ -256,7 +256,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -276,7 +276,7 @@ type
     ///   an integer corresponding to the days of the month scheduled for wake up
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_MONTHDAYS_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YWakeUpSchedule.MONTHDAYS_INVALID</c>.
     /// </para>
     ///-
     function get_monthDays():LongInt;
@@ -297,7 +297,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -317,7 +317,7 @@ type
     ///   an integer corresponding to the months scheduled for wake up
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_MONTHS_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YWakeUpSchedule.MONTHS_INVALID</c>.
     /// </para>
     ///-
     function get_months():LongInt;
@@ -338,7 +338,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -358,7 +358,7 @@ type
     ///   an integer corresponding to the date/time (seconds) of the next wake up occurrence
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_NEXTOCCURENCE_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YWakeUpSchedule.NEXTOCCURENCE_INVALID</c>.
     /// </para>
     ///-
     function get_nextOccurence():int64;
@@ -456,7 +456,7 @@ type
     ///   Minutes 00-59 of each hour scheduled for wake up.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.

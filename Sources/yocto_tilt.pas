@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_tilt.pas 42965 2020-12-14 13:23:37Z seb $
+ *  $Id: yocto_tilt.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindTilt(), the high-level API for Tilt functions
  *
@@ -67,7 +67,7 @@ type
 
   ////
   /// <summary>
-  ///   TYTilt Class: tilt sensor control interface, available for instance in the Yocto-3D-V2
+  ///   TYTilt Class: tilt sensor control interface, available for instance in the Yocto-3D-V2 or the Yocto-Inclinometer
   /// <para>
   ///   The <c>YSensor</c> class is the parent class for all Yoctopuce sensor types. It can be
   ///   used to read the current value and unit of any sensor, read the min/max
@@ -111,7 +111,7 @@ type
     ///   an integer corresponding to the measure update frequency, measured in Hz
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_BANDWIDTH_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YTilt.BANDWIDTH_INVALID</c>.
     /// </para>
     ///-
     function get_bandwidth():LongInt;
@@ -134,7 +134,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -250,7 +250,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -266,7 +266,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.

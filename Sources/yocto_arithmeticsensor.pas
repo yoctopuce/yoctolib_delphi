@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_arithmeticsensor.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_arithmeticsensor.pas 43619 2021-01-29 09:14:45Z mvuilleu $
  *
  *  Implements yFindArithmeticSensor(), the high-level API for ArithmeticSensor functions
  *
@@ -108,7 +108,7 @@ type
     /// <para>
     /// </para>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -128,7 +128,7 @@ type
     ///   a string corresponding to a short informative description of the formula
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>Y_DESCRIPTION_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YArithmeticSensor.DESCRIPTION_INVALID</c>.
     /// </para>
     ///-
     function get_description():string;
@@ -296,7 +296,7 @@ type
     ///   desired for each of the input value, index by index.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -323,7 +323,7 @@ type
     ///   output value for each of the input value, index by index.
     /// </param>
     /// <returns>
-    ///   <c>YAPI_SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
