@@ -1,4 +1,3 @@
-Delphi v1.10.43781
+Delphi v1.10.44029
 
-use api version 1.0
-- improve documentation
+- Add YAPI.AddUdevRule() method

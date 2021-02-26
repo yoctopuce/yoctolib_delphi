@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 43619 2021-01-29 09:14:45Z mvuilleu $
+ * $Id: yocto_api.pas 44025 2021-02-25 09:38:14Z web $
  *
  * High-level programming interface, common to all modules
  *
@@ -120,7 +120,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '43781';
+  YOCTO_API_BUILD_NO        = '44029';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -2768,6 +2768,27 @@ end;
 
     ////
     /// <summary>
+    ///   Adds a UDEV rule which authorizes all users to access Yoctopuce modules
+    ///   connected to the USB ports.
+    /// <para>
+    ///   This function works only under Linux. The process that
+    ///   calls this method must have root privileges because this method changes the Linux configuration.
+    /// </para>
+    /// </summary>
+    /// <param name="force">
+    ///   if true, overwrites any existing rule.
+    /// </param>
+    /// <returns>
+    ///   an empty string if the rule has been added.
+    /// </returns>
+    /// <para>
+    ///   On failure, returns a string that starts with "error:".
+    /// </para>
+    ///-
+    function AddUdevRule(force: boolean):string; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Modifies the network connection delay for <c>yRegisterHub()</c> and <c>yUpdateDeviceList()</c>.
     /// <para>
     ///   This delay impacts only the YoctoHubs and VirtualHub
@@ -4482,6 +4503,27 @@ end;
 
     ////
     /// <summary>
+    ///   Adds a UDEV rule which authorizes all users to access Yoctopuce modules
+    ///   connected to the USB ports.
+    /// <para>
+    ///   This function works only under Linux. The process that
+    ///   calls this method must have root privileges because this method changes the Linux configuration.
+    /// </para>
+    /// </summary>
+    /// <param name="force">
+    ///   if true, overwrites any existing rule.
+    /// </param>
+    /// <returns>
+    ///   an empty string if the rule has been added.
+    /// </returns>
+    /// <para>
+    ///   On failure, returns a string that starts with "error:".
+    /// </para>
+    ///-
+    function yAddUdevRule(force: boolean):string;
+
+    ////
+    /// <summary>
     ///   Modifies the network connection delay for <c>yRegisterHub()</c> and <c>yUpdateDeviceList()</c>.
     /// <para>
     ///   This delay impacts only the YoctoHubs and VirtualHub
@@ -5520,6 +5562,7 @@ const
   function _yapiGetDLLPath(path:pansichar; pathsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetDLLPath';
   procedure _yapiSetNetworkTimeout(sValidity:integer); cdecl; external dllfile name 'yapiSetNetworkTimeout';
   function _yapiGetNetworkTimeout():integer; cdecl; external dllfile name 'yapiGetNetworkTimeout';
+  function _yapiAddUdevRulesForYocto(force:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiAddUdevRulesForYocto';
 //--- (end of generated code: YFunction dlldef)
 
 
@@ -11690,6 +11733,37 @@ var
     end;
 
 
+  function TYAPIContext.AddUdevRule(force: boolean):string;
+    var
+      msg : string;
+      res : LongInt;
+      c_force : LongInt;
+      errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
+      errmsg : pansichar;
+    begin
+      errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
+      if force then
+        begin
+          c_force := 1;
+        end
+      else
+        begin
+          c_force := 0;
+        end;
+      res := _yapiAddUdevRulesForYocto(c_force, errmsg);
+      if res < 0 then
+        begin
+          msg := 'error: ' + string(errmsg);
+        end
+      else
+        begin
+          msg := '';
+        end;
+      result := msg;
+      exit;
+    end;
+
+
   procedure TYAPIContext.SetNetworkTimeout(networkMsTimeout: LongInt);
     begin
       _yapiSetNetworkTimeout(networkMsTimeout);
@@ -11741,6 +11815,12 @@ var
   function yGetDeviceListValidity():LongInt;
     begin
         result := _yapiContext.GetDeviceListValidity();
+    end;
+
+
+  function yAddUdevRule(force: boolean):string;
+    begin
+        result := _yapiContext.AddUdevRule(force);
     end;
 
 
