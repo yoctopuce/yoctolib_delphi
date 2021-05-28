@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.pas 44023 2021-02-25 09:23:38Z web $
+ *  $Id: yocto_quadraturedecoder.pas 45292 2021-05-25 23:27:54Z mvuilleu $
  *
  *  Implements yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
  *
@@ -51,9 +51,8 @@ uses
 const Y_SPEED_INVALID                 = YAPI_INVALID_DOUBLE;
 const Y_DECODING_OFF = 0;
 const Y_DECODING_ON = 1;
-const Y_DECODING_DIV2 = 2;
-const Y_DECODING_DIV4 = 3;
 const Y_DECODING_INVALID = -1;
+const Y_EDGESPERCYCLE_INVALID         = YAPI_INVALID_UINT;
 
 
 //--- (end of YQuadratureDecoder definitions)
@@ -83,6 +82,7 @@ type
     // Attributes (function value cache)
     _speed                    : double;
     _decoding                 : Integer;
+    _edgesPerCycle            : LongInt;
     _valueCallbackQuadratureDecoder : TYQuadratureDecoderValueCallback;
     _timedReportCallbackQuadratureDecoder : TYQuadratureDecoderTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
@@ -119,14 +119,14 @@ type
 
     ////
     /// <summary>
-    ///   Returns the increments frequency, in Hz.
+    ///   Returns the cycle frequency, in Hz.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a floating point number corresponding to the increments frequency, in Hz
+    ///   a floating point number corresponding to the cycle frequency, in Hz
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>YQuadratureDecoder.SPEED_INVALID</c>.
@@ -143,8 +143,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>YQuadratureDecoder.DECODING_OFF</c>, <c>YQuadratureDecoder.DECODING_ON</c>,
-    ///   <c>YQuadratureDecoder.DECODING_DIV2</c> and <c>YQuadratureDecoder.DECODING_DIV4</c> corresponding
+    ///   either <c>YQuadratureDecoder.DECODING_OFF</c> or <c>YQuadratureDecoder.DECODING_ON</c>, according
     ///   to the current activation state of the quadrature decoder
     /// </returns>
     /// <para>
@@ -164,8 +163,7 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a value among <c>YQuadratureDecoder.DECODING_OFF</c>, <c>YQuadratureDecoder.DECODING_ON</c>,
-    ///   <c>YQuadratureDecoder.DECODING_DIV2</c> and <c>YQuadratureDecoder.DECODING_DIV4</c> corresponding
+    ///   either <c>YQuadratureDecoder.DECODING_OFF</c> or <c>YQuadratureDecoder.DECODING_ON</c>, according
     ///   to the activation state of the quadrature decoder
     /// </param>
     /// <para>
@@ -178,6 +176,47 @@ type
     /// </para>
     ///-
     function set_decoding(newval:Integer):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the edge count per full cycle configuration setting.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the edge count per full cycle configuration setting
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YQuadratureDecoder.EDGESPERCYCLE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_edgesPerCycle():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the edge count per full cycle configuration setting.
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the edge count per full cycle configuration setting
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_edgesPerCycle(newval:LongInt):integer;
 
     ////
     /// <summary>
@@ -385,6 +424,7 @@ implementation
       //--- (YQuadratureDecoder accessors initialization)
       _speed := Y_SPEED_INVALID;
       _decoding := Y_DECODING_INVALID;
+      _edgesPerCycle := Y_EDGESPERCYCLE_INVALID;
       _valueCallbackQuadratureDecoder := nil;
       _timedReportCallbackQuadratureDecoder := nil;
       //--- (end of YQuadratureDecoder accessors initialization)
@@ -408,7 +448,13 @@ implementation
          end;
       if (member^.name = 'decoding') then
         begin
-          _decoding := integer(member^.ivalue);
+          _decoding := member^.ivalue;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'edgesPerCycle') then
+        begin
+          _edgesPerCycle := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -464,8 +510,34 @@ implementation
     var
       rest_val: string;
     begin
-      rest_val := inttostr(newval);
+      if(newval>0) then rest_val := '1' else rest_val := '0';
       result := _setAttr('decoding',rest_val);
+    end;
+
+  function TYQuadratureDecoder.get_edgesPerCycle():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_EDGESPERCYCLE_INVALID;
+              exit;
+            end;
+        end;
+      res := self._edgesPerCycle;
+      result := res;
+      exit;
+    end;
+
+
+  function TYQuadratureDecoder.set_edgesPerCycle(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('edgesPerCycle',rest_val);
     end;
 
   class function TYQuadratureDecoder.FindQuadratureDecoder(func: string):TYQuadratureDecoder;

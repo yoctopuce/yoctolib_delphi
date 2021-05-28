@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_colorledcluster.pas 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_colorledcluster.pas 44921 2021-05-06 08:03:05Z mvuilleu $
  *
  *  Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -51,6 +51,7 @@ uses
 const Y_ACTIVELEDCOUNT_INVALID        = YAPI_INVALID_UINT;
 const Y_LEDTYPE_RGB = 0;
 const Y_LEDTYPE_RGBW = 1;
+const Y_LEDTYPE_WS2811 = 2;
 const Y_LEDTYPE_INVALID = -1;
 const Y_MAXLEDCOUNT_INVALID           = YAPI_INVALID_UINT;
 const Y_BLINKSEQMAXCOUNT_INVALID      = YAPI_INVALID_UINT;
@@ -155,8 +156,8 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>YColorLedCluster.LEDTYPE_RGB</c> or <c>YColorLedCluster.LEDTYPE_RGBW</c>, according to
-    ///   the RGB LED type currently handled by the device
+    ///   a value among <c>YColorLedCluster.LEDTYPE_RGB</c>, <c>YColorLedCluster.LEDTYPE_RGBW</c> and
+    ///   <c>YColorLedCluster.LEDTYPE_WS2811</c> corresponding to the RGB LED type currently handled by the device
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>YColorLedCluster.LEDTYPE_INVALID</c>.
@@ -175,8 +176,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>YColorLedCluster.LEDTYPE_RGB</c> or <c>YColorLedCluster.LEDTYPE_RGBW</c>, according to
-    ///   the RGB LED type currently handled by the device
+    ///   a value among <c>YColorLedCluster.LEDTYPE_RGB</c>, <c>YColorLedCluster.LEDTYPE_RGBW</c> and
+    ///   <c>YColorLedCluster.LEDTYPE_WS2811</c> corresponding to the RGB LED type currently handled by the device
     /// </param>
     /// <para>
     /// </para>

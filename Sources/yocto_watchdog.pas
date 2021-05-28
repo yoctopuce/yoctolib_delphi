@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_watchdog.pas 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_watchdog.pas 44548 2021-04-13 09:56:42Z mvuilleu $
  *
  *  Implements yFindWatchdog(), the high-level API for Watchdog functions
  *
@@ -77,6 +77,7 @@ const Y_RUNNING_ON = 1;
 const Y_RUNNING_INVALID = -1;
 const Y_TRIGGERDELAY_INVALID          = YAPI_INVALID_LONG;
 const Y_TRIGGERDURATION_INVALID       = YAPI_INVALID_LONG;
+const Y_LASTTRIGGER_INVALID           = YAPI_INVALID_UINT;
 
 var Y_DELAYEDPULSETIMER_INVALID : TYWatchdogDelayedPulse;
 
@@ -122,6 +123,7 @@ type
     _running                  : Integer;
     _triggerDelay             : int64;
     _triggerDuration          : int64;
+    _lastTrigger              : LongInt;
     _valueCallbackWatchdog    : TYWatchdogValueCallback;
     _firm                     : LongInt;
     // Function-specific method for reading JSON output and caching result
@@ -641,6 +643,23 @@ type
 
     ////
     /// <summary>
+    ///   Returns the number of seconds spent since the last output power-up event.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the number of seconds spent since the last output power-up event
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YWatchdog.LASTTRIGGER_INVALID</c>.
+    /// </para>
+    ///-
+    function get_lastTrigger():LongInt;
+
+    ////
+    /// <summary>
     ///   Retrieves $AFUNCTION$ for a given identifier.
     /// <para>
     ///   The identifier can be specified using several formats:
@@ -855,6 +874,7 @@ implementation
       _running := Y_RUNNING_INVALID;
       _triggerDelay := Y_TRIGGERDELAY_INVALID;
       _triggerDuration := Y_TRIGGERDURATION_INVALID;
+      _lastTrigger := Y_LASTTRIGGER_INVALID;
       _valueCallbackWatchdog := nil;
       _firm := 0;
       //--- (end of YWatchdog accessors initialization)
@@ -951,6 +971,12 @@ implementation
       if (member^.name = 'triggerDuration') then
         begin
           _triggerDuration := member^.ivalue;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'lastTrigger') then
+        begin
+          _lastTrigger := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -1347,6 +1373,24 @@ implementation
       rest_val := inttostr(newval);
       result := _setAttr('triggerDuration',rest_val);
     end;
+
+  function TYWatchdog.get_lastTrigger():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_LASTTRIGGER_INVALID;
+              exit;
+            end;
+        end;
+      res := self._lastTrigger;
+      result := res;
+      exit;
+    end;
+
 
   class function TYWatchdog.FindWatchdog(func: string):TYWatchdog;
     var
