@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 45292 2021-05-25 23:27:54Z mvuilleu $
+ * $Id: yocto_api.pas 45551 2021-06-14 13:51:37Z web $
  *
  * High-level programming interface, common to all modules
  *
@@ -120,7 +120,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '45343';
+  YOCTO_API_BUILD_NO        = '45664';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -217,6 +217,7 @@ const YAPI_DOUBLE_ACCES              = -11;     // you have two process that try
 const YAPI_UNAUTHORIZED              = -12;     // unauthorized access to password-protected device
 const YAPI_RTC_NOT_READY             = -13;     // real-time clock has not been initialized (or time was lost)
 const YAPI_FILE_NOT_FOUND            = -14;     // the file is not found
+const YAPI_SSL_ERROR                 = -15;     // Error reported by mbedSSL
 
 const Y_LOGICALNAME_INVALID           = YAPI_INVALID_STRING;
 const Y_ADVERTISEDVALUE_INVALID       = YAPI_INVALID_STRING;

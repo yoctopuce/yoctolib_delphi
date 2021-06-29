@@ -1,5 +1,4 @@
-Delphi v1.10.45343
+Delphi v1.10.45664
 
-- Add edgePerCycle attribute to the QuadratureDecoder
-- Add Example for Yocto-MaxiKnob
-- Fix missing documentation for isReadOnly() method.
+- Fix wrong error message when an host is unreachable.
+- Fix YAPI.TestHub return value that was not YAPI.SUCCESS on success. Now the method work as documented
