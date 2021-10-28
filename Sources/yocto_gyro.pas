@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_gyro.pas 43580 2021-01-26 17:46:01Z mvuilleu $
+ * $Id: yocto_gyro.pas 46894 2021-10-25 15:07:44Z seb $
  *
  * Implements yFindGyro(), the high-level API for Gyro functions
  *
@@ -44,7 +44,9 @@ unit yocto_gyro;
 interface
 
 uses
-  sysutils, classes, windows, yocto_api, yjson, Math;
+  sysutils, classes,{$IFNDEF UNIX}windows,
+{$ENDIF}
+ yocto_api, yjson, Math;
 
 //--- (generated code: YQt definitions)
 

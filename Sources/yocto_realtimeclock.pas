@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_realtimeclock.pas 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_realtimeclock.pas 46894 2021-10-25 15:07:44Z seb $
  *
  *  Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
@@ -44,7 +44,11 @@ unit yocto_realtimeclock;
 interface
 
 uses
-  sysutils, classes, windows, yocto_api, yjson;
+  sysutils, classes,
+{$IFNDEF UNIX}
+  windows,
+{$ENDIF}
+  yocto_api, yjson;
 
 //--- (YRealTimeClock definitions)
 
@@ -69,7 +73,7 @@ type
   ////
   /// <summary>
   ///   TYRealTimeClock Class: real-time clock control interface, available for instance in the
-  ///   YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-GSM-4G or the YoctoHub-Wireless-n
+  ///   YoctoHub-GSM-2G, the YoctoHub-GSM-3G-EU, the YoctoHub-GSM-4G or the YoctoHub-Wireless-n
   /// <para>
   ///   The <c>YRealTimeClock</c> class provide access to the embedded real-time clock available on some Yoctopuce
   ///   devices. It can provide current date and time, even after a power outage
@@ -363,7 +367,7 @@ type
   /// </summary>
   /// <param name="func">
   ///   a string that uniquely characterizes the real-time clock, for instance
-  ///   <c>YHUBGSM3.realTimeClock</c>.
+  ///   <c>YHUBGSM1.realTimeClock</c>.
   /// </param>
   /// <returns>
   ///   a <c>YRealTimeClock</c> object allowing you to drive the real-time clock.

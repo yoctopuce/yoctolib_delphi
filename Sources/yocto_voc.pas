@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_voc.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_voc.pas 46894 2021-10-25 15:07:44Z seb $
  *
  *  Implements yFindVoc(), the high-level API for Voc functions
  *
@@ -44,7 +44,11 @@ unit yocto_voc;
 interface
 
 uses
-  sysutils, classes, windows, yocto_api, yjson;
+  sysutils, classes,
+{$IFNDEF UNIX}
+  windows,
+{$ENDIF}
+  yocto_api, yjson;
 
 //--- (YVoc definitions)
 

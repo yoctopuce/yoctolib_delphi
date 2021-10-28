@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_buzzer.pas 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_buzzer.pas 46894 2021-10-25 15:07:44Z seb $
  *
  *  Implements yFindBuzzer(), the high-level API for Buzzer functions
  *
@@ -44,7 +44,11 @@ unit yocto_buzzer;
 interface
 
 uses
-  sysutils, classes, windows, yocto_api, yjson;
+  sysutils, classes,
+{$IFNDEF UNIX}
+  windows,
+{$ENDIF}
+  yocto_api, yjson;
 
 //--- (YBuzzer definitions)
 
@@ -68,7 +72,8 @@ type
 
   ////
   /// <summary>
-  ///   TYBuzzer Class: buzzer control interface, available for instance in the Yocto-Buzzer or the Yocto-MaxiBuzzer
+  ///   TYBuzzer Class: buzzer control interface, available for instance in the Yocto-Buzzer, the
+  ///   Yocto-MaxiBuzzer or the Yocto-MaxiKnob
   /// <para>
   ///   The <c>YBuzzer</c> class allows you to drive a buzzer. You can
   ///   choose the frequency and the volume at which the buzzer must sound.

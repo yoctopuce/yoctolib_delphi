@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_pressure.pas 38899 2019-12-20 17:21:03Z mvuilleu $
+ *  $Id: yocto_pressure.pas 46894 2021-10-25 15:07:44Z seb $
  *
  *  Implements yFindPressure(), the high-level API for Pressure functions
  *
@@ -44,7 +44,11 @@ unit yocto_pressure;
 interface
 
 uses
-  sysutils, classes, windows, yocto_api, yjson;
+  sysutils, classes,
+{$IFNDEF UNIX}
+  windows,
+{$ENDIF}
+  yocto_api, yjson;
 
 //--- (YPressure definitions)
 

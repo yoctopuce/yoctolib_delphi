@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_refframe.pas 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_refframe.pas 46894 2021-10-25 15:07:44Z seb $
  *
  *  Implements yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -44,7 +44,11 @@ unit yocto_refframe;
 interface
 
 uses
-  sysutils, classes, windows, yocto_api, yjson;
+  sysutils, classes,
+{$IFNDEF UNIX}
+  windows,
+{$ENDIF}
+  yocto_api, yjson;
 
 //--- (YRefFrame definitions)
 type  TYMOUNTPOSITION = (Y_MOUNTPOSITION_BOTTOM,Y_MOUNTPOSITION_TOP,Y_MOUNTPOSITION_FRONT,Y_MOUNTPOSITION_REAR,Y_MOUNTPOSITION_RIGHT,Y_MOUNTPOSITION_LEFT,Y_MOUNTPOSITION_INVALID);

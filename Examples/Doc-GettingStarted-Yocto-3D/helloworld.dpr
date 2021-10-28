@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: helloworld.dpr 32621 2018-10-10 13:10:25Z seb $
+ *  $Id: helloworld.dpr 46876 2021-10-21 08:43:08Z martinm $
  *
  *  An example that show how to use a  Yocto-3D
  *
@@ -15,8 +15,7 @@
 program helloworld;
 {$APPTYPE CONSOLE}
 uses
-  SysUtils,
-  Windows,
+  SysUtils,
   yocto_api,
   yocto_tilt,
   yocto_compass,

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_poweroutput.pas 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_poweroutput.pas 46894 2021-10-25 15:07:44Z seb $
  *
  *  Implements yFindPowerOutput(), the high-level API for PowerOutput functions
  *
@@ -44,7 +44,11 @@ unit yocto_poweroutput;
 interface
 
 uses
-  sysutils, classes, windows, yocto_api, yjson;
+  sysutils, classes,
+{$IFNDEF UNIX}
+  windows,
+{$ENDIF}
+  yocto_api, yjson;
 
 //--- (YPowerOutput definitions)
 

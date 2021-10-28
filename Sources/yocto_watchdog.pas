@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_watchdog.pas 44548 2021-04-13 09:56:42Z mvuilleu $
+ *  $Id: yocto_watchdog.pas 46894 2021-10-25 15:07:44Z seb $
  *
  *  Implements yFindWatchdog(), the high-level API for Watchdog functions
  *
@@ -44,7 +44,11 @@ unit yocto_watchdog;
 interface
 
 uses
-  sysutils, classes, windows, yocto_api, yjson;
+  sysutils, classes,
+{$IFNDEF UNIX}
+  windows,
+{$ENDIF}
+  yocto_api, yjson;
 
 //--- (YWatchdog definitions)
 type  TYWatchdogDelayedPulse = class(TObject)

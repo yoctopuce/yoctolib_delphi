@@ -1,4 +1,6 @@
-Delphi v1.10.45664
+Delphi v1.10.46924
 
-- Fix wrong error message when an host is unreachable.
-- Fix YAPI.TestHub return value that was not YAPI.SUCCESS on success. Now the method work as documented
+- Add support for missing measures in DataStream (returned as NaN) and skipping them in DataSet
+- Add InputChain class
+- Add support for Lazarus on Linux
+- Fix bug in json parser

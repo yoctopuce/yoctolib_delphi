@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 45551 2021-06-14 13:51:37Z web $
+ * $Id: yocto_api.pas 46904 2021-10-25 15:34:15Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -37,13 +37,21 @@
  *
  *********************************************************************}
 unit yocto_api;
+
+{$WRITEABLECONST OFF}
 {$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
 
 uses
-  sysutils,classes,windows,winsock,Math,
+  sysutils,classes,Math,
+
+   {$IFNDEF UNIX}
+    windows,  winsock,
+   {$ENDIF}
+
   {$IFDEF CONDITIONALEXPRESSIONS}
+
      {$IF RTLVersion >= 14.0}
           DateUtils,
      {$IFEND}
@@ -120,7 +128,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '45664';
+  YOCTO_API_BUILD_NO        = '46924';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -317,6 +325,10 @@ const Y_CLEARHISTORY_INVALID = -1;
 
 
 //--- (end of generated code: YDataLogger definitions)
+
+ Function IsNAN_D5 (const sgl: single)  : boolean; overload;
+ Function IsNAN_D5 (const dbl: double)  : boolean; overload;
+
 
 type
   TYDevice = class;
@@ -4442,7 +4454,7 @@ end;
   /// </summary>
   /// <param name="func">
   ///   a string that uniquely characterizes the data logger, for instance
-  ///   <c>RX420MA1.dataLogger</c>.
+  ///   <c>LIGHTMK4.dataLogger</c>.
   /// </param>
   /// <returns>
   ///   a <c>YDataLogger</c> object allowing you to drive the data logger.
@@ -4779,7 +4791,8 @@ type
   /// <summary>
   ///   Setup the Yoctopuce library to use modules connected on a given machine.
   /// <para>
-  ///   The
+  ///   Idealy this
+  ///   call will be made once at the begining of your application.  The
   ///   parameter will determine how the API will work. Use the following values:
   /// </para>
   /// <para>
@@ -4819,7 +4832,9 @@ type
   ///   <c>http://username:password@address:port</c>
   /// </para>
   /// <para>
-  ///   You can call <i>RegisterHub</i> several times to connect to several machines.
+  ///   You can call <i>RegisterHub</i> several times to connect to several machines. On
+  ///   the other hand, it is useless and even counterproductive to call <i>RegisterHub</i>
+  ///   with to same address multiple times during the life of the application.
   /// </para>
   /// <para>
   /// </para>
@@ -5409,7 +5424,7 @@ type
   end;
 
 
-
+  {$IFDEF ENABLEPROGRAMMING}
 const
   InterfaceClassGuid : TGUID = '{4D1E55B2-F16F-11CF-88CB-001111000030}';
   DBT_DEVICEARRIVAL          = $8000;          // system detected a new device
@@ -5454,8 +5469,31 @@ const
   SPDRP_ADDRESS                     = $0000001C; // Device Address (R)
   SPDRP_UI_NUMBER_DESC_FORMAT       = $0000001E; // UiNumberDescFormat (R/W)
   SPDRP_MAXIMUM_PROPERTY            = $0000001F; // Upper bound on ordinals
+  {$ENDIF}
+
+{IsNaN does not exist in delphi 5.
+ Implementation by John Herbste
+}
+
+type  TExtPackedRec = packed record Man: Int64; Exp: word end;
+const SglExpBits: LongInt = $7F800000;          { 8 bits}
+      DblExpBits: Int64   = $7FF0000000000000;  {11 bits}
+      ExtExpBits: word    = $7FFF;              {15 bits}
+
+Function IsNAN_D5 (const sgl: single): boolean;
+var InputX: LongInt absolute sgl;
+begin
+  Result := (InputX <> 0) and ((InputX and SglExpBits)=SglExpBits);
+end;
+
+Function IsNAN_D5 (const dbl: double): boolean;
+var InputX: Int64 absolute dbl;
+begin
+  Result := (InputX <> 0) and ((InputX and DblExpBits)=DblExpBits);
+end;
 
 
+  {$IFNDEF UNIX}
 
   function SetupDiGetClassDevsA(ClassGuid: PGUID; const Enumerator: PChar;
     hwndParent: HWND; Flags: DWORD): HDEVINFO; stdcall;   external   'setupapi.dll' name 'SetupDiGetClassDevsA';
@@ -5481,11 +5519,18 @@ const
 
 
   function SetupDiDestroyDeviceInfoList(DeviceInfoSet: HDEVINFO): LongBool; stdcall;  external   'setupapi.dll' name 'SetupDiDestroyDeviceInfoList';
-
+   {$ENDIF}
 const
 {$IFDEF ENABLEPROGRAMMING}
   dllfile = 'yprogrammer.dll';
 {$ELSE}
+  {$IFDEF LINUX}
+   {$ifdef CPU64}
+     dllfile = 'libyapi-amd64.so';
+     {$ELSE}
+     dllfile = 'libyapi-i386.so';
+   {$endif}
+   {$ELSE}
   {$IFDEF WIN32}
      dllfile = 'yapi.dll';
   {$ELSE}
@@ -5495,6 +5540,8 @@ const
        dllfile = 'yapi.dll';
     {$ENDIF}
    {$ENDIF}
+   {$ENDIF}
+
 {$ENDIF}
 
   {$ifdef ENABLEPROGRAMMING}
@@ -5594,7 +5641,7 @@ const
         errmsg: string;
         callback: TYModuleLogCallback;
     begin
-
+        errmsg:='';
         if (yapiGetDeviceInfo(devdescr, infos, errmsg) <> YAPI_SUCCESS)then exit;
         modul := yFindModule(infos.serial + '.module');
         callback := modul.get_logCallback();
@@ -5643,6 +5690,7 @@ var
       event  : PyapiEvent;
       errmsg : string;
     begin
+      errmsg:='';
       TYDevice.PlugDevice(d);
       event := _yapiGetMem(sizeof(TyapiEvent));
       event^.eventtype    := YAPI_DEV_ARRIVAL;
@@ -5659,6 +5707,7 @@ var
       m:tymodule;
       errmsg:string;
     begin
+      errmsg:='';
       yArrival :=arrivalCallback;
       if (assigned(arrivalCallback)) then
         begin
@@ -5683,6 +5732,7 @@ var
       infos  : yDeviceSt;
       errmsg : string;
     begin
+      errmsg:='';
       if(not assigned(yRemoval)) then exit;
       event := _yapiGetMem(sizeof(TyapiEvent));
       event^.eventtype    := YAPI_DEV_REMOVAL;
@@ -5705,6 +5755,7 @@ var
       errmsg : string;
       event  : PyapiEvent;
     begin
+      errmsg:='';
       if(not assigned(yChange)) then exit;
       event := _yapiGetMem(sizeof(TyapiEvent));
       event^.eventtype    := YAPI_DEV_CHANGE;
@@ -5724,6 +5775,7 @@ var
       index  : integer;
       modul  : TYModule;
     begin
+      errmsg:='';
       if(yapiGetDeviceInfo(d, infos, errmsg) <> YAPI_SUCCESS) then exit;
       hwid := string(infos.serial)+'.module';
       index := _moduleCallbackList.indexof(hwid);
@@ -5746,6 +5798,7 @@ var
       index  : integer;
       modul  : TYModule;
     begin
+      errmsg:='';
       if(yapiGetDeviceInfo(d, infos, errmsg) <> YAPI_SUCCESS) then exit;
       hwid := string(infos.serial)+'.module';
       index := _moduleCallbackList.indexof(hwid);
@@ -6431,15 +6484,14 @@ var
       if (YISERR(res)) then
         begin
           errmsg:=string(perror);
-          yUpdateDeviceList:=res;
-          exit;
-        end;
-      res := _yapiHandleEvents(perror);
-      if (YISERR(res)) then
+        end
+      else
         begin
-          errmsg:=string(perror);
-          yUpdateDeviceList:=res;
-          exit;
+          res := _yapiHandleEvents(perror);
+          if (YISERR(res)) then
+            begin
+              errmsg:=string(perror);
+            end;
         end;
       while (_plugEvents.count>0) do
         begin
@@ -6462,7 +6514,7 @@ var
           end;
           _yapiFreeMem(p);
         end;
-      yUpdateDeviceList:=YAPI_SUCCESS;
+      yUpdateDeviceList:=res;
     end;
 
 
@@ -7172,6 +7224,7 @@ var
     const
       n_element = 1;
     begin
+      errmsg:='';
       res := _getDescriptor(fundescr, errmsg);
       if(YISERR(res)) then  begin   _throw(res, errmsg); result:=res; exit; end;
       maxsize :=n_element *sizeof(yHandle);
@@ -7299,6 +7352,7 @@ var
       errBuffer       : array[0..YOCTO_ERRMSG_LEN] of ansichar;
       perror          : pansichar;
     begin
+      errmsg:='';
       // Execute http request
       res := _buildSetRequest(attrname, newvalue, request, errmsg);
       if(YISERR(res)) then
@@ -7360,6 +7414,7 @@ var
       perror        : pansichar;
 
     begin
+      errmsg:='';
       // Resolve our reference to our device, load REST API
       res := _getDevice(dev, errmsg);
       if(YISERR(res)) then
@@ -7823,6 +7878,7 @@ var
       funcid:string;
       errbuff:string;
     begin
+      errmsg:='';
       // Resolve the function name
       retcode := _getDescriptor(fundesc, errmsg);
       if(YISERR(retcode)) then
@@ -7855,6 +7911,7 @@ var
       funcid:string;
       errbuff:string;
     begin
+      errmsg:='';
       // Resolve the function name
       retcode := _getDescriptor(fundesc, errmsg);
       if(YISERR(retcode)) then
@@ -7890,6 +7947,7 @@ var
       friendMod:string;
       friendFun:string;
     begin
+      errmsg:='';
       // Resolve the function name
       retcode := _getDescriptor(fundesc, errmsg);
       if(YISERR(retcode)) then
@@ -7941,6 +7999,7 @@ var
       devdescr:YDEV_DESCR;
       errmsg, serial, funcId, funcName, funcValue:string;
     begin
+      errmsg:='';
       fundescr := yapiGetFunction(_className, _func, errmsg);
       if(not(YISERR(fundescr)))  then
       if(not(YISERR(yapiGetFunctionInfo(fundescr, devdescr, serial, funcId, funcName, funcValue, errmsg)))) then
@@ -7998,6 +8057,7 @@ var
       errmsg :string;
       apires :TJsonParser;
     begin
+      errmsg:='';
       // A valid value in cache means that the device is online
       if(_cacheExpiration > yGetTickCount()) then
       begin result:= true; exit;end;
@@ -8146,6 +8206,7 @@ var
       funcName,funcVal:string;
       node: PJSONRECORD;
     begin
+      errmsg:='';
       // Resolve our reference to our device, load REST API
       res := _getDevice(dev, errmsg);
       if(YISERR(res))  then begin _throw(res, errmsg); result:= res;exit;end;
@@ -8178,6 +8239,7 @@ var
       errmsg         : string;
       res            : integer;
     begin
+      errmsg:='';
       // Resolve our reference to our device, load REST API
       res := _getDevice(dev, errmsg);
       if(YISERR(res))  then
@@ -8194,6 +8256,7 @@ var
     devdescr   : YDEV_DESCR;
     errmsg, serial, funcId, funcName, funcValue : string;
   begin
+    errmsg:='';
     fundescr := yapiGetFunction(_className, _func, errmsg);
     if (not(YISERR(fundescr)))  then
     if(not(YISERR(yapiGetFunctionInfo(fundescr, devdescr, serial, funcId, funcName, funcValue, errmsg)))) then
@@ -8311,6 +8374,7 @@ var
       errmsg    : string;
       res       : integer;
     begin
+      errmsg:='';
       res := _getDevice(dev, errmsg);
       if(YISERR(res)) then begin _throw(res, errmsg); result:= res;exit;end;
       res := dev.getFunctions(functions, errmsg);
@@ -8324,6 +8388,7 @@ var
       serial, funcId, baseType, funcName, funcVal, errmsg:string;
       res:integer;
     begin
+      errmsg:='';
       res := _getFunction(functionIndex, serial, funcId, baseType, funcName, funcVal, errmsg);
       if(YISERR(res)) then
         begin
@@ -8341,6 +8406,7 @@ var
       res, i: integer;
       first, c : char;
     begin
+      errmsg:='';
       res := _getFunction(functionIndex, serial, funcId, baseType, funcName, funcVal, errmsg);
       if(YISERR(res)) then
         begin
@@ -8364,6 +8430,7 @@ var
       serial, funcId, funcName, baseType, funcVal, errmsg:string;
       res: integer;
     begin
+      errmsg:='';
       res := _getFunction(functionIndex, serial, funcId, baseType, funcName, funcVal, errmsg);
       if(YISERR(res)) then
         begin
@@ -8380,6 +8447,7 @@ var
       serial, funcId, baseType, funcName, funcVal, errmsg :  string;
       res:integer;
     begin
+      errmsg:='';
       res := _getFunction(functionIndex, serial, funcId, baseType, funcName, funcVal, errmsg);
       if(YISERR(res)) then
         begin
@@ -8396,6 +8464,7 @@ var
       serial, funcId, baseType, funcName, funcVal, errmsg:string;
       res: integer;
     begin
+      errmsg:='';
       res := _getFunction(functionIndex, serial, funcId, baseType, funcName, funcVal, errmsg);
       if(YISERR(res)) then
         begin
@@ -10625,6 +10694,7 @@ var
       funcid:string;
       errbuff:string;
     begin
+     errmsg:='';
       // Resolve the function name
       retcode := _getDescriptor(fundesc, errmsg);
       if(YISERR(retcode)) then
@@ -12288,12 +12358,24 @@ var
             begin
               dat_pos := 0;
               SetLength(dat, 3);
-              dat[dat_pos] := self._decodeVal(udat[idx + 2] + (((udat[idx + 3]) shl 16)));
-              inc(dat_pos);
-              dat[dat_pos] := self._decodeAvg(udat[idx] + (((((udat[idx + 1]) xor ($08000))) shl 16)), 1);
-              inc(dat_pos);
-              dat[dat_pos] := self._decodeVal(udat[idx + 4] + (((udat[idx + 5]) shl 16)));
-              inc(dat_pos);
+              if (udat[idx] = 65535) and(udat[idx + 1] = 65535) then
+                begin
+                  dat[dat_pos] := (0/0);
+                  inc(dat_pos);
+                  dat[dat_pos] := (0/0);
+                  inc(dat_pos);
+                  dat[dat_pos] := (0/0);
+                  inc(dat_pos);
+                end
+              else
+                begin
+                  dat[dat_pos] := self._decodeVal(udat[idx + 2] + (((udat[idx + 3]) shl 16)));
+                  inc(dat_pos);
+                  dat[dat_pos] := self._decodeAvg(udat[idx] + (((((udat[idx + 1]) xor ($08000))) shl 16)), 1);
+                  inc(dat_pos);
+                  dat[dat_pos] := self._decodeVal(udat[idx + 4] + (((udat[idx + 5]) shl 16)));
+                  inc(dat_pos);
+                end;
               idx := idx + 6;
               SetLength(dat, dat_pos);
               self._values[values_pos] := dat;
@@ -12306,8 +12388,16 @@ var
             begin
               dat_pos := 0;
               SetLength(dat, 1);
-              dat[dat_pos] := self._decodeAvg(udat[idx] + (((((udat[idx + 1]) xor ($08000))) shl 16)), 1);
-              inc(dat_pos);
+              if (udat[idx] = 65535) and(udat[idx + 1] = 65535) then
+                begin
+                  dat[dat_pos] := (0/0);
+                  inc(dat_pos);
+                end
+              else
+                begin
+                  dat[dat_pos] := self._decodeAvg(udat[idx] + (((((udat[idx + 1]) xor ($08000))) shl 16)), 1);
+                  inc(dat_pos);
+                end;
               SetLength(dat, dat_pos);
               self._values[values_pos] := dat;
               inc(values_pos);
@@ -12933,6 +13023,7 @@ var
       tim : double;
       itv : double;
       fitv : double;
+      avgv : double;
       end_ : double;
       nCols : LongInt;
       minCol : LongInt;
@@ -13004,9 +13095,10 @@ var
             begin
               end_ := tim + itv;
             end;
-          if (end_ > self._startTimeMs) and((self._endTimeMs = 0) or(tim < self._endTimeMs)) then
+          avgv := dataRows[i_i][avgCol];
+          if (end_ > self._startTimeMs) and((self._endTimeMs = 0) or(tim < self._endTimeMs)) and not(isNaN_D5(avgv)) then
             begin
-              self._measures[measures_pos] := TYMeasure.create(tim / 1000, end_ / 1000, dataRows[i_i][minCol], dataRows[i_i][avgCol], dataRows[i_i][maxCol]);
+              self._measures[measures_pos] := TYMeasure.create(tim / 1000, end_ / 1000, dataRows[i_i][minCol], avgv, dataRows[i_i][maxCol]);
               inc(measures_pos);
             end;
           tim := end_;

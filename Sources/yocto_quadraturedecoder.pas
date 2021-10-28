@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_quadraturedecoder.pas 45292 2021-05-25 23:27:54Z mvuilleu $
+ *  $Id: yocto_quadraturedecoder.pas 46894 2021-10-25 15:07:44Z seb $
  *
  *  Implements yFindQuadratureDecoder(), the high-level API for QuadratureDecoder functions
  *
@@ -44,7 +44,11 @@ unit yocto_quadraturedecoder;
 interface
 
 uses
-  sysutils, classes, windows, yocto_api, yjson;
+  sysutils, classes,
+{$IFNDEF UNIX}
+  windows,
+{$ENDIF}
+  yocto_api, yjson;
 
 //--- (YQuadratureDecoder definitions)
 
@@ -67,7 +71,8 @@ type
 
   ////
   /// <summary>
-  ///   TYQuadratureDecoder Class: quadrature decoder control interface, available for instance in the Yocto-PWM-Rx
+  ///   TYQuadratureDecoder Class: quadrature decoder control interface, available for instance in the
+  ///   Yocto-MaxiKnob or the Yocto-PWM-Rx
   /// <para>
   ///   The <c>YQuadratureDecoder</c> class allows you to read and configure Yoctopuce quadrature decoders.
   ///   It inherits from <c>YSensor</c> class the core functions to read measurements,
@@ -388,7 +393,7 @@ type
   /// </summary>
   /// <param name="func">
   ///   a string that uniquely characterizes the quadrature decoder, for instance
-  ///   <c>YPWMRX01.quadratureDecoder</c>.
+  ///   <c>YMXBTN01.quadratureDecoder1</c>.
   /// </param>
   /// <returns>
   ///   a <c>YQuadratureDecoder</c> object allowing you to drive the quadrature decoder.

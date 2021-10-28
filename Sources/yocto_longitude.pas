@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_longitude.pas 39658 2020-03-12 15:36:29Z seb $
+ *  $Id: yocto_longitude.pas 46894 2021-10-25 15:07:44Z seb $
  *
  *  Implements yFindLongitude(), the high-level API for Longitude functions
  *
@@ -44,7 +44,11 @@ unit yocto_longitude;
 interface
 
 uses
-  sysutils, classes, windows, yocto_api, yjson;
+  sysutils, classes,
+{$IFNDEF UNIX}
+  windows,
+{$ENDIF}
+  yocto_api, yjson;
 
 //--- (YLongitude definitions)
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 43619 2021-01-29 09:14:45Z mvuilleu $
+ * $Id: yocto_serialport.pas 46894 2021-10-25 15:07:44Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -44,7 +44,9 @@ unit yocto_serialport;
 interface
 
 uses
-  sysutils, classes, windows, yocto_api, yjson;
+  sysutils, classes,{$IFNDEF UNIX}windows,
+{$ENDIF}
+ yocto_api, yjson;
 
 //--- (generated code: YSerialPort definitions)
 

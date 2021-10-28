@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_led.pas 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_led.pas 46894 2021-10-25 15:07:44Z seb $
  *
  *  Implements yFindLed(), the high-level API for Led functions
  *
@@ -44,7 +44,11 @@ unit yocto_led;
 interface
 
 uses
-  sysutils, classes, windows, yocto_api, yjson;
+  sysutils, classes,
+{$IFNDEF UNIX}
+  windows,
+{$ENDIF}
+  yocto_api, yjson;
 
 //--- (YLed definitions)
 

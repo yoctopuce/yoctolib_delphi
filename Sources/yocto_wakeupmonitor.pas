@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.pas 43619 2021-01-29 09:14:45Z mvuilleu $
+ *  $Id: yocto_wakeupmonitor.pas 46894 2021-10-25 15:07:44Z seb $
  *
  *  Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -44,7 +44,11 @@ unit yocto_wakeupmonitor;
 interface
 
 uses
-  sysutils, classes, windows, yocto_api, yjson;
+  sysutils, classes,
+{$IFNDEF UNIX}
+  windows,
+{$ENDIF}
+  yocto_api, yjson;
 
 //--- (YWakeUpMonitor definitions)
 
@@ -77,7 +81,7 @@ type
   ////
   /// <summary>
   ///   TYWakeUpMonitor Class: wake-up monitor control interface, available for instance in the
-  ///   YoctoHub-GSM-3G-EU, the YoctoHub-GSM-3G-NA, the YoctoHub-GSM-4G or the YoctoHub-Wireless-n
+  ///   YoctoHub-GSM-2G, the YoctoHub-GSM-3G-EU, the YoctoHub-GSM-4G or the YoctoHub-Wireless-n
   /// <para>
   ///   The <c>YWakeUpMonitor</c> class handles globally all wake-up sources, as well
   ///   as automated sleep mode.
@@ -504,7 +508,7 @@ type
   /// </summary>
   /// <param name="func">
   ///   a string that uniquely characterizes the wake-up monitor, for instance
-  ///   <c>YHUBGSM3.wakeUpMonitor</c>.
+  ///   <c>YHUBGSM1.wakeUpMonitor</c>.
   /// </param>
   /// <returns>
   ///   a <c>YWakeUpMonitor</c> object allowing you to drive the wake-up monitor.

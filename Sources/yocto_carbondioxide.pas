@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_carbondioxide.pas 44175 2021-03-11 11:27:12Z mvuilleu $
+ *  $Id: yocto_carbondioxide.pas 46894 2021-10-25 15:07:44Z seb $
  *
  *  Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
@@ -44,7 +44,11 @@ unit yocto_carbondioxide;
 interface
 
 uses
-  sysutils, classes, windows, yocto_api, yjson;
+  sysutils, classes,
+{$IFNDEF UNIX}
+  windows,
+{$ENDIF}
+  yocto_api, yjson;
 
 //--- (YCarbonDioxide definitions)
 

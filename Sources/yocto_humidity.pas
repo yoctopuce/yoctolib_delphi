@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_humidity.pas 43580 2021-01-26 17:46:01Z mvuilleu $
+ *  $Id: yocto_humidity.pas 46894 2021-10-25 15:07:44Z seb $
  *
  *  Implements yFindHumidity(), the high-level API for Humidity functions
  *
@@ -44,7 +44,11 @@ unit yocto_humidity;
 interface
 
 uses
-  sysutils, classes, windows, yocto_api, yjson;
+  sysutils, classes,
+{$IFNDEF UNIX}
+  windows,
+{$ENDIF}
+  yocto_api, yjson;
 
 //--- (YHumidity definitions)
 

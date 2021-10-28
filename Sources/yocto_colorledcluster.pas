@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_colorledcluster.pas 44921 2021-05-06 08:03:05Z mvuilleu $
+ *  $Id: yocto_colorledcluster.pas 46894 2021-10-25 15:07:44Z seb $
  *
  *  Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -44,7 +44,11 @@ unit yocto_colorledcluster;
 interface
 
 uses
-  sysutils, classes, windows, yocto_api, yjson;
+  sysutils, classes,
+{$IFNDEF UNIX}
+  windows,
+{$ENDIF}
+  yocto_api, yjson;
 
 //--- (YColorLedCluster definitions)
 
@@ -72,7 +76,7 @@ type
   ////
   /// <summary>
   ///   TYColorLedCluster Class: RGB LED cluster control interface, available for instance in the
-  ///   Yocto-Color-V2 or the Yocto-MaxiBuzzer
+  ///   Yocto-Color-V2, the Yocto-MaxiBuzzer or the Yocto-MaxiKnob
   /// <para>
   ///   The <c>YColorLedCluster</c> class allows you to drive a
   ///   color LED cluster. Unlike the <c>ColorLed</c> class, the <c>YColorLedCluster</c>

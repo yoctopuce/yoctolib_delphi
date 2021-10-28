@@ -15,8 +15,7 @@
 program helloworld;
 {$APPTYPE CONSOLE}
 uses
-  SysUtils,
-  Windows,
+  SysUtils,
   yocto_api,
   yocto_tilt;
 
