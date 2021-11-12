@@ -1,7 +1,11 @@
 program helloworld;
 {$APPTYPE CONSOLE}
 uses
-  SysUtils,
+  SysUtils,
+  {$IFNDEF UNIX}
+  windows,
+  {$ENDIF UNIX} 
+  
   yocto_api,
   yocto_humidity;
 
@@ -19,6 +23,7 @@ begin
   if yRegisterHub('usb', errmsg)<>YAPI_SUCCESS then
   begin
     Write('RegisterHub error: '+errmsg);
+    sleep(3000);
     exit;
   end;
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 46904 2021-10-25 15:34:15Z seb $
+ * $Id: yocto_api.pas 46962 2021-10-29 06:18:41Z martinm $
  *
  * High-level programming interface, common to all modules
  *
@@ -128,7 +128,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '46924';
+  YOCTO_API_BUILD_NO        = '47244';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -5525,23 +5525,30 @@ const
   dllfile = 'yprogrammer.dll';
 {$ELSE}
   {$IFDEF LINUX}
-   {$ifdef CPU64}
-     dllfile = 'libyapi-amd64.so';
-     {$ELSE}
-     dllfile = 'libyapi-i386.so';
-   {$endif}
-   {$ELSE}
-  {$IFDEF WIN32}
-     dllfile = 'yapi.dll';
-  {$ELSE}
-    {$IFDEF WIN64}
-       dllfile = 'yapi64.dll';
+    {$IFDEF CPUARM}
+      {$IFDEF CPU64}
+          dllfile = 'libyapi-aarch64.so';
+      {$ELSE}
+          dllfile = 'libyapi-armhf.so';
+      {$ENDIF}
     {$ELSE}
-       dllfile = 'yapi.dll';
+      {$IFDEF CPU64}
+        dllfile = 'libyapi-amd64.so';
+      {$ELSE}
+        dllfile = 'libyapi-i386.so';
+      {$endif}
     {$ENDIF}
-   {$ENDIF}
-   {$ENDIF}
-
+  {$ELSE}
+    {$IFDEF WIN32}
+       dllfile = 'yapi.dll';
+    {$ELSE}
+      {$IFDEF WIN64}
+         dllfile = 'yapi64.dll';
+      {$ELSE}
+       dllfile = 'yapi.dll';
+      {$ENDIF}
+  {$ENDIF}
+ {$ENDIF}
 {$ENDIF}
 
   {$ifdef ENABLEPROGRAMMING}
