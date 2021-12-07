@@ -1,5 +1,11 @@
-Delphi v1.10.47244
+Delphi v1.10.47582
 
-- Add support for Lazarus (including Linux compatibility)
 - Add support for missing measures in DataStream (returned as NaN) and skipping them in DataSet
-- Improve WebSocket connextion robustness
+- Add support for YInputChain class
+- Improve documentation of YAPI.RegisterHub
+- Improve error reporting if VirtualHub is registered two times with different URL
+- Improve examples to work with Lazarus
+- Improve Readme.txt file
+- Improve WebSocket connection robustness
+- Fix bug in JSON parser (was causing never ending loop on firmware update of Yocto-MaxiThermistor with locgical name and calibrations)
+- Fix bug when YoctoHub is accessible by USB and Network

@@ -1,5 +1,5 @@
-Yoctopuce library for Delphi
-============================
+Yoctopuce library for Delphi and Free-Pascal/Lazarus
+====================================================
 
 ## License information
 
@@ -41,7 +41,7 @@ WARRANTY, OR OTHERWISE.
 
 * Examples/
 
-		Directory with sample programs in Delphi
+		Directory with sample programs for both Delphi and Lazarus
 
 * Sources/
 
@@ -49,8 +49,9 @@ WARRANTY, OR OTHERWISE.
 
 * Sources/dll/
 
-		Low-level library as DLL (C source code with makefile
-		to build the DLL is available in the C++ library)
+		Low-level library as DLL and .so files (C source code
+        with makefile to build them is available in the C++
+        library) 
 
 * FILES.txt
 

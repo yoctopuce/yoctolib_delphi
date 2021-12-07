@@ -62,6 +62,8 @@ const Y_BITCHAIN4_INVALID             = YAPI_INVALID_STRING;
 const Y_BITCHAIN5_INVALID             = YAPI_INVALID_STRING;
 const Y_BITCHAIN6_INVALID             = YAPI_INVALID_STRING;
 const Y_BITCHAIN7_INVALID             = YAPI_INVALID_STRING;
+const Y_WATCHDOGPERIOD_INVALID        = YAPI_INVALID_UINT;
+const Y_CHAINDIAGS_INVALID            = YAPI_INVALID_UINT;
 
 
 //--- (end of YInputChain definitions)
@@ -73,6 +75,7 @@ type
   //--- (YInputChain class start)
   TYInputChainValueCallback = procedure(func: TYInputChain; value:string);
   TYInputChainTimedReportCallback = procedure(func: TYInputChain; value:TYMeasure);
+  TYEventCallback = procedure(func: TYInputChain; stamp:integer; evtType:string; evtData:string; evtChange:string);
 
   ////
   /// <summary>
@@ -98,7 +101,14 @@ type
     _bitChain5                : string;
     _bitChain6                : string;
     _bitChain7                : string;
+    _watchdogPeriod           : LongInt;
+    _chainDiags               : LongInt;
     _valueCallbackInputChain  : TYInputChainValueCallback;
+    _eventCallback            : TYEventCallback;
+    _prevPos                  : LongInt;
+    _eventPos                 : LongInt;
+    _eventStamp               : LongInt;
+    _eventChains              : TStringArray;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
 
@@ -211,19 +221,217 @@ type
     ///-
     function set_refreshRate(newval:LongInt):integer;
 
+    ////
+    /// <summary>
+    ///   Returns the state of input 1 for all nodes of the input chain,
+    ///   as a hexadecimal string.
+    /// <para>
+    ///   The node nearest to the controller
+    ///   is the lowest bit of the result.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the state of input 1 for all nodes of the input chain,
+    ///   as a hexadecimal string
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YInputChain.BITCHAIN1_INVALID</c>.
+    /// </para>
+    ///-
     function get_bitChain1():string;
 
+    ////
+    /// <summary>
+    ///   Returns the state of input 2 for all nodes of the input chain,
+    ///   as a hexadecimal string.
+    /// <para>
+    ///   The node nearest to the controller
+    ///   is the lowest bit of the result.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the state of input 2 for all nodes of the input chain,
+    ///   as a hexadecimal string
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YInputChain.BITCHAIN2_INVALID</c>.
+    /// </para>
+    ///-
     function get_bitChain2():string;
 
+    ////
+    /// <summary>
+    ///   Returns the state of input 3 for all nodes of the input chain,
+    ///   as a hexadecimal string.
+    /// <para>
+    ///   The node nearest to the controller
+    ///   is the lowest bit of the result.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the state of input 3 for all nodes of the input chain,
+    ///   as a hexadecimal string
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YInputChain.BITCHAIN3_INVALID</c>.
+    /// </para>
+    ///-
     function get_bitChain3():string;
 
+    ////
+    /// <summary>
+    ///   Returns the state of input 4 for all nodes of the input chain,
+    ///   as a hexadecimal string.
+    /// <para>
+    ///   The node nearest to the controller
+    ///   is the lowest bit of the result.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the state of input 4 for all nodes of the input chain,
+    ///   as a hexadecimal string
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YInputChain.BITCHAIN4_INVALID</c>.
+    /// </para>
+    ///-
     function get_bitChain4():string;
 
+    ////
+    /// <summary>
+    ///   Returns the state of input 5 for all nodes of the input chain,
+    ///   as a hexadecimal string.
+    /// <para>
+    ///   The node nearest to the controller
+    ///   is the lowest bit of the result.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the state of input 5 for all nodes of the input chain,
+    ///   as a hexadecimal string
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YInputChain.BITCHAIN5_INVALID</c>.
+    /// </para>
+    ///-
     function get_bitChain5():string;
 
+    ////
+    /// <summary>
+    ///   Returns the state of input 6 for all nodes of the input chain,
+    ///   as a hexadecimal string.
+    /// <para>
+    ///   The node nearest to the controller
+    ///   is the lowest bit of the result.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the state of input 6 for all nodes of the input chain,
+    ///   as a hexadecimal string
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YInputChain.BITCHAIN6_INVALID</c>.
+    /// </para>
+    ///-
     function get_bitChain6():string;
 
+    ////
+    /// <summary>
+    ///   Returns the state of input 7 for all nodes of the input chain,
+    ///   as a hexadecimal string.
+    /// <para>
+    ///   The node nearest to the controller
+    ///   is the lowest bit of the result.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the state of input 7 for all nodes of the input chain,
+    ///   as a hexadecimal string
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YInputChain.BITCHAIN7_INVALID</c>.
+    /// </para>
+    ///-
     function get_bitChain7():string;
+
+    ////
+    /// <summary>
+    ///   Returns the wait time in seconds before triggering an inactivity
+    ///   timeout error.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the wait time in seconds before triggering an inactivity
+    ///   timeout error
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YInputChain.WATCHDOGPERIOD_INVALID</c>.
+    /// </para>
+    ///-
+    function get_watchdogPeriod():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the wait time in seconds before triggering an inactivity
+    ///   timeout error.
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method
+    ///   of the module if the modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the wait time in seconds before triggering an inactivity
+    ///   timeout error
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_watchdogPeriod(newval:LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the controller state diagnostics.
+    /// <para>
+    ///   Bit 0 indicates a chain length
+    ///   error, bit 1 indicates an inactivity timeout and bit 2 indicates
+    ///   a loopback test failure.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the controller state diagnostics
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YInputChain.CHAINDIAGS_INVALID</c>.
+    /// </para>
+    ///-
+    function get_chainDiags():LongInt;
 
     ////
     /// <summary>
@@ -298,6 +506,68 @@ type
     function registerValueCallback(callback: TYInputChainValueCallback):LongInt; overload;
 
     function _invokeValueCallback(value: string):LongInt; override;
+
+    ////
+    /// <summary>
+    ///   Resets the application watchdog countdown.
+    /// <para>
+    ///   If you have setup a non-zero <c>watchdogPeriod</c>, you should
+    ///   call this function on a regular basis to prevent the application
+    ///   inactivity error to be triggered.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function resetWatchdog():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns a string with last events observed on the digital input chain.
+    /// <para>
+    ///   This method return only events that are still buffered in the device memory.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string with last events observed (one per line).
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns  <c>YAPI_INVALID_STRING</c>.
+    /// </para>
+    ///-
+    function get_lastEvents():string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Registers a callback function to be called each time that an event is detected on the
+    ///   input chain.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="callback">
+    ///   the callback function to call, or a NIL pointer.
+    ///   The callback function should take four arguments:
+    ///   the <c>YInputChain</c> object that emitted the event, the
+    ///   UTC timestamp of the event, a character string describing
+    ///   the type of event and a character string with the event data.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </param>
+    ///-
+    function registerEventCallback(callback: TYEventCallback):LongInt; overload; virtual;
+
+    function _internalEventHandler(cbpos: string):LongInt; overload; virtual;
+
+    function _strXor(a: string; b: string):string; overload; virtual;
+
+    function hex2array(hexstr: string):TLongIntArray; overload; virtual;
 
 
     ////
@@ -396,6 +666,8 @@ type
   ///-
   function yFirstInputChain():TYInputChain;
 
+Procedure yInternalEventCallback(inputChain:TYInputChain; value:string);
+
 //--- (end of YInputChain functions declaration)
 
 implementation
@@ -417,7 +689,12 @@ implementation
       _bitChain5 := Y_BITCHAIN5_INVALID;
       _bitChain6 := Y_BITCHAIN6_INVALID;
       _bitChain7 := Y_BITCHAIN7_INVALID;
+      _watchdogPeriod := Y_WATCHDOGPERIOD_INVALID;
+      _chainDiags := Y_CHAINDIAGS_INVALID;
       _valueCallbackInputChain := nil;
+      _prevPos := 0;
+      _eventPos := 0;
+      _eventStamp := 0;
       //--- (end of YInputChain accessors initialization)
     end;
 
@@ -488,6 +765,18 @@ implementation
       if (member^.name = 'bitChain7') then
         begin
           _bitChain7 := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'watchdogPeriod') then
+        begin
+          _watchdogPeriod := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'chainDiags') then
+        begin
+          _chainDiags := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -691,6 +980,50 @@ implementation
     end;
 
 
+  function TYInputChain.get_watchdogPeriod():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_WATCHDOGPERIOD_INVALID;
+              exit;
+            end;
+        end;
+      res := self._watchdogPeriod;
+      result := res;
+      exit;
+    end;
+
+
+  function TYInputChain.set_watchdogPeriod(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('watchdogPeriod',rest_val);
+    end;
+
+  function TYInputChain.get_chainDiags():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_CHAINDIAGS_INVALID;
+              exit;
+            end;
+        end;
+      res := self._chainDiags;
+      result := res;
+      exit;
+    end;
+
+
   class function TYInputChain.FindInputChain(func: string):TYInputChain;
     var
       obj : TYInputChain;
@@ -748,6 +1081,224 @@ implementation
     end;
 
 
+  function TYInputChain.resetWatchdog():LongInt;
+    begin
+      result := self.set_watchdogPeriod(-1);
+      exit;
+    end;
+
+
+  function TYInputChain.get_lastEvents():string;
+    var
+      content : TByteArray;
+    begin
+      content := self._download('events.txt');
+      result := _ByteToString(content);
+      exit;
+    end;
+
+
+  function TYInputChain.registerEventCallback(callback: TYEventCallback):LongInt;
+    begin
+      if (addr(callback) <> nil) then
+        begin
+          self.registerValueCallback(yInternalEventCallback);
+        end
+      else
+        begin
+          self.registerValueCallback(TYInputChainValueCallback(nil));
+        end;
+      // register user callback AFTER the internal pseudo-event,
+      // to make sure we start with future events only
+      self._eventCallback := callback;
+      result := 0;
+      exit;
+    end;
+
+
+  function TYInputChain._internalEventHandler(cbpos: string):LongInt;
+    var
+      newPos : LongInt;
+      url : string;
+      content : TByteArray;
+      contentStr : string;
+      eventArr : TStringArray;
+      arrLen : LongInt;
+      lenStr : string;
+      arrPos : LongInt;
+      eventStr : string;
+      eventLen : LongInt;
+      hexStamp : string;
+      typePos : LongInt;
+      dataPos : LongInt;
+      evtStamp : LongInt;
+      evtType : string;
+      evtData : string;
+      evtChange : string;
+      chainIdx : LongInt;
+      eventChains_pos : LongInt;
+    begin
+      SetLength(eventArr, 0);
+      newPos := _atoi(cbpos);
+      if newPos < self._prevPos then
+        begin
+          self._eventPos := 0;
+        end;
+      self._prevPos := newPos;
+      if newPos < self._eventPos then
+        begin
+          result := YAPI_SUCCESS;
+          exit;
+        end;
+      if not((addr(self._eventCallback) <> nil)) then
+        begin
+          // first simulated event, use it to initialize reference values
+          self._eventPos := newPos;
+          SetLength(self._eventChains, 0);
+          eventChains_pos := length(self._eventChains);
+          SetLength(self._eventChains, eventChains_pos+7);
+          self._eventChains[eventChains_pos] := self.get_bitChain1;
+          inc(eventChains_pos);
+          self._eventChains[eventChains_pos] := self.get_bitChain2;
+          inc(eventChains_pos);
+          self._eventChains[eventChains_pos] := self.get_bitChain3;
+          inc(eventChains_pos);
+          self._eventChains[eventChains_pos] := self.get_bitChain4;
+          inc(eventChains_pos);
+          self._eventChains[eventChains_pos] := self.get_bitChain5;
+          inc(eventChains_pos);
+          self._eventChains[eventChains_pos] := self.get_bitChain6;
+          inc(eventChains_pos);
+          self._eventChains[eventChains_pos] := self.get_bitChain7;
+          inc(eventChains_pos);
+          SetLength(self._eventChains, eventChains_pos);
+          result := YAPI_SUCCESS;
+          exit;
+        end;
+      url := 'events.txt?pos='+inttostr(self._eventPos);
+
+      content := self._download(url);
+      contentStr := _ByteToString(content);
+      eventArr := _stringSplit(contentStr, #10);
+      arrLen := length(eventArr);
+      if not(arrLen > 0) then
+        begin
+          self._throw( YAPI_IO_ERROR, 'fail to download events');
+          result:=YAPI_IO_ERROR;
+          exit;
+        end;
+      // last element of array is the new position preceeded by '@'
+      arrLen := arrLen - 1;
+      lenStr := eventArr[arrLen];
+      lenStr := Copy(lenStr,  1 + 1, Length(lenStr)-1);
+      // update processed event position pointer
+      self._eventPos := _atoi(lenStr);
+      // now generate callbacks for each event received
+      arrPos := 0;
+      while arrPos < arrLen do
+        begin
+          eventStr := eventArr[arrPos];
+          eventLen := Length(eventStr);
+          if eventLen >= 1 then
+            begin
+              hexStamp := Copy(eventStr,  0 + 1, 8);
+              evtStamp := StrToInt('$0' + hexStamp);
+              typePos := (pos(':', eventStr) - 1)+1;
+              if (evtStamp >= self._eventStamp) and(typePos > 8) then
+                begin
+                  self._eventStamp := evtStamp;
+                  dataPos := (pos('=', eventStr) - 1)+1;
+                  evtType := Copy(eventStr,  typePos + 1, 1);
+                  evtData := '';
+                  evtChange := '';
+                  if dataPos > 10 then
+                    begin
+                      evtData := Copy(eventStr,  dataPos + 1, Length(eventStr)-dataPos);
+                      if (pos(evtType, '1234567') - 1) >= 0 then
+                        begin
+                          chainIdx := _atoi(evtType) - 1;
+                          evtChange := self._strXor(evtData, self._eventChains[chainIdx]);
+                          self._eventChains[ chainIdx] := evtData;
+                        end;
+                    end;
+                  self._eventCallback(self, evtStamp, evtType, evtData, evtChange);
+                end;
+            end;
+          arrPos := arrPos + 1;
+        end;
+      result := YAPI_SUCCESS;
+      exit;
+    end;
+
+
+  function TYInputChain._strXor(a: string; b: string):string;
+    var
+      lenA : LongInt;
+      lenB : LongInt;
+      res : string;
+      idx : LongInt;
+      digitA : LongInt;
+      digitB : LongInt;
+    begin
+      lenA := Length(a);
+      lenB := Length(b);
+      if lenA > lenB then
+        begin
+          res := Copy(a,  0 + 1, lenA-lenB);
+          a := Copy(a,  lenA-lenB + 1, lenB);
+          lenA := lenB;
+        end
+      else
+        begin
+          res := '';
+          b := Copy(b,  lenA-lenB + 1, lenA);
+        end;
+      // scan strings and compare digit by digit
+      idx := 0;
+      while idx < lenA do
+        begin
+          digitA := StrToInt('$0' + Copy(a,  idx + 1, 1));
+          digitB := StrToInt('$0' + Copy(b,  idx + 1, 1));
+          res := ''+ res+''+AnsiLowerCase(inttohex(((digitA) xor (digitB)),1));
+          idx := idx + 1;
+        end;
+      result := res;
+      exit;
+    end;
+
+
+  function TYInputChain.hex2array(hexstr: string):TLongIntArray;
+    var
+      hexlen : LongInt;
+      res : TLongIntArray;
+      idx : LongInt;
+      digit : LongInt;
+      res_pos : LongInt;
+    begin
+      hexlen := Length(hexstr);
+      SetLength(res, 0);
+      res_pos := length(res);
+      SetLength(res, res_pos+4*hexlen);;
+      idx := hexlen;
+      while idx > 0 do
+        begin
+          idx := idx - 1;
+          digit := StrToInt('$0' + Copy(hexstr,  idx + 1, 1));
+          res[res_pos] := ((digit) and 1);
+          inc(res_pos);
+          res[res_pos] := ((((digit) shr 1)) and 1);
+          inc(res_pos);
+          res[res_pos] := ((((digit) shr 2)) and 1);
+          inc(res_pos);
+          res[res_pos] := ((((digit) shr 3)) and 1);
+          inc(res_pos);
+        end;
+      SetLength(res, res_pos);;
+      result := res;
+      exit;
+    end;
+
+
   function TYInputChain.nextInputChain(): TYInputChain;
     var
       hwid: string;
@@ -785,6 +1336,11 @@ implementation
         end;
      result := TYInputChain.FindInputChain(serial+'.'+funcId);
     end;
+
+Procedure yInternalEventCallback(inputChain:TYInputChain; value:string);
+begin
+    inputChain._internalEventHandler(value);
+end;
 
 //--- (end of YInputChain implementation)
 

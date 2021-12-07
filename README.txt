@@ -38,10 +38,10 @@
 Content of this package:
 ------------------------
 Documentation/       API Reference, in HTML and PDF format
-Examples/            Directory with sample programs in Delphi
+Examples/            Directory with sample programs for  Delphi and lazarus
 Sources/             Source code of the high-level library (in Delphi)
-Sources/dll/         Low-level library as DLL (C source code with makefile 
-                     to build the DLL is available in the C++ library)
+Sources/dll/         Low-level library DLL and .so file(s C source code with makefile 
+                     to build them  is available in the C++ library)
 FILES.txt            List of files contained in this archive
 RELEASE.txt          Release notes
 build.bat            Automated build script
