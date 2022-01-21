@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.pas 47630 2021-12-10 17:04:48Z mvuilleu $
+ *  $Id: yocto_wakeupschedule.pas 48183 2022-01-20 10:26:11Z mvuilleu $
  *
  *  Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
@@ -74,7 +74,7 @@ type
   ////
   /// <summary>
   ///   TYWakeUpSchedule Class: wake up schedule control interface, available for instance in the
-  ///   YoctoHub-GSM-2G, the YoctoHub-GSM-4G, the YoctoHub-Wireless-g or the YoctoHub-Wireless-n
+  ///   YoctoHub-GSM-4G, the YoctoHub-Wireless-SR, the YoctoHub-Wireless-g or the YoctoHub-Wireless-n
   /// <para>
   ///   The <c>YWakeUpSchedule</c> class implements a wake up condition. The wake up time is
   ///   specified as a set of months and/or days and/or hours and/or minutes when the
@@ -542,7 +542,7 @@ type
   /// </summary>
   /// <param name="func">
   ///   a string that uniquely characterizes the wake up schedule, for instance
-  ///   <c>YHUBGSM1.wakeUpSchedule1</c>.
+  ///   <c>YHUBGSM5.wakeUpSchedule1</c>.
   /// </param>
   /// <returns>
   ///   a <c>YWakeUpSchedule</c> object allowing you to drive the wake up schedule.

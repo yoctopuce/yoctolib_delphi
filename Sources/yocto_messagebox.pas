@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 46894 2021-10-25 15:07:44Z seb $
+ * $Id: yocto_messagebox.pas 48090 2022-01-14 08:31:08Z seb $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *
@@ -40,7 +40,7 @@
 
 unit yocto_messagebox;
 {$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
-
+{$WARN USE_BEFORE_DEF OFF}
 interface
 
 uses
@@ -69,6 +69,9 @@ const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 type
   TYMessageBox = class;
   TYSms = class;
+
+  TYSmsArray = array  of TYSms;
+
   //--- (generated code: YMessageBox class start)
   TYMessageBoxValueCallback = procedure(func: TYMessageBox; value:string);
   TYMessageBoxTimedReportCallback = procedure(func: TYMessageBox; value:TYMeasure);
@@ -499,6 +502,8 @@ type
     //--- (end of generated code: YSms declaration)
 
   public
+    constructor create(mbox :TYMessageBox);
+
     //--- (generated code: YSms accessors declaration)
     function get_slot():LongInt; overload; virtual;
 
@@ -1462,7 +1467,7 @@ implementation
       i := 0;
       while i < asclen do
         begin
-          ch = asc[i];
+          ch := asc[i];
           gsm7 := self._iso2gsm[ch];
           if gsm7 = 27 then
             begin
@@ -1482,7 +1487,7 @@ implementation
       i := 0;
       while i < asclen do
         begin
-          ch = asc[i];
+          ch := asc[i];
           gsm7 := self._iso2gsm[ch];
           res[wpos] := gsm7;
           wpos := wpos + 1;
@@ -1866,6 +1871,7 @@ implementation
       _mbox := mbox;
     end;
 
+{$HINTS OFF}
 
 //--- (generated code: YSms implementation)
 
@@ -2518,7 +2524,7 @@ implementation
       i := 0;
       while i < srclen do
         begin
-          val = bytes[i];
+          val := bytes[i];
           if (val >= 48) and(val < 58) then
             begin
               numlen := numlen + 1;
@@ -2547,7 +2553,7 @@ implementation
       i := 0;
       while i < srclen do
         begin
-          val = bytes[i];
+          val := bytes[i];
           if (val >= 48) and(val < 58) then
             begin
               if ((numlen) and 1) = 0 then
@@ -2745,7 +2751,7 @@ implementation
                   v2 := 4 * res[n] + v1;
                   if expasc[i-3] = 45 then
                     begin
-                      v2 += 128;
+                      v2 := v2 + 128;
                     end;
                   res[n] := v2;
                 end;
@@ -3397,6 +3403,7 @@ implementation
 
 
 //--- (end of generated code: YSms implementation)
+{$HINTS ON}
 
 //--- (generated code: YSms functions)
 
