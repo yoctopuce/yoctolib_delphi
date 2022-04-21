@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_genericsensor.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_genericsensor.pas 49385 2022-04-06 00:49:27Z mvuilleu $
  *
  *  Implements yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -81,7 +81,7 @@ type
   ////
   /// <summary>
   ///   TYGenericSensor Class: GenericSensor control interface, available for instance in the
-  ///   Yocto-0-10V-Rx, the Yocto-4-20mA-Rx, the Yocto-Serial or the Yocto-milliVolt-Rx
+  ///   Yocto-0-10V-Rx, the Yocto-4-20mA-Rx, the Yocto-SPI or the Yocto-milliVolt-Rx
   /// <para>
   ///   The <c>YGenericSensor</c> class allows you to read and configure Yoctopuce signal
   ///   transducers. It inherits from <c>YSensor</c> class the core functions to read measurements,

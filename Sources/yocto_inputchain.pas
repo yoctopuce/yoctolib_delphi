@@ -54,6 +54,9 @@ uses
 
 const Y_EXPECTEDNODES_INVALID         = YAPI_INVALID_UINT;
 const Y_DETECTEDNODES_INVALID         = YAPI_INVALID_UINT;
+const Y_LOOPBACKTEST_OFF = 0;
+const Y_LOOPBACKTEST_ON = 1;
+const Y_LOOPBACKTEST_INVALID = -1;
 const Y_REFRESHRATE_INVALID           = YAPI_INVALID_UINT;
 const Y_BITCHAIN1_INVALID             = YAPI_INVALID_STRING;
 const Y_BITCHAIN2_INVALID             = YAPI_INVALID_STRING;
@@ -93,6 +96,7 @@ type
     // Attributes (function value cache)
     _expectedNodes            : LongInt;
     _detectedNodes            : LongInt;
+    _loopbackTest             : Integer;
     _refreshRate              : LongInt;
     _bitChain1                : string;
     _bitChain2                : string;
@@ -175,6 +179,51 @@ type
     /// </para>
     ///-
     function get_detectedNodes():LongInt;
+
+    ////
+    /// <summary>
+    ///   Returns the activation state of the exhaustive chain connectivity test.
+    /// <para>
+    ///   The connectivity test requires a cable connecting the end of the chain
+    ///   to the loopback test connector.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   either <c>YInputChain.LOOPBACKTEST_OFF</c> or <c>YInputChain.LOOPBACKTEST_ON</c>, according to the
+    ///   activation state of the exhaustive chain connectivity test
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YInputChain.LOOPBACKTEST_INVALID</c>.
+    /// </para>
+    ///-
+    function get_loopbackTest():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the activation state of the exhaustive chain connectivity test.
+    /// <para>
+    ///   The connectivity test requires a cable connecting the end of the chain
+    ///   to the loopback test connector.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   either <c>YInputChain.LOOPBACKTEST_OFF</c> or <c>YInputChain.LOOPBACKTEST_ON</c>, according to the
+    ///   activation state of the exhaustive chain connectivity test
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_loopbackTest(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -681,6 +730,7 @@ implementation
       //--- (YInputChain accessors initialization)
       _expectedNodes := Y_EXPECTEDNODES_INVALID;
       _detectedNodes := Y_DETECTEDNODES_INVALID;
+      _loopbackTest := Y_LOOPBACKTEST_INVALID;
       _refreshRate := Y_REFRESHRATE_INVALID;
       _bitChain1 := Y_BITCHAIN1_INVALID;
       _bitChain2 := Y_BITCHAIN2_INVALID;
@@ -717,6 +767,12 @@ implementation
       if (member^.name = 'detectedNodes') then
         begin
           _detectedNodes := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'loopbackTest') then
+        begin
+          _loopbackTest := member^.ivalue;
          result := 1;
          exit;
          end;
@@ -827,6 +883,32 @@ implementation
       exit;
     end;
 
+
+  function TYInputChain.get_loopbackTest():Integer;
+    var
+      res : Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_LOOPBACKTEST_INVALID;
+              exit;
+            end;
+        end;
+      res := self._loopbackTest;
+      result := res;
+      exit;
+    end;
+
+
+  function TYInputChain.set_loopbackTest(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      if(newval>0) then rest_val := '1' else rest_val := '0';
+      result := _setAttr('loopbackTest',rest_val);
+    end;
 
   function TYInputChain.get_refreshRate():LongInt;
     var

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 46894 2021-10-25 15:07:44Z seb $
+ * $Id: yocto_serialport.pas 48954 2022-03-14 09:55:13Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -1083,6 +1083,30 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     /// </para>
     ///-
     function readHex(nBytes: LongInt):string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Emits a BREAK condition on the serial interface.
+    /// <para>
+    ///   When the specified
+    ///   duration is 0, the BREAK signal will be exactly one character wide.
+    ///   When the duration is between 1 and 100, the BREAK condition will
+    ///   be hold for the specified number of milliseconds.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="duration">
+    ///   0 for a standard BREAK, or duration between 1 and 100 ms
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function sendBreak(duration: LongInt):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -2595,6 +2619,13 @@ implementation
           ofs := ofs + 1;
         end;
       result := res;
+      exit;
+    end;
+
+
+  function TYSerialPort.sendBreak(duration: LongInt):LongInt;
+    begin
+      result := self.sendCommand('B'+inttostr(duration));
       exit;
     end;
 

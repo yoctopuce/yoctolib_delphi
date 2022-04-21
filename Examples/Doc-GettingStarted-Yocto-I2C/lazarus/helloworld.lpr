@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: helloworld.lpr 47192 2021-11-08 18:02:19Z seb $
+ *  $Id: helloworld.lpr 48374 2022-01-28 15:44:48Z mvuilleu $
  *
  *  An example that show how to use a  Yocto-I2C
  *
@@ -73,7 +73,7 @@ begin
   if (i2cPort.isOnline()) then
     begin
       // sample code reading MCP9804 temperature sensor
-      i2cPort.set_i2cMode('400kbps');
+      i2cPort.set_i2cMode('100kbps');
       i2cPort.set_i2cVoltageLevel(Y_I2CVOLTAGELEVEL_3V3);
       i2cPort.reset();
       // do not forget to configure the powerOutput

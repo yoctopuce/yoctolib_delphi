@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_multisenscontroller.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_multisenscontroller.pas 49501 2022-04-21 07:09:25Z mvuilleu $
  *
  *  Implements yFindMultiSensController(), the high-level API for MultiSensController functions
  *
@@ -57,6 +57,7 @@ const Y_MAXSENSORS_INVALID            = YAPI_INVALID_UINT;
 const Y_MAINTENANCEMODE_FALSE = 0;
 const Y_MAINTENANCEMODE_TRUE = 1;
 const Y_MAINTENANCEMODE_INVALID = -1;
+const Y_LASTADDRESSDETECTED_INVALID   = YAPI_INVALID_UINT;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 
@@ -88,6 +89,7 @@ type
     _nSensors                 : LongInt;
     _maxSensors               : LongInt;
     _maintenanceMode          : Integer;
+    _lastAddressDetected      : LongInt;
     _command                  : string;
     _valueCallbackMultiSensController : TYMultiSensControllerValueCallback;
     // Function-specific method for reading JSON output and caching result
@@ -124,7 +126,7 @@ type
     ///   <c>saveToFlash()</c> method of the module if the
     ///   modification must be kept. It is recommended to restart the
     ///   device with  <c>module->reboot()</c> after modifying
-    ///   (and saving) this settings
+    ///   (and saving) this settings.
     /// </para>
     /// <para>
     /// </para>
@@ -202,6 +204,27 @@ type
     /// </para>
     ///-
     function set_maintenanceMode(newval:Integer):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the I2C address of the most recently detected sensor.
+    /// <para>
+    ///   This method can
+    ///   be used to in case of I2C communication error to determine what is the
+    ///   last sensor that can be reached, or after a call to <c>setupAddress</c>
+    ///   to make sure that the address change was properly processed.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the I2C address of the most recently detected sensor
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YMultiSensController.LASTADDRESSDETECTED_INVALID</c>.
+    /// </para>
+    ///-
+    function get_lastAddressDetected():LongInt;
 
     function get_command():string;
 
@@ -287,9 +310,11 @@ type
     /// <para>
     ///   It is recommended to put the the device in maintenance mode before
     ///   changing sensor addresses.  This method is only intended to work with a single
-    ///   sensor connected to the device, if several sensors are connected, the result
+    ///   sensor connected to the device. If several sensors are connected, the result
     ///   is unpredictable.
-    ///   Note that the device is probably expecting to find a string of sensors with specific
+    /// </para>
+    /// <para>
+    ///   Note that the device is expecting to find a sensor or a string of sensors with specific
     ///   addresses. Check the device documentation to find out which addresses should be used.
     /// </para>
     /// </summary>
@@ -302,6 +327,23 @@ type
     /// </returns>
     ///-
     function setupAddress(addr: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Triggers the I2C address detection procedure for the only sensor connected to the device.
+    /// <para>
+    ///   This method is only intended to work with a single sensor connected to the device.
+    ///   If several sensors are connected, the result is unpredictable.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the I2C address of the detected sensor, or 0 if none is found
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function get_sensorAddress():LongInt; overload; virtual;
 
 
     ////
@@ -415,6 +457,7 @@ implementation
       _nSensors := Y_NSENSORS_INVALID;
       _maxSensors := Y_MAXSENSORS_INVALID;
       _maintenanceMode := Y_MAINTENANCEMODE_INVALID;
+      _lastAddressDetected := Y_LASTADDRESSDETECTED_INVALID;
       _command := Y_COMMAND_INVALID;
       _valueCallbackMultiSensController := nil;
       //--- (end of YMultiSensController accessors initialization)
@@ -445,6 +488,12 @@ implementation
       if (member^.name = 'maintenanceMode') then
         begin
           _maintenanceMode := member^.ivalue;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'lastAddressDetected') then
+        begin
+          _lastAddressDetected := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -527,6 +576,24 @@ implementation
       if(newval>0) then rest_val := '1' else rest_val := '0';
       result := _setAttr('maintenanceMode',rest_val);
     end;
+
+  function TYMultiSensController.get_lastAddressDetected():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_LASTADDRESSDETECTED_INVALID;
+              exit;
+            end;
+        end;
+      res := self._lastAddressDetected;
+      result := res;
+      exit;
+    end;
+
 
   function TYMultiSensController.get_command():string;
     var
@@ -614,9 +681,51 @@ implementation
   function TYMultiSensController.setupAddress(addr: LongInt):LongInt;
     var
       cmd : string;
+      res : LongInt;
+      ignoreErrMsg : string;
     begin
       cmd := 'A'+inttostr(addr);
-      result := self.set_command(cmd);
+      res := self.set_command(cmd);
+      if not(res = YAPI_SUCCESS) then
+        begin
+          self._throw( YAPI_IO_ERROR, 'unable to trigger address change');
+          result:=YAPI_IO_ERROR;
+          exit;
+        end;
+      ySleep(1500, ignoreErrMsg);
+      res := self.get_lastAddressDetected;
+      if not(res > 0) then
+        begin
+          self._throw( YAPI_IO_ERROR, 'IR sensor not found');
+          result:=YAPI_IO_ERROR;
+          exit;
+        end;
+      if not(res = addr) then
+        begin
+          self._throw( YAPI_IO_ERROR, 'address change failed');
+          result:=YAPI_IO_ERROR;
+          exit;
+        end;
+      result := YAPI_SUCCESS;
+      exit;
+    end;
+
+
+  function TYMultiSensController.get_sensorAddress():LongInt;
+    var
+      res : LongInt;
+      ignoreErrMsg : string;
+    begin
+      res := self.set_command('a');
+      if not(res = YAPI_SUCCESS) then
+        begin
+          self._throw( YAPI_IO_ERROR, 'unable to trigger address detection');
+          result:=res;
+          exit;
+        end;
+      ySleep(1000, ignoreErrMsg);
+      res := self.get_lastAddressDetected;
+      result := res;
       exit;
     end;
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 45292 2021-05-25 23:27:54Z mvuilleu $
+ * $Id: yocto_files.pas 49385 2022-04-06 00:49:27Z mvuilleu $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -138,7 +138,7 @@ TYFILERECORDARRAY = array of TYFileRecord;
   ////
   /// <summary>
   ///   TYFiles Class: filesystem control interface, available for instance in the Yocto-Color-V2, the
-  ///   Yocto-Serial, the YoctoHub-Ethernet or the YoctoHub-GSM-4G
+  ///   Yocto-SPI, the YoctoHub-Ethernet or the YoctoHub-GSM-4G
   /// <para>
   ///   The YFiles class is used to access the filesystem embedded on
   ///   some Yoctopuce devices. This filesystem makes it

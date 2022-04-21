@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_network.pas 48183 2022-01-20 10:26:11Z mvuilleu $
+ *  $Id: yocto_network.pas 49385 2022-04-06 00:49:27Z mvuilleu $
  *
  *  Implements yFindNetwork(), the high-level API for Network functions
  *
@@ -62,6 +62,7 @@ const Y_MACADDRESS_INVALID            = YAPI_INVALID_STRING;
 const Y_IPADDRESS_INVALID             = YAPI_INVALID_STRING;
 const Y_SUBNETMASK_INVALID            = YAPI_INVALID_STRING;
 const Y_ROUTER_INVALID                = YAPI_INVALID_STRING;
+const Y_CURRENTDNS_INVALID            = YAPI_INVALID_STRING;
 const Y_IPCONFIG_INVALID              = YAPI_INVALID_STRING;
 const Y_PRIMARYDNS_INVALID            = YAPI_INVALID_STRING;
 const Y_SECONDARYDNS_INVALID          = YAPI_INVALID_STRING;
@@ -114,7 +115,7 @@ type
   ////
   /// <summary>
   ///   TYNetwork Class: network interface control interface, available for instance in the
-  ///   YoctoHub-Ethernet, the YoctoHub-GSM-4G, the YoctoHub-Wireless-g or the YoctoHub-Wireless-n
+  ///   YoctoHub-Ethernet, the YoctoHub-GSM-4G, the YoctoHub-Wireless-SR or the YoctoHub-Wireless-n
   /// <para>
   ///   <c>YNetwork</c> objects provide access to TCP/IP parameters of Yoctopuce
   ///   devices that include a built-in network interface.
@@ -131,6 +132,7 @@ type
     _ipAddress                : string;
     _subnetMask               : string;
     _router                   : string;
+    _currentDNS               : string;
     _ipConfig                 : string;
     _primaryDNS               : string;
     _secondaryDNS             : string;
@@ -263,6 +265,23 @@ type
     /// </para>
     ///-
     function get_router():string;
+
+    ////
+    /// <summary>
+    ///   Returns the IP address of the DNS server currently used by the device.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the IP address of the DNS server currently used by the device
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YNetwork.CURRENTDNS_INVALID</c>.
+    /// </para>
+    ///-
+    function get_currentDNS():string;
 
     ////
     /// <summary>
@@ -1420,6 +1439,7 @@ implementation
       _ipAddress := Y_IPADDRESS_INVALID;
       _subnetMask := Y_SUBNETMASK_INVALID;
       _router := Y_ROUTER_INVALID;
+      _currentDNS := Y_CURRENTDNS_INVALID;
       _ipConfig := Y_IPCONFIG_INVALID;
       _primaryDNS := Y_PRIMARYDNS_INVALID;
       _secondaryDNS := Y_SECONDARYDNS_INVALID;
@@ -1480,6 +1500,12 @@ implementation
       if (member^.name = 'router') then
         begin
           _router := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'currentDNS') then
+        begin
+          _currentDNS := string(member^.svalue);
          result := 1;
          exit;
          end;
@@ -1686,6 +1712,24 @@ implementation
             end;
         end;
       res := self._router;
+      result := res;
+      exit;
+    end;
+
+
+  function TYNetwork.get_currentDNS():string;
+    var
+      res : string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_CURRENTDNS_INVALID;
+              exit;
+            end;
+        end;
+      res := self._currentDNS;
       result := res;
       exit;
     end;
