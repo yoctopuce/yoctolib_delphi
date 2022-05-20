@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_spiport.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_spiport.pas 49750 2022-05-13 07:10:42Z seb $
  *
  *  Implements yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -70,6 +70,7 @@ const Y_VOLTAGELEVEL_TTL5VR = 4;
 const Y_VOLTAGELEVEL_RS232 = 5;
 const Y_VOLTAGELEVEL_RS485 = 6;
 const Y_VOLTAGELEVEL_TTL1V8 = 7;
+const Y_VOLTAGELEVEL_SDI12 = 8;
 const Y_VOLTAGELEVEL_INVALID = -1;
 const Y_SPIMODE_INVALID               = YAPI_INVALID_STRING;
 const Y_SSPOLARITY_ACTIVE_LOW = 0;
@@ -496,8 +497,8 @@ TYSpiSnoopingRecordARRAY = array of TYSpiSnoopingRecord;
     ///   a value among <c>YSpiPort.VOLTAGELEVEL_OFF</c>, <c>YSpiPort.VOLTAGELEVEL_TTL3V</c>,
     ///   <c>YSpiPort.VOLTAGELEVEL_TTL3VR</c>, <c>YSpiPort.VOLTAGELEVEL_TTL5V</c>,
     ///   <c>YSpiPort.VOLTAGELEVEL_TTL5VR</c>, <c>YSpiPort.VOLTAGELEVEL_RS232</c>,
-    ///   <c>YSpiPort.VOLTAGELEVEL_RS485</c> and <c>YSpiPort.VOLTAGELEVEL_TTL1V8</c> corresponding to the
-    ///   voltage level used on the serial line
+    ///   <c>YSpiPort.VOLTAGELEVEL_RS485</c>, <c>YSpiPort.VOLTAGELEVEL_TTL1V8</c> and
+    ///   <c>YSpiPort.VOLTAGELEVEL_SDI12</c> corresponding to the voltage level used on the serial line
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>YSpiPort.VOLTAGELEVEL_INVALID</c>.
@@ -524,8 +525,8 @@ TYSpiSnoopingRecordARRAY = array of TYSpiSnoopingRecord;
     ///   a value among <c>YSpiPort.VOLTAGELEVEL_OFF</c>, <c>YSpiPort.VOLTAGELEVEL_TTL3V</c>,
     ///   <c>YSpiPort.VOLTAGELEVEL_TTL3VR</c>, <c>YSpiPort.VOLTAGELEVEL_TTL5V</c>,
     ///   <c>YSpiPort.VOLTAGELEVEL_TTL5VR</c>, <c>YSpiPort.VOLTAGELEVEL_RS232</c>,
-    ///   <c>YSpiPort.VOLTAGELEVEL_RS485</c> and <c>YSpiPort.VOLTAGELEVEL_TTL1V8</c> corresponding to the
-    ///   voltage type used on the serial line
+    ///   <c>YSpiPort.VOLTAGELEVEL_RS485</c>, <c>YSpiPort.VOLTAGELEVEL_TTL1V8</c> and
+    ///   <c>YSpiPort.VOLTAGELEVEL_SDI12</c> corresponding to the voltage type used on the serial line
     /// </param>
     /// <para>
     /// </para>

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 46962 2021-10-29 06:18:41Z martinm $
+ * $Id: yocto_api.pas 49750 2022-05-13 07:10:42Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -128,7 +128,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '49504';
+  YOCTO_API_BUILD_NO        = '49822';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -2914,9 +2914,6 @@ end;
     /// <summary>
     ///   Returns a list of all the modules in "firmware update" mode.
     /// <para>
-    ///   Only devices
-    ///   connected over USB are listed. For devices connected to a YoctoHub, you
-    ///   must connect yourself to the YoctoHub web interface.
     /// </para>
     /// <para>
     /// </para>

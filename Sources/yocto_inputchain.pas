@@ -715,7 +715,7 @@ type
   ///-
   function yFirstInputChain():TYInputChain;
 
-Procedure yInternalEventCallback(inputChain:TYInputChain; value:string);
+Procedure yInternalEventCallback(obj:TYInputChain; value:string);
 
 //--- (end of YInputChain functions declaration)
 
@@ -1419,9 +1419,9 @@ implementation
      result := TYInputChain.FindInputChain(serial+'.'+funcId);
     end;
 
-Procedure yInternalEventCallback(inputChain:TYInputChain; value:string);
+Procedure yInternalEventCallback(obj:TYInputChain; value:string);
 begin
-    inputChain._internalEventHandler(value);
+    obj._internalEventHandler(value);
 end;
 
 //--- (end of YInputChain implementation)

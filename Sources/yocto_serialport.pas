@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 48954 2022-03-14 09:55:13Z seb $
+ * $Id: yocto_serialport.pas 49818 2022-05-19 09:57:42Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -70,6 +70,7 @@ const Y_VOLTAGELEVEL_TTL5VR = 4;
 const Y_VOLTAGELEVEL_RS232 = 5;
 const Y_VOLTAGELEVEL_RS485 = 6;
 const Y_VOLTAGELEVEL_TTL1V8 = 7;
+const Y_VOLTAGELEVEL_SDI12 = 8;
 const Y_VOLTAGELEVEL_INVALID = -1;
 const Y_SERIALMODE_INVALID            = YAPI_INVALID_STRING;
 
@@ -157,6 +158,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
   //--- (generated code: YSerialPort class start)
   TYSerialPortValueCallback = procedure(func: TYSerialPort; value:string);
   TYSerialPortTimedReportCallback = procedure(func: TYSerialPort; value:TYMeasure);
+  TYSnoopingCallback = procedure(func: TYSerialPort; rec: TYSnoopingRecord);
 
   ////
   /// <summary>
@@ -194,6 +196,8 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     _rxptr                    : LongInt;
     _rxbuff                   : TByteArray;
     _rxbuffptr                : LongInt;
+    _eventCallback            : TYSnoopingCallback;
+    _eventPos                 : LongInt;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
 
@@ -498,8 +502,8 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   a value among <c>YSerialPort.VOLTAGELEVEL_OFF</c>, <c>YSerialPort.VOLTAGELEVEL_TTL3V</c>,
     ///   <c>YSerialPort.VOLTAGELEVEL_TTL3VR</c>, <c>YSerialPort.VOLTAGELEVEL_TTL5V</c>,
     ///   <c>YSerialPort.VOLTAGELEVEL_TTL5VR</c>, <c>YSerialPort.VOLTAGELEVEL_RS232</c>,
-    ///   <c>YSerialPort.VOLTAGELEVEL_RS485</c> and <c>YSerialPort.VOLTAGELEVEL_TTL1V8</c> corresponding to
-    ///   the voltage level used on the serial line
+    ///   <c>YSerialPort.VOLTAGELEVEL_RS485</c>, <c>YSerialPort.VOLTAGELEVEL_TTL1V8</c> and
+    ///   <c>YSerialPort.VOLTAGELEVEL_SDI12</c> corresponding to the voltage level used on the serial line
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>YSerialPort.VOLTAGELEVEL_INVALID</c>.
@@ -526,8 +530,8 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   a value among <c>YSerialPort.VOLTAGELEVEL_OFF</c>, <c>YSerialPort.VOLTAGELEVEL_TTL3V</c>,
     ///   <c>YSerialPort.VOLTAGELEVEL_TTL3VR</c>, <c>YSerialPort.VOLTAGELEVEL_TTL5V</c>,
     ///   <c>YSerialPort.VOLTAGELEVEL_TTL5VR</c>, <c>YSerialPort.VOLTAGELEVEL_RS232</c>,
-    ///   <c>YSerialPort.VOLTAGELEVEL_RS485</c> and <c>YSerialPort.VOLTAGELEVEL_TTL1V8</c> corresponding to
-    ///   the voltage type used on the serial line
+    ///   <c>YSerialPort.VOLTAGELEVEL_RS485</c>, <c>YSerialPort.VOLTAGELEVEL_TTL1V8</c> and
+    ///   <c>YSerialPort.VOLTAGELEVEL_SDI12</c> corresponding to the voltage type used on the serial line
     /// </param>
     /// <para>
     /// </para>
@@ -1177,6 +1181,26 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
 
     ////
     /// <summary>
+    ///   Registers a callback function to be called each time that a message is sent or
+    ///   received by the serial port.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="callback">
+    ///   the callback function to call, or a NIL pointer.
+    ///   The callback function should take four arguments:
+    ///   the <c>YSerialPort</c> object that emitted the event, and
+    ///   the <c>SnoopingRecord</c> object that describes the message
+    ///   sent or received.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </param>
+    ///-
+    function registerSnoopingCallback(callback: TYSnoopingCallback):LongInt; overload; virtual;
+
+    function _internalEventHandler(advstr: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Sends an ASCII string to the serial port, preceeded with an STX code and
     ///   followed by an ETX code.
     /// <para>
@@ -1567,6 +1591,8 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
   ///-
   function yFirstSerialPort():TYSerialPort;
 
+Procedure yInternalEventCallback(obj:TYSerialPort; value:string);
+
 //--- (end of generated code: YSerialPort functions declaration)
 
 implementation
@@ -1595,6 +1621,7 @@ implementation
       _valueCallbackSerialPort := nil;
       _rxptr := 0;
       _rxbuffptr := 0;
+      _eventPos := 0;
       //--- (end of generated code: YSerialPort accessors initialization)
     end;
 
@@ -2694,6 +2721,69 @@ implementation
     end;
 
 
+  function TYSerialPort.registerSnoopingCallback(callback: TYSnoopingCallback):LongInt;
+    begin
+      if (addr(callback) <> nil) then
+        begin
+          self.registerValueCallback(yInternalEventCallback);
+        end
+      else
+        begin
+          self.registerValueCallback(TYSerialPortValueCallback(nil));
+        end;
+      // register user callback AFTER the internal pseudo-event,
+      // to make sure we start with future events only
+      self._eventCallback := callback;
+      result := 0;
+      exit;
+    end;
+
+
+  function TYSerialPort._internalEventHandler(advstr: string):LongInt;
+    var
+      url : string;
+      msgbin : TByteArray;
+      msgarr : TStringArray;
+      msglen : LongInt;
+      idx : LongInt;
+    begin
+      SetLength(msgarr, 0);
+      if not((addr(self._eventCallback) <> nil)) then
+        begin
+          // first simulated event, use it only to initialize reference values
+          self._eventPos := 0;
+        end;
+
+      url := 'rxmsg.json?pos='+inttostr(self._eventPos)+'&maxw=0&t=0';
+      msgbin := self._download(url);
+      msgarr := self._json_get_array(msgbin);
+      msglen := length(msgarr);
+      if msglen = 0 then
+        begin
+          result := YAPI_SUCCESS;
+          exit;
+        end;
+      // last element of array is the new position
+      msglen := msglen - 1;
+      if not((addr(self._eventCallback) <> nil)) then
+        begin
+          // first simulated event, use it only to initialize reference values
+          self._eventPos := _atoi(msgarr[msglen]);
+          result := YAPI_SUCCESS;
+          exit;
+        end;
+      self._eventPos := _atoi(msgarr[msglen]);
+      idx := 0;
+      while idx < msglen do
+        begin
+          self._eventCallback(self, TYSnoopingRecord.create(msgarr[idx]));
+          idx := idx + 1;
+        end;
+      result := YAPI_SUCCESS;
+      exit;
+    end;
+
+
   function TYSerialPort.writeStxEtx(text: string):LongInt;
     var
       buff : TByteArray;
@@ -3389,6 +3479,11 @@ implementation
         end;
      result := TYSerialPort.FindSerialPort(serial+'.'+funcId);
     end;
+
+Procedure yInternalEventCallback(obj:TYSerialPort; value:string);
+begin
+    obj._internalEventHandler(value);
+end;
 
 //--- (end of generated code: YSerialPort implementation)
 
