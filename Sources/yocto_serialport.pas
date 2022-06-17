@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 49818 2022-05-19 09:57:42Z seb $
+ * $Id: yocto_serialport.pas 49903 2022-05-25 14:18:36Z mvuilleu $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -196,8 +196,8 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     _rxptr                    : LongInt;
     _rxbuff                   : TByteArray;
     _rxbuffptr                : LongInt;
-    _eventCallback            : TYSnoopingCallback;
     _eventPos                 : LongInt;
+    _eventCallback            : TYSnoopingCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
 
@@ -1184,13 +1184,19 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   Registers a callback function to be called each time that a message is sent or
     ///   received by the serial port.
     /// <para>
+    ///   The callback is invoked only during the execution of
+    ///   <c>ySleep</c> or <c>yHandleEvents</c>. This provides control over the time when
+    ///   the callback is triggered. For good responsiveness, remember to call one of these
+    ///   two functions periodically. To unregister a callback, pass a NIL pointer as argument.
+    /// </para>
+    /// <para>
     /// </para>
     /// </summary>
     /// <param name="callback">
     ///   the callback function to call, or a NIL pointer.
     ///   The callback function should take four arguments:
     ///   the <c>YSerialPort</c> object that emitted the event, and
-    ///   the <c>SnoopingRecord</c> object that describes the message
+    ///   the <c>YSnoopingRecord</c> object that describes the message
     ///   sent or received.
     ///   On failure, throws an exception or returns a negative error code.
     /// </param>
@@ -2274,6 +2280,7 @@ implementation
 
   function TYSerialPort.reset():LongInt;
     begin
+      self._eventPos := 0;
       self._rxptr := 0;
       self._rxbuffptr := 0;
       setlength(self._rxbuff,0);

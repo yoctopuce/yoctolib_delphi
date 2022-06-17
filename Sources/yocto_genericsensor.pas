@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_genericsensor.pas 49385 2022-04-06 00:49:27Z mvuilleu $
+ *  $Id: yocto_genericsensor.pas 49903 2022-05-25 14:18:36Z mvuilleu $
  *
  *  Implements yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -62,6 +62,7 @@ const Y_SIGNALSAMPLING_HIGH_RATE_FILTERED = 1;
 const Y_SIGNALSAMPLING_LOW_NOISE = 2;
 const Y_SIGNALSAMPLING_LOW_NOISE_FILTERED = 3;
 const Y_SIGNALSAMPLING_HIGHEST_RATE = 4;
+const Y_SIGNALSAMPLING_AC = 5;
 const Y_SIGNALSAMPLING_INVALID = -1;
 const Y_ENABLED_FALSE = 0;
 const Y_ENABLED_TRUE = 1;
@@ -334,8 +335,8 @@ type
     /// <returns>
     ///   a value among <c>YGenericSensor.SIGNALSAMPLING_HIGH_RATE</c>,
     ///   <c>YGenericSensor.SIGNALSAMPLING_HIGH_RATE_FILTERED</c>, <c>YGenericSensor.SIGNALSAMPLING_LOW_NOISE</c>,
-    ///   <c>YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED</c> and <c>YGenericSensor.SIGNALSAMPLING_HIGHEST_RATE</c>
-    ///   corresponding to the electric signal sampling method to use
+    ///   <c>YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED</c>, <c>YGenericSensor.SIGNALSAMPLING_HIGHEST_RATE</c>
+    ///   and <c>YGenericSensor.SIGNALSAMPLING_AC</c> corresponding to the electric signal sampling method to use
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>YGenericSensor.SIGNALSAMPLING_INVALID</c>.
@@ -361,8 +362,8 @@ type
     /// <param name="newval">
     ///   a value among <c>YGenericSensor.SIGNALSAMPLING_HIGH_RATE</c>,
     ///   <c>YGenericSensor.SIGNALSAMPLING_HIGH_RATE_FILTERED</c>, <c>YGenericSensor.SIGNALSAMPLING_LOW_NOISE</c>,
-    ///   <c>YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED</c> and <c>YGenericSensor.SIGNALSAMPLING_HIGHEST_RATE</c>
-    ///   corresponding to the electric signal sampling method to use
+    ///   <c>YGenericSensor.SIGNALSAMPLING_LOW_NOISE_FILTERED</c>, <c>YGenericSensor.SIGNALSAMPLING_HIGHEST_RATE</c>
+    ///   and <c>YGenericSensor.SIGNALSAMPLING_AC</c> corresponding to the electric signal sampling method to use
     /// </param>
     /// <para>
     /// </para>

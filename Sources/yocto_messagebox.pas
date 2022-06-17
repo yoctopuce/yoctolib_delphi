@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 48090 2022-01-14 08:31:08Z seb $
+ * $Id: yocto_messagebox.pas 50144 2022-06-17 06:59:52Z seb $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *
@@ -309,6 +309,8 @@ type
     function nextMsgRef():LongInt; overload; virtual;
 
     function clearSIMSlot(slot: LongInt):LongInt; overload; virtual;
+
+    function _AT(cmd: string):string; overload; virtual;
 
     function fetchPdu(slot: LongInt):TYSms; overload; virtual;
 
@@ -768,6 +770,7 @@ implementation
       _command := Y_COMMAND_INVALID;
       _valueCallbackMessageBox := nil;
       _nextMsgRef := 0;
+      _prevBitmapStr := '';
       //--- (end of generated code: YMessageBox accessors initialization)
     end;
 
@@ -1017,9 +1020,120 @@ implementation
 
 
   function TYMessageBox.clearSIMSlot(slot: LongInt):LongInt;
+    var
+      retry : LongInt;
+      idx : LongInt;
+      res : string;
+      bitmapStr : string;
+      int_res : LongInt;
+      newBitmap : TByteArray;
+      bitVal : LongInt;
     begin
-      self._prevBitmapStr := '';
-      result := self.set_command('DS'+inttostr(slot));
+      retry := 5;
+      while retry > 0 do
+        begin
+          self.clearCache;
+          bitmapStr := self.get_slotsBitmap;
+          newBitmap := _hexStrToBin(bitmapStr);
+          idx := ((slot) shr 3);
+          if idx < length(newBitmap) then
+            begin
+              bitVal := ((1) shl ((((slot) and 7))));
+              if (((newBitmap[idx]) and (bitVal))) <> 0 then
+                begin
+                  self._prevBitmapStr := '';
+                  int_res := self.set_command('DS'+inttostr(slot));
+                  if int_res < 0 then
+                    begin
+                      result := int_res;
+                      exit;
+                    end;
+                end
+              else
+                begin
+                  result := YAPI_SUCCESS;
+                  exit;
+                end;
+            end
+          else
+            begin
+              result := YAPI_INVALID_ARGUMENT;
+              exit;
+            end;
+          res := self._AT('');
+          retry := retry - 1;
+        end;
+      result := YAPI_IO_ERROR;
+      exit;
+    end;
+
+
+  function TYMessageBox._AT(cmd: string):string;
+    var
+      chrPos : LongInt;
+      cmdLen : LongInt;
+      waitMore : LongInt;
+      res : string;
+      buff : TByteArray;
+      bufflen : LongInt;
+      buffstr : string;
+      buffstrlen : LongInt;
+      idx : LongInt;
+      suffixlen : LongInt;
+    begin
+      cmdLen := Length(cmd);
+      chrPos := (pos('#', cmd) - 1);
+      while chrPos >= 0 do
+        begin
+          cmd := ''+ Copy(cmd,  0 + 1, chrPos)+''+chr( 37)+'23'+Copy(cmd,  chrPos+1 + 1, cmdLen-chrPos-1);
+          cmdLen := cmdLen + 2;
+          chrPos := (pos('#', cmd) - 1);
+        end;
+      chrPos := (pos('+', cmd) - 1);
+      while chrPos >= 0 do
+        begin
+          cmd := ''+ Copy(cmd,  0 + 1, chrPos)+''+chr( 37)+'2B'+Copy(cmd,  chrPos+1 + 1, cmdLen-chrPos-1);
+          cmdLen := cmdLen + 2;
+          chrPos := (pos('+', cmd) - 1);
+        end;
+      chrPos := (pos('=', cmd) - 1);
+      while chrPos >= 0 do
+        begin
+          cmd := ''+ Copy(cmd,  0 + 1, chrPos)+''+chr( 37)+'3D'+Copy(cmd,  chrPos+1 + 1, cmdLen-chrPos-1);
+          cmdLen := cmdLen + 2;
+          chrPos := (pos('=', cmd) - 1);
+        end;
+      cmd := 'at.txt?cmd='+cmd;
+      res := '';
+      // max 2 minutes (each iteration may take up to 5 seconds if waiting)
+      waitMore := 24;
+      while waitMore > 0 do
+        begin
+          buff := self._download(cmd);
+          bufflen := length(buff);
+          buffstr := _ByteToString(buff);
+          buffstrlen := Length(buffstr);
+          idx := bufflen - 1;
+          while (idx > 0) and(buff[idx] <> 64) and(buff[idx] <> 10) and(buff[idx] <> 13) do
+            begin
+              idx := idx - 1;
+            end;
+          if buff[idx] = 64 then
+            begin
+              // continuation detected
+              suffixlen := bufflen - idx;
+              cmd := 'at.txt?cmd='+Copy(buffstr,  buffstrlen - suffixlen + 1, suffixlen);
+              buffstr := Copy(buffstr,  0 + 1, buffstrlen - suffixlen);
+              waitMore := waitMore - 1;
+            end
+          else
+            begin
+              // request complete
+              waitMore := 0;
+            end;
+          res := ''+ res+''+buffstr;
+        end;
+      result := res;
       exit;
     end;
 
@@ -1860,11 +1974,16 @@ implementation
     begin
       //--- (generated code: YSms accessors initialization)
       _slot := 0;
+      _smsc := '';
       _mref := 0;
+      _orig := '';
+      _dest := '';
       _pid := 0;
       _alphab := 0;
       _mclass := 0;
+      _stamp := '';
       _npdu := 0;
+      _aggSig := '';
       _aggIdx := 0;
       _aggCnt := 0;
       //--- (end of generated code: YSms accessors initialization)
@@ -2467,7 +2586,6 @@ implementation
         end;
       SetLength(sorted, sorted_pos);;
       self._parts := sorted;
-      self._npdu := length(sorted);
       // inherit header fields from first part
       subsms := self._parts[0];
       retcode := self.parsePdu(subsms.get_pdu);
@@ -2476,6 +2594,7 @@ implementation
           result := retcode;
           exit;
         end;
+      self._npdu := length(sorted);
       // concatenate user data from all parts
       totsize := 0;
       partno := 0;
@@ -3384,7 +3503,7 @@ implementation
       retcode : LongInt;
       pdu : TYSms;
     begin
-      if self._slot > 0 then
+      if self._npdu < 2 then
         begin
           result := self._mbox.clearSIMSlot(self._slot);
           exit;

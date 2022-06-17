@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_spiport.pas 49750 2022-05-13 07:10:42Z seb $
+ *  $Id: yocto_spiport.pas 49903 2022-05-25 14:18:36Z mvuilleu $
  *
  *  Implements yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -203,6 +203,7 @@ TYSpiSnoopingRecordARRAY = array of TYSpiSnoopingRecord;
     _rxptr                    : LongInt;
     _rxbuff                   : TByteArray;
     _rxbuffptr                : LongInt;
+    _eventPos                 : LongInt;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
 
@@ -1336,6 +1337,7 @@ implementation
       _valueCallbackSpiPort := nil;
       _rxptr := 0;
       _rxbuffptr := 0;
+      _eventPos := 0;
       //--- (end of generated code: YSpiPort accessors initialization)
     end;
 
@@ -2054,6 +2056,7 @@ implementation
 
   function TYSpiPort.reset():LongInt;
     begin
+      self._eventPos := 0;
       self._rxptr := 0;
       self._rxbuffptr := 0;
       setlength(self._rxbuff,0);
