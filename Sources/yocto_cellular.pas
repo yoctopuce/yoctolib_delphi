@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 46894 2021-10-25 15:07:44Z seb $
+ * $Id: yocto_cellular.pas 50281 2022-06-30 07:21:14Z mvuilleu $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -897,6 +897,21 @@ type
     /// </returns>
     ///-
     function decodePLMN(mccmnc: string):string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the list available radio communication profiles, as a string array
+    ///   (YoctoHub-GSM-4G only).
+    /// <para>
+    ///   Each string is a made of a numerical ID, followed by a colon,
+    ///   followed by the profile description.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a list of string describing available radio communication profiles.
+    /// </returns>
+    ///-
+    function get_communicationProfiles():TStringArray; overload; virtual;
 
 
     ////
@@ -9714,6 +9729,54 @@ implementation
   function TYCellular.decodePLMN(mccmnc: string):string;
     begin
       result := self.imm_decodePLMN(mccmnc);
+      exit;
+    end;
+
+
+  function TYCellular.get_communicationProfiles():TStringArray;
+    var
+      profiles : string;
+      lines : TStringArray;
+      nlines : LongInt;
+      idx : LongInt;
+      line : string;
+      cpos : LongInt;
+      profno : LongInt;
+      res : TStringArray;
+      res_pos : LongInt;
+    begin
+      SetLength(lines, 0);
+      SetLength(res, 0);
+
+      profiles := self._AT('+UMNOPROF=?');
+      lines := _stringSplit(profiles, #10);
+      nlines := length(lines);
+      if not(nlines > 0) then
+        begin
+          self._throw( YAPI_IO_ERROR, 'fail to retrieve profile list');
+          result:=res;
+          exit;
+        end;
+      res_pos := 0;
+      SetLength(res, nlines);;
+      idx := 0;
+      while idx < nlines do
+        begin
+          line := lines[idx];
+          cpos := (pos(':', line) - 1);
+          if cpos > 0 then
+            begin
+              profno := _atoi(Copy(line,  0 + 1, cpos));
+              if profno > 0 then
+                begin
+                  res[res_pos] := line;
+                  inc(res_pos);
+                end;
+            end;
+          idx := idx + 1;
+        end;
+      SetLength(res, res_pos);;
+      result := res;
       exit;
     end;
 

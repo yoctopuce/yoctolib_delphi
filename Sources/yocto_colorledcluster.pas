@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_colorledcluster.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_colorledcluster.pas 50281 2022-06-30 07:21:14Z mvuilleu $
  *
  *  Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -58,6 +58,7 @@ const Y_LEDTYPE_RGBW = 1;
 const Y_LEDTYPE_WS2811 = 2;
 const Y_LEDTYPE_INVALID = -1;
 const Y_MAXLEDCOUNT_INVALID           = YAPI_INVALID_UINT;
+const Y_DYNAMICLEDCOUNT_INVALID       = YAPI_INVALID_UINT;
 const Y_BLINKSEQMAXCOUNT_INVALID      = YAPI_INVALID_UINT;
 const Y_BLINKSEQMAXSIZE_INVALID       = YAPI_INVALID_UINT;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
@@ -97,6 +98,7 @@ type
     _activeLedCount           : LongInt;
     _ledType                  : Integer;
     _maxLedCount              : LongInt;
+    _dynamicLedCount          : LongInt;
     _blinkSeqMaxCount         : LongInt;
     _blinkSeqMaxSize          : LongInt;
     _command                  : string;
@@ -210,6 +212,23 @@ type
     /// </para>
     ///-
     function get_maxLedCount():LongInt;
+
+    ////
+    /// <summary>
+    ///   Returns the maximum number of LEDs that can perform autonomous transitions and sequences.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the maximum number of LEDs that can perform autonomous transitions and sequences
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YColorLedCluster.DYNAMICLEDCOUNT_INVALID</c>.
+    /// </para>
+    ///-
+    function get_dynamicLedCount():LongInt;
 
     ////
     /// <summary>
@@ -1364,6 +1383,7 @@ implementation
       _activeLedCount := Y_ACTIVELEDCOUNT_INVALID;
       _ledType := Y_LEDTYPE_INVALID;
       _maxLedCount := Y_MAXLEDCOUNT_INVALID;
+      _dynamicLedCount := Y_DYNAMICLEDCOUNT_INVALID;
       _blinkSeqMaxCount := Y_BLINKSEQMAXCOUNT_INVALID;
       _blinkSeqMaxSize := Y_BLINKSEQMAXSIZE_INVALID;
       _command := Y_COMMAND_INVALID;
@@ -1396,6 +1416,12 @@ implementation
       if (member^.name = 'maxLedCount') then
         begin
           _maxLedCount := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'dynamicLedCount') then
+        begin
+          _dynamicLedCount := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -1486,6 +1512,24 @@ implementation
             end;
         end;
       res := self._maxLedCount;
+      result := res;
+      exit;
+    end;
+
+
+  function TYColorLedCluster.get_dynamicLedCount():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration = 0 then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_DYNAMICLEDCOUNT_INVALID;
+              exit;
+            end;
+        end;
+      res := self._dynamicLedCount;
       result := res;
       exit;
     end;
