@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_powersupply.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_powersupply.pas 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements yFindPowerSupply(), the high-level API for PowerSupply functions
  *
@@ -686,13 +686,13 @@ implementation
     begin
       if (member^.name = 'voltageSetPoint') then
         begin
-          _voltageSetPoint := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _voltageSetPoint := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'currentLimit') then
         begin
-          _currentLimit := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _currentLimit := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
@@ -710,31 +710,31 @@ implementation
          end;
       if (member^.name = 'measuredVoltage') then
         begin
-          _measuredVoltage := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _measuredVoltage := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'measuredCurrent') then
         begin
-          _measuredCurrent := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _measuredCurrent := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'inputVoltage') then
         begin
-          _inputVoltage := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _inputVoltage := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'vInt') then
         begin
-          _vInt := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _vInt := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'ldoTemperature') then
         begin
-          _ldoTemperature := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _ldoTemperature := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
@@ -746,13 +746,13 @@ implementation
          end;
       if (member^.name = 'voltageAtStartUp') then
         begin
-          _voltageAtStartUp := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _voltageAtStartUp := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'currentAtStartUp') then
         begin
-          _currentAtStartUp := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _currentAtStartUp := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;

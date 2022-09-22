@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 50281 2022-06-30 07:21:14Z mvuilleu $
+ * $Id: yocto_cellular.pas 50494 2022-07-19 16:08:56Z mvuilleu $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -9767,7 +9767,7 @@ implementation
           if cpos > 0 then
             begin
               profno := _atoi(Copy(line,  0 + 1, cpos));
-              if profno > 0 then
+              if profno > 1 then
                 begin
                   res[res_pos] := line;
                   inc(res_pos);

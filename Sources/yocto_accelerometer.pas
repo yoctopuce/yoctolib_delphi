@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_accelerometer.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_accelerometer.pas 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements yFindAccelerometer(), the high-level API for Accelerometer functions
  *
@@ -435,19 +435,19 @@ implementation
          end;
       if (member^.name = 'xValue') then
         begin
-          _xValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _xValue := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'yValue') then
         begin
-          _yValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _yValue := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'zValue') then
         begin
-          _zValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _zValue := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;

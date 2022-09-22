@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_voltageoutput.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_voltageoutput.pas 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements yFindVoltageOutput(), the high-level API for VoltageOutput functions
  *
@@ -400,7 +400,7 @@ implementation
     begin
       if (member^.name = 'currentVoltage') then
         begin
-          _currentVoltage := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _currentVoltage := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
@@ -412,7 +412,7 @@ implementation
          end;
       if (member^.name = 'voltageAtStartUp') then
         begin
-          _voltageAtStartUp := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _voltageAtStartUp := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;

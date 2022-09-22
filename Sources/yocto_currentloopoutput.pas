@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_currentloopoutput.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_currentloopoutput.pas 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
  *
@@ -431,7 +431,7 @@ implementation
     begin
       if (member^.name = 'current') then
         begin
-          _current := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _current := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
@@ -443,7 +443,7 @@ implementation
          end;
       if (member^.name = 'currentAtStartUp') then
         begin
-          _currentAtStartUp := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _currentAtStartUp := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;

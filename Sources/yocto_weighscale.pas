@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_weighscale.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_weighscale.pas 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements yFindWeighScale(), the high-level API for WeighScale functions
  *
@@ -884,37 +884,37 @@ implementation
          end;
       if (member^.name = 'tempAvgAdaptRatio') then
         begin
-          _tempAvgAdaptRatio := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _tempAvgAdaptRatio := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'tempChgAdaptRatio') then
         begin
-          _tempChgAdaptRatio := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _tempChgAdaptRatio := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'compTempAvg') then
         begin
-          _compTempAvg := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _compTempAvg := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'compTempChg') then
         begin
-          _compTempChg := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _compTempChg := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'compensation') then
         begin
-          _compensation := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _compensation := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'zeroTracking') then
         begin
-          _zeroTracking := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _zeroTracking := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;

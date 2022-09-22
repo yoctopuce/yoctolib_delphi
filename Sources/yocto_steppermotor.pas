@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_steppermotor.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_steppermotor.pas 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements yFindStepperMotor(), the high-level API for StepperMotor functions
  *
@@ -988,25 +988,25 @@ implementation
          end;
       if (member^.name = 'speed') then
         begin
-          _speed := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _speed := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'pullinSpeed') then
         begin
-          _pullinSpeed := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _pullinSpeed := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'maxAccel') then
         begin
-          _maxAccel := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _maxAccel := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'maxSpeed') then
         begin
-          _maxSpeed := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _maxSpeed := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 49750 2022-05-13 07:10:42Z seb $
+ * $Id: yocto_api.pas 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -128,7 +128,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '50357';
+  YOCTO_API_BUILD_NO        = '51008';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -10765,25 +10765,25 @@ var
          end;
       if (member^.name = 'currentValue') then
         begin
-          _currentValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _currentValue := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'lowestValue') then
         begin
-          _lowestValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _lowestValue := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'highestValue') then
         begin
-          _highestValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _highestValue := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'currentRawValue') then
         begin
-          _currentRawValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _currentRawValue := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
@@ -10813,7 +10813,7 @@ var
          end;
       if (member^.name = 'resolution') then
         begin
-          _resolution := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _resolution := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;

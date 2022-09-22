@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_pwminput.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_pwminput.pas 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements yFindPwmInput(), the high-level API for PwmInput functions
  *
@@ -662,25 +662,25 @@ implementation
     begin
       if (member^.name = 'dutyCycle') then
         begin
-          _dutyCycle := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _dutyCycle := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'pulseDuration') then
         begin
-          _pulseDuration := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _pulseDuration := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'frequency') then
         begin
-          _frequency := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _frequency := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'period') then
         begin
-          _period := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _period := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;

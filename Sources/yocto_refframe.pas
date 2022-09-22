@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_refframe.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_refframe.pas 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -741,7 +741,7 @@ implementation
          end;
       if (member^.name = 'bearing') then
         begin
-          _bearing := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _bearing := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;

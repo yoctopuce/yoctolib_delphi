@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_genericsensor.pas 49903 2022-05-25 14:18:36Z mvuilleu $
+ *  $Id: yocto_genericsensor.pas 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -668,7 +668,7 @@ implementation
     begin
       if (member^.name = 'signalValue') then
         begin
-          _signalValue := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _signalValue := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
@@ -692,7 +692,7 @@ implementation
          end;
       if (member^.name = 'signalBias') then
         begin
-          _signalBias := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _signalBias := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;

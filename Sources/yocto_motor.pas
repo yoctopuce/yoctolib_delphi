@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_motor.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_motor.pas 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements yFindMotor(), the high-level API for Motor functions
  *
@@ -762,19 +762,19 @@ implementation
          end;
       if (member^.name = 'drivingForce') then
         begin
-          _drivingForce := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _drivingForce := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'brakingForce') then
         begin
-          _brakingForce := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _brakingForce := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'cutOffVoltage') then
         begin
-          _cutOffVoltage := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _cutOffVoltage := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
@@ -786,7 +786,7 @@ implementation
          end;
       if (member^.name = 'frequency') then
         begin
-          _frequency := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _frequency := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;

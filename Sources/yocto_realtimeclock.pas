@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_realtimeclock.pas 48183 2022-01-20 10:26:11Z mvuilleu $
+ *  $Id: yocto_realtimeclock.pas 50595 2022-07-28 07:54:15Z mvuilleu $
  *
  *  Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
@@ -58,6 +58,9 @@ const Y_UTCOFFSET_INVALID             = YAPI_INVALID_INT;
 const Y_TIMESET_FALSE = 0;
 const Y_TIMESET_TRUE = 1;
 const Y_TIMESET_INVALID = -1;
+const Y_DISABLEHOSTSYNC_FALSE = 0;
+const Y_DISABLEHOSTSYNC_TRUE = 1;
+const Y_DISABLEHOSTSYNC_INVALID = -1;
 
 
 //--- (end of YRealTimeClock definitions)
@@ -92,6 +95,7 @@ type
     _dateTime                 : string;
     _utcOffset                : LongInt;
     _timeSet                  : Integer;
+    _disableHostSync          : Integer;
     _valueCallbackRealTimeClock : TYRealTimeClockValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
@@ -218,6 +222,51 @@ type
     /// </para>
     ///-
     function get_timeSet():Integer;
+
+    ////
+    /// <summary>
+    ///   Returns true if the automatic clock synchronization with host has been disabled,
+    ///   and false otherwise.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   either <c>YRealTimeClock.DISABLEHOSTSYNC_FALSE</c> or <c>YRealTimeClock.DISABLEHOSTSYNC_TRUE</c>,
+    ///   according to true if the automatic clock synchronization with host has been disabled,
+    ///   and false otherwise
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YRealTimeClock.DISABLEHOSTSYNC_INVALID</c>.
+    /// </para>
+    ///-
+    function get_disableHostSync():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the automatic clock synchronization with host working state.
+    /// <para>
+    ///   To disable automatic synchronization, set the value to true.
+    ///   To enable automatic synchronization (default), set the value to false.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   either <c>YRealTimeClock.DISABLEHOSTSYNC_FALSE</c> or <c>YRealTimeClock.DISABLEHOSTSYNC_TRUE</c>,
+    ///   according to the automatic clock synchronization with host working state
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_disableHostSync(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -405,6 +454,7 @@ implementation
       _dateTime := Y_DATETIME_INVALID;
       _utcOffset := Y_UTCOFFSET_INVALID;
       _timeSet := Y_TIMESET_INVALID;
+      _disableHostSync := Y_DISABLEHOSTSYNC_INVALID;
       _valueCallbackRealTimeClock := nil;
       //--- (end of YRealTimeClock accessors initialization)
     end;
@@ -440,6 +490,12 @@ implementation
       if (member^.name = 'timeSet') then
         begin
           _timeSet := member^.ivalue;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'disableHostSync') then
+        begin
+          _disableHostSync := member^.ivalue;
          result := 1;
          exit;
          end;
@@ -534,6 +590,32 @@ implementation
       exit;
     end;
 
+
+  function TYRealTimeClock.get_disableHostSync():Integer;
+    var
+      res : Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_DISABLEHOSTSYNC_INVALID;
+              exit;
+            end;
+        end;
+      res := self._disableHostSync;
+      result := res;
+      exit;
+    end;
+
+
+  function TYRealTimeClock.set_disableHostSync(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      if(newval>0) then rest_val := '1' else rest_val := '0';
+      result := _setAttr('disableHostSync',rest_val);
+    end;
 
   class function TYRealTimeClock.FindRealTimeClock(func: string):TYRealTimeClock;
     var

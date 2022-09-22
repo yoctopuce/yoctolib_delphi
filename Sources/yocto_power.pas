@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_power.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_power.pas 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements yFindPower(), the high-level API for Power functions
  *
@@ -443,25 +443,25 @@ implementation
     begin
       if (member^.name = 'cosPhi') then
         begin
-          _cosPhi := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _cosPhi := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'meter') then
         begin
-          _meter := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _meter := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'deliveredEnergyMeter') then
         begin
-          _deliveredEnergyMeter := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _deliveredEnergyMeter := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
       if (member^.name = 'receivedEnergyMeter') then
         begin
-          _receivedEnergyMeter := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _receivedEnergyMeter := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;

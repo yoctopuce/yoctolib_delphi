@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_rangefinder.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_rangefinder.pas 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements yFindRangeFinder(), the high-level API for RangeFinder functions
  *
@@ -627,7 +627,7 @@ implementation
          end;
       if (member^.name = 'currentTemperature') then
         begin
-          _currentTemperature := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _currentTemperature := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;

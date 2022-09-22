@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_altitude.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_altitude.pas 50689 2022-08-17 14:37:15Z mvuilleu $
  *
  *  Implements yFindAltitude(), the high-level API for Altitude functions
  *
@@ -414,7 +414,7 @@ implementation
     begin
       if (member^.name = 'qnh') then
         begin
-          _qnh := round(member^.ivalue * 1000.0 / 65536.0) / 1000.0;
+          _qnh := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
