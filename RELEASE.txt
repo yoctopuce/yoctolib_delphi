@@ -1,4 +1,3 @@
-Delphi v1.10.51050
+Delphi v1.10.51266
 
-- Remove "SIM ICCID select" profile from list returned by get_communicationProfiles
-- Fix potential socket leak on Linux
+- Add addFileToHTTPCallback methode to YModule

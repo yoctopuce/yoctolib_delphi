@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 50689 2022-08-17 14:37:15Z mvuilleu $
+ * $Id: yocto_api.pas 51266 2022-10-10 09:18:25Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -128,7 +128,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '51050';
+  YOCTO_API_BUILD_NO        = '51266';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -1846,6 +1846,25 @@ type
     /// </para>
     ///-
     function set_allSettings(settings: TByteArray):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Adds a file to the uploaded data at the next HTTP callback.
+    /// <para>
+    ///   This function only affects the next HTTP callback and only works in
+    ///   HTTP callback mode.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="filename">
+    ///   the name of the file to upload at the next HTTP callback
+    /// </param>
+    /// <returns>
+    ///   nothing.
+    /// </returns>
+    ///-
+    function addFileToHTTPCallback(filename: string):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -10491,6 +10510,21 @@ var
         end;
       self.clearCache;
       result := res;
+      exit;
+    end;
+
+
+  function TYModule.addFileToHTTPCallback(filename: string):LongInt;
+    var
+      content : TByteArray;
+    begin
+      content := self._download('@YCB+' + filename);
+      if length(content) = 0 then
+        begin
+          result := YAPI_NOT_SUPPORTED;
+          exit;
+        end;
+      result := YAPI_SUCCESS;
       exit;
     end;
 
