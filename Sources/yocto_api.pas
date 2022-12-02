@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 51266 2022-10-10 09:18:25Z seb $
+ * $Id: yocto_api.pas 51903 2022-11-29 17:25:59Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -128,7 +128,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '51266';
+  YOCTO_API_BUILD_NO        = '52094';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -3078,6 +3078,7 @@ end;
     _calraw                   : TDoubleArray;
     _calref                   : TDoubleArray;
     _values                   : TDoubleArrayArray;
+    _isLoaded                 : boolean;
 
     //--- (end of generated code: YDataStream declaration)
     _calhdl                  : yCalibrationHandler;
@@ -3091,7 +3092,13 @@ end;
 
     function _parseStream(sdata: TByteArray):LongInt; overload; virtual;
 
+    function _wasLoaded():boolean; overload; virtual;
+
     function _get_url():string; overload; virtual;
+
+    function _get_baseurl():string; overload; virtual;
+
+    function _get_urlsuffix():string; overload; virtual;
 
     function loadStream():LongInt; overload; virtual;
 
@@ -3560,6 +3567,7 @@ end;
     _hardwareId               : string;
     _functionId               : string;
     _unit                     : string;
+    _bulkLoad                 : LongInt;
     _startTimeMs              : double;
     _endTimeMs                : double;
     _progress                 : LongInt;
@@ -12379,6 +12387,11 @@ var
       values_pos : LongInt;
       dat_pos : LongInt;
     begin
+      if self._isLoaded and not(self._isClosed) then
+        begin
+          result := YAPI_SUCCESS;
+          exit;
+        end;
       if length(sdata) = 0 then
         begin
           self._nRows := 0;
@@ -12444,7 +12457,15 @@ var
         end;
       SetLength(self._values, values_pos);
       self._nRows := length(self._values);
+      self._isLoaded := true;
       result := YAPI_SUCCESS;
+      exit;
+    end;
+
+
+  function TYDataStream._wasLoaded():boolean;
+    begin
+      result := self._isLoaded;
       exit;
     end;
 
@@ -12455,6 +12476,27 @@ var
     begin
       url := 'logger.json?id='+
       self._functionId+'&run='+inttostr(self._runNo)+'&utc='+inttostr(self._utcStamp);
+      result := url;
+      exit;
+    end;
+
+
+  function TYDataStream._get_baseurl():string;
+    var
+      url : string;
+    begin
+      url := 'logger.json?id='+
+      self._functionId+'&run='+inttostr(self._runNo)+'&utc=';
+      result := url;
+      exit;
+    end;
+
+
+  function TYDataStream._get_urlsuffix():string;
+    var
+      url : string;
+    begin
+      url := ''+inttostr(self._utcStamp);
       result := url;
       exit;
     end;
@@ -12790,6 +12832,11 @@ var
       self._functionId := string(node.svalue);
       node := p.GetChildNode(nil, 'unit');
       self._unit := string(node.svalue);
+      node := p.GetChildNode(nil, 'bulk');
+      if(node <> nil) then
+        begin
+          self._bulkLoad := _atoi(string(node.svalue));
+        end;
       node := p.GetChildNode(nil, 'calib');
       if(node <> nil) then
         begin
@@ -12925,9 +12972,12 @@ var
             begin
               // stream that are partially in the dataset
               // we need to parse data to filter value outside the dataset
-              url :=  self._streams[i_i]._get_url();
-              data := self._parent._download(url);
-              self._streams[i_i]._parseStream(data);
+              if not( self._streams[i_i]._wasLoaded()) then
+                begin
+                  url :=  self._streams[i_i]._get_url();
+                  data := self._parent._download(url);
+                  self._streams[i_i]._parseStream(data);
+                end;
               dataRows :=  self._streams[i_i].get_dataRows();
               if length(dataRows) = 0 then
                 begin
@@ -12995,8 +13045,11 @@ var
                         begin
                           previewMaxVal := maxVal;
                         end;
-                      previewTotalAvg := previewTotalAvg + (avgVal * mitv);
-                      previewTotalTime := previewTotalTime + mitv;
+                      if not(isNaN_D5(avgVal)) then
+                        begin
+                          previewTotalAvg := previewTotalAvg + (avgVal * mitv);
+                          previewTotalTime := previewTotalTime + mitv;
+                        end;
                     end;
                   tim := end_;
                   m_pos := m_pos + 1;
@@ -13068,9 +13121,22 @@ var
       avgCol : LongInt;
       maxCol : LongInt;
       firstMeasure : boolean;
+      baseurl : string;
+      url : string;
+      suffix : string;
+      suffixes : TStringArray;
+      idx : LongInt;
+      bulkFile : TByteArray;
+      streamStr : TStringArray;
+      urlIdx : LongInt;
+      streamBin : TByteArray;
       measures_pos : LongInt;
       i_i : LongInt;
+      suffixes_pos : LongInt;
     begin
+      SetLength(suffixes, 0);
+      SetLength(streamStr, 0);
+
       if progress <> self._progress then
         begin
           result := self._progress;
@@ -13082,7 +13148,10 @@ var
           exit;
         end;
       stream := self._streams[self._progress];
-      stream._parseStream(data);
+      if not(stream._wasLoaded()) then
+        begin
+          stream._parseStream(data);
+        end;
       dataRows := stream.get_dataRows();
       self._progress := self._progress + 1;
       if length(dataRows) = 0 then
@@ -13142,6 +13211,51 @@ var
           tim := end_;
         end;
       SetLength(self._measures, measures_pos);;
+      // Perform bulk preload to speed-up network transfer
+      if (self._bulkLoad > 0) and(self._progress < length(self._streams)) then
+        begin
+          stream := self._streams[self._progress];
+          if stream._wasLoaded() then
+            begin
+              result := self.get_progress;
+              exit;
+            end;
+          baseurl := stream._get_baseurl();
+          url := stream._get_url();
+          suffix := stream._get_urlsuffix();
+          suffixes_pos := length(suffixes);
+          SetLength(suffixes, suffixes_pos+self._bulkLoad);
+          suffixes[suffixes_pos] := suffix;
+          inc(suffixes_pos);
+          idx := self._progress+1;
+          while (idx < length(self._streams)) and(length(suffixes) < self._bulkLoad) do
+            begin
+              stream := self._streams[idx];
+              if not(stream._wasLoaded()) and((stream._get_baseurl() = baseurl)) then
+                begin
+                  suffix := stream._get_urlsuffix();
+                  suffixes[suffixes_pos] := suffix;
+                  inc(suffixes_pos);
+                  url := url + ',' + suffix;
+                end;
+              idx := idx + 1;
+            end;
+          bulkFile := self._parent._download(url);
+          streamStr := self._parent._json_get_array(bulkFile);
+          urlIdx := 0;
+          idx := self._progress;
+          while (idx < length(self._streams)) and(urlIdx < length(suffixes)) and(urlIdx < length(streamStr)) do
+            begin
+              stream := self._streams[idx];
+              if ((stream._get_baseurl() = baseurl)) and((stream._get_urlsuffix() = suffixes[urlIdx])) then
+                begin
+                  streamBin := _StrToByte(streamStr[urlIdx]);
+                  stream._parseStream(streamBin);
+                  urlIdx := urlIdx + 1;
+                end;
+              idx := idx + 1;
+            end;
+        end;
       result := self.get_progress;
       exit;
     end;
@@ -13257,6 +13371,12 @@ var
           else
             begin
               stream := self._streams[self._progress];
+              if stream._wasLoaded() then
+                begin
+                  // Do not reload stream if it was already loaded
+                  result := self.processMore(self._progress, _StrToByte(''));
+                  exit;
+                end;
               url := stream._get_url();
             end;
         end;
