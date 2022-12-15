@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_power.pas 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_power.pas 52319 2022-12-13 10:58:43Z seb $
  *
  *  Implements yFindPower(), the high-level API for Power functions
  *
@@ -124,18 +124,19 @@ type
 
     ////
     /// <summary>
-    ///   Returns the energy counter, maintained by the wattmeter by integrating the power consumption over time,
-    ///   but only when positive.
+    ///   Returns the energy counter, maintained by the wattmeter by integrating the
+    ///   power consumption over time.
     /// <para>
-    ///   Note that this counter is reset at each start of the device.
+    ///   This is the sum of forward and backwad energy transfers,
+    ///   if you are insterested in only one direction, use  get_receivedEnergyMeter() or
+    ///   get_deliveredEnergyMeter(). Note that this counter is reset at each start of the device.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a floating point number corresponding to the energy counter, maintained by the wattmeter by
-    ///   integrating the power consumption over time,
-    ///   but only when positive
+    ///   a floating point number corresponding to the energy counter, maintained by the wattmeter by integrating the
+    ///   power consumption over time
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>YPower.METER_INVALID</c>.

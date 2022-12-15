@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 51903 2022-11-29 17:25:59Z mvuilleu $
+ * $Id: yocto_api.pas 52354 2022-12-14 08:25:28Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -128,7 +128,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '52094';
+  YOCTO_API_BUILD_NO        = '52382';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -8288,6 +8288,11 @@ var
     errmsg, serial, funcId, funcName, funcValue : string;
   begin
     errmsg:='';
+    if not(_serial = '') then
+        begin
+          result :=  yFindModule(_serial + '.module');
+          exit;
+        end;
     fundescr := yapiGetFunction(_className, _func, errmsg);
     if (not(YISERR(fundescr)))  then
     if(not(YISERR(yapiGetFunctionInfo(fundescr, devdescr, serial, funcId, funcName, funcValue, errmsg)))) then
