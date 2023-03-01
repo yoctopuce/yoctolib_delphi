@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 49903 2022-05-25 14:18:36Z mvuilleu $
+ * $Id: yocto_serialport.pas 52892 2023-01-25 10:13:30Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -773,6 +773,8 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     /// </returns>
     ///-
     function read_avail():LongInt; overload; virtual;
+
+    function end_tell():LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -2181,17 +2183,31 @@ implementation
 
   function TYSerialPort.read_avail():LongInt;
     var
-      buff : TByteArray;
-      bufflen : LongInt;
+      availPosStr : string;
+      atPos : LongInt;
       res : LongInt;
+      databin : TByteArray;
     begin
-      buff := self._download('rxcnt.bin?pos='+inttostr(self._rxptr));
-      bufflen := length(buff) - 1;
-      while (bufflen > 0) and(buff[bufflen] <> 64) do
-        begin
-          bufflen := bufflen - 1;
-        end;
-      res := _atoi(Copy(_ByteToString(buff),  0 + 1, bufflen));
+      databin := self._download('rxcnt.bin?pos='+inttostr(self._rxptr));
+      availPosStr := _ByteToString(databin);
+      atPos := (pos('@', availPosStr) - 1);
+      res := _atoi(Copy(availPosStr,  0 + 1, atPos));
+      result := res;
+      exit;
+    end;
+
+
+  function TYSerialPort.end_tell():LongInt;
+    var
+      availPosStr : string;
+      atPos : LongInt;
+      res : LongInt;
+      databin : TByteArray;
+    begin
+      databin := self._download('rxcnt.bin?pos='+inttostr(self._rxptr));
+      availPosStr := _ByteToString(databin);
+      atPos := (pos('@', availPosStr) - 1);
+      res := _atoi(Copy(availPosStr,  atPos+1 + 1, Length(availPosStr)-atPos-1));
       result := res;
       exit;
     end;
@@ -2199,6 +2215,7 @@ implementation
 
   function TYSerialPort.queryLine(query: string; maxWait: LongInt):string;
     var
+      prevpos : LongInt;
       url : string;
       msgbin : TByteArray;
       msgarr : TStringArray;
@@ -2206,8 +2223,19 @@ implementation
       res : string;
     begin
       SetLength(msgarr, 0);
+      if Length(query) <= 80 then
+        begin
+          // fast query
+          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=!'+self._escapeAttr(query);
+        end
+      else
+        begin
+          // long query
+          prevpos := self.end_tell;
+          self._upload('txdata', _StrToByte(query + ''#13''#10''));
+          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&pos='+inttostr(prevpos);
+        end;
 
-      url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=!'+self._escapeAttr(query);
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
       msglen := length(msgarr);
@@ -2232,6 +2260,7 @@ implementation
 
   function TYSerialPort.queryHex(hexString: string; maxWait: LongInt):string;
     var
+      prevpos : LongInt;
       url : string;
       msgbin : TByteArray;
       msgarr : TStringArray;
@@ -2239,8 +2268,19 @@ implementation
       res : string;
     begin
       SetLength(msgarr, 0);
+      if Length(hexString) <= 80 then
+        begin
+          // fast query
+          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=$'+hexString;
+        end
+      else
+        begin
+          // long query
+          prevpos := self.end_tell;
+          self._upload('txdata', _hexStrToBin(hexString));
+          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&pos='+inttostr(prevpos);
+        end;
 
-      url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=$'+hexString;
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
       msglen := length(msgarr);
@@ -2815,6 +2855,7 @@ implementation
       nib : LongInt;
       i : LongInt;
       cmd : string;
+      prevpos : LongInt;
       url : string;
       pat : string;
       msgs : TByteArray;
@@ -2836,8 +2877,19 @@ implementation
           cmd := ''+ cmd+''+AnsiUpperCase(inttohex(((pduBytes[i]) and ($0ff)),02));
           i := i + 1;
         end;
+      if Length(cmd) <= 80 then
+        begin
+          // fast query
+          url := 'rxmsg.json?cmd=:'+ cmd+'&pat=:'+pat;
+        end
+      else
+        begin
+          // long query
+          prevpos := self.end_tell;
+          self._upload('txdata:', _hexStrToBin(cmd));
+          url := 'rxmsg.json?pos='+inttostr( prevpos)+'&maxw=2000&pat=:'+pat;
+        end;
 
-      url := 'rxmsg.json?cmd=:'+ cmd+'&pat=:'+pat;
       msgs := self._download(url);
       reps := self._json_get_array(msgs);
       if not(length(reps) > 1) then
@@ -3052,6 +3104,12 @@ implementation
       pdu_pos : LongInt;
       res_pos : LongInt;
     begin
+      if not(nWords<=256) then
+        begin
+          self._throw( YAPI_INVALID_ARGUMENT, 'Cannot read more than 256 words');
+          result:=res;
+          exit;
+        end;
       pdu_pos := length(pdu);
       SetLength(pdu, pdu_pos+5);;
       pdu[pdu_pos] := $003;

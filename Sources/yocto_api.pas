@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 52354 2022-12-14 08:25:28Z seb $
+ * $Id: yocto_api.pas 53258 2023-02-16 11:16:45Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -128,7 +128,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '52382';
+  YOCTO_API_BUILD_NO        = '53327';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -3731,7 +3731,7 @@ end;
 
     ////
     /// <summary>
-    ///   Loads the the next block of measures from the dataLogger, and updates
+    ///   Loads the next block of measures from the dataLogger, and updates
     ///   the progress indicator.
     /// <para>
     /// </para>
@@ -4828,9 +4828,16 @@ type
   /// <para>
   ///   <b><i>x.x.x.x</i></b> or <b><i>hostname</i></b>: The API will use the devices connected to the
   ///   host with the given IP address or hostname. That host can be a regular computer
-  ///   running a VirtualHub, or a networked YoctoHub such as YoctoHub-Ethernet or
+  ///   running a <i>native VirtualHub</i>, a <i>VirtualHub for web</i> hosted on a server,
+  ///   or a networked YoctoHub such as YoctoHub-Ethernet or
   ///   YoctoHub-Wireless. If you want to use the VirtualHub running on you local
-  ///   computer, use the IP address 127.0.0.1.
+  ///   computer, use the IP address 127.0.0.1. If the given IP is unresponsive, <c>yRegisterHub</c>
+  ///   will not return until a time-out defined by <c>ySetNetworkTimeout</c> has elapsed.
+  ///   However, it is possible to preventively test a connection  with <c>yTestHub</c>.
+  ///   If you cannot afford a network time-out, you can use the non blocking <c>yPregisterHub</c>
+  ///   function that will establish the connection as soon as it is available.
+  /// </para>
+  /// <para>
   /// </para>
   /// <para>
   ///   <b>callback</b>: that keyword make the API run in "<i>HTTP Callback</i>" mode.
@@ -4886,7 +4893,8 @@ type
   ///   This function has the same
   ///   purpose and same arguments as <c>yRegisterHub()</c>, but does not trigger
   ///   an error when the selected hub is not available at the time of the function call.
-  ///   This makes it possible to register a network hub independently of the current
+  ///   If the connexion cannot be established immediately, a background task will automatically
+  ///   perform periodic retries. This makes it possible to register a network hub independently of the current
   ///   connectivity, and to try to contact it only when a device is actively needed.
   /// </para>
   /// <para>
@@ -5693,11 +5701,13 @@ type
 
   TyapiEventType = (YAPI_DEV_ARRIVAL,YAPI_DEV_REMOVAL,YAPI_DEV_CHANGE,
                     YAPI_FUN_UPDATE,YAPI_FUN_VALUE,YAPI_FUN_TIMEDREPORT,
-                    YAPI_HUB_DISCOVERY,YAPI_DEV_CONFIGCHANGE,YAPI_BEACON_CHANGE);
+                    YAPI_HUB_DISCOVERY,YAPI_DEV_CONFIGCHANGE,
+                    YAPI_BEACON_CHANGE, YAPI_FUN_REFRESH);
 
   TyapiEvent = record
     eventtype: TyapiEventType;
     module   : TYmodule;
+    fun   : TYFunction;
     fun_descr: YFUN_DESCR;
     value    : string[YOCTO_PUBVAL_LEN];
     timestamp: double;
@@ -5719,9 +5729,24 @@ var
     var
       infos  : yDeviceSt;
       event  : PyapiEvent;
+      devent  : PyapiEvent;
       errmsg : string;
+      i : integer;
+      descriptor : YDEV_DESCR;
     begin
       errmsg:='';
+
+      For i := 0 To _FunctionCallbacks.Count - 1 do
+        begin
+          descriptor := TYfunction(_FunctionCallbacks.items[i]).get_functionDescriptor();
+          if descriptor = Y_FUNCTIONDESCRIPTOR_INVALID then
+            begin
+              devent := _yapiGetMem(sizeof(TyapiEvent));
+              devent^.eventtype := YAPI_FUN_REFRESH;
+              devent^.fun := TYfunction(_FunctionCallbacks.items[i]);
+              _DataEvents.add(devent)
+            end;
+        end;
       TYDevice.PlugDevice(d);
       event := _yapiGetMem(sizeof(TyapiEvent));
       event^.eventtype    := YAPI_DEV_ARRIVAL;
@@ -6607,6 +6632,10 @@ var
               else If (p^.eventtype = YAPI_BEACON_CHANGE) Then
                 begin
                   p^.module._invokeBeaconCallback(p^.beacon);
+                end
+              else If (p^.eventtype = YAPI_FUN_REFRESH) Then
+                begin
+                  p^.fun.isOnline();
                 end;
               _yapiFreeMem(p);
             end;

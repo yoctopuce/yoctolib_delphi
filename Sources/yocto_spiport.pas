@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_spiport.pas 49903 2022-05-25 14:18:36Z mvuilleu $
+ *  $Id: yocto_spiport.pas 52892 2023-01-25 10:13:30Z seb $
  *
  *  Implements yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -852,6 +852,8 @@ TYSpiSnoopingRecordARRAY = array of TYSpiSnoopingRecord;
     /// </returns>
     ///-
     function read_avail():LongInt; overload; virtual;
+
+    function end_tell():LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -1957,17 +1959,31 @@ implementation
 
   function TYSpiPort.read_avail():LongInt;
     var
-      buff : TByteArray;
-      bufflen : LongInt;
+      availPosStr : string;
+      atPos : LongInt;
       res : LongInt;
+      databin : TByteArray;
     begin
-      buff := self._download('rxcnt.bin?pos='+inttostr(self._rxptr));
-      bufflen := length(buff) - 1;
-      while (bufflen > 0) and(buff[bufflen] <> 64) do
-        begin
-          bufflen := bufflen - 1;
-        end;
-      res := _atoi(Copy(_ByteToString(buff),  0 + 1, bufflen));
+      databin := self._download('rxcnt.bin?pos='+inttostr(self._rxptr));
+      availPosStr := _ByteToString(databin);
+      atPos := (pos('@', availPosStr) - 1);
+      res := _atoi(Copy(availPosStr,  0 + 1, atPos));
+      result := res;
+      exit;
+    end;
+
+
+  function TYSpiPort.end_tell():LongInt;
+    var
+      availPosStr : string;
+      atPos : LongInt;
+      res : LongInt;
+      databin : TByteArray;
+    begin
+      databin := self._download('rxcnt.bin?pos='+inttostr(self._rxptr));
+      availPosStr := _ByteToString(databin);
+      atPos := (pos('@', availPosStr) - 1);
+      res := _atoi(Copy(availPosStr,  atPos+1 + 1, Length(availPosStr)-atPos-1));
       result := res;
       exit;
     end;
@@ -1975,6 +1991,7 @@ implementation
 
   function TYSpiPort.queryLine(query: string; maxWait: LongInt):string;
     var
+      prevpos : LongInt;
       url : string;
       msgbin : TByteArray;
       msgarr : TStringArray;
@@ -1982,8 +1999,19 @@ implementation
       res : string;
     begin
       SetLength(msgarr, 0);
+      if Length(query) <= 80 then
+        begin
+          // fast query
+          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=!'+self._escapeAttr(query);
+        end
+      else
+        begin
+          // long query
+          prevpos := self.end_tell;
+          self._upload('txdata', _StrToByte(query + ''#13''#10''));
+          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&pos='+inttostr(prevpos);
+        end;
 
-      url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=!'+self._escapeAttr(query);
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
       msglen := length(msgarr);
@@ -2008,6 +2036,7 @@ implementation
 
   function TYSpiPort.queryHex(hexString: string; maxWait: LongInt):string;
     var
+      prevpos : LongInt;
       url : string;
       msgbin : TByteArray;
       msgarr : TStringArray;
@@ -2015,8 +2044,19 @@ implementation
       res : string;
     begin
       SetLength(msgarr, 0);
+      if Length(hexString) <= 80 then
+        begin
+          // fast query
+          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=$'+hexString;
+        end
+      else
+        begin
+          // long query
+          prevpos := self.end_tell;
+          self._upload('txdata', _hexStrToBin(hexString));
+          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&pos='+inttostr(prevpos);
+        end;
 
-      url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=$'+hexString;
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
       msglen := length(msgarr);

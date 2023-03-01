@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_i2cport.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_i2cport.pas 52943 2023-01-26 15:46:47Z mvuilleu $
  *
  *  Implements yFindI2cPort(), the high-level API for I2cPort functions
  *
@@ -739,6 +739,8 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     /// </returns>
     ///-
     function read_avail():LongInt; overload; virtual;
+
+    function end_tell():LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -1786,17 +1788,31 @@ implementation
 
   function TYI2cPort.read_avail():LongInt;
     var
-      buff : TByteArray;
-      bufflen : LongInt;
+      availPosStr : string;
+      atPos : LongInt;
       res : LongInt;
+      databin : TByteArray;
     begin
-      buff := self._download('rxcnt.bin?pos='+inttostr(self._rxptr));
-      bufflen := length(buff) - 1;
-      while (bufflen > 0) and(buff[bufflen] <> 64) do
-        begin
-          bufflen := bufflen - 1;
-        end;
-      res := _atoi(Copy(_ByteToString(buff),  0 + 1, bufflen));
+      databin := self._download('rxcnt.bin?pos='+inttostr(self._rxptr));
+      availPosStr := _ByteToString(databin);
+      atPos := (pos('@', availPosStr) - 1);
+      res := _atoi(Copy(availPosStr,  0 + 1, atPos));
+      result := res;
+      exit;
+    end;
+
+
+  function TYI2cPort.end_tell():LongInt;
+    var
+      availPosStr : string;
+      atPos : LongInt;
+      res : LongInt;
+      databin : TByteArray;
+    begin
+      databin := self._download('rxcnt.bin?pos='+inttostr(self._rxptr));
+      availPosStr := _ByteToString(databin);
+      atPos := (pos('@', availPosStr) - 1);
+      res := _atoi(Copy(availPosStr,  atPos+1 + 1, Length(availPosStr)-atPos-1));
       result := res;
       exit;
     end;
@@ -1804,6 +1820,7 @@ implementation
 
   function TYI2cPort.queryLine(query: string; maxWait: LongInt):string;
     var
+      prevpos : LongInt;
       url : string;
       msgbin : TByteArray;
       msgarr : TStringArray;
@@ -1811,8 +1828,19 @@ implementation
       res : string;
     begin
       SetLength(msgarr, 0);
+      if Length(query) <= 80 then
+        begin
+          // fast query
+          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=!'+self._escapeAttr(query);
+        end
+      else
+        begin
+          // long query
+          prevpos := self.end_tell;
+          self._upload('txdata', _StrToByte(query + ''#13''#10''));
+          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&pos='+inttostr(prevpos);
+        end;
 
-      url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=!'+self._escapeAttr(query);
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
       msglen := length(msgarr);
@@ -1837,6 +1865,7 @@ implementation
 
   function TYI2cPort.queryHex(hexString: string; maxWait: LongInt):string;
     var
+      prevpos : LongInt;
       url : string;
       msgbin : TByteArray;
       msgarr : TStringArray;
@@ -1844,8 +1873,19 @@ implementation
       res : string;
     begin
       SetLength(msgarr, 0);
+      if Length(hexString) <= 80 then
+        begin
+          // fast query
+          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=$'+hexString;
+        end
+      else
+        begin
+          // long query
+          prevpos := self.end_tell;
+          self._upload('txdata', _hexStrToBin(hexString));
+          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&pos='+inttostr(prevpos);
+        end;
 
-      url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=$'+hexString;
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
       msglen := length(msgarr);
@@ -1991,6 +2031,13 @@ implementation
       reply : string;
       rcvbytes : TByteArray;
     begin
+      setlength(rcvbytes,0);
+      if not(rcvCount<=512) then
+        begin
+          self._throw( YAPI_INVALID_ARGUMENT, 'Cannot read more than 512 bytes');
+          result:=rcvbytes;
+          exit;
+        end;
       msg := '@'+AnsiLowerCase(inttohex(slaveAddr,02))+':';
       nBytes := length(buff);
       idx := 0;
@@ -2001,6 +2048,19 @@ implementation
           idx := idx + 1;
         end;
       idx := 0;
+      if rcvCount > 54 then
+        begin
+          while rcvCount - idx > 255 do
+            begin
+              msg := ''+msg+'xx*FF';
+              idx := idx + 255;
+            end;
+          if rcvCount - idx > 2 then
+            begin
+              msg := ''+ msg+'xx*'+AnsiUpperCase(inttohex((rcvCount - idx),02));
+              idx := rcvCount;
+            end;
+        end;
       while idx < rcvCount do
         begin
           msg := ''+msg+'xx';
@@ -2008,7 +2068,6 @@ implementation
         end;
 
       reply := self.queryLine(msg, 1000);
-      setlength(rcvbytes,0);
       if not(Length(reply) > 0) then
         begin
           self._throw( YAPI_IO_ERROR, 'No response from I2C device');
@@ -2047,6 +2106,13 @@ implementation
       res : TLongIntArray;
       res_pos : LongInt;
     begin
+      SetLength(res, 0);
+      if not(rcvCount<=512) then
+        begin
+          self._throw( YAPI_INVALID_ARGUMENT, 'Cannot read more than 512 bytes');
+          result:=res;
+          exit;
+        end;
       msg := '@'+AnsiLowerCase(inttohex(slaveAddr,02))+':';
       nBytes := length(values);
       idx := 0;
@@ -2057,6 +2123,19 @@ implementation
           idx := idx + 1;
         end;
       idx := 0;
+      if rcvCount > 54 then
+        begin
+          while rcvCount - idx > 255 do
+            begin
+              msg := ''+msg+'xx*FF';
+              idx := idx + 255;
+            end;
+          if rcvCount - idx > 2 then
+            begin
+              msg := ''+ msg+'xx*'+AnsiUpperCase(inttohex((rcvCount - idx),02));
+              idx := rcvCount;
+            end;
+        end;
       while idx < rcvCount do
         begin
           msg := ''+msg+'xx';

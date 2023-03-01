@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: helloworld.dpr 52208 2022-12-07 08:17:21Z mvuilleu $
+ *  $Id: helloworld.dpr 52639 2023-01-06 10:10:58Z seb $
  *
  *  An example that show how to use a  Yocto-RS485
  *
@@ -58,8 +58,8 @@ begin
    ReadLn(slave);
   until (slave>0) and (slave<256);
 
-  writeln('Please select a Coil No (>=1), Input Bit No (>=10001),');
-  writeln('Input Register No (>=30001) or Holding Register No (>=40001)');
+  writeln('Please select a Coil No (>=1), Input Bit No (>=10001+),');
+  writeln('Input Register No (>=30001) or Register No (>=40001)');
   writeln('No: ');
   repeat
   ReadLn(reg);
@@ -74,15 +74,15 @@ begin
     val := res[0];
     writeln('Current value: '+inttostr(val));
     write('Press ENTER to read again, Q to quit');
-    if((reg mod 40000) < 10000) then write (' or enter a new value');
+    if((reg mod 30000) < 10000) then write (' or enter a new value');
     write(': ');
     readLn(cmd);
     if (cmd ='q') or  (cmd ='Q') then halt;
-    if  (cmd<>'') and ((reg mod 40000) < 10000) then
+    if  (cmd<>'') and ((reg mod 30000) < 10000) then
      begin
          val := strtoint(cmd);
-         if(reg >= 40001) then serialPort.modbusWriteRegister(slave, reg-40001, val)
-                          else serialPort.modbusWriteBit(slave, reg-1, val);
+         if(reg >= 30001) then serialPort.modbusWriteRegister(slave, reg-30001, val)
+                          else    serialPort.modbusWriteBit(slave, reg-1, val);
      end;
    end;
   yFreeAPI();
