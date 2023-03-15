@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_power.pas 52319 2022-12-13 10:58:43Z seb $
+ *  $Id: yocto_power.pas 53420 2023-03-06 10:38:51Z mvuilleu $
  *
  *  Implements yFindPower(), the high-level API for Power functions
  *
@@ -52,6 +52,7 @@ uses
 
 //--- (YPower definitions)
 
+const Y_POWERFACTOR_INVALID           = YAPI_INVALID_DOUBLE;
 const Y_COSPHI_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_METER_INVALID                 = YAPI_INVALID_DOUBLE;
 const Y_DELIVEREDENERGYMETER_INVALID  = YAPI_INVALID_DOUBLE;
@@ -85,6 +86,7 @@ type
   protected
   //--- (YPower declaration)
     // Attributes (function value cache)
+    _powerFactor              : double;
     _cosPhi                   : double;
     _meter                    : double;
     _deliveredEnergyMeter     : double;
@@ -103,16 +105,37 @@ type
 
     ////
     /// <summary>
-    ///   Returns the power factor (the ratio between the real power consumed,
-    ///   measured in W, and the apparent power provided, measured in VA).
+    ///   Returns the power factor (PF), i.e.
     /// <para>
+    ///   ratio between the active power consumed (in W)
+    ///   and the apparent power provided (VA).
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a floating point number corresponding to the power factor (the ratio between the real power consumed,
-    ///   measured in W, and the apparent power provided, measured in VA)
+    ///   a floating point number corresponding to the power factor (PF), i.e
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YPower.POWERFACTOR_INVALID</c>.
+    /// </para>
+    ///-
+    function get_powerFactor():double;
+
+    ////
+    /// <summary>
+    ///   Returns the Displacement Power factor (DPF), i.e.
+    /// <para>
+    ///   cosine of the phase shift between
+    ///   the voltage and current fundamentals.
+    ///   On the Yocto-Watt (V1), the value returned by this method correponds to the
+    ///   power factor as this device is cannot estimate the true DPF.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a floating point number corresponding to the Displacement Power factor (DPF), i.e
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>YPower.COSPHI_INVALID</c>.
@@ -422,6 +445,7 @@ implementation
       inherited Create(func);
       _className := 'Power';
       //--- (YPower accessors initialization)
+      _powerFactor := Y_POWERFACTOR_INVALID;
       _cosPhi := Y_COSPHI_INVALID;
       _meter := Y_METER_INVALID;
       _deliveredEnergyMeter := Y_DELIVEREDENERGYMETER_INVALID;
@@ -442,6 +466,12 @@ implementation
       sub : PJSONRECORD;
       i,l        : integer;
     begin
+      if (member^.name = 'powerFactor') then
+        begin
+          _powerFactor := round(member^.ivalue / 65.536) / 1000.0;
+         result := 1;
+         exit;
+         end;
       if (member^.name = 'cosPhi') then
         begin
           _cosPhi := round(member^.ivalue / 65.536) / 1000.0;
@@ -475,6 +505,29 @@ implementation
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
+
+  function TYPower.get_powerFactor():double;
+    var
+      res : double;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_POWERFACTOR_INVALID;
+              exit;
+            end;
+        end;
+      res := self._powerFactor;
+      if res = Y_POWERFACTOR_INVALID then
+        begin
+          res := self._cosPhi;
+        end;
+      res := round(res * 1000) / 1000;
+      result := res;
+      exit;
+    end;
+
 
   function TYPower.get_cosPhi():double;
     var

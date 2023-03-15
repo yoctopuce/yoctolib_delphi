@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_network.pas 49385 2022-04-06 00:49:27Z mvuilleu $
+ *  $Id: yocto_network.pas 53420 2023-03-06 10:38:51Z mvuilleu $
  *
  *  Implements yFindNetwork(), the high-level API for Network functions
  *
@@ -94,6 +94,9 @@ const Y_CALLBACKENCODING_YOCTO_API_JZON = 10;
 const Y_CALLBACKENCODING_PRTG = 11;
 const Y_CALLBACKENCODING_INFLUXDB_V2 = 12;
 const Y_CALLBACKENCODING_INVALID = -1;
+const Y_CALLBACKTEMPLATE_OFF = 0;
+const Y_CALLBACKTEMPLATE_ON = 1;
+const Y_CALLBACKTEMPLATE_INVALID = -1;
 const Y_CALLBACKCREDENTIALS_INVALID   = YAPI_INVALID_STRING;
 const Y_CALLBACKINITIALDELAY_INVALID  = YAPI_INVALID_UINT;
 const Y_CALLBACKSCHEDULE_INVALID      = YAPI_INVALID_STRING;
@@ -146,6 +149,7 @@ type
     _callbackUrl              : string;
     _callbackMethod           : Integer;
     _callbackEncoding         : Integer;
+    _callbackTemplate         : Integer;
     _callbackCredentials      : string;
     _callbackInitialDelay     : LongInt;
     _callbackSchedule         : string;
@@ -859,6 +863,54 @@ type
 
     ////
     /// <summary>
+    ///   Returns the activation state of the custom template file to customize callback
+    ///   format.
+    /// <para>
+    ///   If the custom callback template is disabled, it will be ignored even
+    ///   if present on the YoctoHub.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   either <c>YNetwork.CALLBACKTEMPLATE_OFF</c> or <c>YNetwork.CALLBACKTEMPLATE_ON</c>, according to
+    ///   the activation state of the custom template file to customize callback
+    ///   format
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YNetwork.CALLBACKTEMPLATE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_callbackTemplate():Integer;
+
+    ////
+    /// <summary>
+    ///   Enable the use of a template file to customize callbacks format.
+    /// <para>
+    ///   When the custom callback template file is enabled, the template file
+    ///   will be loaded for each callback in order to build the data to post to the
+    ///   server. If template file does not exist on the YoctoHub, the callback will
+    ///   fail with an error message indicating the name of the expected template file.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   either <c>YNetwork.CALLBACKTEMPLATE_OFF</c> or <c>YNetwork.CALLBACKTEMPLATE_ON</c>
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_callbackTemplate(newval:Integer):integer;
+
+    ////
+    /// <summary>
     ///   Returns a hashed version of the notification callback credentials if set,
     ///   or an empty string otherwise.
     /// <para>
@@ -1453,6 +1505,7 @@ implementation
       _callbackUrl := Y_CALLBACKURL_INVALID;
       _callbackMethod := Y_CALLBACKMETHOD_INVALID;
       _callbackEncoding := Y_CALLBACKENCODING_INVALID;
+      _callbackTemplate := Y_CALLBACKTEMPLATE_INVALID;
       _callbackCredentials := Y_CALLBACKCREDENTIALS_INVALID;
       _callbackInitialDelay := Y_CALLBACKINITIALDELAY_INVALID;
       _callbackSchedule := Y_CALLBACKSCHEDULE_INVALID;
@@ -1584,6 +1637,12 @@ implementation
       if (member^.name = 'callbackEncoding') then
         begin
           _callbackEncoding := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'callbackTemplate') then
+        begin
+          _callbackTemplate := member^.ivalue;
          result := 1;
          exit;
          end;
@@ -2083,6 +2142,32 @@ implementation
     begin
       rest_val := inttostr(newval);
       result := _setAttr('callbackEncoding',rest_val);
+    end;
+
+  function TYNetwork.get_callbackTemplate():Integer;
+    var
+      res : Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_CALLBACKTEMPLATE_INVALID;
+              exit;
+            end;
+        end;
+      res := self._callbackTemplate;
+      result := res;
+      exit;
+    end;
+
+
+  function TYNetwork.set_callbackTemplate(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      if(newval>0) then rest_val := '1' else rest_val := '0';
+      result := _setAttr('callbackTemplate',rest_val);
     end;
 
   function TYNetwork.get_callbackCredentials():string;
