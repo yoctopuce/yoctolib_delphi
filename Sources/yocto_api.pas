@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 53258 2023-02-16 11:16:45Z seb $
+ * $Id: yocto_api.pas 53849 2023-04-04 11:59:51Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -128,7 +128,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '53532';
+  YOCTO_API_BUILD_NO        = '54037';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -924,16 +924,16 @@ type
 
     ////
     /// <summary>
-    ///   Test if the function is readOnly.
+    ///   Indicates whether changes to the function are prohibited or allowed.
     /// <para>
-    ///   Return <c>true</c> if the function is write protected
-    ///   or that the function is not available.
+    ///   Returns <c>true</c> if the function is blocked by an admin password
+    ///   or if the function is not available.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>true</c> if the function is readOnly or not online.
+    ///   <c>true</c> if the function is write-protected or not online.
     /// </returns>
     ///-
     function isReadOnly():boolean; overload; virtual;
@@ -5650,6 +5650,7 @@ const
   procedure _yapiSetNetworkTimeout(sValidity:integer); cdecl; external dllfile name 'yapiSetNetworkTimeout';
   function _yapiGetNetworkTimeout():integer; cdecl; external dllfile name 'yapiGetNetworkTimeout';
   function _yapiAddUdevRulesForYocto(force:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiAddUdevRulesForYocto';
+  function _yapiGetNextHubRef(ref:integer):integer; cdecl; external dllfile name 'yapiGetNextHubRef';
 //--- (end of generated code: YFunction dlldef)
 
 

@@ -208,6 +208,10 @@ type
     ///   to the loopback test connector.
     /// </para>
     /// <para>
+    ///   If you want the change to be kept after a device reboot,
+    ///   make sure  to call the matching module <c>saveToFlash()</c>.
+    /// </para>
+    /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
