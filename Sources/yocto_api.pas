@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 53849 2023-04-04 11:59:51Z mvuilleu $
+ * $Id: yocto_api.pas 54066 2023-04-17 14:22:16Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -128,7 +128,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '54037';
+  YOCTO_API_BUILD_NO        = '54070';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -5650,7 +5650,6 @@ const
   procedure _yapiSetNetworkTimeout(sValidity:integer); cdecl; external dllfile name 'yapiSetNetworkTimeout';
   function _yapiGetNetworkTimeout():integer; cdecl; external dllfile name 'yapiGetNetworkTimeout';
   function _yapiAddUdevRulesForYocto(force:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiAddUdevRulesForYocto';
-  function _yapiGetNextHubRef(ref:integer):integer; cdecl; external dllfile name 'yapiGetNextHubRef';
 //--- (end of generated code: YFunction dlldef)
 
 
