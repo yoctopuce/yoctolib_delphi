@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_relay.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_relay.pas 54155 2023-04-20 10:23:39Z seb $
  *
  *  Implements yFindRelay(), the high-level API for Relay functions
  *
@@ -1058,7 +1058,7 @@ implementation
       if self._firm = 0 then
         begin
           mo := self.get_module;
-          fw := mo.get_firmwareRelease();
+          fw := mo.get_firmwareRelease;
           if (fw = Y_FIRMWARERELEASE_INVALID) then
             begin
               result := Y_STATE_INVALID;

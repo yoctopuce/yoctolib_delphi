@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 46894 2021-10-25 15:07:44Z seb $
+ * $Id: yocto_wireless.pas 54155 2023-04-20 10:23:39Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -931,7 +931,7 @@ implementation
       wlanlist : TStringArray;
       res : TYWlanRecordArray;
       res_pos : LongInt;
-      i_i : LongInt;
+      ii_0 : LongInt;
     begin
       SetLength(wlanlist, 0);
 
@@ -939,9 +939,9 @@ implementation
       wlanlist := self._json_get_array(json);
       res_pos := 0;
       SetLength(res, length(wlanlist));;
-      for i_i:=0 to length(wlanlist)-1 do
+      for ii_0:=0 to length(wlanlist)-1 do
         begin
-          res[res_pos] := TYWlanRecord.create(wlanlist[i_i]);
+          res[res_pos] := TYWlanRecord.create(wlanlist[ii_0]);
           inc(res_pos);
         end;
       result := res;

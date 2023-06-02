@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 50494 2022-07-19 16:08:56Z mvuilleu $
+ * $Id: yocto_cellular.pas 54155 2023-04-20 10:23:39Z seb $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -1915,7 +1915,7 @@ implementation
       oper : string;
       res : TYCellRecordArray;
       res_pos : LongInt;
-      i_i : LongInt;
+      ii_0 : LongInt;
     begin
       SetLength(recs, 0);
 
@@ -1944,16 +1944,16 @@ implementation
       // process each line in turn
       res_pos := 0;
       SetLength(res, length(celllist));;
-      for i_i:=0 to length(recs)-1 do
+      for ii_0:=0 to length(recs)-1 do
         begin
-          llen := Length(recs[i_i]) - 2;
+          llen := Length(recs[ii_0]) - 2;
           if llen >= 44 then
             begin
-              if (Copy(recs[i_i], 41 + 1, 3) = 'dbm') then
+              if (Copy(recs[ii_0], 41 + 1, 3) = 'dbm') then
                 begin
-                  lac := StrToInt('$0' + Copy(recs[i_i], 16 + 1, 4));
-                  cellId := StrToInt('$0' + Copy(recs[i_i], 23 + 1, 4));
-                  dbms := Copy(recs[i_i], 37 + 1, 4);
+                  lac := StrToInt('$0' + Copy(recs[ii_0], 16 + 1, 4));
+                  cellId := StrToInt('$0' + Copy(recs[ii_0], 23 + 1, 4));
+                  dbms := Copy(recs[ii_0], 37 + 1, 4);
                   if (Copy(dbms, 0 + 1, 1) = ' ') then
                     begin
                       dbms := Copy(dbms, 1 + 1, 3);
@@ -1961,13 +1961,13 @@ implementation
                   dbm := _atoi(dbms);
                   if llen > 66 then
                     begin
-                      tads := Copy(recs[i_i], 54 + 1, 2);
+                      tads := Copy(recs[ii_0], 54 + 1, 2);
                       if (Copy(tads, 0 + 1, 1) = ' ') then
                         begin
                           tads := Copy(tads, 1 + 1, 3);
                         end;
                       tad := _atoi(tads);
-                      oper := Copy(recs[i_i], 66 + 1, llen-66);
+                      oper := Copy(recs[ii_0], 66 + 1, llen-66);
                     end
                   else
                     begin

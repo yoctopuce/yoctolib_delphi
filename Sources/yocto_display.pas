@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 46894 2021-10-25 15:07:44Z seb $
+ * $Id: yocto_display.pas 54155 2023-04-20 10:23:39Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -2406,28 +2406,28 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
 
   function TYDisplayLayer.get_displayWidth():LongInt;
     begin
-      result := self._display.get_displayWidth();
+      result := self._display.get_displayWidth;
       exit;
     end;
 
 
   function TYDisplayLayer.get_displayHeight():LongInt;
     begin
-      result := self._display.get_displayHeight();
+      result := self._display.get_displayHeight;
       exit;
     end;
 
 
   function TYDisplayLayer.get_layerWidth():LongInt;
     begin
-      result := self._display.get_layerWidth();
+      result := self._display.get_layerWidth;
       exit;
     end;
 
 
   function TYDisplayLayer.get_layerHeight():LongInt;
     begin
-      result := self._display.get_layerHeight();
+      result := self._display.get_layerHeight;
       exit;
     end;
 

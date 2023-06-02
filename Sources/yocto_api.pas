@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 54066 2023-04-17 14:22:16Z seb $
+ * $Id: yocto_api.pas 54649 2023-05-22 10:09:20Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -128,7 +128,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '54070';
+  YOCTO_API_BUILD_NO        = '54821';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -206,6 +206,11 @@ type
     progress      : TyFlashCallback;
     context       : pointer;
   end;
+
+//--- (generated code: YHub definitions)
+
+
+//--- (end of generated code: YHub definitions)
 
 //--- (generated code: YFunction definitions)
 
@@ -332,6 +337,7 @@ const Y_CLEARHISTORY_INVALID = -1;
 
 type
   TYDevice = class;
+  TYHub = class;
   TYFunction = class;
   TYModule = class;
   TYSensor = class;
@@ -384,6 +390,252 @@ type
     function  getFunctions(var functions:tlist; var errmsg:string):YRETCODE;
     destructor Destroy();override;
   end;
+
+
+
+
+  //--- (generated code: YHub class start)
+  ////
+  /// <summary>
+  ///   TYHub Class: Hub Interface
+  /// <para>
+  /// </para>
+  /// <para>
+  /// </para>
+  /// </summary>
+  ///-
+  TYHub=class(TObject)
+  //--- (end of generated code: YHub class start)
+  protected
+    //--- (generated code: YHub declaration)
+    // Attributes (function value cache)
+    _ctx                      : TYAPIContext;
+    _hubref                   : LongInt;
+    _userData                 : Tobject;
+
+    //--- (end of generated code: YHub declaration)
+
+  public
+    constructor Create(yctx:TYAPIContext; hubref:LongInt);
+
+    //--- (generated code: YHub accessors declaration)
+    function _getStrAttr(attrName: string):string; overload; virtual;
+
+    function _getIntAttr(attrName: string):LongInt; overload; virtual;
+
+    procedure _setIntAttr(attrName: string; value: LongInt); overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the URL that has been used first to register this hub.
+    /// <para>
+    /// </para>
+    /// </summary>
+    ///-
+    function get_registeredUrl():string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns all known URLs that have been used to register this hub.
+    /// <para>
+    ///   URLs are pointing to the same hub when the devices connected
+    ///   are sharing the same serial number.
+    /// </para>
+    /// </summary>
+    ///-
+    function get_knownUrls():TStringArray; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the URL currently in use to communicate with this hub.
+    /// <para>
+    /// </para>
+    /// </summary>
+    ///-
+    function get_connectionUrl():string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the hub serial number, if the hub was already connected once.
+    /// <para>
+    /// </para>
+    /// </summary>
+    ///-
+    function get_serialNumber():string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Tells if this hub is still registered within the API.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>true</c> if the hub has not been unregistered.
+    /// </returns>
+    ///-
+    function isInUse():boolean; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Tells if there is an active communication channel with this hub.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>true</c> if the hub is currently connected.
+    /// </returns>
+    ///-
+    function isOnline():boolean; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Tells if write access on this hub is blocked.
+    /// <para>
+    ///   Return <c>true</c> if it
+    ///   is not possible to change attributes on this hub
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>true</c> if it is not possible to change attributes on this hub.
+    /// </returns>
+    ///-
+    function isReadOnly():boolean; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Modifies tthe network connection delay for this hub.
+    /// <para>
+    ///   The default value is inherited from <c>ySetNetworkTimeout</c>
+    ///   at the time when the hub is registered, but it can be updated
+    ///   afterwards for each specific hub if necessary.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="networkMsTimeout">
+    ///   the network connection delay in milliseconds.
+    /// @noreturn
+    /// </param>
+    ///-
+    procedure set_networkTimeout(networkMsTimeout: LongInt); overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the network connection delay for this hub.
+    /// <para>
+    ///   The default value is inherited from <c>ySetNetworkTimeout</c>
+    ///   at the time when the hub is registered, but it can be updated
+    ///   afterwards for each specific hub if necessary.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the network connection delay in milliseconds.
+    /// </returns>
+    ///-
+    function get_networkTimeout():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the numerical error code of the latest error with the hub.
+    /// <para>
+    ///   This method is mostly useful when using the Yoctopuce library with
+    ///   exceptions disabled.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a number corresponding to the code of the latest error that occurred while
+    ///   using the hub object
+    /// </returns>
+    ///-
+    function get_errorType():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the error message of the latest error with the hub.
+    /// <para>
+    ///   This method is mostly useful when using the Yoctopuce library with
+    ///   exceptions disabled.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the latest error message that occured while
+    ///   using the hub object
+    /// </returns>
+    ///-
+    function get_errorMessage():string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the value of the userData attribute, as previously stored
+    ///   using method <c>set_userData</c>.
+    /// <para>
+    ///   This attribute is never touched directly by the API, and is at
+    ///   disposal of the caller to store a context.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the object stored previously by the caller.
+    /// </returns>
+    ///-
+    function get_userData():Tobject; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Stores a user context provided as argument in the userData
+    ///   attribute of the function.
+    /// <para>
+    ///   This attribute is never touched by the API, and is at
+    ///   disposal of the caller to store a context.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="data">
+    ///   any kind of object to be stored
+    /// @noreturn
+    /// </param>
+    ///-
+    procedure set_userData(data: Tobject); overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Starts the enumeration of hubs currently in use by the API.
+    /// <para>
+    ///   Use the method <c>YHub.nextHubInUse()</c> to iterate on the
+    ///   next hubs.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a pointer to a <c>YHub</c> object, corresponding to
+    ///   the first hub currently in use by the API, or a
+    ///   <c>null</c> pointer if none has been registered.
+    /// </returns>
+    ///-
+    class function FirstHubInUse():TYHub;
+
+    ////
+    /// <summary>
+    ///   Continues the module enumeration started using <c>YHub.FirstHubInUse()</c>.
+    /// <para>
+    ///   Caution: You can't make any assumption about the order of returned hubs.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a pointer to a <c>YHub</c> object, corresponding to
+    ///   the next hub currenlty in use, or a <c>NIL</c> pointer
+    ///   if there are no more hubs to enumerate.
+    /// </returns>
+    ///-
+    function nextHubInUse():TYHub; overload; virtual;
+
+
+  //--- (end of generated code: YHub accessors declaration)
+  end;
+
+
+
 
 
   //--- (generated code: YFunction class start)
@@ -2756,6 +3008,7 @@ end;
   TYAPIContext=class(TObject)
   //--- (end of generated code: YAPIContext class start)
   protected
+    _yhub_cache :  TStringList;
   //--- (generated code: YAPIContext declaration)
     // Attributes (function value cache)
     _defaultCacheValidity     : u64;
@@ -2890,8 +3143,17 @@ end;
     ///-
     function GetCacheValidity():u64; overload; virtual;
 
+    function nextHubInUseInternal(hubref: LongInt):TYHub; overload; virtual;
+
+    function getYHubObj(hubref: LongInt):TYHub; overload; virtual;
+
 
   //--- (end of generated code: YAPIContext accessors declaration)
+
+    function _findYHubFromCache(hubref:LongInt):TYHub;
+    procedure _addYHubToCache(hubref:LongInt; obj:TYHub);
+    procedure _ClearCache();
+
   end;
 
   //--- (generated code: YFirmwareUpdate class start)
@@ -4630,6 +4892,10 @@ end;
     ///-
     function yGetCacheValidity():u64;
 
+    function ynextHubInUseInternal(hubref: LongInt):TYHub;
+
+    function ygetYHubObj(hubref: LongInt):TYHub;
+
 //--- (end of generated code: YAPIContext yapiwrapper declaration)
 
   ////
@@ -4685,7 +4951,7 @@ end;
   ///   <c>YAPI.SUCCESS</c> when the call succeeds.
   /// </returns>
   /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
+  ///   On failure returns a negative error code.
   /// </para>
   ///-
   function yInitAPI(mode: integer; var errmsg:string ):integer;
@@ -4738,8 +5004,7 @@ end;
   /// <para>
   ///   Be aware than when exceptions are enabled, every function that fails
   ///   triggers an exception. If the exception is not caught by the user code,
-  ///   it  either fires the debugger or aborts (i.e. crash) the program.
-  ///   On failure, throws an exception or returns a negative error code.
+  ///   it either fires the debugger or aborts (i.e. crash) the program.
   /// </para>
   /// </summary>
   ///-
@@ -4881,7 +5146,7 @@ type
   ///   <c>YAPI.SUCCESS</c> when the call succeeds.
   /// </returns>
   /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
+  ///   On failure returns a negative error code.
   /// </para>
   ///-
   function yRegisterHub(url:string;var errmsg:string):integer;
@@ -4911,7 +5176,7 @@ type
   ///   <c>YAPI.SUCCESS</c> when the call succeeds.
   /// </returns>
   /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
+  ///   On failure returns a negative error code.
   /// </para>
   ///-
   function yPreregisterHub(url:string;var errmsg:string):integer;
@@ -4984,7 +5249,7 @@ type
   ///   <c>YAPI.SUCCESS</c> when the call succeeds.
   /// </returns>
   /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
+  ///   On failure returns a negative error code.
   /// </para>
   ///-
   function yUpdateDeviceList(var errmsg:string):integer;
@@ -5011,7 +5276,7 @@ type
   ///   <c>YAPI.SUCCESS</c> when the call succeeds.
   /// </returns>
   /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
+  ///   On failure returns a negative error code.
   /// </para>
   ///-
   function  yHandleEvents(var errmsg:string):integer;
@@ -5042,7 +5307,7 @@ type
   ///   <c>YAPI.SUCCESS</c> when the call succeeds.
   /// </returns>
   /// <para>
-  ///   On failure, throws an exception or returns a negative error code.
+  ///   On failure returns a negative error code.
   /// </para>
   ///-
   function ySleep(ms_duration:integer; var errmsg:string):integer;
@@ -5112,10 +5377,16 @@ type
   /// </param>
   /// <returns>
   ///   <c>YAPI.SUCCESS</c> when the call succeeds.
-  ///   On failure, throws an exception or returns a negative error code.
+  ///   On failure returns a negative error code.
   /// </returns>
   ///-
   function yTriggerHubDiscovery(var errmsg:string):integer;
+
+
+  //--- (generated code: YHub functions declaration)
+//--- (end of generated code: YHub functions declaration)
+
+
 
   //--- (generated code: YFunction functions declaration)
   ////
@@ -5650,6 +5921,10 @@ const
   procedure _yapiSetNetworkTimeout(sValidity:integer); cdecl; external dllfile name 'yapiSetNetworkTimeout';
   function _yapiGetNetworkTimeout():integer; cdecl; external dllfile name 'yapiGetNetworkTimeout';
   function _yapiAddUdevRulesForYocto(force:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiAddUdevRulesForYocto';
+  function _yapiGetNextHubRef(hubref:integer):integer; cdecl; external dllfile name 'yapiGetNextHubRef';
+  function _yapiGetHubStrAttr(hubref:integer; attrname:pansichar; attrval:pansichar; maxsize:integer; var neededsize:integer):integer; cdecl; external dllfile name 'yapiGetHubStrAttr';
+  function _yapiGetHubIntAttr(hubref:integer; attrname:pansichar):integer; cdecl; external dllfile name 'yapiGetHubIntAttr';
+  function _yapiSetHubIntAttr(hubref:integer; attrname:pansichar; value:integer):integer; cdecl; external dllfile name 'yapiSetHubIntAttr';
 //--- (end of generated code: YFunction dlldef)
 
 
@@ -7152,6 +7427,207 @@ var
       result := Round((DelphiTime - 25569) * 86400);
     end;
 
+
+
+
+
+  constructor TYHub.Create(yctx:TYAPIContext; hubref:integer);
+    begin
+      //--- (generated code: YHub accessors initialization)
+      _hubref := 0;
+      //--- (end of generated code: YHub accessors initialization)
+      _ctx := yctx;
+      _hubref := hubref;
+    end;
+
+
+//--- (generated code: YHub implementation)
+
+  function TYHub._getStrAttr(attrName: string):string;
+    var
+      val_buffer : array[0..1024] of ansichar;
+      val : pansichar;
+      res : LongInt;
+      fullsize : LongInt;
+    begin
+      val_buffer[0]:=#0;val:=@val_buffer;
+      fullsize := 0;
+      res := _yapiGetHubStrAttr(self._hubref, pansichar(ansistring(attrName)), val, 1024, fullsize);
+      if res > 0 then
+        begin
+          result := string(val);
+          exit;
+        end;
+      result := '';
+      exit;
+    end;
+
+
+  function TYHub._getIntAttr(attrName: string):LongInt;
+    begin
+      result := _yapiGetHubIntAttr(self._hubref, pansichar(ansistring(attrName)));
+      exit;
+    end;
+
+
+  procedure TYHub._setIntAttr(attrName: string; value: LongInt);
+    begin
+      _yapiSetHubIntAttr(self._hubref, pansichar(ansistring(attrName)), value);
+    end;
+
+
+  function TYHub.get_registeredUrl():string;
+    begin
+      result := self._getStrAttr('registeredUrl');
+      exit;
+    end;
+
+
+  function TYHub.get_knownUrls():TStringArray;
+    var
+      smallbuff_buffer : array[0..1024] of ansichar;
+      smallbuff : pansichar;
+      bigbuff : pansichar;
+      buffsize : LongInt;
+      fullsize : LongInt;
+      yapi_res : LongInt;
+      urls_packed : string;
+      known_url_val : string;
+      url_list : TStringArray;
+    begin
+      smallbuff_buffer[0]:=#0;smallbuff:=@smallbuff_buffer;
+      SetLength(url_list, 0);
+
+      fullsize := 0;
+      known_url_val := 'knownUrls';
+      yapi_res := _yapiGetHubStrAttr(self._hubref, pansichar(ansistring(known_url_val)), smallbuff, 1024, fullsize);
+      if yapi_res < 0 then
+        begin
+          result := url_list;
+          exit;
+        end;
+      if fullsize <= 1024 then
+        begin
+          urls_packed := string(smallbuff);
+        end
+      else
+        begin
+          buffsize := fullsize;
+          getmem(bigbuff, buffsize);
+          yapi_res := _yapiGetHubStrAttr(self._hubref, pansichar(ansistring(known_url_val)), bigbuff, buffsize, fullsize);
+          if yapi_res < 0 then
+            begin
+              freemem(bigbuff);
+              result := url_list;
+              exit;
+            end
+          else
+            begin
+              urls_packed := string(bigbuff);
+            end;
+          freemem(bigbuff);
+        end;
+      if not((urls_packed = '')) then
+        begin
+          url_list := _stringSplit(urls_packed, '?');
+        end;
+      result := url_list;
+      exit;
+    end;
+
+
+  function TYHub.get_connectionUrl():string;
+    begin
+      result := self._getStrAttr('connectionUrl');
+      exit;
+    end;
+
+
+  function TYHub.get_serialNumber():string;
+    begin
+      result := self._getStrAttr('serialNumber');
+      exit;
+    end;
+
+
+  function TYHub.isInUse():boolean;
+    begin
+      result := self._getIntAttr('isInUse') > 0;
+      exit;
+    end;
+
+
+  function TYHub.isOnline():boolean;
+    begin
+      result := self._getIntAttr('isOnline') > 0;
+      exit;
+    end;
+
+
+  function TYHub.isReadOnly():boolean;
+    begin
+      result := self._getIntAttr('isReadOnly') > 0;
+      exit;
+    end;
+
+
+  procedure TYHub.set_networkTimeout(networkMsTimeout: LongInt);
+    begin
+      self._setIntAttr('networkTimeout', networkMsTimeout);
+    end;
+
+
+  function TYHub.get_networkTimeout():LongInt;
+    begin
+      result := self._getIntAttr('networkTimeout');
+      exit;
+    end;
+
+
+  function TYHub.get_errorType():LongInt;
+    begin
+      result := self._getIntAttr('errorType');
+      exit;
+    end;
+
+
+  function TYHub.get_errorMessage():string;
+    begin
+      result := self._getStrAttr('errorMessage');
+      exit;
+    end;
+
+
+  function TYHub.get_userData():Tobject;
+    begin
+      result := self._userData;
+      exit;
+    end;
+
+
+  procedure TYHub.set_userData(data: Tobject);
+    begin
+      self._userData := data;
+    end;
+
+
+  class function TYHub.FirstHubInUse():TYHub;
+    begin
+      result := ynextHubInUseInternal(-1);
+      exit;
+    end;
+
+
+  function TYHub.nextHubInUse():TYHub;
+    begin
+      result := self._ctx.nextHubInUseInternal(self._hubref);
+      exit;
+    end;
+
+
+//--- (end of generated code: YHub implementation)
+
+
   class function TYFunction._FindFromCache(classname: string; func: string): TYFunction;
     var
       index: integer;
@@ -7873,7 +8349,7 @@ var
       m : TYModule;
     begin
       m := self.get_module;
-      result := m.get_serialNumber();
+      result := m.get_serialNumber;
       exit;
     end;
 
@@ -9257,7 +9733,7 @@ var
       prodrel := self.get_productRelease;
       if prodrel > 1 then
         begin
-          fullname := ''+ prodname+' rev. '+chr(64+prodrel);
+          fullname := ''+ prodname+' rev. '+chr(64 + prodrel);
         end
       else
         begin
@@ -9466,7 +9942,8 @@ var
       ext_settings : string;
       filelist : TStringArray;
       templist : TStringArray;
-      i_i : LongInt;
+      ii_0 : LongInt;
+      ii_1 : LongInt;
     begin
       SetLength(filelist, 0);
       SetLength(templist, 0);
@@ -9480,15 +9957,15 @@ var
       ext_settings := ', "extras":[';
       templist := self.get_functionIds('Temperature');
       sep := '';
-      for i_i:=0 to length( templist)-1 do
+      for ii_0:=0 to length( templist)-1 do
         begin
           if _atoi(self.get_firmwareRelease) > 9000 then
             begin
-              url := 'api/'+ templist[i_i]+'/sensorType';
+              url := 'api/'+ templist[ii_0]+'/sensorType';
               t_type := _ByteToString(self._download(url));
               if (t_type = 'RES_NTC') or (t_type = 'RES_LINEAR') then
                 begin
-                  id := Copy( templist[i_i],  11 + 1, Length( templist[i_i]) - 11);
+                  id := Copy( templist[ii_0],  11 + 1, Length( templist[ii_0]) - 11);
                   if (id = '') then
                     begin
                       id := '1';
@@ -9496,7 +9973,7 @@ var
                   temp_data_bin := self._download('extra.json?page='+id);
                   if length(temp_data_bin) > 0 then
                     begin
-                      item := ''+ sep+'{"fid":"'+  templist[i_i]+'", "json":'+_ByteToString(temp_data_bin)+'}'#10'';
+                      item := ''+ sep+'{"fid":"'+  templist[ii_0]+'", "json":'+_ByteToString(temp_data_bin)+'}'#10'';
                       ext_settings := ext_settings + item;
                       sep := ',';
                     end;
@@ -9514,9 +9991,9 @@ var
             end;
           filelist := self._json_get_array(json);
           sep := '';
-          for i_i:=0 to length( filelist)-1 do
+          for ii_1:=0 to length( filelist)-1 do
             begin
-              name := self._json_get_key(_StrToByte( filelist[i_i]), 'name');
+              name := self._json_get_key(_StrToByte( filelist[ii_1]), 'name');
               if (Length(name) > 0) and not((name = 'startupConf.json')) then
                 begin
                   file_data_bin := self._download(self._escapeAttr(name));
@@ -9568,15 +10045,15 @@ var
       extras : TStringArray;
       functionId : string;
       data : string;
-      i_i : LongInt;
+      ii_0 : LongInt;
     begin
       SetLength(extras, 0);
       extras := self._json_get_array(_StrToByte(jsonExtra));
-      for i_i:=0 to length( extras)-1 do
+      for ii_0:=0 to length( extras)-1 do
         begin
-          functionId := self._get_json_path( extras[i_i], 'fid');
+          functionId := self._get_json_path( extras[ii_0], 'fid');
           functionId := self._decode_json_string(functionId);
-          data := self._get_json_path( extras[i_i], 'json');
+          data := self._get_json_path( extras[ii_0], 'json');
           if self.hasFunction(functionId) then
             begin
               self.loadThermistorExtra(functionId, data);
@@ -9600,7 +10077,7 @@ var
         res : string;
         name : string;
         data : string;
-      i_i : LongInt;
+      ii_0 : LongInt;
     begin
       SetLength(files, 0);
       fuperror := 0;
@@ -9630,11 +10107,11 @@ var
             end;
           json_files := self._get_json_path(json, 'files');
           files := self._json_get_array(_StrToByte(json_files));
-          for i_i:=0 to length( files)-1 do
+          for ii_0:=0 to length( files)-1 do
             begin
-              name := self._get_json_path( files[i_i], 'name');
+              name := self._get_json_path( files[ii_0], 'name');
               name := self._decode_json_string(name);
-              data := self._get_json_path( files[i_i], 'data');
+              data := self._get_json_path( files[ii_0], 'data');
               data := self._decode_json_string(data);
               if (name = '') then
                 begin
@@ -9877,7 +10354,7 @@ var
       wordVal : double;
       calibData_pos : LongInt;
       words_pos : LongInt;
-      i_i : LongInt;
+      ii_0 : LongInt;
     begin
       SetLength(words_str, 0);
       // Initial guess for parameter encoding
@@ -9961,9 +10438,9 @@ var
                   words_str := _stringSplit(param, ',');
                   words_pos := length(words);
                   SetLength(words, words_pos+length(words_str));
-                  for i_i:=0 to length(words_str)-1 do
+                  for ii_0:=0 to length(words_str)-1 do
                     begin
-                      words[words_pos] := _atoi(words_str[i_i]);
+                      words[words_pos] := _atoi(words_str[ii_0]);
                       inc(words_pos);
                     end;
                   SetLength(words, words_pos);
@@ -10179,9 +10656,11 @@ var
       jpath_pos : LongInt;
       len_pos : LongInt;
       arr_pos : LongInt;
-      i_i : LongInt;
+      ii_0 : LongInt;
       ignoreErrMsg : string;
+      ii_1 : LongInt;
       restoreLast_pos : LongInt;
+      ii_2 : LongInt;
     begin
       SetLength(restoreLast, 0);
       SetLength(old_dslist, 0);
@@ -10207,9 +10686,9 @@ var
       SetLength(old_jpath_len, len_pos+length(old_dslist));;
       arr_pos := length(old_val_arr);
       SetLength(old_val_arr, arr_pos+length(old_dslist));;
-      for i_i:=0 to length(old_dslist)-1 do
+      for ii_0:=0 to length(old_dslist)-1 do
         begin
-          each_str := self._json_get_string(_StrToByte(old_dslist[i_i]));
+          each_str := self._json_get_string(_StrToByte(old_dslist[ii_0]));
           // split json path and attr
           leng := Length(each_str);
           eqpos := (pos('=', each_str) - 1);
@@ -10248,10 +10727,10 @@ var
       SetLength(new_jpath_len, len_pos+length(new_dslist));;
       arr_pos := length(new_val_arr);
       SetLength(new_val_arr, arr_pos+length(new_dslist));;
-      for i_i:=0 to length(new_dslist)-1 do
+      for ii_1:=0 to length(new_dslist)-1 do
         begin
           // remove quotes
-          each_str := self._json_get_string(_StrToByte(new_dslist[i_i]));
+          each_str := self._json_get_string(_StrToByte(new_dslist[ii_1]));
           // split json path and attr
           leng := Length(each_str);
           eqpos := (pos('=', each_str) - 1);
@@ -10542,9 +11021,9 @@ var
           i := i + 1;
         end;
       SetLength(restoreLast, restoreLast_pos);;
-      for i_i:=0 to length(restoreLast)-1 do
+      for ii_2:=0 to length(restoreLast)-1 do
         begin
-          subres := self._tryExec(restoreLast[i_i]);
+          subres := self._tryExec(restoreLast[ii_2]);
           if (res = YAPI_SUCCESS) and(subres <> YAPI_SUCCESS) then
             begin
               res := subres;
@@ -11420,7 +11899,7 @@ var
       hwid : string;
     begin
       modu := self.get_module;
-      serial := modu.get_serialNumber();
+      serial := modu.get_serialNumber;
       if (serial = YAPI_INVALID_STRING) then
         begin
           result := nil;
@@ -11438,7 +11917,7 @@ var
       res : TByteArray;
     begin
       res := self._download('api/dataLogger/recording?recording=1');
-      if not(length(res)>0) then
+      if not(length(res) > 0) then
         begin
           self._throw( YAPI_IO_ERROR, 'unable to start datalogger');
           result:=YAPI_IO_ERROR;
@@ -11454,7 +11933,7 @@ var
       res : TByteArray;
     begin
       res := self._download('api/dataLogger/recording?recording=0');
-      if not(length(res)>0) then
+      if not(length(res) > 0) then
         begin
           self._throw( YAPI_IO_ERROR, 'unable to stop datalogger');
           result:=YAPI_IO_ERROR;
@@ -11526,7 +12005,8 @@ var
     var
       rawValues_pos : LongInt;
       refValues_pos : LongInt;
-      i_i : LongInt;
+      ii_0 : LongInt;
+      ii_1 : LongInt;
     begin
       SetLength(rawValues, 0);
       SetLength(refValues, 0);
@@ -11550,14 +12030,14 @@ var
       SetLength(rawValues, length(self._calraw));
       refValues_pos := 0;
       SetLength(refValues, length(self._calref));
-      for i_i:=0 to length(self._calraw)-1 do
+      for ii_0:=0 to length(self._calraw)-1 do
         begin
-          rawValues[rawValues_pos] := self._calraw[i_i];
+          rawValues[rawValues_pos] := self._calraw[ii_0];
           inc(rawValues_pos);
         end;
-      for i_i:=0 to length(self._calref)-1 do
+      for ii_1:=0 to length(self._calref)-1 do
         begin
-          refValues[refValues_pos] := self._calref[i_i];
+          refValues[refValues_pos] := self._calref[ii_1];
           inc(refValues_pos);
         end;
       result := YAPI_SUCCESS;
@@ -11863,6 +12343,8 @@ var
       //--- (generated code: YAPIContext accessors initialization)
       _defaultCacheValidity := 5;
       //--- (end of generated code: YAPIContext accessors initialization)
+      _yhub_cache                := TStringList.create();
+      _yhub_cache.sorted         := true;
     end;
 
 
@@ -11944,7 +12426,71 @@ var
     end;
 
 
+  function TYAPIContext.nextHubInUseInternal(hubref: LongInt):TYHub;
+    var
+      nextref : LongInt;
+    begin
+      nextref := _yapiGetNextHubRef(hubref);
+      if nextref < 0 then
+        begin
+          result := nil;
+          exit;
+        end;
+      result := self.getYHubObj(nextref);
+      exit;
+    end;
+
+
+  function TYAPIContext.getYHubObj(hubref: LongInt):TYHub;
+    var
+      obj : TYHub;
+    begin
+      obj := self._findYHubFromCache(hubref);
+      if obj = nil then
+        begin
+          obj :=  TYHub.create(self, hubref);
+          self._addYHubToCache(hubref, obj);
+        end;
+      result := obj;
+      exit;
+    end;
+
+
 //--- (end of generated code: YAPIContext implementation)
+
+  function TYAPIContext._findYHubFromCache(hubref: LongInt):TYHub;
+    var
+      index: integer;
+      key: string;
+    begin
+      key := IntToStr(hubref);
+      if _yhub_cache.Find(key, index) then
+        begin
+          result := TYHub(_yhub_cache.objects[index]);
+          exit;
+        end;
+      result := nil;
+    end;
+
+
+  procedure TYAPIContext._addYHubToCache(hubref: LongInt; obj:TYHub);
+    begin
+      _yhub_cache.addObject(IntToStr(hubref), obj);
+    end;
+
+
+  procedure TYAPIContext._ClearCache();
+    var
+      i: integer;
+    begin
+      for i:=0 to _yhub_cache.count-1 do
+        begin
+          _yhub_cache.objects[i].free();
+          _yhub_cache.objects[i]:=nil;
+        end;
+      _yhub_cache.free();
+    end;
+
 
 //--- (generated code: YAPIContext functions)
 
@@ -11996,6 +12542,18 @@ var
   function yGetCacheValidity():u64;
     begin
         result := _yapiContext.GetCacheValidity();
+    end;
+
+
+  function ynextHubInUseInternal(hubref: LongInt):TYHub;
+    begin
+        result := _yapiContext.nextHubInUseInternal(hubref);
+    end;
+
+
+  function ygetYHubObj(hubref: LongInt):TYHub;
+    begin
+        result := _yapiContext.getYHubObj(hubref);
     end;
 
 //--- (end of generated code: YAPIContext yapiwrapper)
@@ -12075,14 +12633,14 @@ var
             begin
               self._progress_msg := 'restoring settings';
               m := TYModule.FindModule(self._serial + '.module');
-              if not(m.isOnline()) then
+              if not(m.isOnline) then
                 begin
                   result := self._progress;
                   exit;
                 end;
               if self._progress < 95 then
                 begin
-                  prod_prefix := Copy(m.get_productName(),  0 + 1, 8);
+                  prod_prefix := Copy(m.get_productName,  0 + 1, 8);
                   if (prod_prefix = 'YoctoHub') then
                     begin
                       ySleep(1000, ignoreErrMsg);
@@ -12098,7 +12656,7 @@ var
               if self._progress < 100 then
                 begin
                   m.set_allSettingsAndFiles(self._settings);
-                  m.saveToFlash();
+                  m.saveToFlash;
                   setlength(self._settings,0);
                   if self._progress_c = YAPI_VERSION_MISMATCH then
                     begin
@@ -12305,13 +12863,13 @@ var
       ms_offset := encoded[6];
       if ms_offset < 1000 then
         begin
-          // new encoding -> add the ms to the UTC timestamp
+          // new encoding . add the ms to the UTC timestamp
           self._startTime := self._utcStamp + (ms_offset / 1000.0);
         end
       else
         begin
           // legacy encoding subtract the measure interval form the UTC timestamp
-          self._startTime := self._utcStamp -  self._dataSamplesInterval;
+          self._startTime := self._utcStamp - self._dataSamplesInterval;
         end;
       self._firstMeasureDuration := encoded[5];
       if not(self._isAvg) then
@@ -12341,7 +12899,7 @@ var
           self._duration := 0;
         end;
       // precompute decoding parameters
-      iCalib := dataset._get_calibration();
+      iCalib := dataset._get_calibration;
       self._caltyp := iCalib[0];
       if self._caltyp <> 0 then
         begin
@@ -12378,7 +12936,7 @@ var
           SetLength(self._calref, calref_pos);
         end;
       // preload column names for backward-compatibility
-      self._functionId := dataset.get_functionId();
+      self._functionId := dataset.get_functionId;
       if self._isAvg then
         begin
           columnNames_pos := 0;
@@ -12960,7 +13518,7 @@ var
       strdata : string;
       measure_data : TDoubleArray;
       preview_pos : LongInt;
-      i_i : LongInt;
+      ii_0 : LongInt;
     begin
       if self._progress < 0 then
         begin
@@ -12987,17 +13545,17 @@ var
       preview_pos := length(self._preview);
       SetLength(self._preview, preview_pos+length(self._streams));
       // Parse complete streams
-      for i_i:=0 to length( self._streams)-1 do
+      for ii_0:=0 to length( self._streams)-1 do
         begin
-          streamStartTimeMs := round( self._streams[i_i].get_realStartTimeUTC() *1000);
-          streamDuration :=  self._streams[i_i].get_realDuration() ;
+          streamStartTimeMs := round( self._streams[ii_0].get_realStartTimeUTC * 1000);
+          streamDuration :=  self._streams[ii_0].get_realDuration;
           streamEndTimeMs := streamStartTimeMs + round(streamDuration * 1000);
           if (streamStartTimeMs >= self._startTimeMs) and((self._endTimeMs = 0) or(streamEndTimeMs <= self._endTimeMs)) then
             begin
               // stream that are completely inside the dataset
-              previewMinVal :=  self._streams[i_i].get_minValue();
-              previewAvgVal :=  self._streams[i_i].get_averageValue();
-              previewMaxVal :=  self._streams[i_i].get_maxValue();
+              previewMinVal :=  self._streams[ii_0].get_minValue;
+              previewAvgVal :=  self._streams[ii_0].get_averageValue;
+              previewMaxVal :=  self._streams[ii_0].get_maxValue;
               previewStartMs := streamStartTimeMs;
               previewStopMs := streamEndTimeMs;
               previewDuration := streamDuration;
@@ -13006,21 +13564,21 @@ var
             begin
               // stream that are partially in the dataset
               // we need to parse data to filter value outside the dataset
-              if not( self._streams[i_i]._wasLoaded()) then
+              if not( self._streams[ii_0]._wasLoaded) then
                 begin
-                  url :=  self._streams[i_i]._get_url();
+                  url :=  self._streams[ii_0]._get_url;
                   data := self._parent._download(url);
-                  self._streams[i_i]._parseStream(data);
+                  self._streams[ii_0]._parseStream(data);
                 end;
-              dataRows :=  self._streams[i_i].get_dataRows();
+              dataRows :=  self._streams[ii_0].get_dataRows;
               if length(dataRows) = 0 then
                 begin
                   result := self.get_progress;
                   exit;
                 end;
               tim := streamStartTimeMs;
-              fitv := round( self._streams[i_i].get_firstDataSamplesInterval() * 1000);
-              itv := round( self._streams[i_i].get_dataSamplesInterval() * 1000);
+              fitv := round( self._streams[ii_0].get_firstDataSamplesInterval * 1000);
+              itv := round( self._streams[ii_0].get_dataSamplesInterval * 1000);
               nCols := length(dataRows[0]);
               minCol := 0;
               if nCols > 2 then
@@ -13048,7 +13606,7 @@ var
               m_pos := 0;
               while m_pos < length(dataRows) do
                 begin
-                  measure_data  := dataRows[m_pos];
+                  measure_data := dataRows[m_pos];
                   if m_pos = 0 then
                     begin
                       mitv := fitv;
@@ -13165,7 +13723,7 @@ var
       urlIdx : LongInt;
       streamBin : TByteArray;
       measures_pos : LongInt;
-      i_i : LongInt;
+      ii_0 : LongInt;
       suffixes_pos : LongInt;
     begin
       SetLength(suffixes, 0);
@@ -13182,20 +13740,20 @@ var
           exit;
         end;
       stream := self._streams[self._progress];
-      if not(stream._wasLoaded()) then
+      if not(stream._wasLoaded) then
         begin
           stream._parseStream(data);
         end;
-      dataRows := stream.get_dataRows();
+      dataRows := stream.get_dataRows;
       self._progress := self._progress + 1;
       if length(dataRows) = 0 then
         begin
           result := self.get_progress;
           exit;
         end;
-      tim := round(stream.get_realStartTimeUTC() * 1000);
-      fitv := round(stream.get_firstDataSamplesInterval() * 1000);
-      itv := round(stream.get_dataSamplesInterval() * 1000);
+      tim := round(stream.get_realStartTimeUTC * 1000);
+      fitv := round(stream.get_firstDataSamplesInterval * 1000);
+      itv := round(stream.get_dataSamplesInterval * 1000);
       if fitv = 0 then
         begin
           fitv := itv;
@@ -13225,7 +13783,7 @@ var
       measures_pos := length(self._measures);
       SetLength(self._measures, measures_pos+length(dataRows));
       firstMeasure := true;
-      for i_i:=0 to length(dataRows)-1 do
+      for ii_0:=0 to length(dataRows)-1 do
         begin
           if firstMeasure then
             begin
@@ -13236,10 +13794,10 @@ var
             begin
               end_ := tim + itv;
             end;
-          avgv := dataRows[i_i][avgCol];
+          avgv := dataRows[ii_0][avgCol];
           if (end_ > self._startTimeMs) and((self._endTimeMs = 0) or(tim < self._endTimeMs)) and not(isNaN_D5(avgv)) then
             begin
-              self._measures[measures_pos] := TYMeasure.create(tim / 1000, end_ / 1000, dataRows[i_i][minCol], avgv, dataRows[i_i][maxCol]);
+              self._measures[measures_pos] := TYMeasure.create(tim / 1000, end_ / 1000, dataRows[ii_0][minCol], avgv, dataRows[ii_0][maxCol]);
               inc(measures_pos);
             end;
           tim := end_;
@@ -13249,25 +13807,25 @@ var
       if (self._bulkLoad > 0) and(self._progress < length(self._streams)) then
         begin
           stream := self._streams[self._progress];
-          if stream._wasLoaded() then
+          if stream._wasLoaded then
             begin
               result := self.get_progress;
               exit;
             end;
-          baseurl := stream._get_baseurl();
-          url := stream._get_url();
-          suffix := stream._get_urlsuffix();
+          baseurl := stream._get_baseurl;
+          url := stream._get_url;
+          suffix := stream._get_urlsuffix;
           suffixes_pos := length(suffixes);
           SetLength(suffixes, suffixes_pos+self._bulkLoad);
           suffixes[suffixes_pos] := suffix;
           inc(suffixes_pos);
-          idx := self._progress+1;
+          idx := self._progress + 1;
           while (idx < length(self._streams)) and(length(suffixes) < self._bulkLoad) do
             begin
               stream := self._streams[idx];
-              if not(stream._wasLoaded()) and((stream._get_baseurl() = baseurl)) then
+              if not(stream._wasLoaded) and((stream._get_baseurl = baseurl)) then
                 begin
-                  suffix := stream._get_urlsuffix();
+                  suffix := stream._get_urlsuffix;
                   suffixes[suffixes_pos] := suffix;
                   inc(suffixes_pos);
                   url := url + ',' + suffix;
@@ -13281,7 +13839,7 @@ var
           while (idx < length(self._streams)) and(urlIdx < length(suffixes)) and(urlIdx < length(streamStr)) do
             begin
               stream := self._streams[idx];
-              if ((stream._get_baseurl() = baseurl)) and((stream._get_urlsuffix() = suffixes[urlIdx])) then
+              if ((stream._get_baseurl = baseurl)) and((stream._get_urlsuffix = suffixes[urlIdx])) then
                 begin
                   streamBin := _StrToByte(streamStr[urlIdx]);
                   stream._parseStream(streamBin);
@@ -13311,8 +13869,8 @@ var
           result := self._hardwareId;
           exit;
         end;
-      mo := self._parent.get_module();
-      self._hardwareId := ''+ mo.get_serialNumber()+'.'+self.get_functionId;
+      mo := self._parent.get_module;
+      self._hardwareId := ''+ mo.get_serialNumber+'.'+self.get_functionId;
       result := self._hardwareId;
       exit;
     end;
@@ -13392,7 +13950,7 @@ var
             end;
           if self._endTimeMs <> 0 then
             begin
-              url := ''+url+'&to='+inttostr(self.imm_get_endTimeUTC+1);
+              url := ''+url+'&to='+inttostr(self.imm_get_endTimeUTC + 1);
             end;
         end
       else
@@ -13405,13 +13963,13 @@ var
           else
             begin
               stream := self._streams[self._progress];
-              if stream._wasLoaded() then
+              if stream._wasLoaded then
                 begin
                   // Do not reload stream if it was already loaded
                   result := self.processMore(self._progress, _StrToByte(''));
                   exit;
                 end;
-              url := stream._get_url();
+              url := stream._get_url;
             end;
         end;
       Try
@@ -13451,16 +14009,17 @@ var
       minCol : LongInt;
       avgCol : LongInt;
       maxCol : LongInt;
-      i_i : LongInt;
+      ii_0 : LongInt;
       measures_pos : LongInt;
+      ii_1 : LongInt;
     begin
       startUtcMs := measure.get_startTimeUTC * 1000;
       stream := nil;
-      for i_i:=0 to length(self._streams)-1 do
+      for ii_0:=0 to length(self._streams)-1 do
         begin
-          if round(self._streams[i_i].get_realStartTimeUTC() *1000) = startUtcMs then
+          if round(self._streams[ii_0].get_realStartTimeUTC *1000) = startUtcMs then
             begin
-              stream := self._streams[i_i];
+              stream := self._streams[ii_0];
             end;
         end;
       if stream = nil then
@@ -13468,14 +14027,14 @@ var
           result := measures;
           exit;
         end;
-      dataRows := stream.get_dataRows();
+      dataRows := stream.get_dataRows;
       if length(dataRows) = 0 then
         begin
           result := measures;
           exit;
         end;
-      tim := round(stream.get_realStartTimeUTC() * 1000);
-      itv := round(stream.get_dataSamplesInterval() * 1000);
+      tim := round(stream.get_realStartTimeUTC * 1000);
+      itv := round(stream.get_dataSamplesInterval * 1000);
       if tim < itv then
         begin
           tim := itv;
@@ -13500,12 +14059,12 @@ var
         end;
       measures_pos := length(measures);
       SetLength(measures, measures_pos+length(dataRows));
-      for i_i:=0 to length(dataRows)-1 do
+      for ii_1:=0 to length(dataRows)-1 do
         begin
           end_ := tim + itv;
           if (end_ > self._startTimeMs) and((self._endTimeMs = 0) or(tim < self._endTimeMs)) then
             begin
-              measures[measures_pos] := TYMeasure.create(tim / 1000.0, end_ / 1000.0, dataRows[i_i][minCol], dataRows[i_i][avgCol], dataRows[i_i][maxCol]);
+              measures[measures_pos] := TYMeasure.create(tim / 1000.0, end_ / 1000.0, dataRows[ii_1][minCol], dataRows[ii_1][avgCol], dataRows[ii_1][maxCol]);
               inc(measures_pos);
             end;
           tim := end_;
@@ -13699,7 +14258,7 @@ var
               datarec[datarec_pos] := newvalue;
               inc(datarec_pos);
               self._nexttim[ s] := 0.0;
-              self._nextidx[ s] := idx+1;
+              self._nextidx[ s] := idx + 1;
             end
           else
             begin
@@ -14157,17 +14716,17 @@ const
       dataset : TYDataSet;
       res : TYDataSetArray;
       res_pos : LongInt;
-      i_i : LongInt;
+      ii_0 : LongInt;
     begin
       SetLength(dslist, 0);
 
       dslist := self._json_get_array(json);
       res_pos := 0;
       SetLength(res, length(dslist));;
-      for i_i:=0 to length(dslist)-1 do
+      for ii_0:=0 to length(dslist)-1 do
         begin
           dataset :=  TYDataSet.create(self);
-          dataset._parse(dslist[i_i]);
+          dataset._parse(dslist[ii_0]);
           res[res_pos] := dataset;
           inc(res_pos);
         end;
@@ -14479,6 +15038,15 @@ const
 
 
 
+//--- (generated code: YHub functions)
+
+  procedure _HubCleanup();
+    begin
+    end;
+
+//--- (end of generated code: YHub functions)
+
+
 //--- (generated code: YFunction functions)
 
   function yFindFunction(func:string): TYFunction;
@@ -14553,6 +15121,8 @@ initialization
 
 
   YDevice_devCache        := Tlist.create();
+  //--- (generated code: YHub initialization)
+  //--- (end of generated code: YHub initialization)
   //--- (generated code: YModule initialization)
   //--- (end of generated code: YModule initialization)
   //--- (generated code: YFirmwareUpdate initialization)
@@ -14580,6 +15150,8 @@ initialization
   _moduleCallbackList   := TStringList.create();
 
 finalization
+  //--- (generated code: YHub cleanup)
+  //--- (end of generated code: YHub cleanup)
   //--- (generated code: YModule cleanup)
   _ModuleCleanup();
   //--- (end of generated code: YModule cleanup)

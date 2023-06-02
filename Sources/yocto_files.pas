@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 51903 2022-11-29 17:25:59Z mvuilleu $
+ * $Id: yocto_files.pas 54155 2023-04-20 10:23:39Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -659,16 +659,16 @@ implementation
       filelist : TStringArray;
       res : TYFileRecordArray;
       res_pos : LongInt;
-      i_i : LongInt;
+      ii_0 : LongInt;
     begin
       SetLength(filelist, 0);
       json := self.sendCommand('dir&f='+pattern);
       filelist := self._json_get_array(json);
       res_pos := 0;
       SetLength(res, length(filelist));;
-      for i_i:=0 to length(filelist)-1 do
+      for ii_0:=0 to length(filelist)-1 do
         begin
-          res[res_pos] := TYFileRecord.create(filelist[i_i]);
+          res[res_pos] := TYFileRecord.create(filelist[ii_0]);
           inc(res_pos);
         end;
       result := res;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_gyro.pas 50689 2022-08-17 14:37:15Z mvuilleu $
+ * $Id: yocto_gyro.pas 54155 2023-04-20 10:23:39Z seb $
  *
  * Implements yFindGyro(), the high-level API for Gyro functions
  *
@@ -1298,10 +1298,10 @@ constructor TYQt.Create(func:string);
               result := YAPI_DEVICE_NOT_FOUND;
               exit;
             end;
-          self._w := self._qt_w.get_currentValue();
-          self._x := self._qt_x.get_currentValue();
-          self._y := self._qt_y.get_currentValue();
-          self._z := self._qt_z.get_currentValue();
+          self._w := self._qt_w.get_currentValue;
+          self._x := self._qt_x.get_currentValue;
+          self._y := self._qt_y.get_currentValue;
+          self._z := self._qt_z.get_currentValue;
           self._qt_stamp := now_stamp;
         end;
       result := YAPI_SUCCESS;

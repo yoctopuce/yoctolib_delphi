@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_watchdog.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_watchdog.pas 54155 2023-04-20 10:23:39Z seb $
  *
  *  Implements yFindWatchdog(), the high-level API for Watchdog functions
  *
@@ -1462,7 +1462,7 @@ implementation
       if self._firm = 0 then
         begin
           mo := self.get_module;
-          fw := mo.get_firmwareRelease();
+          fw := mo.get_firmwareRelease;
           if (fw = Y_FIRMWARERELEASE_INVALID) then
             begin
               result := Y_STATE_INVALID;

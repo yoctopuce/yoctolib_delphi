@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 50144 2022-06-17 06:59:52Z seb $
+ * $Id: yocto_messagebox.pas 54155 2023-04-20 10:23:39Z seb $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *
@@ -3210,7 +3210,7 @@ implementation
       else
         begin
           addr := self.encodeAddress(self._dest);
-          self._mref := self._mbox.nextMsgRef();
+          self._mref := self._mbox.nextMsgRef;
           setlength(hdr,2);
           hdr[1] := self._mref;
           pdutyp := 1;

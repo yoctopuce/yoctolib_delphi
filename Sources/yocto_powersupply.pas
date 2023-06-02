@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_powersupply.pas 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_powersupply.pas 54768 2023-05-26 06:46:41Z seb $
  *
  *  Implements yFindPowerSupply(), the high-level API for PowerSupply functions
  *
@@ -57,14 +57,9 @@ const Y_CURRENTLIMIT_INVALID          = YAPI_INVALID_DOUBLE;
 const Y_POWEROUTPUT_OFF = 0;
 const Y_POWEROUTPUT_ON = 1;
 const Y_POWEROUTPUT_INVALID = -1;
-const Y_VOLTAGESENSE_INT = 0;
-const Y_VOLTAGESENSE_EXT = 1;
-const Y_VOLTAGESENSE_INVALID = -1;
 const Y_MEASUREDVOLTAGE_INVALID       = YAPI_INVALID_DOUBLE;
 const Y_MEASUREDCURRENT_INVALID       = YAPI_INVALID_DOUBLE;
 const Y_INPUTVOLTAGE_INVALID          = YAPI_INVALID_DOUBLE;
-const Y_VINT_INVALID                  = YAPI_INVALID_DOUBLE;
-const Y_LDOTEMPERATURE_INVALID        = YAPI_INVALID_DOUBLE;
 const Y_VOLTAGETRANSITION_INVALID     = YAPI_INVALID_STRING;
 const Y_VOLTAGEATSTARTUP_INVALID      = YAPI_INVALID_DOUBLE;
 const Y_CURRENTATSTARTUP_INVALID      = YAPI_INVALID_DOUBLE;
@@ -99,12 +94,9 @@ type
     _voltageSetPoint          : double;
     _currentLimit             : double;
     _powerOutput              : Integer;
-    _voltageSense             : Integer;
     _measuredVoltage          : double;
     _measuredCurrent          : double;
     _inputVoltage             : double;
-    _vInt                     : double;
-    _ldoTemperature           : double;
     _voltageTransition        : string;
     _voltageAtStartUp         : double;
     _currentAtStartUp         : double;
@@ -240,47 +232,6 @@ type
 
     ////
     /// <summary>
-    ///   Returns the output voltage control point.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   either <c>YPowerSupply.VOLTAGESENSE_INT</c> or <c>YPowerSupply.VOLTAGESENSE_EXT</c>, according to
-    ///   the output voltage control point
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>YPowerSupply.VOLTAGESENSE_INVALID</c>.
-    /// </para>
-    ///-
-    function get_voltageSense():Integer;
-
-    ////
-    /// <summary>
-    ///   Changes the voltage control point.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="newval">
-    ///   either <c>YPowerSupply.VOLTAGESENSE_INT</c> or <c>YPowerSupply.VOLTAGESENSE_EXT</c>, according to
-    ///   the voltage control point
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_voltageSense(newval:Integer):integer;
-
-    ////
-    /// <summary>
     ///   Returns the measured output voltage, in V.
     /// <para>
     /// </para>
@@ -329,40 +280,6 @@ type
     /// </para>
     ///-
     function get_inputVoltage():double;
-
-    ////
-    /// <summary>
-    ///   Returns the internal voltage, in V.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   a floating point number corresponding to the internal voltage, in V
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>YPowerSupply.VINT_INVALID</c>.
-    /// </para>
-    ///-
-    function get_vInt():double;
-
-    ////
-    /// <summary>
-    ///   Returns the LDO temperature, in Celsius.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   a floating point number corresponding to the LDO temperature, in Celsius
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>YPowerSupply.LDOTEMPERATURE_INVALID</c>.
-    /// </para>
-    ///-
-    function get_ldoTemperature():double;
 
     function get_voltageTransition():string;
 
@@ -660,12 +577,9 @@ implementation
       _voltageSetPoint := Y_VOLTAGESETPOINT_INVALID;
       _currentLimit := Y_CURRENTLIMIT_INVALID;
       _powerOutput := Y_POWEROUTPUT_INVALID;
-      _voltageSense := Y_VOLTAGESENSE_INVALID;
       _measuredVoltage := Y_MEASUREDVOLTAGE_INVALID;
       _measuredCurrent := Y_MEASUREDCURRENT_INVALID;
       _inputVoltage := Y_INPUTVOLTAGE_INVALID;
-      _vInt := Y_VINT_INVALID;
-      _ldoTemperature := Y_LDOTEMPERATURE_INVALID;
       _voltageTransition := Y_VOLTAGETRANSITION_INVALID;
       _voltageAtStartUp := Y_VOLTAGEATSTARTUP_INVALID;
       _currentAtStartUp := Y_CURRENTATSTARTUP_INVALID;
@@ -702,12 +616,6 @@ implementation
          result := 1;
          exit;
          end;
-      if (member^.name = 'voltageSense') then
-        begin
-          _voltageSense := integer(member^.ivalue);
-         result := 1;
-         exit;
-         end;
       if (member^.name = 'measuredVoltage') then
         begin
           _measuredVoltage := round(member^.ivalue / 65.536) / 1000.0;
@@ -723,18 +631,6 @@ implementation
       if (member^.name = 'inputVoltage') then
         begin
           _inputVoltage := round(member^.ivalue / 65.536) / 1000.0;
-         result := 1;
-         exit;
-         end;
-      if (member^.name = 'vInt') then
-        begin
-          _vInt := round(member^.ivalue / 65.536) / 1000.0;
-         result := 1;
-         exit;
-         end;
-      if (member^.name = 'ldoTemperature') then
-        begin
-          _ldoTemperature := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
@@ -844,32 +740,6 @@ implementation
       result := _setAttr('powerOutput',rest_val);
     end;
 
-  function TYPowerSupply.get_voltageSense():Integer;
-    var
-      res : Integer;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
-            begin
-              result := Y_VOLTAGESENSE_INVALID;
-              exit;
-            end;
-        end;
-      res := self._voltageSense;
-      result := res;
-      exit;
-    end;
-
-
-  function TYPowerSupply.set_voltageSense(newval:Integer):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := inttostr(newval);
-      result := _setAttr('voltageSense',rest_val);
-    end;
-
   function TYPowerSupply.get_measuredVoltage():double;
     var
       res : double;
@@ -919,42 +789,6 @@ implementation
             end;
         end;
       res := self._inputVoltage;
-      result := res;
-      exit;
-    end;
-
-
-  function TYPowerSupply.get_vInt():double;
-    var
-      res : double;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
-            begin
-              result := Y_VINT_INVALID;
-              exit;
-            end;
-        end;
-      res := self._vInt;
-      result := res;
-      exit;
-    end;
-
-
-  function TYPowerSupply.get_ldoTemperature():double;
-    var
-      res : double;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
-            begin
-              result := Y_LDOTEMPERATURE_INVALID;
-              exit;
-            end;
-        end;
-      res := self._ldoTemperature;
       result := res;
       exit;
     end;
