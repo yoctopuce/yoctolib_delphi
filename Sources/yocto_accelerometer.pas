@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_accelerometer.pas 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_accelerometer.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindAccelerometer(), the high-level API for Accelerometer functions
  *
@@ -60,12 +60,13 @@ const Y_GRAVITYCANCELLATION_OFF = 0;
 const Y_GRAVITYCANCELLATION_ON = 1;
 const Y_GRAVITYCANCELLATION_INVALID = -1;
 
-
 //--- (end of YAccelerometer definitions)
+
 //--- (YAccelerometer yapiwrapper declaration)
 //--- (end of YAccelerometer yapiwrapper declaration)
 
 type
+
   TYAccelerometer = class;
   //--- (YAccelerometer class start)
   TYAccelerometerValueCallback = procedure(func: TYAccelerometer; value:string);
@@ -98,7 +99,6 @@ type
     _timedReportCallbackAccelerometer : TYAccelerometerTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YAccelerometer declaration)
 
   public
@@ -399,6 +399,7 @@ type
 //--- (end of YAccelerometer functions declaration)
 
 implementation
+
 //--- (YAccelerometer dlldef)
 //--- (end of YAccelerometer dlldef)
 
@@ -724,4 +725,5 @@ finalization
   //--- (YAccelerometer cleanup)
   _AccelerometerCleanup();
   //--- (end of YAccelerometer cleanup)
+
 end.

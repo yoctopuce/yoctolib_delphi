@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_spiport.pas 52892 2023-01-25 10:13:30Z seb $
+ *  $Id: yocto_spiport.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -80,7 +80,6 @@ const Y_SHIFTSAMPLING_OFF = 0;
 const Y_SHIFTSAMPLING_ON = 1;
 const Y_SHIFTSAMPLING_INVALID = -1;
 
-
 //--- (end of generated code: YSpiPort definitions)
 //--- (generated code: YSpiPort yapiwrapper declaration)
 //--- (end of generated code: YSpiPort yapiwrapper declaration)
@@ -111,13 +110,13 @@ type
     _tim                      : LongInt;
     _dir                      : LongInt;
     _msg                      : string;
-
     //--- (end of generated code: YSpiSnoopingRecord declaration)
 public
    constructor create(data:string);
 
 
    //--- (generated code: YSpiSnoopingRecord accessors declaration)
+
     ////
     /// <summary>
     ///   Returns the elapsed time, in ms, since the beginning of the preceding message.
@@ -206,7 +205,6 @@ TYSpiSnoopingRecordARRAY = array of TYSpiSnoopingRecord;
     _eventPos                 : LongInt;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of generated code: YSpiPort declaration)
 
   public

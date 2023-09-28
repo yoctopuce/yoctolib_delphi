@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 54155 2023-04-20 10:23:39Z seb $
+ * $Id: yocto_wireless.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -67,7 +67,6 @@ const Y_WLANSTATE_CONNECTED = 2;
 const Y_WLANSTATE_REJECTED = 3;
 const Y_WLANSTATE_INVALID = -1;
 
-
 //--- (end of generated code: YWireless definitions)
 
 type
@@ -99,13 +98,13 @@ TYWlanRecordArr = array of TYWlanRecord;
     _channel                  : LongInt;
     _sec                      : string;
     _rssi                     : LongInt;
-
     //--- (end of generated code: YWlanRecord declaration)
 public
    constructor create(data:string);
 
 
    //--- (generated code: YWlanRecord accessors declaration)
+
     ////
     /// <summary>
     ///   Returns the name of the wireless network (SSID).
@@ -192,7 +191,6 @@ TYWLANRECORDARRAY = array of TYWlanRecord;
     _valueCallbackWireless    : TYWirelessValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of generated code: YWireless declaration)
 
 public

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_pwmoutput.pas 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_pwmoutput.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindPwmOutput(), the high-level API for PwmOutput functions
  *
@@ -65,12 +65,13 @@ const Y_ENABLEDATPOWERON_TRUE = 1;
 const Y_ENABLEDATPOWERON_INVALID = -1;
 const Y_DUTYCYCLEATPOWERON_INVALID    = YAPI_INVALID_DOUBLE;
 
-
 //--- (end of YPwmOutput definitions)
+
 //--- (YPwmOutput yapiwrapper declaration)
 //--- (end of YPwmOutput yapiwrapper declaration)
 
 type
+
   TYPwmOutput = class;
   //--- (YPwmOutput class start)
   TYPwmOutputValueCallback = procedure(func: TYPwmOutput; value:string);
@@ -102,7 +103,6 @@ type
     _valueCallbackPwmOutput   : TYPwmOutputValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YPwmOutput declaration)
 
   public
@@ -747,6 +747,7 @@ type
 //--- (end of YPwmOutput functions declaration)
 
 implementation
+
 //--- (YPwmOutput dlldef)
 //--- (end of YPwmOutput dlldef)
 
@@ -1276,4 +1277,5 @@ finalization
   //--- (YPwmOutput cleanup)
   _PwmOutputCleanup();
   //--- (end of YPwmOutput cleanup)
+
 end.

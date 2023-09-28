@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 54155 2023-04-20 10:23:39Z seb $
+ * $Id: yocto_cellular.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -83,11 +83,9 @@ const Y_DATASENT_INVALID              = YAPI_INVALID_UINT;
 const Y_DATARECEIVED_INVALID          = YAPI_INVALID_UINT;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
-
 //--- (end of generated code: YCellular definitions)
 
 //--- (generated code: YCellRecord definitions)
-
 
 //--- (end of generated code: YCellRecord definitions)
 
@@ -135,7 +133,6 @@ type
     _valueCallbackCellular    : TYCellularValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of generated code: YCellular declaration)
 
   public
@@ -970,11 +967,11 @@ type
     _cid                      : LongInt;
     _dbm                      : LongInt;
     _tad                      : LongInt;
-
     //--- (end of generated code: YCellRecord declaration)
 
   public
     //--- (generated code: YCellRecord accessors declaration)
+
     ////
     /// <summary>
     ///   Returns the name of the the cell operator, as received from the network.

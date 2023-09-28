@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_i2cport.pas 52943 2023-01-26 15:46:47Z mvuilleu $
+ *  $Id: yocto_i2cport.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindI2cPort(), the high-level API for I2cPort functions
  *
@@ -68,7 +68,6 @@ const Y_I2CVOLTAGELEVEL_1V8 = 2;
 const Y_I2CVOLTAGELEVEL_INVALID = -1;
 const Y_I2CMODE_INVALID               = YAPI_INVALID_STRING;
 
-
 //--- (end of generated code: YI2cPort definitions)
 //--- (generated code: YI2cPort yapiwrapper declaration)
 //--- (end of generated code: YI2cPort yapiwrapper declaration)
@@ -99,13 +98,13 @@ type
     _tim                      : LongInt;
     _dir                      : LongInt;
     _msg                      : string;
-
     //--- (end of generated code: YI2cSnoopingRecord declaration)
 public
    constructor create(data:string);
 
 
    //--- (generated code: YI2cSnoopingRecord accessors declaration)
+
     ////
     /// <summary>
     ///   Returns the elapsed time, in ms, since the beginning of the preceding message.
@@ -191,7 +190,6 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     _rxbuffptr                : LongInt;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of generated code: YI2cPort declaration)
 
   public

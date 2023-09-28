@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 54649 2023-05-22 10:09:20Z seb $
+ * $Id: yocto_api.pas 56655 2023-09-22 08:17:50Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -128,7 +128,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '54852';
+  YOCTO_API_BUILD_NO        = '56784';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -209,7 +209,6 @@ type
 
 //--- (generated code: YHub definitions)
 
-
 //--- (end of generated code: YHub definitions)
 
 //--- (generated code: YFunction definitions)
@@ -231,10 +230,12 @@ const YAPI_UNAUTHORIZED              = -12;     // unauthorized access to passwo
 const YAPI_RTC_NOT_READY             = -13;     // real-time clock has not been initialized (or time was lost)
 const YAPI_FILE_NOT_FOUND            = -14;     // the file is not found
 const YAPI_SSL_ERROR                 = -15;     // Error reported by mbedSSL
+const YAPI_RFID_SOFT_ERROR           = -16;     // Recoverable error with RFID tag (eg. tag out of reach), check YRfidStatus for details
+const YAPI_RFID_HARD_ERROR           = -17;     // Serious RFID error (eg. write-protected, out-of-boundary), check YRfidStatus for details
+const YAPI_BUFFER_TOO_SMALL          = -18;     // The buffer provided is too small
 
 const Y_LOGICALNAME_INVALID           = YAPI_INVALID_STRING;
 const Y_ADVERTISEDVALUE_INVALID       = YAPI_INVALID_STRING;
-
 
 //--- (end of generated code: YFunction definitions)
 const YAPI_HASH_BUF_SIZE            = 28;
@@ -259,7 +260,6 @@ const Y_USBCURRENT_INVALID            = YAPI_INVALID_UINT;
 const Y_REBOOTCOUNTDOWN_INVALID       = YAPI_INVALID_INT;
 const Y_USERVAR_INVALID               = YAPI_INVALID_INT;
 
-
 //--- (end of generated code: YModule definitions)
 //--- (generated code: YSensor definitions)
 
@@ -279,33 +279,26 @@ const Y_CALIBRATIONPARAM_INVALID      = YAPI_INVALID_STRING;
 const Y_RESOLUTION_INVALID            = YAPI_INVALID_DOUBLE;
 const Y_SENSORSTATE_INVALID           = YAPI_INVALID_INT;
 
-
 //--- (end of generated code: YSensor definitions)
 
 //--- (generated code: YAPIContext definitions)
-
 
 //--- (end of generated code: YAPIContext definitions)
 
 
 //--- (generated code: YFirmwareUpdate definitions)
 
-
 //--- (end of generated code: YFirmwareUpdate definitions)
 //--- (generated code: YDataStream definitions)
-
 
 //--- (end of generated code: YDataStream definitions)
 //--- (generated code: YMeasure definitions)
 
-
 //--- (end of generated code: YMeasure definitions)
 //--- (generated code: YDataSet definitions)
 
-
 //--- (end of generated code: YDataSet definitions)
 //--- (generated code: YConsolidatedDataSet definitions)
-
 
 //--- (end of generated code: YConsolidatedDataSet definitions)
 
@@ -327,7 +320,6 @@ const Y_USAGE_INVALID                 = YAPI_INVALID_UINT;
 const Y_CLEARHISTORY_FALSE = 0;
 const Y_CLEARHISTORY_TRUE = 1;
 const Y_CLEARHISTORY_INVALID = -1;
-
 
 //--- (end of generated code: YDataLogger definitions)
 
@@ -412,13 +404,13 @@ type
     _ctx                      : TYAPIContext;
     _hubref                   : LongInt;
     _userData                 : Tobject;
-
     //--- (end of generated code: YHub declaration)
 
   public
     constructor Create(yctx:TYAPIContext; hubref:LongInt);
 
     //--- (generated code: YHub accessors declaration)
+
     function _getStrAttr(attrName: string):string; overload; virtual;
 
     function _getIntAttr(attrName: string):LongInt; overload; virtual;
@@ -685,7 +677,6 @@ type
     _hwId                     : string;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; virtual;
-
     //--- (end of generated code: YFunction declaration)
 
     function _parse(j:PJSONRECORD):integer;
@@ -980,6 +971,7 @@ type
      function ToString():string;
 
     //--- (generated code: YFunction accessors declaration)
+
     ////
     /// <summary>
     ///   Returns the logical name of the function.
@@ -1272,7 +1264,6 @@ type
     _beaconCallback           : TYModuleBeaconCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of generated code: YModule declaration)
 
     // Return the properties of the nth function of our device
@@ -1320,13 +1311,15 @@ type
     /// <summary>
     ///   Retrieves the type of the <i>n</i>th function on the module.
     /// <para>
+    ///   Yoctopuce functions type names match their class names without the <i>Y</i> prefix, for instance
+    ///   <i>Relay</i>, <i>Temperature</i> etc..
     /// </para>
     /// </summary>
     /// <param name="functionIndex">
     ///   the index of the function for which the information is desired, starting at 0 for the first function.
     /// </param>
     /// <returns>
-    ///   a string corresponding to the type of the function
+    ///   a string corresponding to the type of the function.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns an empty string.
@@ -2330,7 +2323,6 @@ end;
     _calhdl                   : yCalibrationHandler;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of generated code: YSensor declaration)
 
 
@@ -2338,6 +2330,7 @@ end;
 
     constructor Create(func:string); overload;
     //--- (generated code: YSensor accessors declaration)
+
     ////
     /// <summary>
     ///   Returns the measuring unit for the measure.
@@ -3012,11 +3005,11 @@ end;
   //--- (generated code: YAPIContext declaration)
     // Attributes (function value cache)
     _defaultCacheValidity     : u64;
-
     //--- (end of generated code: YAPIContext declaration)
   public
    constructor Create();
     //--- (generated code: YAPIContext accessors declaration)
+
     ////
     /// <summary>
     ///   Modifies the delay between each forced enumeration of the used YoctoHubs.
@@ -3182,13 +3175,13 @@ end;
     _progress                 : LongInt;
     _restore_step             : LongInt;
     _force                    : boolean;
-
     //--- (end of generated code: YFirmwareUpdate declaration)
 
   public
     constructor Create(serial: String; path :string; settings :TByteArray; force :boolean);
 
   //--- (generated code: YFirmwareUpdate accessors declaration)
+
     function _processMore(newupdate: LongInt):LongInt; overload; virtual;
 
     ////
@@ -3341,7 +3334,6 @@ end;
     _calref                   : TDoubleArray;
     _values                   : TDoubleArrayArray;
     _isLoaded                 : boolean;
-
     //--- (end of generated code: YDataStream declaration)
     _calhdl                  : yCalibrationHandler;
   public
@@ -3350,6 +3342,7 @@ end;
 
 
   //--- (generated code: YDataStream accessors declaration)
+
     function _initFromDataSet(dataset: TYDataSet; encoded: TLongIntArray):LongInt; overload; virtual;
 
     function _parseStream(sdata: TByteArray):LongInt; overload; virtual;
@@ -3693,7 +3686,6 @@ end;
     _minVal                   : double;
     _avgVal                   : double;
     _maxVal                   : double;
-
     //--- (end of generated code: YMeasure declaration)
     _startDateTime           : TDateTime;
     _endDateTime             : TDateTime;
@@ -3707,6 +3699,7 @@ end;
     function get_endTimeUTC_asTDateTime():TDateTime;
 
   //--- (generated code: YMeasure accessors declaration)
+
     ////
     /// <summary>
     ///   Returns the start time of the measure, relative to the Jan 1, 1970 UTC
@@ -3842,7 +3835,6 @@ end;
     _summaryMaxVal            : double;
     _summaryTotalAvg          : double;
     _summaryTotalTime         : double;
-
     //--- (end of generated code: YDataSet declaration)
 
 
@@ -3857,6 +3849,7 @@ end;
     function _parse(data:string):integer;
 
   //--- (generated code: YDataSet accessors declaration)
+
     function _get_calibration():TLongIntArray; overload; virtual;
 
     function loadSummary(data: TByteArray):LongInt; overload; virtual;
@@ -4158,7 +4151,6 @@ end;
     _progresss                : TLongIntArray;
     _nextidx                  : TLongIntArray;
     _nexttim                  : TDoubleArray;
-
     //--- (end of generated code: YConsolidatedDataSet declaration)
 
 
@@ -4169,6 +4161,7 @@ end;
     destructor Destroy();override;
 
   //--- (generated code: YConsolidatedDataSet accessors declaration)
+
     function imm_init(startt: double; endt: double; sensorList: TYSensorArray):LongInt; overload; virtual;
 
     ////
@@ -4329,7 +4322,6 @@ end;
     _valueCallbackDataLogger  : TYDataLoggerValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of generated code: YDataLogger declaration)
   protected
     _dataLoggerURL :string;
@@ -5629,6 +5621,7 @@ type
   function _decodeWords(sdat:string):TLongIntArray;
   function _decodeFloats(sdat:string):TLongIntArray;
   function _yapiBoolToStr(value:boolean):string;
+  function _yapiStrToFloat(value:string):double;
   function _yapiFloatToStr(value:double):string;
   function _stringSplit(str :String; delimiter :Char):TStringArray;
   function _atoi(val:string):integer;
@@ -6271,7 +6264,7 @@ var
       buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
       perror : pansichar;
     begin
-      buffer[0]:=#0;perror:=@buffer;
+      buffer[0]:=#0;perror:=buffer;
       yapiLockDeviceCallBack := _yapiLockDeviceCallBack(perror);
       errmsg:=string(perror);
     end;
@@ -6281,7 +6274,7 @@ var
       buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
       perror : pansichar;
     begin
-      buffer[0]:=#0;perror:=@buffer;
+      buffer[0]:=#0;perror:=buffer;
       yapiUnlockDeviceCallBack := _yapiUnlockDeviceCallBack(perror);
       errmsg:=string(perror);
     end;
@@ -6291,7 +6284,7 @@ var
       buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
       perror : pansichar;
     begin
-      buffer[0]:=#0;perror:=@buffer;
+      buffer[0]:=#0;perror:=buffer;
       yapiLockFunctionCallBack := _yapiLockFunctionCallBack(perror);
       errmsg:=string(perror);
     end;
@@ -6301,7 +6294,7 @@ var
       buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
       perror : pansichar;
     begin
-      buffer[0]:=#0;perror:=@buffer;
+      buffer[0]:=#0;perror:=buffer;
       yapiUnlockFunctionCallBack := _yapiUnlockFunctionCallBack(perror);
       errmsg:=string(perror);
     end;
@@ -6629,6 +6622,59 @@ var
       if (value) then _yapiBoolToStr:='1' else _yapiBoolToStr:='0';
     end;
 
+  function _yapiStrToFloat(value:string):double;
+    var
+      intval, fract: Double;
+      i, len: Integer;
+      has_fract: Boolean;
+    begin
+      len := length(value);
+      if len = 0 then
+      begin
+        _yapiStrToFloat := 0.0;
+        Exit;
+      end;
+
+      // Initialize variables
+      intval := 0.0;
+      fract := 1.0;
+      has_fract := False;
+
+      // Parse the string
+      i := 1;
+      while (i <= len) and (value[i] = ' ') do
+        Inc(i);
+
+      if (i <= len) and (value[i] = '-') then
+        begin
+          Inc(i);
+          fract := -1.0;
+        end
+      else if (i <= len) and (value[i] = '+') then
+        Inc(i);
+
+      while (i <= len) do
+        begin
+          if value[i] = '.' then
+            begin
+              has_fract := True;
+              Inc(i);
+              continue;
+            end;
+
+          if (value[i] >= '0') and (value[i] <= '9') then
+            begin
+              intval := intval * 10.0 + StrToInt(value[i]);
+              if has_fract then
+                fract := fract * 10.0;
+            end
+          else
+            Break;
+          Inc(i);
+        end;
+      _yapiStrToFloat := intval / fract;
+    end;
+
   function _yapiFloatToStr(value:double):string;
     var
       res : string;
@@ -6718,7 +6764,7 @@ var
           yInitAPI := YAPI_SUCCESS;
           exit;
         end;
-      buffer[0]:=#0;perror:=@buffer;
+      buffer[0]:=#0;perror:=buffer;
       res  := _yapiInitAPI(mode,perror);
       errmsg:=string(perror);
       if (YISERR(res)) then
@@ -6765,7 +6811,7 @@ var
           yRegisterHub:=res;
           exit;
         end;
-      buffer[0]:=#0;perror:=@buffer;
+      buffer[0]:=#0;perror:=buffer;
       yRegisterHub := _yapiRegisterHub(pansichar(ansistring(url)),perror);
       errmsg:=string(perror);
     end;
@@ -6782,7 +6828,7 @@ var
           yPreregisterHub:=res;
           exit;
         end;
-      buffer[0]:=#0;perror:=@buffer;
+      buffer[0]:=#0;perror:=buffer;
       yPreregisterHub := _yapiPreregisterHub(pansichar(ansistring(url)),perror);
       errmsg:=string(perror);
     end;
@@ -6797,7 +6843,7 @@ var
       buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
       perror : pansichar;
     begin
-      buffer[0]:=#0;perror:=@buffer;
+      buffer[0]:=#0;perror:=buffer;
       yTestHub := _yapiTestHub(pansichar(ansistring(url)), mstimeout, perror);
       errmsg:=string(perror);
     end;
@@ -6810,7 +6856,7 @@ var
       res    : Yretcode;
       p      : PyapiEvent;
     begin
-      buffer[0]:=#0;perror:=@buffer;
+      buffer[0]:=#0;perror:=buffer;
       res := _yapiUpdateDeviceList(0,perror);
       if (YISERR(res)) then
         begin
@@ -6860,7 +6906,7 @@ var
       p         : PyapiEvent;
       i,j       : integer;
     begin
-      errBuffer[0]:=#0;pError:=@errBuffer;
+      errBuffer[0]:=#0;pError:=errBuffer;
       res := _yapiHandleEvents(perror);
       if (YISERR(res)) then
         begin
@@ -6927,7 +6973,7 @@ var
       res       : integer;
     begin
       timeout := yGetTickCount() + ms_duration;
-      errBuffer[0]:=#0;pError:=@errBuffer;
+      errBuffer[0]:=#0;pError:=errBuffer;
       repeat
         res := yHandleEvents(errmsg);
         if YISERR(res) then
@@ -7010,7 +7056,7 @@ var
       buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
       perror :pansichar;
     begin
-      buffer[0]:=#0;perror:=@buffer;
+      buffer[0]:=#0;perror:=buffer;
       yapiGetDevice := _yapiGetDevice(pansichar(ansistring(device_str)),perror);
       errmsg:=string(perror);
     end;
@@ -7020,7 +7066,7 @@ var
       buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
       perror : pansichar;
     begin
-      buffer[0]:=#0;perror:=@buffer;
+      buffer[0]:=#0;perror:=buffer;
       yapiGetDeviceInfo :=_yapiGetDeviceInfo(d,infos,perror);
       errmsg:=string(perror);
     end;
@@ -7030,7 +7076,7 @@ var
       buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
       perror :pansichar;
     begin
-      buffer[0]:=#0;perror:=@buffer;
+      buffer[0]:=#0;perror:=buffer;
       yapiGetFunction := _yapiGetFunction(pansichar(ansistring(class_str)),pansichar(ansistring(function_str)),perror);
       errmsg:=string(perror);
     end;
@@ -7041,7 +7087,7 @@ var
       perror :pansichar;
       tmp :integer;
     begin
-      buffer[0]:=#0;perror:=@buffer;
+      buffer[0]:=#0;perror:=buffer;
       tmp:=_yapiGetFunctionsByClass(PansiChar(ansistring(class_str)),precFuncDesc, dbuffer,maxsize,neededsize,perror);
       yapiGetFunctionsByClass:=tmp;
       errmsg := string(perror);
@@ -7053,7 +7099,7 @@ var
       buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
       perror :pansichar;
     begin
-      buffer[0]:=#0;perror:=@buffer;
+      buffer[0]:=#0;perror:=buffer;
       yapiGetFunctionsByDevice:=_yapiGetFunctionsByDevice(devdesc,precFuncDesc, dbuffer,maxsize,neededsize,perror);
       errmsg := string(perror);
     end;
@@ -7071,12 +7117,12 @@ var
       errBuffer      : array[0..YOCTO_ERRMSG_LEN] of ansichar;
       pError,pSerial,pFuncId,pBaseType,pFuncname,pFuncVal : pansichar;
     begin
-      serialBuffer[0]:=#0;  pSerial    := @serialBuffer;
-      funcIdBuffer[0]:=#0;  pFuncId    := @funcIdBuffer;
-      baseTypeBuffer[0]:=#0;pBaseType  := @baseTypeBuffer;
-      funcNameBuffer[0]:=#0;pFuncname  := @funcNameBuffer;
-      funcValBuffer[0]:=#0; pFuncVal   := @funcValBuffer;
-      errBuffer[0]:=#0;     pError     := @errBuffer;
+      serialBuffer[0]:=#0;  pSerial    := serialBuffer;
+      funcIdBuffer[0]:=#0;  pFuncId    := funcIdBuffer;
+      baseTypeBuffer[0]:=#0;pBaseType  := baseTypeBuffer;
+      funcNameBuffer[0]:=#0;pFuncname  := funcNameBuffer;
+      funcValBuffer[0]:=#0; pFuncVal   := funcValBuffer;
+      errBuffer[0]:=#0;     pError     := errBuffer;
       yapiGetFunctionInfoEx :=_yapiGetFunctionInfoEx(fundesc,devdesc,pSerial,pFuncId,pBaseType,pFuncname,pFuncVal,pError);
       serial    := string(pSerial);
       funcId    := string(pFuncId);
@@ -7095,11 +7141,11 @@ var
       errBuffer      : array[0..YOCTO_ERRMSG_LEN] of ansichar;
       pError,pSerial,pFuncId,pFuncname,pFuncVal : pansichar;
     begin
-      serialBuffer[0]:=#0;  pSerial    := @serialBuffer;
-      funcIdBuffer[0]:=#0;  pFuncId    := @funcIdBuffer;
-      funcNameBuffer[0]:=#0;pFuncname  := @funcNameBuffer;
-      funcValBuffer[0]:=#0; pFuncVal   := @funcValBuffer;
-      errBuffer[0]:=#0;     pError     := @errBuffer;
+      serialBuffer[0]:=#0;  pSerial    := serialBuffer;
+      funcIdBuffer[0]:=#0;  pFuncId    := funcIdBuffer;
+      funcNameBuffer[0]:=#0;pFuncname  := funcNameBuffer;
+      funcValBuffer[0]:=#0; pFuncVal   := funcValBuffer;
+      errBuffer[0]:=#0;     pError     := errBuffer;
       yapiGetFunctionInfo :=_yapiGetFunctionInfoEx(fundesc,devdesc,pSerial,pFuncId,nil,pFuncname,pFuncVal,pError);
       serial    := string(pSerial);
       funcId    := string(pFuncId);
@@ -7116,7 +7162,7 @@ var
       devdesc        : YDEV_DESCR;
       res            : integer;
     begin
-      errBuffer[0]:=#0;     pError     := @errBuffer;
+      errBuffer[0]:=#0;     pError     := errBuffer;
       res    := _yapiGetFunctionInfoEx(fundesc,devdesc,nil,nil,nil,nil,nil,pError);
       errmsg := string(perror);
       if(res<0) then yapiGetDeviceByFunction := res
@@ -7136,7 +7182,7 @@ var
       res    : YRETCODE;
     begin
       buffer[0]:=#0;
-      perror:=@buffer;
+      perror:=buffer;
       replysize:=-1;
       res := _yapiHTTPRequestSyncStartEx( addr(iohdl),
                                           pansichar(ansistring(device)),
@@ -7163,7 +7209,7 @@ var
       perror    : pansichar;
       res       : YRETCODE;
     begin
-      buffer[0]:=#0;perror:=@buffer;
+      buffer[0]:=#0;perror:=buffer;
       res := _yapiHTTPRequestAsync(pansichar(ansistring(device)),pansichar(request),nil,nil,perror);
       errmsg := string(perror);
       yapiHTTPRequestAsync := res;
@@ -7450,7 +7496,7 @@ var
       res : LongInt;
       fullsize : LongInt;
     begin
-      val_buffer[0]:=#0;val:=@val_buffer;
+      val_buffer[0]:=#0;val:=val_buffer;
       fullsize := 0;
       res := _yapiGetHubStrAttr(self._hubref, pansichar(ansistring(attrName)), val, 1024, fullsize);
       if res > 0 then
@@ -7495,7 +7541,7 @@ var
       known_url_val : string;
       url_list : TStringArray;
     begin
-      smallbuff_buffer[0]:=#0;smallbuff:=@smallbuff_buffer;
+      smallbuff_buffer[0]:=#0;smallbuff:=smallbuff_buffer;
       SetLength(url_list, 0);
 
       fullsize := 0;
@@ -7710,7 +7756,7 @@ var
       tmp_fundescr:= yapiGetFunction(_className, _func, errmsg);
       if(YISERR(tmp_fundescr)) then
         begin
-          buffer[0]:=#0;perror:=@buffer;
+          buffer[0]:=#0;perror:=buffer;
           res := _yapiUpdateDeviceList(1,perror);
           if (YISERR(res)) then
             begin
@@ -7909,7 +7955,7 @@ var
       if(YISERR(res)) then
         begin
           // make sure a device scan does not solve the issue
-          errBuffer[0]:=#0;perror:=@errBuffer;
+          errBuffer[0]:=#0;perror:=errBuffer;
           res := _yapiUpdateDeviceList(1,perror);
           if (YISERR(res)) then
             begin
@@ -7963,7 +8009,7 @@ var
       if(YISERR(res))  then
         begin
           // Check if an update of the device list does notb solve the issue
-          errBuffer[0]:=#0;perror:=@errBuffer;
+          errBuffer[0]:=#0;perror:=errBuffer;
           res := _yapiUpdateDeviceList(1,perror);
           if(YISERR(res)) then
             begin
@@ -8326,7 +8372,7 @@ var
       errmsg : pansichar;
       res : LongInt;
     begin
-      errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
+      errmsg_buffer[0]:=#0;errmsg:=errmsg_buffer;
       Try
         serial := self.get_serialNumber;
       Except
@@ -8675,7 +8721,7 @@ var
       res : string;
     begin
       buffer[0]:=#0;
-      perror:=@buffer;
+      perror:=buffer;
       dllres := _yapiJsonGetPath( pansichar(ansistring(path)),
                                           pansichar(ansistring(json)),
                                           length(json),
@@ -9195,7 +9241,7 @@ var
       if(YISERR(res)) then
         begin
           // make sure a device scan does not solve the issue
-          errBuffer[0]:=#0;perror:=@errBuffer;
+          errBuffer[0]:=#0;perror:=errBuffer;
           res := _yapiUpdateDeviceList(1,perror);
           if (YISERR(res)) then
             begin
@@ -10211,8 +10257,8 @@ var
       jsonflat : string;
       jsoncomplexstr : string;
     begin
-      errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
-      smallbuff_buffer[0]:=#0;smallbuff:=@smallbuff_buffer;
+      errmsg_buffer[0]:=#0;errmsg:=errmsg_buffer;
+      smallbuff_buffer[0]:=#0;smallbuff:=smallbuff_buffer;
               fullsize := 0;
               jsoncomplexstr := _ByteToString(jsoncomplex);
               res := _yapiGetAllJsonKeys(pansichar(ansistring(jsoncomplexstr)), smallbuff, 1024, fullsize, errmsg);
@@ -10471,7 +10517,7 @@ var
                 begin
                   if paramVer = 0 then
                     begin
-                      ratio := StrToFloat(param);
+                      ratio := _yapiStrToFloat(param);
                       calibData_pos := length(calibData);
                       SetLength(calibData, calibData_pos+4);
                       if ratio > 0 then
@@ -11105,8 +11151,8 @@ var
       subdevices : TStringArray;
       serial : string;
     begin
-      errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
-      smallbuff_buffer[0]:=#0;smallbuff:=@smallbuff_buffer;
+      errmsg_buffer[0]:=#0;errmsg:=errmsg_buffer;
+      smallbuff_buffer[0]:=#0;smallbuff:=smallbuff_buffer;
       SetLength(subdevices, 0);
 
       serial := self.get_serialNumber;
@@ -11157,8 +11203,8 @@ var
       yapi_res : LongInt;
       serial : string;
     begin
-      errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
-      hubserial_buffer[0]:=#0;hubserial:=@hubserial_buffer;
+      errmsg_buffer[0]:=#0;errmsg:=errmsg_buffer;
+      hubserial_buffer[0]:=#0;hubserial:=hubserial_buffer;
 
       serial := self.get_serialNumber;
       // retrieve device object
@@ -11184,8 +11230,8 @@ var
       yapi_res : LongInt;
       serial : string;
     begin
-      errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
-      path_buffer[0]:=#0;path:=@path_buffer;
+      errmsg_buffer[0]:=#0;errmsg:=errmsg_buffer;
+      path_buffer[0]:=#0;path:=path_buffer;
 
       serial := self.get_serialNumber;
       // retrieve device object
@@ -12374,7 +12420,7 @@ var
       errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
       errmsg : pansichar;
     begin
-      errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
+      errmsg_buffer[0]:=#0;errmsg:=errmsg_buffer;
       if force then
         begin
           c_force := 1;
@@ -12594,7 +12640,7 @@ var
       force : LongInt;
       ignoreErrMsg : string;
     begin
-      errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
+      errmsg_buffer[0]:=#0;errmsg:=errmsg_buffer;
       if (self._progress_c < 100) and(self._progress_c <> YAPI_VERSION_MISMATCH) then
         begin
           serial := self._serial;
@@ -12694,8 +12740,8 @@ var
       bootloader_list : string;
       bootladers : TStringArray;
     begin
-      errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
-      smallbuff_buffer[0]:=#0;smallbuff:=@smallbuff_buffer;
+      errmsg_buffer[0]:=#0;errmsg:=errmsg_buffer;
+      smallbuff_buffer[0]:=#0;smallbuff:=smallbuff_buffer;
       SetLength(bootladers, 0);
       fullsize := 0;
       yapi_res := _yapiGetBootloaders(smallbuff, 1024, fullsize, errmsg);
@@ -12747,8 +12793,8 @@ var
       firmware_path : string;
       release : string;
     begin
-      errmsg_buffer[0]:=#0;errmsg:=@errmsg_buffer;
-      smallbuff_buffer[0]:=#0;smallbuff:=@smallbuff_buffer;
+      errmsg_buffer[0]:=#0;errmsg:=errmsg_buffer;
+      smallbuff_buffer[0]:=#0;smallbuff:=smallbuff_buffer;
       fullsize := 0;
       release := IntToStr(minrelease);
       res := _yapiCheckFirmware(pansichar(ansistring(serial)), pansichar(ansistring(release)), pansichar(ansistring(path)), smallbuff, 1024, fullsize, errmsg);

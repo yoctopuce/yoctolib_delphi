@@ -46,8 +46,8 @@ uses
    begin
      serial := m.get_serialNumber();
      writeln('Device arrival : ' + serial);
-     m.registerConfigChangeCallback(@configChangeCallback);
-     m.registerBeaconCallback(@beaconCallback);
+     m.registerConfigChangeCallback(configChangeCallback);
+     m.registerBeaconCallback(beaconCallback);
 
      // First solution: look for a specific type of function (eg. anButton)
      fctcount := m.functionCount();
@@ -58,7 +58,7 @@ uses
          begin
            writeln('- ' + hardwareId);
            anButton := yFindAnButton(hardwareId);
-           anButton.registerValueCallback(@anButtonValueChangeCallBack);
+           anButton.registerValueCallback(anButtonValueChangeCallBack);
          end;
        end;
 
@@ -72,8 +72,8 @@ uses
            writeln('- ' + hardwareId);
            uni := sensor.get_unit();
            sensor.set_userData(TObject(uni));
-           sensor.registerValueCallback(@sensorValueChangeCallBack);
-           sensor.registerTimedReportCallback(@sensorTimedReportCallBack);
+           sensor.registerValueCallback(sensorValueChangeCallBack);
+           sensor.registerTimedReportCallback(sensorTimedReportCallBack);
          end;
          sensor := sensor.nextSensor();
        end
@@ -93,15 +93,15 @@ var
    errmsg:string;
 
 begin
-  yRegisterLogFunction(@logfun);
+  yRegisterLogFunction(logfun);
 
   if (yRegisterHub('usb',  errmsg) <> YAPI_SUCCESS) then
    begin
      WriteLn('RegisterHub error : ' + errmsg);
      halt;
    end;
-  yRegisterDeviceArrivalCallback(@deviceArrival);
-  yRegisterDeviceRemovalCallback(@deviceRemoval);
+  yRegisterDeviceArrivalCallback(deviceArrival);
+  yRegisterDeviceRemovalCallback(deviceRemoval);
 
   WriteLn('Hit Ctrl-C to Stop ');
 

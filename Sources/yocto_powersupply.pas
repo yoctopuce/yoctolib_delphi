@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_powersupply.pas 54768 2023-05-26 06:46:41Z seb $
+ *  $Id: yocto_powersupply.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindPowerSupply(), the high-level API for PowerSupply functions
  *
@@ -52,7 +52,7 @@ uses
 
 //--- (YPowerSupply definitions)
 
-const Y_VOLTAGESETPOINT_INVALID       = YAPI_INVALID_DOUBLE;
+const Y_VOLTAGELIMIT_INVALID          = YAPI_INVALID_DOUBLE;
 const Y_CURRENTLIMIT_INVALID          = YAPI_INVALID_DOUBLE;
 const Y_POWEROUTPUT_OFF = 0;
 const Y_POWEROUTPUT_ON = 1;
@@ -61,16 +61,20 @@ const Y_MEASUREDVOLTAGE_INVALID       = YAPI_INVALID_DOUBLE;
 const Y_MEASUREDCURRENT_INVALID       = YAPI_INVALID_DOUBLE;
 const Y_INPUTVOLTAGE_INVALID          = YAPI_INVALID_DOUBLE;
 const Y_VOLTAGETRANSITION_INVALID     = YAPI_INVALID_STRING;
-const Y_VOLTAGEATSTARTUP_INVALID      = YAPI_INVALID_DOUBLE;
-const Y_CURRENTATSTARTUP_INVALID      = YAPI_INVALID_DOUBLE;
+const Y_VOLTAGELIMITATSTARTUP_INVALID = YAPI_INVALID_DOUBLE;
+const Y_CURRENTLIMITATSTARTUP_INVALID = YAPI_INVALID_DOUBLE;
+const Y_POWEROUTPUTATSTARTUP_OFF = 0;
+const Y_POWEROUTPUTATSTARTUP_ON = 1;
+const Y_POWEROUTPUTATSTARTUP_INVALID = -1;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
-
 //--- (end of YPowerSupply definitions)
+
 //--- (YPowerSupply yapiwrapper declaration)
 //--- (end of YPowerSupply yapiwrapper declaration)
 
 type
+
   TYPowerSupply = class;
   //--- (YPowerSupply class start)
   TYPowerSupplyValueCallback = procedure(func: TYPowerSupply; value:string);
@@ -81,8 +85,8 @@ type
   ///   TYPowerSupply Class: regulated power supply control interface
   /// <para>
   ///   The <c>YPowerSupply</c> class allows you to drive a Yoctopuce power supply.
-  ///   It can be use to change the voltage set point,
-  ///   the current limit and the enable/disable the output.
+  ///   It can be use to change the voltage and current limits, and to enable/disable
+  ///   the output.
   /// </para>
   /// </summary>
   ///-
@@ -91,20 +95,20 @@ type
   protected
   //--- (YPowerSupply declaration)
     // Attributes (function value cache)
-    _voltageSetPoint          : double;
+    _voltageLimit             : double;
     _currentLimit             : double;
     _powerOutput              : Integer;
     _measuredVoltage          : double;
     _measuredCurrent          : double;
     _inputVoltage             : double;
     _voltageTransition        : string;
-    _voltageAtStartUp         : double;
-    _currentAtStartUp         : double;
+    _voltageLimitAtStartUp    : double;
+    _currentLimitAtStartUp    : double;
+    _powerOutputAtStartUp     : Integer;
     _command                  : string;
     _valueCallbackPowerSupply : TYPowerSupplyValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YPowerSupply declaration)
 
   public
@@ -113,14 +117,14 @@ type
 
     ////
     /// <summary>
-    ///   Changes the voltage set point, in V.
+    ///   Changes the voltage limit, in V.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a floating point number corresponding to the voltage set point, in V
+    ///   a floating point number corresponding to the voltage limit, in V
     /// </param>
     /// <para>
     /// </para>
@@ -131,24 +135,24 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function set_voltageSetPoint(newval:double):integer;
+    function set_voltageLimit(newval:double):integer;
 
     ////
     /// <summary>
-    ///   Returns the voltage set point, in V.
+    ///   Returns the voltage limit, in V.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a floating point number corresponding to the voltage set point, in V
+    ///   a floating point number corresponding to the voltage limit, in V
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>YPowerSupply.VOLTAGESETPOINT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YPowerSupply.VOLTAGELIMIT_INVALID</c>.
     /// </para>
     ///-
-    function get_voltageSetPoint():double;
+    function get_voltageLimit():double;
 
     ////
     /// <summary>
@@ -307,24 +311,24 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function set_voltageAtStartUp(newval:double):integer;
+    function set_voltageLimitAtStartUp(newval:double):integer;
 
     ////
     /// <summary>
-    ///   Returns the selected voltage set point at device startup, in V.
+    ///   Returns the selected voltage limit at device startup, in V.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a floating point number corresponding to the selected voltage set point at device startup, in V
+    ///   a floating point number corresponding to the selected voltage limit at device startup, in V
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>YPowerSupply.VOLTAGEATSTARTUP_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YPowerSupply.VOLTAGELIMITATSTARTUP_INVALID</c>.
     /// </para>
     ///-
-    function get_voltageAtStartUp():double;
+    function get_voltageLimitAtStartUp():double;
 
     ////
     /// <summary>
@@ -348,7 +352,7 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function set_currentAtStartUp(newval:double):integer;
+    function set_currentLimitAtStartUp(newval:double):integer;
 
     ////
     /// <summary>
@@ -362,10 +366,53 @@ type
     ///   a floating point number corresponding to the selected current limit at device startup, in mA
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>YPowerSupply.CURRENTATSTARTUP_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YPowerSupply.CURRENTLIMITATSTARTUP_INVALID</c>.
     /// </para>
     ///-
-    function get_currentAtStartUp():double;
+    function get_currentLimitAtStartUp():double;
+
+    ////
+    /// <summary>
+    ///   Returns the power supply output switch state.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   either <c>YPowerSupply.POWEROUTPUTATSTARTUP_OFF</c> or <c>YPowerSupply.POWEROUTPUTATSTARTUP_ON</c>,
+    ///   according to the power supply output switch state
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YPowerSupply.POWEROUTPUTATSTARTUP_INVALID</c>.
+    /// </para>
+    ///-
+    function get_powerOutputAtStartUp():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the power supply output switch state at device start up.
+    /// <para>
+    ///   Remember to call the matching
+    ///   module <c>saveToFlash()</c> method, otherwise this call has no effect.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   either <c>YPowerSupply.POWEROUTPUTATSTARTUP_OFF</c> or <c>YPowerSupply.POWEROUTPUTATSTARTUP_ON</c>,
+    ///   according to the power supply output switch state at device start up
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_powerOutputAtStartUp(newval:Integer):integer;
 
     function get_command():string;
 
@@ -566,6 +613,7 @@ type
 //--- (end of YPowerSupply functions declaration)
 
 implementation
+
 //--- (YPowerSupply dlldef)
 //--- (end of YPowerSupply dlldef)
 
@@ -574,15 +622,16 @@ implementation
       inherited Create(func);
       _className := 'PowerSupply';
       //--- (YPowerSupply accessors initialization)
-      _voltageSetPoint := Y_VOLTAGESETPOINT_INVALID;
+      _voltageLimit := Y_VOLTAGELIMIT_INVALID;
       _currentLimit := Y_CURRENTLIMIT_INVALID;
       _powerOutput := Y_POWEROUTPUT_INVALID;
       _measuredVoltage := Y_MEASUREDVOLTAGE_INVALID;
       _measuredCurrent := Y_MEASUREDCURRENT_INVALID;
       _inputVoltage := Y_INPUTVOLTAGE_INVALID;
       _voltageTransition := Y_VOLTAGETRANSITION_INVALID;
-      _voltageAtStartUp := Y_VOLTAGEATSTARTUP_INVALID;
-      _currentAtStartUp := Y_CURRENTATSTARTUP_INVALID;
+      _voltageLimitAtStartUp := Y_VOLTAGELIMITATSTARTUP_INVALID;
+      _currentLimitAtStartUp := Y_CURRENTLIMITATSTARTUP_INVALID;
+      _powerOutputAtStartUp := Y_POWEROUTPUTATSTARTUP_INVALID;
       _command := Y_COMMAND_INVALID;
       _valueCallbackPowerSupply := nil;
       //--- (end of YPowerSupply accessors initialization)
@@ -598,9 +647,9 @@ implementation
       sub : PJSONRECORD;
       i,l        : integer;
     begin
-      if (member^.name = 'voltageSetPoint') then
+      if (member^.name = 'voltageLimit') then
         begin
-          _voltageSetPoint := round(member^.ivalue / 65.536) / 1000.0;
+          _voltageLimit := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
@@ -640,15 +689,21 @@ implementation
          result := 1;
          exit;
          end;
-      if (member^.name = 'voltageAtStartUp') then
+      if (member^.name = 'voltageLimitAtStartUp') then
         begin
-          _voltageAtStartUp := round(member^.ivalue / 65.536) / 1000.0;
+          _voltageLimitAtStartUp := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
-      if (member^.name = 'currentAtStartUp') then
+      if (member^.name = 'currentLimitAtStartUp') then
         begin
-          _currentAtStartUp := round(member^.ivalue / 65.536) / 1000.0;
+          _currentLimitAtStartUp := round(member^.ivalue / 65.536) / 1000.0;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'powerOutputAtStartUp') then
+        begin
+          _powerOutputAtStartUp := member^.ivalue;
          result := 1;
          exit;
          end;
@@ -662,15 +717,15 @@ implementation
     end;
 {$HINTS ON}
 
-  function TYPowerSupply.set_voltageSetPoint(newval:double):integer;
+  function TYPowerSupply.set_voltageLimit(newval:double):integer;
     var
       rest_val: string;
     begin
       rest_val := inttostr(round(newval * 65536.0));
-      result := _setAttr('voltageSetPoint',rest_val);
+      result := _setAttr('voltageLimit',rest_val);
     end;
 
-  function TYPowerSupply.get_voltageSetPoint():double;
+  function TYPowerSupply.get_voltageLimit():double;
     var
       res : double;
     begin
@@ -678,11 +733,11 @@ implementation
         begin
           if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
-              result := Y_VOLTAGESETPOINT_INVALID;
+              result := Y_VOLTAGELIMIT_INVALID;
               exit;
             end;
         end;
-      res := self._voltageSetPoint;
+      res := self._voltageLimit;
       result := res;
       exit;
     end;
@@ -820,15 +875,15 @@ implementation
       result := _setAttr('voltageTransition',rest_val);
     end;
 
-  function TYPowerSupply.set_voltageAtStartUp(newval:double):integer;
+  function TYPowerSupply.set_voltageLimitAtStartUp(newval:double):integer;
     var
       rest_val: string;
     begin
       rest_val := inttostr(round(newval * 65536.0));
-      result := _setAttr('voltageAtStartUp',rest_val);
+      result := _setAttr('voltageLimitAtStartUp',rest_val);
     end;
 
-  function TYPowerSupply.get_voltageAtStartUp():double;
+  function TYPowerSupply.get_voltageLimitAtStartUp():double;
     var
       res : double;
     begin
@@ -836,25 +891,25 @@ implementation
         begin
           if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
-              result := Y_VOLTAGEATSTARTUP_INVALID;
+              result := Y_VOLTAGELIMITATSTARTUP_INVALID;
               exit;
             end;
         end;
-      res := self._voltageAtStartUp;
+      res := self._voltageLimitAtStartUp;
       result := res;
       exit;
     end;
 
 
-  function TYPowerSupply.set_currentAtStartUp(newval:double):integer;
+  function TYPowerSupply.set_currentLimitAtStartUp(newval:double):integer;
     var
       rest_val: string;
     begin
       rest_val := inttostr(round(newval * 65536.0));
-      result := _setAttr('currentAtStartUp',rest_val);
+      result := _setAttr('currentLimitAtStartUp',rest_val);
     end;
 
-  function TYPowerSupply.get_currentAtStartUp():double;
+  function TYPowerSupply.get_currentLimitAtStartUp():double;
     var
       res : double;
     begin
@@ -862,15 +917,41 @@ implementation
         begin
           if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
-              result := Y_CURRENTATSTARTUP_INVALID;
+              result := Y_CURRENTLIMITATSTARTUP_INVALID;
               exit;
             end;
         end;
-      res := self._currentAtStartUp;
+      res := self._currentLimitAtStartUp;
       result := res;
       exit;
     end;
 
+
+  function TYPowerSupply.get_powerOutputAtStartUp():Integer;
+    var
+      res : Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_POWEROUTPUTATSTARTUP_INVALID;
+              exit;
+            end;
+        end;
+      res := self._powerOutputAtStartUp;
+      result := res;
+      exit;
+    end;
+
+
+  function TYPowerSupply.set_powerOutputAtStartUp(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      if(newval>0) then rest_val := '1' else rest_val := '0';
+      result := _setAttr('powerOutputAtStartUp',rest_val);
+    end;
 
   function TYPowerSupply.get_command():string;
     var
@@ -1036,4 +1117,5 @@ finalization
   //--- (YPowerSupply cleanup)
   _PowerSupplyCleanup();
   //--- (end of YPowerSupply cleanup)
+
 end.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_carbondioxide.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_carbondioxide.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
@@ -55,12 +55,13 @@ uses
 const Y_ABCPERIOD_INVALID             = YAPI_INVALID_UINT;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
-
 //--- (end of YCarbonDioxide definitions)
+
 //--- (YCarbonDioxide yapiwrapper declaration)
 //--- (end of YCarbonDioxide yapiwrapper declaration)
 
 type
+
   TYCarbonDioxide = class;
   //--- (YCarbonDioxide class start)
   TYCarbonDioxideValueCallback = procedure(func: TYCarbonDioxide; value:string);
@@ -88,7 +89,6 @@ type
     _timedReportCallbackCarbonDioxide : TYCarbonDioxideTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YCarbonDioxide declaration)
 
   public
@@ -422,6 +422,7 @@ type
 //--- (end of YCarbonDioxide functions declaration)
 
 implementation
+
 //--- (YCarbonDioxide dlldef)
 //--- (end of YCarbonDioxide dlldef)
 
@@ -707,4 +708,5 @@ finalization
   //--- (YCarbonDioxide cleanup)
   _CarbonDioxideCleanup();
   //--- (end of YCarbonDioxide cleanup)
+
 end.

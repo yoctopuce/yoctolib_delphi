@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_poweroutput.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_poweroutput.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindPowerOutput(), the high-level API for PowerOutput functions
  *
@@ -59,12 +59,13 @@ const Y_VOLTAGE_OUT4V7 = 3;
 const Y_VOLTAGE_OUT1V8 = 4;
 const Y_VOLTAGE_INVALID = -1;
 
-
 //--- (end of YPowerOutput definitions)
+
 //--- (YPowerOutput yapiwrapper declaration)
 //--- (end of YPowerOutput yapiwrapper declaration)
 
 type
+
   TYPowerOutput = class;
   //--- (YPowerOutput class start)
   TYPowerOutputValueCallback = procedure(func: TYPowerOutput; value:string);
@@ -89,7 +90,6 @@ type
     _valueCallbackPowerOutput : TYPowerOutputValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YPowerOutput declaration)
 
   public
@@ -317,6 +317,7 @@ type
 //--- (end of YPowerOutput functions declaration)
 
 implementation
+
 //--- (YPowerOutput dlldef)
 //--- (end of YPowerOutput dlldef)
 
@@ -499,4 +500,5 @@ finalization
   //--- (YPowerOutput cleanup)
   _PowerOutputCleanup();
   //--- (end of YPowerOutput cleanup)
+
 end.

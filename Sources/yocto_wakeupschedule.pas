@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.pas 48183 2022-01-20 10:26:11Z mvuilleu $
+ *  $Id: yocto_wakeupschedule.pas 56230 2023-08-21 15:20:59Z mvuilleu $
  *
  *  Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
@@ -58,14 +58,16 @@ const Y_HOURS_INVALID                 = YAPI_INVALID_UINT;
 const Y_WEEKDAYS_INVALID              = YAPI_INVALID_UINT;
 const Y_MONTHDAYS_INVALID             = YAPI_INVALID_UINT;
 const Y_MONTHS_INVALID                = YAPI_INVALID_UINT;
+const Y_SECONDSBEFORE_INVALID         = YAPI_INVALID_UINT;
 const Y_NEXTOCCURENCE_INVALID         = YAPI_INVALID_LONG;
 
-
 //--- (end of YWakeUpSchedule definitions)
+
 //--- (YWakeUpSchedule yapiwrapper declaration)
 //--- (end of YWakeUpSchedule yapiwrapper declaration)
 
 type
+
   TYWakeUpSchedule = class;
   //--- (YWakeUpSchedule class start)
   TYWakeUpScheduleValueCallback = procedure(func: TYWakeUpSchedule; value:string);
@@ -93,11 +95,11 @@ type
     _weekDays                 : LongInt;
     _monthDays                : LongInt;
     _months                   : LongInt;
+    _secondsBefore            : LongInt;
     _nextOccurence            : int64;
     _valueCallbackWakeUpSchedule : TYWakeUpScheduleValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YWakeUpSchedule declaration)
 
   public
@@ -352,6 +354,51 @@ type
 
     ////
     /// <summary>
+    ///   Returns the number of seconds to anticipate wake-up time to allow
+    ///   the system to power-up.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the number of seconds to anticipate wake-up time to allow
+    ///   the system to power-up
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YWakeUpSchedule.SECONDSBEFORE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_secondsBefore():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the number of seconds to anticipate wake-up time to allow
+    ///   the system to power-up.
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the number of seconds to anticipate wake-up time to allow
+    ///   the system to power-up
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_secondsBefore(newval:LongInt):integer;
+
+    ////
+    /// <summary>
     ///   Returns the date/time (seconds) of the next wake up occurrence.
     /// <para>
     /// </para>
@@ -568,6 +615,7 @@ type
 //--- (end of YWakeUpSchedule functions declaration)
 
 implementation
+
 //--- (YWakeUpSchedule dlldef)
 //--- (end of YWakeUpSchedule dlldef)
 
@@ -582,6 +630,7 @@ implementation
       _weekDays := Y_WEEKDAYS_INVALID;
       _monthDays := Y_MONTHDAYS_INVALID;
       _months := Y_MONTHS_INVALID;
+      _secondsBefore := Y_SECONDSBEFORE_INVALID;
       _nextOccurence := Y_NEXTOCCURENCE_INVALID;
       _valueCallbackWakeUpSchedule := nil;
       //--- (end of YWakeUpSchedule accessors initialization)
@@ -630,6 +679,12 @@ implementation
       if (member^.name = 'months') then
         begin
           _months := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'secondsBefore') then
+        begin
+          _secondsBefore := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -799,6 +854,32 @@ implementation
       result := _setAttr('months',rest_val);
     end;
 
+  function TYWakeUpSchedule.get_secondsBefore():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_SECONDSBEFORE_INVALID;
+              exit;
+            end;
+        end;
+      res := self._secondsBefore;
+      result := res;
+      exit;
+    end;
+
+
+  function TYWakeUpSchedule.set_secondsBefore(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('secondsBefore',rest_val);
+    end;
+
   function TYWakeUpSchedule.get_nextOccurence():int64;
     var
       res : int64;
@@ -961,4 +1042,5 @@ finalization
   //--- (YWakeUpSchedule cleanup)
   _WakeUpScheduleCleanup();
   //--- (end of YWakeUpSchedule cleanup)
+
 end.

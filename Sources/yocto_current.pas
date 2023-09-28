@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_current.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_current.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindCurrent(), the high-level API for Current functions
  *
@@ -56,12 +56,13 @@ const Y_ENABLED_FALSE = 0;
 const Y_ENABLED_TRUE = 1;
 const Y_ENABLED_INVALID = -1;
 
-
 //--- (end of YCurrent definitions)
+
 //--- (YCurrent yapiwrapper declaration)
 //--- (end of YCurrent yapiwrapper declaration)
 
 type
+
   TYCurrent = class;
   //--- (YCurrent class start)
   TYCurrentValueCallback = procedure(func: TYCurrent; value:string);
@@ -88,7 +89,6 @@ type
     _timedReportCallbackCurrent : TYCurrentTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YCurrent declaration)
 
   public
@@ -338,6 +338,7 @@ type
 //--- (end of YCurrent functions declaration)
 
 implementation
+
 //--- (YCurrent dlldef)
 //--- (end of YCurrent dlldef)
 
@@ -555,4 +556,5 @@ finalization
   //--- (YCurrent cleanup)
   _CurrentCleanup();
   //--- (end of YCurrent cleanup)
+
 end.

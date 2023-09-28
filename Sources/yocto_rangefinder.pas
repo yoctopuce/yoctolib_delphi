@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_rangefinder.pas 52848 2023-01-20 15:49:48Z mvuilleu $
+ *  $Id: yocto_rangefinder.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindRangeFinder(), the high-level API for RangeFinder functions
  *
@@ -63,12 +63,13 @@ const Y_HARDWARECALIBRATION_INVALID   = YAPI_INVALID_STRING;
 const Y_CURRENTTEMPERATURE_INVALID    = YAPI_INVALID_DOUBLE;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
-
 //--- (end of YRangeFinder definitions)
+
 //--- (YRangeFinder yapiwrapper declaration)
 //--- (end of YRangeFinder yapiwrapper declaration)
 
 type
+
   TYRangeFinder = class;
   //--- (YRangeFinder class start)
   TYRangeFinderValueCallback = procedure(func: TYRangeFinder; value:string);
@@ -101,7 +102,6 @@ type
     _timedReportCallbackRangeFinder : TYRangeFinderTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YRangeFinder declaration)
 
   public
@@ -572,6 +572,7 @@ type
 //--- (end of YRangeFinder functions declaration)
 
 implementation
+
 //--- (YRangeFinder dlldef)
 //--- (end of YRangeFinder dlldef)
 
@@ -1016,4 +1017,5 @@ finalization
   //--- (YRangeFinder cleanup)
   _RangeFinderCleanup();
   //--- (end of YRangeFinder cleanup)
+
 end.

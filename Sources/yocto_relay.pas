@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_relay.pas 54155 2023-04-20 10:23:39Z seb $
+ *  $Id: yocto_relay.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindRelay(), the high-level API for Relay functions
  *
@@ -75,12 +75,13 @@ const Y_PULSETIMER_INVALID            = YAPI_INVALID_LONG;
 const Y_COUNTDOWN_INVALID             = YAPI_INVALID_LONG;
 
 var Y_DELAYEDPULSETIMER_INVALID : TYRelayDelayedPulse;
-
 //--- (end of YRelay definitions)
+
 //--- (YRelay yapiwrapper declaration)
 //--- (end of YRelay yapiwrapper declaration)
 
 type
+
   TYRelay = class;
   //--- (YRelay class start)
   TYRelayValueCallback = procedure(func: TYRelay; value:string);
@@ -117,7 +118,6 @@ type
     _firm                     : LongInt;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YRelay declaration)
 
   public
@@ -630,6 +630,7 @@ type
 //--- (end of YRelay functions declaration)
 
 implementation
+
 //--- (YRelay dlldef)
 //--- (end of YRelay dlldef)
 
@@ -1160,4 +1161,5 @@ finalization
   //--- (YRelay cleanup)
   _RelayCleanup();
   //--- (end of YRelay cleanup)
+
 end.

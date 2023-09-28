@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.pas 48183 2022-01-20 10:26:11Z mvuilleu $
+ *  $Id: yocto_wakeupmonitor.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -67,12 +67,13 @@ const Y_WAKEUPSTATE_AWAKE = 1;
 const Y_WAKEUPSTATE_INVALID = -1;
 const Y_RTCTIME_INVALID               = YAPI_INVALID_LONG;
 
-
 //--- (end of YWakeUpMonitor definitions)
+
 //--- (YWakeUpMonitor yapiwrapper declaration)
 //--- (end of YWakeUpMonitor yapiwrapper declaration)
 
 type
+
   TYWakeUpMonitor = class;
   //--- (YWakeUpMonitor class start)
   TYWakeUpMonitorValueCallback = procedure(func: TYWakeUpMonitor; value:string);
@@ -103,7 +104,6 @@ type
     _valueCallbackWakeUpMonitor : TYWakeUpMonitorValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YWakeUpMonitor declaration)
 
   public
@@ -534,6 +534,7 @@ type
 //--- (end of YWakeUpMonitor functions declaration)
 
 implementation
+
 //--- (YWakeUpMonitor dlldef)
 //--- (end of YWakeUpMonitor dlldef)
 
@@ -936,4 +937,5 @@ finalization
   //--- (YWakeUpMonitor cleanup)
   _WakeUpMonitorCleanup();
   //--- (end of YWakeUpMonitor cleanup)
+
 end.

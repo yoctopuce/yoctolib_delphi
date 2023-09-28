@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_dualpower.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_dualpower.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindDualPower(), the high-level API for DualPower functions
  *
@@ -63,12 +63,13 @@ const Y_POWERCONTROL_OFF = 3;
 const Y_POWERCONTROL_INVALID = -1;
 const Y_EXTVOLTAGE_INVALID            = YAPI_INVALID_UINT;
 
-
 //--- (end of YDualPower definitions)
+
 //--- (YDualPower yapiwrapper declaration)
 //--- (end of YDualPower yapiwrapper declaration)
 
 type
+
   TYDualPower = class;
   //--- (YDualPower class start)
   TYDualPowerValueCallback = procedure(func: TYDualPower; value:string);
@@ -97,7 +98,6 @@ type
     _valueCallbackDualPower   : TYDualPowerValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YDualPower declaration)
 
   public
@@ -358,6 +358,7 @@ type
 //--- (end of YDualPower functions declaration)
 
 implementation
+
 //--- (YDualPower dlldef)
 //--- (end of YDualPower dlldef)
 
@@ -590,4 +591,5 @@ finalization
   //--- (YDualPower cleanup)
   _DualPowerCleanup();
   //--- (end of YDualPower cleanup)
+
 end.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_compass.pas 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_compass.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindCompass(), the high-level API for Compass functions
  *
@@ -59,12 +59,13 @@ const Y_AXIS_Z = 2;
 const Y_AXIS_INVALID = -1;
 const Y_MAGNETICHEADING_INVALID       = YAPI_INVALID_DOUBLE;
 
-
 //--- (end of YCompass definitions)
+
 //--- (YCompass yapiwrapper declaration)
 //--- (end of YCompass yapiwrapper declaration)
 
 type
+
   TYCompass = class;
   //--- (YCompass class start)
   TYCompassValueCallback = procedure(func: TYCompass; value:string);
@@ -92,7 +93,6 @@ type
     _timedReportCallbackCompass : TYCompassTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YCompass declaration)
 
   public
@@ -357,6 +357,7 @@ type
 //--- (end of YCompass functions declaration)
 
 implementation
+
 //--- (YCompass dlldef)
 //--- (end of YCompass dlldef)
 
@@ -624,4 +625,5 @@ finalization
   //--- (YCompass cleanup)
   _CompassCleanup();
   //--- (end of YCompass cleanup)
+
 end.

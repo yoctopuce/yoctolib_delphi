@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_temperature.pas 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_temperature.pas 56230 2023-08-21 15:20:59Z mvuilleu $
  *
  *  Implements yFindTemperature(), the high-level API for Temperature functions
  *
@@ -75,12 +75,13 @@ const Y_SIGNALVALUE_INVALID           = YAPI_INVALID_DOUBLE;
 const Y_SIGNALUNIT_INVALID            = YAPI_INVALID_STRING;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
-
 //--- (end of YTemperature definitions)
+
 //--- (YTemperature yapiwrapper declaration)
 //--- (end of YTemperature yapiwrapper declaration)
 
 type
+
   TYTemperature = class;
   //--- (YTemperature class start)
   TYTemperatureValueCallback = procedure(func: TYTemperature; value:string);
@@ -112,7 +113,6 @@ type
     _timedReportCallbackTemperature : TYTemperatureTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YTemperature declaration)
 
   public
@@ -533,6 +533,7 @@ type
 //--- (end of YTemperature functions declaration)
 
 implementation
+
 //--- (YTemperature dlldef)
 //--- (end of YTemperature dlldef)
 
@@ -912,7 +913,7 @@ implementation
       idx := 0;
       while idx < siz do
         begin
-          temp := StrToFloat(paramlist[2*idx+1])/1000.0;
+          temp := _yapiStrToFloat(paramlist[2*idx+1])/1000.0;
           templist[templist_pos] := temp;
           inc(templist_pos);
           idx := idx + 1;
@@ -936,7 +937,7 @@ implementation
               if (temp > prev) and(temp < curr) then
                 begin
                   curr := temp;
-                  currRes := StrToFloat(paramlist[2*idx])/1000.0;
+                  currRes := _yapiStrToFloat(paramlist[2*idx])/1000.0;
                   found := 1;
                 end;
               idx := idx + 1;
@@ -1023,4 +1024,5 @@ finalization
   //--- (YTemperature cleanup)
   _TemperatureCleanup();
   //--- (end of YTemperature cleanup)
+
 end.

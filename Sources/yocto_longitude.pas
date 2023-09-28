@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_longitude.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_longitude.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindLongitude(), the high-level API for Longitude functions
  *
@@ -53,12 +53,13 @@ uses
 //--- (YLongitude definitions)
 
 
-
 //--- (end of YLongitude definitions)
+
 //--- (YLongitude yapiwrapper declaration)
 //--- (end of YLongitude yapiwrapper declaration)
 
 type
+
   TYLongitude = class;
   //--- (YLongitude class start)
   TYLongitudeValueCallback = procedure(func: TYLongitude; value:string);
@@ -83,7 +84,6 @@ type
     _timedReportCallbackLongitude : TYLongitudeTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YLongitude declaration)
 
   public
@@ -286,6 +286,7 @@ type
 //--- (end of YLongitude functions declaration)
 
 implementation
+
 //--- (YLongitude dlldef)
 //--- (end of YLongitude dlldef)
 
@@ -470,4 +471,5 @@ finalization
   //--- (YLongitude cleanup)
   _LongitudeCleanup();
   //--- (end of YLongitude cleanup)
+
 end.

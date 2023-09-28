@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_steppermotor.pas 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_steppermotor.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindStepperMotor(), the high-level API for StepperMotor functions
  *
@@ -79,12 +79,13 @@ const Y_AUXMODE_INVALID               = YAPI_INVALID_STRING;
 const Y_AUXSIGNAL_INVALID             = YAPI_INVALID_INT;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
-
 //--- (end of YStepperMotor definitions)
+
 //--- (YStepperMotor yapiwrapper declaration)
 //--- (end of YStepperMotor yapiwrapper declaration)
 
 type
+
   TYStepperMotor = class;
   //--- (YStepperMotor class start)
   TYStepperMotorValueCallback = procedure(func: TYStepperMotor; value:string);
@@ -121,7 +122,6 @@ type
     _valueCallbackStepperMotor : TYStepperMotorValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YStepperMotor declaration)
 
   public
@@ -931,6 +931,7 @@ type
 //--- (end of YStepperMotor functions declaration)
 
 implementation
+
 //--- (YStepperMotor dlldef)
 //--- (end of YStepperMotor dlldef)
 
@@ -1682,4 +1683,5 @@ finalization
   //--- (YStepperMotor cleanup)
   _StepperMotorCleanup();
   //--- (end of YStepperMotor cleanup)
+
 end.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_oscontrol.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_oscontrol.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindOsControl(), the high-level API for OsControl functions
  *
@@ -54,12 +54,13 @@ uses
 
 const Y_SHUTDOWNCOUNTDOWN_INVALID     = YAPI_INVALID_UINT;
 
-
 //--- (end of YOsControl definitions)
+
 //--- (YOsControl yapiwrapper declaration)
 //--- (end of YOsControl yapiwrapper declaration)
 
 type
+
   TYOsControl = class;
   //--- (YOsControl class start)
   TYOsControlValueCallback = procedure(func: TYOsControl; value:string);
@@ -84,7 +85,6 @@ type
     _valueCallbackOsControl   : TYOsControlValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YOsControl declaration)
 
   public
@@ -304,6 +304,7 @@ type
 //--- (end of YOsControl functions declaration)
 
 implementation
+
 //--- (YOsControl dlldef)
 //--- (end of YOsControl dlldef)
 
@@ -493,4 +494,5 @@ finalization
   //--- (YOsControl cleanup)
   _OsControlCleanup();
   //--- (end of YOsControl cleanup)
+
 end.

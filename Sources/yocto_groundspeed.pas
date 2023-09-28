@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_groundspeed.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_groundspeed.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindGroundSpeed(), the high-level API for GroundSpeed functions
  *
@@ -53,12 +53,13 @@ uses
 //--- (YGroundSpeed definitions)
 
 
-
 //--- (end of YGroundSpeed definitions)
+
 //--- (YGroundSpeed yapiwrapper declaration)
 //--- (end of YGroundSpeed yapiwrapper declaration)
 
 type
+
   TYGroundSpeed = class;
   //--- (YGroundSpeed class start)
   TYGroundSpeedValueCallback = procedure(func: TYGroundSpeed; value:string);
@@ -83,7 +84,6 @@ type
     _timedReportCallbackGroundSpeed : TYGroundSpeedTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YGroundSpeed declaration)
 
   public
@@ -286,6 +286,7 @@ type
 //--- (end of YGroundSpeed functions declaration)
 
 implementation
+
 //--- (YGroundSpeed dlldef)
 //--- (end of YGroundSpeed dlldef)
 
@@ -470,4 +471,5 @@ finalization
   //--- (YGroundSpeed cleanup)
   _GroundSpeedCleanup();
   //--- (end of YGroundSpeed cleanup)
+
 end.

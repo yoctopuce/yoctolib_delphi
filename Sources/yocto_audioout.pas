@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_audioout.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_audioout.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindAudioOut(), the high-level API for AudioOut functions
  *
@@ -60,12 +60,13 @@ const Y_VOLUMERANGE_INVALID           = YAPI_INVALID_STRING;
 const Y_SIGNAL_INVALID                = YAPI_INVALID_INT;
 const Y_NOSIGNALFOR_INVALID           = YAPI_INVALID_INT;
 
-
 //--- (end of YAudioOut definitions)
+
 //--- (YAudioOut yapiwrapper declaration)
 //--- (end of YAudioOut yapiwrapper declaration)
 
 type
+
   TYAudioOut = class;
   //--- (YAudioOut class start)
   TYAudioOutValueCallback = procedure(func: TYAudioOut; value:string);
@@ -92,7 +93,6 @@ type
     _valueCallbackAudioOut    : TYAudioOutValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YAudioOut declaration)
 
   public
@@ -410,6 +410,7 @@ type
 //--- (end of YAudioOut functions declaration)
 
 implementation
+
 //--- (YAudioOut dlldef)
 //--- (end of YAudioOut dlldef)
 
@@ -700,4 +701,5 @@ finalization
   //--- (YAudioOut cleanup)
   _AudioOutCleanup();
   //--- (end of YAudioOut cleanup)
+
 end.

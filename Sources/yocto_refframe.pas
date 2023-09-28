@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_refframe.pas 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_refframe.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -67,12 +67,13 @@ const Y_FUSIONMODE_INCLIN_90DEG_3G6 = 6;
 const Y_FUSIONMODE_INCLIN_10DEG = 7;
 const Y_FUSIONMODE_INVALID = -1;
 
-
 //--- (end of YRefFrame definitions)
+
 //--- (YRefFrame yapiwrapper declaration)
 //--- (end of YRefFrame yapiwrapper declaration)
 
 type
+
   TYRefFrame = class;
   //--- (YRefFrame class start)
   TYRefFrameValueCallback = procedure(func: TYRefFrame; value:string);
@@ -124,7 +125,6 @@ type
     _calibAccZScale           : double;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YRefFrame declaration)
 
   public
@@ -695,6 +695,7 @@ type
 //--- (end of YRefFrame functions declaration)
 
 implementation
+
 //--- (YRefFrame dlldef)
 //--- (end of YRefFrame dlldef)
 
@@ -1668,4 +1669,5 @@ finalization
   //--- (YRefFrame cleanup)
   _RefFrameCleanup();
   //--- (end of YRefFrame cleanup)
+
 end.

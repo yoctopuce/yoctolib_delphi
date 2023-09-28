@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_daisychain.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_daisychain.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindDaisyChain(), the high-level API for DaisyChain functions
  *
@@ -61,12 +61,13 @@ const Y_DAISYSTATE_INVALID = -1;
 const Y_CHILDCOUNT_INVALID            = YAPI_INVALID_UINT;
 const Y_REQUIREDCHILDCOUNT_INVALID    = YAPI_INVALID_UINT;
 
-
 //--- (end of YDaisyChain definitions)
+
 //--- (YDaisyChain yapiwrapper declaration)
 //--- (end of YDaisyChain yapiwrapper declaration)
 
 type
+
   TYDaisyChain = class;
   //--- (YDaisyChain class start)
   TYDaisyChainValueCallback = procedure(func: TYDaisyChain; value:string);
@@ -93,7 +94,6 @@ type
     _valueCallbackDaisyChain  : TYDaisyChainValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YDaisyChain declaration)
 
   public
@@ -353,6 +353,7 @@ type
 //--- (end of YDaisyChain functions declaration)
 
 implementation
+
 //--- (YDaisyChain dlldef)
 //--- (end of YDaisyChain dlldef)
 
@@ -585,4 +586,5 @@ finalization
   //--- (YDaisyChain cleanup)
   _DaisyChainCleanup();
   //--- (end of YDaisyChain cleanup)
+
 end.

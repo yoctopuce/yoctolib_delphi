@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_tvoc.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_tvoc.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindTvoc(), the high-level API for Tvoc functions
  *
@@ -53,12 +53,13 @@ uses
 //--- (YTvoc definitions)
 
 
-
 //--- (end of YTvoc definitions)
+
 //--- (YTvoc yapiwrapper declaration)
 //--- (end of YTvoc yapiwrapper declaration)
 
 type
+
   TYTvoc = class;
   //--- (YTvoc class start)
   TYTvocValueCallback = procedure(func: TYTvoc; value:string);
@@ -84,7 +85,6 @@ type
     _timedReportCallbackTvoc  : TYTvocTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YTvoc declaration)
 
   public
@@ -287,6 +287,7 @@ type
 //--- (end of YTvoc functions declaration)
 
 implementation
+
 //--- (YTvoc dlldef)
 //--- (end of YTvoc dlldef)
 
@@ -471,4 +472,5 @@ finalization
   //--- (YTvoc cleanup)
   _TvocCleanup();
   //--- (end of YTvoc cleanup)
+
 end.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_hubport.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_hubport.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindHubPort(), the high-level API for HubPort functions
  *
@@ -63,12 +63,13 @@ const Y_PORTSTATE_PROG = 4;
 const Y_PORTSTATE_INVALID = -1;
 const Y_BAUDRATE_INVALID              = YAPI_INVALID_UINT;
 
-
 //--- (end of YHubPort definitions)
+
 //--- (YHubPort yapiwrapper declaration)
 //--- (end of YHubPort yapiwrapper declaration)
 
 type
+
   TYHubPort = class;
   //--- (YHubPort class start)
   TYHubPortValueCallback = procedure(func: TYHubPort; value:string);
@@ -97,7 +98,6 @@ type
     _valueCallbackHubPort     : TYHubPortValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YHubPort declaration)
 
   public
@@ -359,6 +359,7 @@ type
 //--- (end of YHubPort functions declaration)
 
 implementation
+
 //--- (YHubPort dlldef)
 //--- (end of YHubPort dlldef)
 
@@ -591,4 +592,5 @@ finalization
   //--- (YHubPort cleanup)
   _HubPortCleanup();
   //--- (end of YHubPort cleanup)
+
 end.

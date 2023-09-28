@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_multisenscontroller.pas 49501 2022-04-21 07:09:25Z mvuilleu $
+ *  $Id: yocto_multisenscontroller.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindMultiSensController(), the high-level API for MultiSensController functions
  *
@@ -60,12 +60,13 @@ const Y_MAINTENANCEMODE_INVALID = -1;
 const Y_LASTADDRESSDETECTED_INVALID   = YAPI_INVALID_UINT;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
-
 //--- (end of YMultiSensController definitions)
+
 //--- (YMultiSensController yapiwrapper declaration)
 //--- (end of YMultiSensController yapiwrapper declaration)
 
 type
+
   TYMultiSensController = class;
   //--- (YMultiSensController class start)
   TYMultiSensControllerValueCallback = procedure(func: TYMultiSensController; value:string);
@@ -94,7 +95,6 @@ type
     _valueCallbackMultiSensController : TYMultiSensControllerValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YMultiSensController declaration)
 
   public
@@ -446,6 +446,7 @@ type
 //--- (end of YMultiSensController functions declaration)
 
 implementation
+
 //--- (YMultiSensController dlldef)
 //--- (end of YMultiSensController dlldef)
 
@@ -796,4 +797,5 @@ finalization
   //--- (YMultiSensController cleanup)
   _MultiSensControllerCleanup();
   //--- (end of YMultiSensController cleanup)
+
 end.

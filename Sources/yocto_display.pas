@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 54155 2023-04-20 10:23:39Z seb $
+ * $Id: yocto_display.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -71,12 +71,10 @@ const Y_LAYERHEIGHT_INVALID           = YAPI_INVALID_UINT;
 const Y_LAYERCOUNT_INVALID            = YAPI_INVALID_UINT;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
-
 //--- (end of generated code: YDisplay definitions)
 
 //--- (generated code: YDisplayLayer definitions)
 type  TYALIGN = (Y_ALIGN_TOP_LEFT,Y_ALIGN_CENTER_LEFT,Y_ALIGN_BASELINE_LEFT,Y_ALIGN_BOTTOM_LEFT,Y_ALIGN_TOP_CENTER,Y_ALIGN_CENTER,Y_ALIGN_BASELINE_CENTER,Y_ALIGN_BOTTOM_CENTER,Y_ALIGN_TOP_DECIMAL,Y_ALIGN_CENTER_DECIMAL,Y_ALIGN_BASELINE_DECIMAL,Y_ALIGN_BOTTOM_DECIMAL,Y_ALIGN_TOP_RIGHT,Y_ALIGN_CENTER_RIGHT,Y_ALIGN_BASELINE_RIGHT,Y_ALIGN_BOTTOM_RIGHT);
-
 
 //--- (end of generated code: YDisplayLayer definitions)
 
@@ -130,7 +128,6 @@ type
     _allDisplayLayers         : TYDisplayLayerArray;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of generated code: YDisplay declaration)
 
 private
@@ -785,7 +782,6 @@ end;
 
   //--- (generated code: YDisplayLayer declaration)
     // Attributes (function value cache)
-
     //--- (end of generated code: YDisplayLayer declaration)
 private
    _display : TYdisplay;
@@ -802,6 +798,7 @@ public
 
 
    //--- (generated code: YDisplayLayer accessors declaration)
+
     ////
     /// <summary>
     ///   Reverts the layer to its initial state (fully transparent, default settings).

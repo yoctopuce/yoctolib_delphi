@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_gps.pas 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_gps.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindGps(), the high-level API for Gps functions
  *
@@ -81,12 +81,13 @@ const Y_DATETIME_INVALID              = YAPI_INVALID_STRING;
 const Y_UTCOFFSET_INVALID             = YAPI_INVALID_INT;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
-
 //--- (end of YGps definitions)
+
 //--- (YGps yapiwrapper declaration)
 //--- (end of YGps yapiwrapper declaration)
 
 type
+
   TYGps = class;
   //--- (YGps class start)
   TYGpsValueCallback = procedure(func: TYGps; value:string);
@@ -132,7 +133,6 @@ type
     _valueCallbackGps         : TYGpsValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YGps declaration)
 
   public
@@ -672,6 +672,7 @@ type
 //--- (end of YGps functions declaration)
 
 implementation
+
 //--- (YGps dlldef)
 //--- (end of YGps dlldef)
 
@@ -1253,4 +1254,5 @@ finalization
   //--- (YGps cleanup)
   _GpsCleanup();
   //--- (end of YGps cleanup)
+
 end.

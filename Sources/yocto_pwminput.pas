@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_pwminput.pas 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_pwminput.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindPwmInput(), the high-level API for PwmInput functions
  *
@@ -74,12 +74,13 @@ const Y_DEBOUNCEPERIOD_INVALID        = YAPI_INVALID_UINT;
 const Y_BANDWIDTH_INVALID             = YAPI_INVALID_UINT;
 const Y_EDGESPERPERIOD_INVALID        = YAPI_INVALID_UINT;
 
-
 //--- (end of YPwmInput definitions)
+
 //--- (YPwmInput yapiwrapper declaration)
 //--- (end of YPwmInput yapiwrapper declaration)
 
 type
+
   TYPwmInput = class;
   //--- (YPwmInput class start)
   TYPwmInputValueCallback = procedure(func: TYPwmInput; value:string);
@@ -116,7 +117,6 @@ type
     _timedReportCallbackPwmInput : TYPwmInputTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YPwmInput declaration)
 
   public
@@ -627,6 +627,7 @@ type
 //--- (end of YPwmInput functions declaration)
 
 implementation
+
 //--- (YPwmInput dlldef)
 //--- (end of YPwmInput dlldef)
 
@@ -1108,4 +1109,5 @@ finalization
   //--- (YPwmInput cleanup)
   _PwmInputCleanup();
   //--- (end of YPwmInput cleanup)
+
 end.

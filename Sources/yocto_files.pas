@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 54155 2023-04-20 10:23:39Z seb $
+ * $Id: yocto_files.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -51,7 +51,6 @@ uses
 const Y_FILESCOUNT_INVALID            = YAPI_INVALID_UINT;
 const Y_FREESPACE_INVALID             = YAPI_INVALID_UINT;
 
-
 //--- (end of generated code: YFiles definitions)
 
 type
@@ -81,13 +80,13 @@ type
     _name                     : string;
     _size                     : LongInt;
     _crc                      : LongInt;
-
     //--- (end of generated code: YFileRecord declaration)
 public
    constructor create(data:string);
 
 
    //--- (generated code: YFileRecord accessors declaration)
+
     ////
     /// <summary>
     ///   Returns the name of the file.
@@ -157,7 +156,6 @@ TYFILERECORDARRAY = array of TYFileRecord;
     _valueCallbackFiles       : TYFilesValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of generated code: YFiles declaration)
 
 public

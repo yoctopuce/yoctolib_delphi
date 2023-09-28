@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_colorled.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_colorled.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindColorLed(), the high-level API for ColorLed functions
  *
@@ -69,12 +69,13 @@ const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 var Y_RGBMOVE_INVALID : TYColorLedMove;
 var Y_HSLMOVE_INVALID : TYColorLedMove;
-
 //--- (end of YColorLed definitions)
+
 //--- (YColorLed yapiwrapper declaration)
 //--- (end of YColorLed yapiwrapper declaration)
 
 type
+
   TYColorLed = class;
   //--- (YColorLed class start)
   TYColorLedValueCallback = procedure(func: TYColorLed; value:string);
@@ -111,7 +112,6 @@ type
     _valueCallbackColorLed    : TYColorLedValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YColorLed declaration)
 
   public
@@ -177,7 +177,7 @@ type
 
     ////
     /// <summary>
-    ///   Changes the current color of the LED, using a color HSL.
+    ///   Changes the current color of the LED, using a specific HSL color.
     /// <para>
     ///   Encoding is done as follows: 0xHHSSLL.
     /// </para>
@@ -185,7 +185,7 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer corresponding to the current color of the LED, using a color HSL
+    ///   an integer corresponding to the current color of the LED, using a specific HSL color
     /// </param>
     /// <para>
     /// </para>
@@ -333,7 +333,7 @@ type
 
     ////
     /// <summary>
-    ///   Return the blinking sequence signature.
+    ///   Returns the blinking sequence signature.
     /// <para>
     ///   Since blinking
     ///   sequences cannot be read from the device, this can be used
@@ -344,7 +344,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer
+    ///   an integer corresponding to the blinking sequence signature
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>YColorLed.BLINKSEQSIGNATURE_INVALID</c>.
@@ -614,6 +614,7 @@ type
 //--- (end of YColorLed functions declaration)
 
 implementation
+
 //--- (YColorLed dlldef)
 //--- (end of YColorLed dlldef)
 
@@ -1173,4 +1174,5 @@ finalization
   //--- (YColorLed cleanup)
   _ColorLedCleanup();
   //--- (end of YColorLed cleanup)
+
 end.

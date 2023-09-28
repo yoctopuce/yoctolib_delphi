@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_arithmeticsensor.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_arithmeticsensor.pas 56230 2023-08-21 15:20:59Z mvuilleu $
  *
  *  Implements yFindArithmeticSensor(), the high-level API for ArithmeticSensor functions
  *
@@ -55,12 +55,13 @@ uses
 const Y_DESCRIPTION_INVALID           = YAPI_INVALID_STRING;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
-
 //--- (end of YArithmeticSensor definitions)
+
 //--- (YArithmeticSensor yapiwrapper declaration)
 //--- (end of YArithmeticSensor yapiwrapper declaration)
 
 type
+
   TYArithmeticSensor = class;
   //--- (YArithmeticSensor class start)
   TYArithmeticSensorValueCallback = procedure(func: TYArithmeticSensor; value:string);
@@ -89,7 +90,6 @@ type
     _timedReportCallbackArithmeticSensor : TYArithmeticSensorTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YArithmeticSensor declaration)
 
   public
@@ -435,6 +435,7 @@ type
 //--- (end of YArithmeticSensor functions declaration)
 
 implementation
+
 //--- (YArithmeticSensor dlldef)
 //--- (end of YArithmeticSensor dlldef)
 
@@ -641,7 +642,7 @@ implementation
           result:=YAPI_INVALID_DOUBLE;
           exit;
         end;
-      resval := StrToFloat(Copy(diags,  8 + 1, Length(diags)-8));
+      resval := _yapiStrToFloat(Copy(diags,  8 + 1, Length(diags)-8));
       result := resval;
       exit;
     end;
@@ -800,4 +801,5 @@ finalization
   //--- (YArithmeticSensor cleanup)
   _ArithmeticSensorCleanup();
   //--- (end of YArithmeticSensor cleanup)
+
 end.

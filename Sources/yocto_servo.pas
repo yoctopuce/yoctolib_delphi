@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_servo.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_servo.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindServo(), the high-level API for Servo functions
  *
@@ -71,12 +71,13 @@ const Y_ENABLEDATPOWERON_TRUE = 1;
 const Y_ENABLEDATPOWERON_INVALID = -1;
 
 var Y_MOVE_INVALID : TYServoMove;
-
 //--- (end of YServo definitions)
+
 //--- (YServo yapiwrapper declaration)
 //--- (end of YServo yapiwrapper declaration)
 
 type
+
   TYServo = class;
   //--- (YServo class start)
   TYServoValueCallback = procedure(func: TYServo; value:string);
@@ -109,7 +110,6 @@ type
     _valueCallbackServo       : TYServoValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YServo declaration)
 
   public
@@ -569,6 +569,7 @@ type
 //--- (end of YServo functions declaration)
 
 implementation
+
 //--- (YServo dlldef)
 //--- (end of YServo dlldef)
 
@@ -1000,4 +1001,5 @@ finalization
   //--- (YServo cleanup)
   _ServoCleanup();
   //--- (end of YServo cleanup)
+
 end.

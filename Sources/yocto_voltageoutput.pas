@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_voltageoutput.pas 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_voltageoutput.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindVoltageOutput(), the high-level API for VoltageOutput functions
  *
@@ -56,12 +56,13 @@ const Y_CURRENTVOLTAGE_INVALID        = YAPI_INVALID_DOUBLE;
 const Y_VOLTAGETRANSITION_INVALID     = YAPI_INVALID_STRING;
 const Y_VOLTAGEATSTARTUP_INVALID      = YAPI_INVALID_DOUBLE;
 
-
 //--- (end of YVoltageOutput definitions)
+
 //--- (YVoltageOutput yapiwrapper declaration)
 //--- (end of YVoltageOutput yapiwrapper declaration)
 
 type
+
   TYVoltageOutput = class;
   //--- (YVoltageOutput class start)
   TYVoltageOutputValueCallback = procedure(func: TYVoltageOutput; value:string);
@@ -86,7 +87,6 @@ type
     _valueCallbackVoltageOutput : TYVoltageOutputValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YVoltageOutput declaration)
 
   public
@@ -373,6 +373,7 @@ type
 //--- (end of YVoltageOutput functions declaration)
 
 implementation
+
 //--- (YVoltageOutput dlldef)
 //--- (end of YVoltageOutput dlldef)
 
@@ -640,4 +641,5 @@ finalization
   //--- (YVoltageOutput cleanup)
   _VoltageOutputCleanup();
   //--- (end of YVoltageOutput cleanup)
+
 end.

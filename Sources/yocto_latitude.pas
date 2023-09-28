@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_latitude.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_latitude.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindLatitude(), the high-level API for Latitude functions
  *
@@ -53,12 +53,13 @@ uses
 //--- (YLatitude definitions)
 
 
-
 //--- (end of YLatitude definitions)
+
 //--- (YLatitude yapiwrapper declaration)
 //--- (end of YLatitude yapiwrapper declaration)
 
 type
+
   TYLatitude = class;
   //--- (YLatitude class start)
   TYLatitudeValueCallback = procedure(func: TYLatitude; value:string);
@@ -83,7 +84,6 @@ type
     _timedReportCallbackLatitude : TYLatitudeTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YLatitude declaration)
 
   public
@@ -286,6 +286,7 @@ type
 //--- (end of YLatitude functions declaration)
 
 implementation
+
 //--- (YLatitude dlldef)
 //--- (end of YLatitude dlldef)
 
@@ -470,4 +471,5 @@ finalization
   //--- (YLatitude cleanup)
   _LatitudeCleanup();
   //--- (end of YLatitude cleanup)
+
 end.

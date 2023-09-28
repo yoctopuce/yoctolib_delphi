@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_humidity.pas 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_humidity.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindHumidity(), the high-level API for Humidity functions
  *
@@ -55,12 +55,13 @@ uses
 const Y_RELHUM_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_ABSHUM_INVALID                = YAPI_INVALID_DOUBLE;
 
-
 //--- (end of YHumidity definitions)
+
 //--- (YHumidity yapiwrapper declaration)
 //--- (end of YHumidity yapiwrapper declaration)
 
 type
+
   TYHumidity = class;
   //--- (YHumidity class start)
   TYHumidityValueCallback = procedure(func: TYHumidity; value:string);
@@ -88,7 +89,6 @@ type
     _timedReportCallbackHumidity : TYHumidityTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YHumidity declaration)
 
   public
@@ -355,6 +355,7 @@ type
 //--- (end of YHumidity functions declaration)
 
 implementation
+
 //--- (YHumidity dlldef)
 //--- (end of YHumidity dlldef)
 
@@ -597,4 +598,5 @@ finalization
   //--- (YHumidity cleanup)
   _HumidityCleanup();
   //--- (end of YHumidity cleanup)
+
 end.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_weighscale.pas 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_weighscale.pas 56230 2023-08-21 15:20:59Z mvuilleu $
  *
  *  Implements yFindWeighScale(), the high-level API for WeighScale functions
  *
@@ -64,12 +64,13 @@ const Y_COMPENSATION_INVALID          = YAPI_INVALID_DOUBLE;
 const Y_ZEROTRACKING_INVALID          = YAPI_INVALID_DOUBLE;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
-
 //--- (end of YWeighScale definitions)
+
 //--- (YWeighScale yapiwrapper declaration)
 //--- (end of YWeighScale yapiwrapper declaration)
 
 type
+
   TYWeighScale = class;
   //--- (YWeighScale class start)
   TYWeighScaleValueCallback = procedure(func: TYWeighScale; value:string);
@@ -105,7 +106,6 @@ type
     _timedReportCallbackWeighScale : TYWeighScaleTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YWeighScale declaration)
 
   public
@@ -845,6 +845,7 @@ type
 //--- (end of YWeighScale functions declaration)
 
 implementation
+
 //--- (YWeighScale dlldef)
 //--- (end of YWeighScale dlldef)
 
@@ -1321,8 +1322,8 @@ implementation
       idx := 0;
       while idx < siz do
         begin
-          temp := StrToFloat(paramlist[2*idx])/1000.0;
-          comp := StrToFloat(paramlist[2*idx+1])/1000.0;
+          temp := _yapiStrToFloat(paramlist[2*idx])/1000.0;
+          comp := _yapiStrToFloat(paramlist[2*idx+1])/1000.0;
           tempValues[tempValues_pos] := temp;
           inc(tempValues_pos);
           compValues[compValues_pos] := comp;
@@ -1458,4 +1459,5 @@ finalization
   //--- (YWeighScale cleanup)
   _WeighScaleCleanup();
   //--- (end of YWeighScale cleanup)
+
 end.

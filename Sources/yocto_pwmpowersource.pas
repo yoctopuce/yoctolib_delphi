@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_pwmpowersource.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_pwmpowersource.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindPwmPowerSource(), the high-level API for PwmPowerSource functions
  *
@@ -58,12 +58,13 @@ const Y_POWERMODE_EXT_V = 2;
 const Y_POWERMODE_OPNDRN = 3;
 const Y_POWERMODE_INVALID = -1;
 
-
 //--- (end of YPwmPowerSource definitions)
+
 //--- (YPwmPowerSource yapiwrapper declaration)
 //--- (end of YPwmPowerSource yapiwrapper declaration)
 
 type
+
   TYPwmPowerSource = class;
   //--- (YPwmPowerSource class start)
   TYPwmPowerSourceValueCallback = procedure(func: TYPwmPowerSource; value:string);
@@ -87,7 +88,6 @@ type
     _valueCallbackPwmPowerSource : TYPwmPowerSourceValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YPwmPowerSource declaration)
 
   public
@@ -318,6 +318,7 @@ type
 //--- (end of YPwmPowerSource functions declaration)
 
 implementation
+
 //--- (YPwmPowerSource dlldef)
 //--- (end of YPwmPowerSource dlldef)
 
@@ -500,4 +501,5 @@ finalization
   //--- (YPwmPowerSource cleanup)
   _PwmPowerSourceCleanup();
   //--- (end of YPwmPowerSource cleanup)
+
 end.

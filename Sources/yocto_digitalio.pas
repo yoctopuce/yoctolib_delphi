@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_digitalio.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_digitalio.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindDigitalIO(), the high-level API for DigitalIO functions
  *
@@ -64,12 +64,13 @@ const Y_OUTPUTVOLTAGE_EXT_V = 2;
 const Y_OUTPUTVOLTAGE_INVALID = -1;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
-
 //--- (end of YDigitalIO definitions)
+
 //--- (YDigitalIO yapiwrapper declaration)
 //--- (end of YDigitalIO yapiwrapper declaration)
 
 type
+
   TYDigitalIO = class;
   //--- (YDigitalIO class start)
   TYDigitalIOValueCallback = procedure(func: TYDigitalIO; value:string);
@@ -108,7 +109,6 @@ type
     _valueCallbackDigitalIO   : TYDigitalIOValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YDigitalIO declaration)
 
   public
@@ -797,6 +797,7 @@ type
 //--- (end of YDigitalIO functions declaration)
 
 implementation
+
 //--- (YDigitalIO dlldef)
 //--- (end of YDigitalIO dlldef)
 
@@ -1331,4 +1332,5 @@ finalization
   //--- (YDigitalIO cleanup)
   _DigitalIOCleanup();
   //--- (end of YDigitalIO cleanup)
+
 end.

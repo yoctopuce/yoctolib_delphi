@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_realtimeclock.pas 53849 2023-04-04 11:59:51Z mvuilleu $
+ *  $Id: yocto_realtimeclock.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
@@ -62,12 +62,13 @@ const Y_DISABLEHOSTSYNC_FALSE = 0;
 const Y_DISABLEHOSTSYNC_TRUE = 1;
 const Y_DISABLEHOSTSYNC_INVALID = -1;
 
-
 //--- (end of YRealTimeClock definitions)
+
 //--- (YRealTimeClock yapiwrapper declaration)
 //--- (end of YRealTimeClock yapiwrapper declaration)
 
 type
+
   TYRealTimeClock = class;
   //--- (YRealTimeClock class start)
   TYRealTimeClockValueCallback = procedure(func: TYRealTimeClock; value:string);
@@ -99,7 +100,6 @@ type
     _valueCallbackRealTimeClock : TYRealTimeClockValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YRealTimeClock declaration)
 
   public
@@ -446,6 +446,7 @@ type
 //--- (end of YRealTimeClock functions declaration)
 
 implementation
+
 //--- (YRealTimeClock dlldef)
 //--- (end of YRealTimeClock dlldef)
 
@@ -744,4 +745,5 @@ finalization
   //--- (YRealTimeClock cleanup)
   _RealTimeClockCleanup();
   //--- (end of YRealTimeClock cleanup)
+
 end.

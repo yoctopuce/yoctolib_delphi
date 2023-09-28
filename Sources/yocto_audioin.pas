@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_audioin.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_audioin.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindAudioIn(), the high-level API for AudioIn functions
  *
@@ -60,12 +60,13 @@ const Y_VOLUMERANGE_INVALID           = YAPI_INVALID_STRING;
 const Y_SIGNAL_INVALID                = YAPI_INVALID_INT;
 const Y_NOSIGNALFOR_INVALID           = YAPI_INVALID_INT;
 
-
 //--- (end of YAudioIn definitions)
+
 //--- (YAudioIn yapiwrapper declaration)
 //--- (end of YAudioIn yapiwrapper declaration)
 
 type
+
   TYAudioIn = class;
   //--- (YAudioIn class start)
   TYAudioInValueCallback = procedure(func: TYAudioIn; value:string);
@@ -92,7 +93,6 @@ type
     _valueCallbackAudioIn     : TYAudioInValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YAudioIn declaration)
 
   public
@@ -410,6 +410,7 @@ type
 //--- (end of YAudioIn functions declaration)
 
 implementation
+
 //--- (YAudioIn dlldef)
 //--- (end of YAudioIn dlldef)
 
@@ -700,4 +701,5 @@ finalization
   //--- (YAudioIn cleanup)
   _AudioInCleanup();
   //--- (end of YAudioIn cleanup)
+
 end.

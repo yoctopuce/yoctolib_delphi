@@ -68,17 +68,18 @@ const Y_BITCHAIN7_INVALID             = YAPI_INVALID_STRING;
 const Y_WATCHDOGPERIOD_INVALID        = YAPI_INVALID_UINT;
 const Y_CHAINDIAGS_INVALID            = YAPI_INVALID_UINT;
 
-
 //--- (end of YInputChain definitions)
+
 //--- (YInputChain yapiwrapper declaration)
 //--- (end of YInputChain yapiwrapper declaration)
 
 type
+
   TYInputChain = class;
   //--- (YInputChain class start)
   TYInputChainValueCallback = procedure(func: TYInputChain; value:string);
   TYInputChainTimedReportCallback = procedure(func: TYInputChain; value:TYMeasure);
-  TYEventCallback = procedure(func: TYInputChain; stamp:integer; evtType:string; evtData:string; evtChange:string);
+  TYStateChangeCallback = procedure(func: TYInputChain; stamp:integer; evtType:string; evtData:string; evtChange:string);
 
   ////
   /// <summary>
@@ -108,14 +109,13 @@ type
     _watchdogPeriod           : LongInt;
     _chainDiags               : LongInt;
     _valueCallbackInputChain  : TYInputChainValueCallback;
-    _eventCallback            : TYEventCallback;
+    _stateChangeCallback      : TYStateChangeCallback;
     _prevPos                  : LongInt;
     _eventPos                 : LongInt;
     _eventStamp               : LongInt;
     _eventChains              : TStringArray;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YInputChain declaration)
 
   public
@@ -620,7 +620,7 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </param>
     ///-
-    function registerEventCallback(callback: TYEventCallback):LongInt; overload; virtual;
+    function registerStateChangeCallback(callback: TYStateChangeCallback):LongInt; overload; virtual;
 
     function _internalEventHandler(cbpos: string):LongInt; overload; virtual;
 
@@ -730,6 +730,7 @@ Procedure yInternalEventCallback(obj:TYInputChain; value:string);
 //--- (end of YInputChain functions declaration)
 
 implementation
+
 //--- (YInputChain dlldef)
 //--- (end of YInputChain dlldef)
 
@@ -1190,7 +1191,7 @@ implementation
     end;
 
 
-  function TYInputChain.registerEventCallback(callback: TYEventCallback):LongInt;
+  function TYInputChain.registerStateChangeCallback(callback: TYStateChangeCallback):LongInt;
     begin
       if (addr(callback) <> nil) then
         begin
@@ -1202,7 +1203,7 @@ implementation
         end;
       // register user callback AFTER the internal pseudo-event,
       // to make sure we start with future events only
-      self._eventCallback := callback;
+      self._stateChangeCallback := callback;
       result := 0;
       exit;
     end;
@@ -1242,7 +1243,7 @@ implementation
           result := YAPI_SUCCESS;
           exit;
         end;
-      if not((addr(self._eventCallback) <> nil)) then
+      if not((addr(self._stateChangeCallback) <> nil)) then
         begin
           // first simulated event, use it to initialize reference values
           self._eventPos := newPos;
@@ -1313,7 +1314,7 @@ implementation
                           self._eventChains[ chainIdx] := evtData;
                         end;
                     end;
-                  self._eventCallback(self, evtStamp, evtType, evtData, evtChange);
+                  self._stateChangeCallback(self, evtStamp, evtType, evtData, evtChange);
                 end;
             end;
           arrPos := arrPos + 1;
@@ -1462,4 +1463,5 @@ finalization
   //--- (YInputChain cleanup)
   _InputChainCleanup();
   //--- (end of YInputChain cleanup)
+
 end.

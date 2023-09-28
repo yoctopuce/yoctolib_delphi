@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_power.pas 53420 2023-03-06 10:38:51Z mvuilleu $
+ *  $Id: yocto_power.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindPower(), the high-level API for Power functions
  *
@@ -59,12 +59,13 @@ const Y_DELIVEREDENERGYMETER_INVALID  = YAPI_INVALID_DOUBLE;
 const Y_RECEIVEDENERGYMETER_INVALID   = YAPI_INVALID_DOUBLE;
 const Y_METERTIMER_INVALID            = YAPI_INVALID_UINT;
 
-
 //--- (end of YPower definitions)
+
 //--- (YPower yapiwrapper declaration)
 //--- (end of YPower yapiwrapper declaration)
 
 type
+
   TYPower = class;
   //--- (YPower class start)
   TYPowerValueCallback = procedure(func: TYPower; value:string);
@@ -96,7 +97,6 @@ type
     _timedReportCallbackPower : TYPowerTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YPower declaration)
 
   public
@@ -437,6 +437,7 @@ type
 //--- (end of YPower functions declaration)
 
 implementation
+
 //--- (YPower dlldef)
 //--- (end of YPower dlldef)
 
@@ -791,4 +792,5 @@ finalization
   //--- (YPower cleanup)
   _PowerCleanup();
   //--- (end of YPower cleanup)
+
 end.

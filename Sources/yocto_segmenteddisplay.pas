@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_segmenteddisplay.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_segmenteddisplay.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindSegmentedDisplay(), the high-level API for SegmentedDisplay functions
  *
@@ -59,12 +59,13 @@ const Y_DISPLAYMODE_AUTO1 = 2;
 const Y_DISPLAYMODE_AUTO60 = 3;
 const Y_DISPLAYMODE_INVALID = -1;
 
-
 //--- (end of YSegmentedDisplay definitions)
+
 //--- (YSegmentedDisplay yapiwrapper declaration)
 //--- (end of YSegmentedDisplay yapiwrapper declaration)
 
 type
+
   TYSegmentedDisplay = class;
   //--- (YSegmentedDisplay class start)
   TYSegmentedDisplayValueCallback = procedure(func: TYSegmentedDisplay; value:string);
@@ -88,7 +89,6 @@ type
     _valueCallbackSegmentedDisplay : TYSegmentedDisplayValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YSegmentedDisplay declaration)
 
   public
@@ -312,6 +312,7 @@ type
 //--- (end of YSegmentedDisplay functions declaration)
 
 implementation
+
 //--- (YSegmentedDisplay dlldef)
 //--- (end of YSegmentedDisplay dlldef)
 
@@ -527,4 +528,5 @@ finalization
   //--- (YSegmentedDisplay cleanup)
   _SegmentedDisplayCleanup();
   //--- (end of YSegmentedDisplay cleanup)
+
 end.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_proximity.pas 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_proximity.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindProximity(), the high-level API for Proximity functions
  *
@@ -69,12 +69,13 @@ const Y_PROXIMITYREPORTMODE_PRESENCE = 1;
 const Y_PROXIMITYREPORTMODE_PULSECOUNT = 2;
 const Y_PROXIMITYREPORTMODE_INVALID = -1;
 
-
 //--- (end of YProximity definitions)
+
 //--- (YProximity yapiwrapper declaration)
 //--- (end of YProximity yapiwrapper declaration)
 
 type
+
   TYProximity = class;
   //--- (YProximity class start)
   TYProximityValueCallback = procedure(func: TYProximity; value:string);
@@ -112,7 +113,6 @@ type
     _timedReportCallbackProximity : TYProximityTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YProximity declaration)
 
   public
@@ -671,6 +671,7 @@ type
 //--- (end of YProximity functions declaration)
 
 implementation
+
 //--- (YProximity dlldef)
 //--- (end of YProximity dlldef)
 
@@ -1185,4 +1186,5 @@ finalization
   //--- (YProximity cleanup)
   _ProximityCleanup();
   //--- (end of YProximity cleanup)
+
 end.

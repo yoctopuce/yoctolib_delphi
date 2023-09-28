@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_multiaxiscontroller.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_multiaxiscontroller.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
  *
@@ -62,12 +62,13 @@ const Y_GLOBALSTATE_BATCH = 5;
 const Y_GLOBALSTATE_INVALID = -1;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
-
 //--- (end of YMultiAxisController definitions)
+
 //--- (YMultiAxisController yapiwrapper declaration)
 //--- (end of YMultiAxisController yapiwrapper declaration)
 
 type
+
   TYMultiAxisController = class;
   //--- (YMultiAxisController class start)
   TYMultiAxisControllerValueCallback = procedure(func: TYMultiAxisController; value:string);
@@ -93,7 +94,6 @@ type
     _valueCallbackMultiAxisController : TYMultiAxisControllerValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YMultiAxisController declaration)
 
   public
@@ -461,6 +461,7 @@ type
 //--- (end of YMultiAxisController functions declaration)
 
 implementation
+
 //--- (YMultiAxisController dlldef)
 //--- (end of YMultiAxisController dlldef)
 
@@ -826,4 +827,5 @@ finalization
   //--- (YMultiAxisController cleanup)
   _MultiAxisControllerCleanup();
   //--- (end of YMultiAxisController cleanup)
+
 end.

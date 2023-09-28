@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_gyro.pas 54155 2023-04-20 10:23:39Z seb $
+ * $Id: yocto_gyro.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  * Implements yFindGyro(), the high-level API for Gyro functions
  *
@@ -51,7 +51,6 @@ uses
 //--- (generated code: YQt definitions)
 
 
-
 //--- (end of generated code: YQt definitions)
 
 //--- (generated code: YGyro definitions)
@@ -60,7 +59,6 @@ const Y_BANDWIDTH_INVALID             = YAPI_INVALID_UINT;
 const Y_XVALUE_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_YVALUE_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_ZVALUE_INVALID                = YAPI_INVALID_DOUBLE;
-
 
 //--- (end of generated code: YGyro definitions)
 
@@ -92,7 +90,6 @@ type
     _timedReportCallbackQt    : TYQtTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of generated code: YQt declaration)
 
   public
@@ -344,7 +341,6 @@ type
     _anglesCallback           : TYAnglesCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of generated code: YGyro declaration)
 
   public

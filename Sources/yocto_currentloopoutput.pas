@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_currentloopoutput.pas 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_currentloopoutput.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
  *
@@ -60,12 +60,13 @@ const Y_LOOPPOWER_LOWPWR = 1;
 const Y_LOOPPOWER_POWEROK = 2;
 const Y_LOOPPOWER_INVALID = -1;
 
-
 //--- (end of YCurrentLoopOutput definitions)
+
 //--- (YCurrentLoopOutput yapiwrapper declaration)
 //--- (end of YCurrentLoopOutput yapiwrapper declaration)
 
 type
+
   TYCurrentLoopOutput = class;
   //--- (YCurrentLoopOutput class start)
   TYCurrentLoopOutputValueCallback = procedure(func: TYCurrentLoopOutput; value:string);
@@ -93,7 +94,6 @@ type
     _valueCallbackCurrentLoopOutput : TYCurrentLoopOutputValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YCurrentLoopOutput declaration)
 
   public
@@ -403,6 +403,7 @@ type
 //--- (end of YCurrentLoopOutput functions declaration)
 
 implementation
+
 //--- (YCurrentLoopOutput dlldef)
 //--- (end of YCurrentLoopOutput dlldef)
 
@@ -695,4 +696,5 @@ finalization
   //--- (YCurrentLoopOutput cleanup)
   _CurrentLoopOutputCleanup();
   //--- (end of YCurrentLoopOutput cleanup)
+
 end.

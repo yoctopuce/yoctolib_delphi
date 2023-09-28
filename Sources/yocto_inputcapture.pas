@@ -52,7 +52,6 @@ uses
 
 //--- (generated code: YInputCaptureData definitions)
 
-
 //--- (end of generated code: YInputCaptureData definitions)
 //--- (generated code: YInputCaptureData yapiwrapper declaration)
 //--- (end of generated code: YInputCaptureData yapiwrapper declaration)
@@ -95,7 +94,6 @@ type
     _var1samples              : TDoubleArray;
     _var2samples              : TDoubleArray;
     _var3samples              : TDoubleArray;
-
     //--- (end of generated code: YInputCaptureData declaration)
 
   public
@@ -105,6 +103,7 @@ type
     Procedure _throw(errType:YRETCODE;  errMsg:string );
 
     //--- (generated code: YInputCaptureData accessors declaration)
+
     function _decodeU16(sdata: TByteArray; ofs: LongInt):LongInt; overload; virtual;
 
     function _decodeU32(sdata: TByteArray; ofs: LongInt):double; overload; virtual;
@@ -380,7 +379,6 @@ const Y_CAPTURETYPEATSTARTUP_DPF_MIN = 19;
 const Y_CAPTURETYPEATSTARTUP_INVALID = -1;
 const Y_CONDVALUEATSTARTUP_INVALID    = YAPI_INVALID_DOUBLE;
 
-
 //--- (end of generated code: YInputCapture definitions)
 //--- (generated code: YInputCapture yapiwrapper declaration)
 //--- (end of generated code: YInputCapture yapiwrapper declaration)
@@ -417,7 +415,6 @@ type
     _valueCallbackInputCapture : TYInputCaptureValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of generated code: YInputCapture declaration)
 
   public
@@ -1043,6 +1040,9 @@ implementation
       ms : LongInt;
       recSize : LongInt;
       count : LongInt;
+      mult1 : LongInt;
+      mult2 : LongInt;
+      mult3 : LongInt;
       v : double;
       var1samples_pos : LongInt;
       var2samples_pos : LongInt;
@@ -1132,6 +1132,30 @@ implementation
               recOfs := recOfs + 1;
             end;
         end;
+      if ((recOfs) and 1) = 1 then
+        begin
+          // align to next word
+          recOfs := recOfs + 1;
+        end;
+      mult1 := 1;
+      mult2 := 1;
+      mult3 := 1;
+      if recOfs < self._recOfs then
+        begin
+          // load optional value multiplier
+          mult1 := self._decodeU16(sdata, self._recOfs);
+          recOfs := recOfs + 2;
+          if self._var2size > 0 then
+            begin
+              mult2 := self._decodeU16(sdata, self._recOfs);
+              recOfs := recOfs + 2;
+            end;
+          if self._var3size > 0 then
+            begin
+              mult3 := self._decodeU16(sdata, self._recOfs);
+              recOfs := recOfs + 2;
+            end;
+        end;
       var1samples_pos := length(self._var1samples);
       SetLength(self._var1samples, var1samples_pos+self._nRecs);;
       recOfs := self._recOfs;
@@ -1139,7 +1163,7 @@ implementation
       while (count > 0) and(recOfs + self._var1size <= buffSize) do
         begin
           v := self._decodeVal(sdata,  recOfs, self._var1size) / 1000.0;
-          self._var1samples[var1samples_pos] := v;
+          self._var1samples[var1samples_pos] := v*mult1;
           inc(var1samples_pos);
           recOfs := recOfs + recSize;
         end;
@@ -1153,7 +1177,7 @@ implementation
           while (count > 0) and(recOfs + self._var2size <= buffSize) do
             begin
               v := self._decodeVal(sdata,  recOfs, self._var2size) / 1000.0;
-              self._var2samples[var2samples_pos] := v;
+              self._var2samples[var2samples_pos] := v*mult2;
               inc(var2samples_pos);
               recOfs := recOfs + recSize;
             end;
@@ -1168,7 +1192,7 @@ implementation
           while (count > 0) and(recOfs + self._var3size <= buffSize) do
             begin
               v := self._decodeVal(sdata,  recOfs, self._var3size) / 1000.0;
-              self._var3samples[var3samples_pos] := v;
+              self._var3samples[var3samples_pos] := v*mult3;
               inc(var3samples_pos);
               recOfs := recOfs + recSize;
             end;

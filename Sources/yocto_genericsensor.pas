@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_genericsensor.pas 51903 2022-11-29 17:25:59Z mvuilleu $
+ *  $Id: yocto_genericsensor.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -68,12 +68,13 @@ const Y_ENABLED_FALSE = 0;
 const Y_ENABLED_TRUE = 1;
 const Y_ENABLED_INVALID = -1;
 
-
 //--- (end of YGenericSensor definitions)
+
 //--- (YGenericSensor yapiwrapper declaration)
 //--- (end of YGenericSensor yapiwrapper declaration)
 
 type
+
   TYGenericSensor = class;
   //--- (YGenericSensor class start)
   TYGenericSensorValueCallback = procedure(func: TYGenericSensor; value:string);
@@ -108,7 +109,6 @@ type
     _timedReportCallbackGenericSensor : TYGenericSensorTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YGenericSensor declaration)
 
   public
@@ -636,6 +636,7 @@ type
 //--- (end of YGenericSensor functions declaration)
 
 implementation
+
 //--- (YGenericSensor dlldef)
 //--- (end of YGenericSensor dlldef)
 
@@ -1055,4 +1056,5 @@ finalization
   //--- (YGenericSensor cleanup)
   _GenericSensorCleanup();
   //--- (end of YGenericSensor cleanup)
+
 end.

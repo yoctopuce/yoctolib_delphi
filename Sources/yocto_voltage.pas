@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_voltage.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_voltage.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindVoltage(), the high-level API for Voltage functions
  *
@@ -56,12 +56,13 @@ const Y_ENABLED_FALSE = 0;
 const Y_ENABLED_TRUE = 1;
 const Y_ENABLED_INVALID = -1;
 
-
 //--- (end of YVoltage definitions)
+
 //--- (YVoltage yapiwrapper declaration)
 //--- (end of YVoltage yapiwrapper declaration)
 
 type
+
   TYVoltage = class;
   //--- (YVoltage class start)
   TYVoltageValueCallback = procedure(func: TYVoltage; value:string);
@@ -88,7 +89,6 @@ type
     _timedReportCallbackVoltage : TYVoltageTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YVoltage declaration)
 
   public
@@ -338,6 +338,7 @@ type
 //--- (end of YVoltage functions declaration)
 
 implementation
+
 //--- (YVoltage dlldef)
 //--- (end of YVoltage dlldef)
 
@@ -555,4 +556,5 @@ finalization
   //--- (YVoltage cleanup)
   _VoltageCleanup();
   //--- (end of YVoltage cleanup)
+
 end.

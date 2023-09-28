@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_led.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_led.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindLed(), the high-level API for Led functions
  *
@@ -64,12 +64,13 @@ const Y_BLINKING_CALL = 4;
 const Y_BLINKING_PANIC = 5;
 const Y_BLINKING_INVALID = -1;
 
-
 //--- (end of YLed definitions)
+
 //--- (YLed yapiwrapper declaration)
 //--- (end of YLed yapiwrapper declaration)
 
 type
+
   TYLed = class;
   //--- (YLed class start)
   TYLedValueCallback = procedure(func: TYLed; value:string);
@@ -97,7 +98,6 @@ type
     _valueCallbackLed         : TYLedValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YLed declaration)
 
   public
@@ -401,6 +401,7 @@ type
 //--- (end of YLed functions declaration)
 
 implementation
+
 //--- (YLed dlldef)
 //--- (end of YLed dlldef)
 
@@ -649,4 +650,5 @@ finalization
   //--- (YLed cleanup)
   _LedCleanup();
   //--- (end of YLed cleanup)
+
 end.

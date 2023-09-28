@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 54155 2023-04-20 10:23:39Z seb $
+ * $Id: yocto_messagebox.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *
@@ -55,13 +55,12 @@ const Y_SLOTSCOUNT_INVALID            = YAPI_INVALID_UINT;
 const Y_SLOTSBITMAP_INVALID           = YAPI_INVALID_STRING;
 const Y_PDUSENT_INVALID               = YAPI_INVALID_UINT;
 const Y_PDURECEIVED_INVALID           = YAPI_INVALID_UINT;
+const Y_OBEY_INVALID                  = YAPI_INVALID_STRING;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
-
 
 //--- (end of generated code: YMessageBox definitions)
 
 //--- (generated code: YSms definitions)
-
 
 //--- (end of generated code: YSms definitions)
 
@@ -96,6 +95,7 @@ type
     _slotsBitmap              : string;
     _pduSent                  : LongInt;
     _pduReceived              : LongInt;
+    _obey                     : string;
     _command                  : string;
     _valueCallbackMessageBox  : TYMessageBoxValueCallback;
     _nextMsgRef               : LongInt;
@@ -107,7 +107,6 @@ type
     _iso2gsm                  : TByteArray;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of generated code: YMessageBox declaration)
 
   public
@@ -227,6 +226,60 @@ type
     /// </para>
     ///-
     function set_pduReceived(newval:LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the phone number authorized to send remote management commands.
+    /// <para>
+    ///   When a phone number is specified, the hub will take contre of all incoming
+    ///   SMS messages: it will execute commands coming from the authorized number,
+    ///   and delete all messages once received (whether authorized or not).
+    ///   If you need to receive SMS messages using your own software, leave this
+    ///   attribute empty.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the phone number authorized to send remote management commands
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YMessageBox.OBEY_INVALID</c>.
+    /// </para>
+    ///-
+    function get_obey():string;
+
+    ////
+    /// <summary>
+    ///   Changes the phone number authorized to send remote management commands.
+    /// <para>
+    ///   The phone number usually starts with a '+' and does not include spacers.
+    ///   When a phone number is specified, the hub will take contre of all incoming
+    ///   SMS messages: it will execute commands coming from the authorized number,
+    ///   and delete all messages once received (whether authorized or not).
+    ///   If you need to receive SMS messages using your own software, leave this
+    ///   attribute empty. Remember to call the <c>saveToFlash()</c> method of the
+    ///   module if the modification must be kept.
+    /// </para>
+    /// <para>
+    ///   This feature is only available since YoctoHub-GSM-4G.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a string corresponding to the phone number authorized to send remote management commands
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_obey(newval:string):integer;
 
     function get_command():string;
 
@@ -500,13 +553,13 @@ type
     _aggSig                   : string;
     _aggIdx                   : LongInt;
     _aggCnt                   : LongInt;
-
     //--- (end of generated code: YSms declaration)
 
   public
     constructor create(mbox :TYMessageBox);
 
     //--- (generated code: YSms accessors declaration)
+
     function get_slot():LongInt; overload; virtual;
 
     function get_smsc():string; overload; virtual;
@@ -767,6 +820,7 @@ implementation
       _slotsBitmap := Y_SLOTSBITMAP_INVALID;
       _pduSent := Y_PDUSENT_INVALID;
       _pduReceived := Y_PDURECEIVED_INVALID;
+      _obey := Y_OBEY_INVALID;
       _command := Y_COMMAND_INVALID;
       _valueCallbackMessageBox := nil;
       _nextMsgRef := 0;
@@ -809,6 +863,12 @@ implementation
       if (member^.name = 'pduReceived') then
         begin
           _pduReceived := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'obey') then
+        begin
+          _obey := string(member^.svalue);
          result := 1;
          exit;
          end;
@@ -926,6 +986,32 @@ implementation
     begin
       rest_val := inttostr(newval);
       result := _setAttr('pduReceived',rest_val);
+    end;
+
+  function TYMessageBox.get_obey():string;
+    var
+      res : string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_OBEY_INVALID;
+              exit;
+            end;
+        end;
+      res := self._obey;
+      result := res;
+      exit;
+    end;
+
+
+  function TYMessageBox.set_obey(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('obey',rest_val);
     end;
 
   function TYMessageBox.get_command():string;

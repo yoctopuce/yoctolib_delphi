@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_magnetometer.pas 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_magnetometer.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindMagnetometer(), the high-level API for Magnetometer functions
  *
@@ -57,12 +57,13 @@ const Y_XVALUE_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_YVALUE_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_ZVALUE_INVALID                = YAPI_INVALID_DOUBLE;
 
-
 //--- (end of YMagnetometer definitions)
+
 //--- (YMagnetometer yapiwrapper declaration)
 //--- (end of YMagnetometer yapiwrapper declaration)
 
 type
+
   TYMagnetometer = class;
   //--- (YMagnetometer class start)
   TYMagnetometerValueCallback = procedure(func: TYMagnetometer; value:string);
@@ -97,7 +98,6 @@ type
     _timedReportCallbackMagnetometer : TYMagnetometerTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YMagnetometer declaration)
 
   public
@@ -394,6 +394,7 @@ type
 //--- (end of YMagnetometer functions declaration)
 
 implementation
+
 //--- (YMagnetometer dlldef)
 //--- (end of YMagnetometer dlldef)
 
@@ -686,4 +687,5 @@ finalization
   //--- (YMagnetometer cleanup)
   _MagnetometerCleanup();
   //--- (end of YMagnetometer cleanup)
+
 end.

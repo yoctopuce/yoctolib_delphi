@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 52892 2023-01-25 10:13:30Z seb $
+ * $Id: yocto_serialport.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -74,7 +74,6 @@ const Y_VOLTAGELEVEL_SDI12 = 8;
 const Y_VOLTAGELEVEL_INVALID = -1;
 const Y_SERIALMODE_INVALID            = YAPI_INVALID_STRING;
 
-
 //--- (end of generated code: YSerialPort definitions)
 
 type
@@ -104,13 +103,13 @@ type
     _tim                      : LongInt;
     _dir                      : LongInt;
     _msg                      : string;
-
     //--- (end of generated code: YSnoopingRecord declaration)
 public
    constructor create(data:string);
 
 
    //--- (generated code: YSnoopingRecord accessors declaration)
+
     ////
     /// <summary>
     ///   Returns the elapsed time, in ms, since the beginning of the preceding message.
@@ -200,7 +199,6 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     _eventCallback            : TYSnoopingCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of generated code: YSerialPort declaration)
 
   public

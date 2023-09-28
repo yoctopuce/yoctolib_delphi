@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_colorledcluster.pas 50281 2022-06-30 07:21:14Z mvuilleu $
+ *  $Id: yocto_colorledcluster.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindColorLedCluster(), the high-level API for ColorLedCluster functions
  *
@@ -63,12 +63,13 @@ const Y_BLINKSEQMAXCOUNT_INVALID      = YAPI_INVALID_UINT;
 const Y_BLINKSEQMAXSIZE_INVALID       = YAPI_INVALID_UINT;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
-
 //--- (end of YColorLedCluster definitions)
+
 //--- (YColorLedCluster yapiwrapper declaration)
 //--- (end of YColorLedCluster yapiwrapper declaration)
 
 type
+
   TYColorLedCluster = class;
   //--- (YColorLedCluster class start)
   TYColorLedClusterValueCallback = procedure(func: TYColorLedCluster; value:string);
@@ -105,7 +106,6 @@ type
     _valueCallbackColorLedCluster : TYColorLedClusterValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YColorLedCluster declaration)
 
   public
@@ -1372,6 +1372,7 @@ type
 //--- (end of YColorLedCluster functions declaration)
 
 implementation
+
 //--- (YColorLedCluster dlldef)
 //--- (end of YColorLedCluster dlldef)
 
@@ -2329,4 +2330,5 @@ finalization
   //--- (YColorLedCluster cleanup)
   _ColorLedClusterCleanup();
   //--- (end of YColorLedCluster cleanup)
+
 end.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_network.pas 53886 2023-04-05 08:06:39Z mvuilleu $
+ *  $Id: yocto_network.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindNetwork(), the high-level API for Network functions
  *
@@ -104,12 +104,13 @@ const Y_CALLBACKMINDELAY_INVALID      = YAPI_INVALID_UINT;
 const Y_CALLBACKMAXDELAY_INVALID      = YAPI_INVALID_UINT;
 const Y_POECURRENT_INVALID            = YAPI_INVALID_UINT;
 
-
 //--- (end of YNetwork definitions)
+
 //--- (YNetwork yapiwrapper declaration)
 //--- (end of YNetwork yapiwrapper declaration)
 
 type
+
   TYNetwork = class;
   //--- (YNetwork class start)
   TYNetworkValueCallback = procedure(func: TYNetwork; value:string);
@@ -159,7 +160,6 @@ type
     _valueCallbackNetwork     : TYNetworkValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YNetwork declaration)
 
   public
@@ -1480,6 +1480,7 @@ type
 //--- (end of YNetwork functions declaration)
 
 implementation
+
 //--- (YNetwork dlldef)
 //--- (end of YNetwork dlldef)
 
@@ -2523,4 +2524,5 @@ finalization
   //--- (YNetwork cleanup)
   _NetworkCleanup();
   //--- (end of YNetwork cleanup)
+
 end.

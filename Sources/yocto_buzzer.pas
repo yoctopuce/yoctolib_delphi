@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_buzzer.pas 50689 2022-08-17 14:37:15Z mvuilleu $
+ *  $Id: yocto_buzzer.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindBuzzer(), the high-level API for Buzzer functions
  *
@@ -59,12 +59,13 @@ const Y_PLAYSEQMAXSIZE_INVALID        = YAPI_INVALID_UINT;
 const Y_PLAYSEQSIGNATURE_INVALID      = YAPI_INVALID_UINT;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
-
 //--- (end of YBuzzer definitions)
+
 //--- (YBuzzer yapiwrapper declaration)
 //--- (end of YBuzzer yapiwrapper declaration)
 
 type
+
   TYBuzzer = class;
   //--- (YBuzzer class start)
   TYBuzzerValueCallback = procedure(func: TYBuzzer; value:string);
@@ -95,7 +96,6 @@ type
     _valueCallbackBuzzer      : TYBuzzerValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YBuzzer declaration)
 
   public
@@ -667,6 +667,7 @@ type
 //--- (end of YBuzzer functions declaration)
 
 implementation
+
 //--- (YBuzzer dlldef)
 //--- (end of YBuzzer dlldef)
 
@@ -1289,4 +1290,5 @@ finalization
   //--- (YBuzzer cleanup)
   _BuzzerCleanup();
   //--- (end of YBuzzer cleanup)
+
 end.

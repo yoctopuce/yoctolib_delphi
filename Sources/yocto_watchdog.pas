@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_watchdog.pas 54155 2023-04-20 10:23:39Z seb $
+ *  $Id: yocto_watchdog.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindWatchdog(), the high-level API for Watchdog functions
  *
@@ -84,12 +84,13 @@ const Y_TRIGGERDURATION_INVALID       = YAPI_INVALID_LONG;
 const Y_LASTTRIGGER_INVALID           = YAPI_INVALID_UINT;
 
 var Y_DELAYEDPULSETIMER_INVALID : TYWatchdogDelayedPulse;
-
 //--- (end of YWatchdog definitions)
+
 //--- (YWatchdog yapiwrapper declaration)
 //--- (end of YWatchdog yapiwrapper declaration)
 
 type
+
   TYWatchdog = class;
   //--- (YWatchdog class start)
   TYWatchdogValueCallback = procedure(func: TYWatchdog; value:string);
@@ -132,7 +133,6 @@ type
     _firm                     : LongInt;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YWatchdog declaration)
 
   public
@@ -851,6 +851,7 @@ type
 //--- (end of YWatchdog functions declaration)
 
 implementation
+
 //--- (YWatchdog dlldef)
 //--- (end of YWatchdog dlldef)
 
@@ -1564,4 +1565,5 @@ finalization
   //--- (YWatchdog cleanup)
   _WatchdogCleanup();
   //--- (end of YWatchdog cleanup)
+
 end.

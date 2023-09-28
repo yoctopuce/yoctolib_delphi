@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_pressure.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_pressure.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindPressure(), the high-level API for Pressure functions
  *
@@ -53,12 +53,13 @@ uses
 //--- (YPressure definitions)
 
 
-
 //--- (end of YPressure definitions)
+
 //--- (YPressure yapiwrapper declaration)
 //--- (end of YPressure yapiwrapper declaration)
 
 type
+
   TYPressure = class;
   //--- (YPressure class start)
   TYPressureValueCallback = procedure(func: TYPressure; value:string);
@@ -84,7 +85,6 @@ type
     _timedReportCallbackPressure : TYPressureTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YPressure declaration)
 
   public
@@ -287,6 +287,7 @@ type
 //--- (end of YPressure functions declaration)
 
 implementation
+
 //--- (YPressure dlldef)
 //--- (end of YPressure dlldef)
 
@@ -471,4 +472,5 @@ finalization
   //--- (YPressure cleanup)
   _PressureCleanup();
   //--- (end of YPressure cleanup)
+
 end.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_lightsensor.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_lightsensor.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindLightSensor(), the high-level API for LightSensor functions
  *
@@ -60,12 +60,13 @@ const Y_MEASURETYPE_HIGH_ENERGY = 4;
 const Y_MEASURETYPE_HIGH_RESOLUTION = 5;
 const Y_MEASURETYPE_INVALID = -1;
 
-
 //--- (end of YLightSensor definitions)
+
 //--- (YLightSensor yapiwrapper declaration)
 //--- (end of YLightSensor yapiwrapper declaration)
 
 type
+
   TYLightSensor = class;
   //--- (YLightSensor class start)
   TYLightSensorValueCallback = procedure(func: TYLightSensor; value:string);
@@ -96,7 +97,6 @@ type
     _timedReportCallbackLightSensor : TYLightSensorTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YLightSensor declaration)
 
   public
@@ -378,6 +378,7 @@ type
 //--- (end of YLightSensor functions declaration)
 
 implementation
+
 //--- (YLightSensor dlldef)
 //--- (end of YLightSensor dlldef)
 
@@ -636,4 +637,5 @@ finalization
   //--- (YLightSensor cleanup)
   _LightSensorCleanup();
   //--- (end of YLightSensor cleanup)
+
 end.

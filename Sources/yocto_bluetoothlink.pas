@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_bluetoothlink.pas 46894 2021-10-25 15:07:44Z seb $
+ *  $Id: yocto_bluetoothlink.pas 56084 2023-08-15 16:13:01Z mvuilleu $
  *
  *  Implements yFindBluetoothLink(), the high-level API for BluetoothLink functions
  *
@@ -71,12 +71,13 @@ const Y_LINKSTATE_INVALID = -1;
 const Y_LINKQUALITY_INVALID           = YAPI_INVALID_UINT;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
-
 //--- (end of YBluetoothLink definitions)
+
 //--- (YBluetoothLink yapiwrapper declaration)
 //--- (end of YBluetoothLink yapiwrapper declaration)
 
 type
+
   TYBluetoothLink = class;
   //--- (YBluetoothLink class start)
   TYBluetoothLinkValueCallback = procedure(func: TYBluetoothLink; value:string);
@@ -109,7 +110,6 @@ type
     _valueCallbackBluetoothLink : TYBluetoothLinkValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-
     //--- (end of YBluetoothLink declaration)
 
   public
@@ -610,6 +610,7 @@ type
 //--- (end of YBluetoothLink functions declaration)
 
 implementation
+
 //--- (YBluetoothLink dlldef)
 //--- (end of YBluetoothLink dlldef)
 
@@ -1071,4 +1072,5 @@ finalization
   //--- (YBluetoothLink cleanup)
   _BluetoothLinkCleanup();
   //--- (end of YBluetoothLink cleanup)
+
 end.
