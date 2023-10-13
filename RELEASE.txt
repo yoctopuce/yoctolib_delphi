@@ -1,3 +1,8 @@
-Delphi v1.10.56784
+Delphi v1.10.57097
 
-- test build
+- Add new secondsBefore attribute to wakeUpSchedule
+- Add support for multiplier in InputCapture
+- Fix compilation that was failing if typed @ operator was enabled
+- Update default port strategy on RegisterHub when contacting VirtualHub4Web (was using 4444, now use 80)
+- Fix truncated value change callback for large V2 notifications when connecting via network
+- Fix network hub discovery (broken since 54099)
