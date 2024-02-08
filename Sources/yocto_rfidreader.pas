@@ -588,7 +588,7 @@ type
   //--- (generated code: YRfidReader class start)
   TYRfidReaderValueCallback = procedure(func: TYRfidReader; value:string);
   TYRfidReaderTimedReportCallback = procedure(func: TYRfidReader; value:TYMeasure);
-  TYEventCallback = procedure(func: TYRfidReader; stamp:integer; evtType:string; evtData:string);
+  TYEventCallback = procedure(func: TYRfidReader; stamp:double; evtType:string; evtData:string);
 
   ////
   /// <summary>
@@ -792,7 +792,7 @@ type
     ///   the detailled status of the operation
     /// </param>
     /// <returns>
-    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    ///   a <c>YRfidTagInfo</c> object.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns an empty <c>YRfidTagInfo</c> objact.
@@ -1537,7 +1537,7 @@ implementation
   constructor TYRfidOptions.Create();
     begin
       //--- (generated code: YRfidOptions accessors initialization)
-      _KeyType := 0;
+      KeyType := 0;
       //--- (end of generated code: YRfidOptions accessors initialization)
     end;
 
@@ -2631,7 +2631,7 @@ implementation
     var
       content : TByteArray;
     begin
-      content := self._download('events.txt');
+      content := self._download('events.txt?pos=0');
       result := _ByteToString(content);
       exit;
     end;
@@ -2658,15 +2658,11 @@ implementation
     var
       cbPos : LongInt;
       cbDPos : LongInt;
-      cbNtags : LongInt;
-      searchTags : LongInt;
       url : string;
       content : TByteArray;
       contentStr : string;
-      currentTags : TStringArray;
       eventArr : TStringArray;
       arrLen : LongInt;
-      lastEvents : TLongIntArray;
       lenStr : string;
       arrPos : LongInt;
       eventStr : string;
@@ -2674,17 +2670,16 @@ implementation
       hexStamp : string;
       typePos : LongInt;
       dataPos : LongInt;
-      evtStamp : LongInt;
+      intStamp : LongInt;
+      binMStamp : TByteArray;
+      msStamp : LongInt;
+      evtStamp : double;
       evtType : string;
       evtData : string;
-      tagIdx : LongInt;
-      lastEvents_pos : LongInt;
     begin
-      SetLength(currentTags, 0);
       SetLength(eventArr, 0);
       // detect possible power cycle of the reader to clear event pointer
       cbPos := _atoi(cbVal);
-      cbNtags := ((cbPos) Mod (1000));
       cbPos := (cbPos div 1000);
       cbDPos := ((cbPos - self._prevCbPos) and ($07ffff));
       self._prevCbPos := cbPos;
@@ -2697,117 +2692,67 @@ implementation
           result := YAPI_SUCCESS;
           exit;
         end;
-      // load all events since previous call
-      url := 'events.txt?pos='+inttostr(self._eventPos);
-
-      content := self._download(url);
-      contentStr := _ByteToString(content);
-      eventArr := _stringSplit(contentStr, #10);
-      arrLen := length(eventArr);
-      if not(arrLen > 0) then
-        begin
-          self._throw( YAPI_IO_ERROR, 'fail to download events');
-          result:=YAPI_IO_ERROR;
-          exit;
-        end;
-      // last element of array is the new position preceeded by '@'
-      arrLen := arrLen - 1;
-      lenStr := eventArr[arrLen];
-      lenStr := Copy(lenStr,  1 + 1, Length(lenStr)-1);
-      // update processed event position pointer
-      self._eventPos := _atoi(lenStr);
       if self._isFirstCb then
         begin
           // first emulated value callback caused by registerValueCallback:
-          // attempt to retrieve arrivals of all tags present to emulate arrival
+          // retrieve arrivals of all tags currently present to emulate arrival
           self._isFirstCb := false;
           self._eventStamp := 0;
-          if cbNtags = 0 then
+          content := self._download('events.txt');
+          contentStr := _ByteToString(content);
+          eventArr := _stringSplit(contentStr, #10);
+          arrLen := length(eventArr);
+          if not(arrLen > 0) then
             begin
-              result := YAPI_SUCCESS;
+              self._throw( YAPI_IO_ERROR, 'fail to download events');
+              result:=YAPI_IO_ERROR;
               exit;
             end;
-          currentTags := self.get_tagIdList;
-          cbNtags := length(currentTags);
-          searchTags := cbNtags;
-          lastEvents_pos := 0;
-          SetLength(lastEvents, cbNtags);
-          arrPos := arrLen - 1;
-          while (arrPos >= 0) and(searchTags > 0) do
-            begin
-              eventStr := eventArr[arrPos];
-              typePos := (pos(':', eventStr) - 1)+1;
-              if typePos > 8 then
-                begin
-                  dataPos := (pos('=', eventStr) - 1)+1;
-                  evtType := Copy(eventStr,  typePos + 1, 1);
-                  if (dataPos > 10) and (evtType = '+') then
-                    begin
-                      evtData := Copy(eventStr,  dataPos + 1, Length(eventStr)-dataPos);
-                      tagIdx := searchTags - 1;
-                      while tagIdx >= 0 do
-                        begin
-                          if (evtData = currentTags[tagIdx]) then
-                            begin
-                              lastEvents[lastEvents_pos] := 0+arrPos;
-                              inc(lastEvents_pos);
-                              currentTags[tagIdx] := '';
-                              while (searchTags > 0) and (currentTags[searchTags-1] = '') do
-                                begin
-                                  searchTags := searchTags - 1;
-                                end;
-                              tagIdx := -1;
-                            end;
-                          tagIdx := tagIdx - 1;
-                        end;
-                    end;
-                end;
-              arrPos := arrPos - 1;
-            end;
-          SetLength(lastEvents, lastEvents_pos);
-          // If we have any remaining tags without a known arrival event,
-          // create a pseudo callback with timestamp zero
-          tagIdx := 0;
-          while tagIdx < searchTags do
-            begin
-              evtData := currentTags[tagIdx];
-              if not((evtData = '')) then
-                begin
-                  self._eventCallback(self, 0, '+', evtData);
-                end;
-              tagIdx := tagIdx + 1;
-            end;
+          // first element of array is the new position preceeded by '@'
+          arrPos := 1;
+          lenStr := eventArr[0];
+          lenStr := Copy(lenStr,  1 + 1, Length(lenStr)-1);
+          // update processed event position pointer
+          self._eventPos := _atoi(lenStr);
         end
       else
         begin
-          // regular callback
-          lastEvents_pos := 0;
-          SetLength(lastEvents, arrLen);
-          arrPos := arrLen - 1;
-          while arrPos >= 0 do
+          // load all events since previous call
+          url := 'events.txt?pos='+inttostr(self._eventPos);
+          content := self._download(url);
+          contentStr := _ByteToString(content);
+          eventArr := _stringSplit(contentStr, #10);
+          arrLen := length(eventArr);
+          if not(arrLen > 0) then
             begin
-              lastEvents[lastEvents_pos] := 0+arrPos;
-              inc(lastEvents_pos);
-              arrPos := arrPos - 1;
+              self._throw( YAPI_IO_ERROR, 'fail to download events');
+              result:=YAPI_IO_ERROR;
+              exit;
             end;
-          SetLength(lastEvents, lastEvents_pos);
+          // last element of array is the new position preceeded by '@'
+          arrPos := 0;
+          arrLen := arrLen - 1;
+          lenStr := eventArr[arrLen];
+          lenStr := Copy(lenStr,  1 + 1, Length(lenStr)-1);
+          // update processed event position pointer
+          self._eventPos := _atoi(lenStr);
         end;
-      // now generate callbacks for each selected event
-      arrLen := length(lastEvents);
-      arrPos := arrLen - 1;
-      while arrPos >= 0 do
+      // now generate callbacks for each real event
+      while arrPos < arrLen do
         begin
-          tagIdx := lastEvents[arrPos];
-          eventStr := eventArr[tagIdx];
+          eventStr := eventArr[arrPos];
           eventLen := Length(eventStr);
-          if eventLen >= 1 then
+          typePos := (pos(':', eventStr) - 1)+1;
+          if (eventLen >= 14) and(typePos > 10) then
             begin
               hexStamp := Copy(eventStr,  0 + 1, 8);
-              evtStamp := StrToInt('$0' + hexStamp);
-              typePos := (pos(':', eventStr) - 1)+1;
-              if (evtStamp >= self._eventStamp) and(typePos > 8) then
+              intStamp := StrToInt('$0' + hexStamp);
+              if intStamp >= self._eventStamp then
                 begin
-                  self._eventStamp := evtStamp;
+                  self._eventStamp := intStamp;
+                  binMStamp := _StrToByte(Copy(eventStr,  8 + 1, 2));
+                  msStamp := (binMStamp[0]-64) * 32 + binMStamp[1];
+                  evtStamp := intStamp + (0.001 * msStamp);
                   dataPos := (pos('=', eventStr) - 1)+1;
                   evtType := Copy(eventStr,  typePos + 1, 1);
                   evtData := '';
@@ -2815,10 +2760,13 @@ implementation
                     begin
                       evtData := Copy(eventStr,  dataPos + 1, eventLen-dataPos);
                     end;
-                  self._eventCallback(self, evtStamp, evtType, evtData);
+                  if (addr(self._eventCallback) <> nil) then
+                    begin
+                      self._eventCallback(self, evtStamp, evtType, evtData);
+                    end;
                 end;
             end;
-          arrPos := arrPos - 1;
+          arrPos := arrPos + 1;
         end;
       result := YAPI_SUCCESS;
       exit;

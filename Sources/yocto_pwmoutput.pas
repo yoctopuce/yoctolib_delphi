@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_pwmoutput.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_pwmoutput.pas 58892 2024-01-11 11:11:28Z mvuilleu $
  *
  *  Implements yFindPwmOutput(), the high-level API for PwmOutput functions
  *
@@ -60,6 +60,9 @@ const Y_PERIOD_INVALID                = YAPI_INVALID_DOUBLE;
 const Y_DUTYCYCLE_INVALID             = YAPI_INVALID_DOUBLE;
 const Y_PULSEDURATION_INVALID         = YAPI_INVALID_DOUBLE;
 const Y_PWMTRANSITION_INVALID         = YAPI_INVALID_STRING;
+const Y_INVERTEDOUTPUT_FALSE = 0;
+const Y_INVERTEDOUTPUT_TRUE = 1;
+const Y_INVERTEDOUTPUT_INVALID = -1;
 const Y_ENABLEDATPOWERON_FALSE = 0;
 const Y_ENABLEDATPOWERON_TRUE = 1;
 const Y_ENABLEDATPOWERON_INVALID = -1;
@@ -98,6 +101,7 @@ type
     _dutyCycle                : double;
     _pulseDuration            : double;
     _pwmTransition            : string;
+    _invertedOutput           : Integer;
     _enabledAtPowerOn         : Integer;
     _dutyCycleAtPowerOn       : double;
     _valueCallbackPwmOutput   : TYPwmOutputValueCallback;
@@ -321,6 +325,49 @@ type
     function get_pwmTransition():string;
 
     function set_pwmTransition(newval:string):integer;
+
+    ////
+    /// <summary>
+    ///   Returns true if the output signal is configured as inverted, and false otherwise.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   either <c>YPwmOutput.INVERTEDOUTPUT_FALSE</c> or <c>YPwmOutput.INVERTEDOUTPUT_TRUE</c>, according
+    ///   to true if the output signal is configured as inverted, and false otherwise
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YPwmOutput.INVERTEDOUTPUT_INVALID</c>.
+    /// </para>
+    ///-
+    function get_invertedOutput():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the inversion mode of the output signal.
+    /// <para>
+    ///   Remember to call the matching module <c>saveToFlash()</c> method if you want
+    ///   the change to be kept after power cycle.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   either <c>YPwmOutput.INVERTEDOUTPUT_FALSE</c> or <c>YPwmOutput.INVERTEDOUTPUT_TRUE</c>, according
+    ///   to the inversion mode of the output signal
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_invertedOutput(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -762,6 +809,7 @@ implementation
       _dutyCycle := Y_DUTYCYCLE_INVALID;
       _pulseDuration := Y_PULSEDURATION_INVALID;
       _pwmTransition := Y_PWMTRANSITION_INVALID;
+      _invertedOutput := Y_INVERTEDOUTPUT_INVALID;
       _enabledAtPowerOn := Y_ENABLEDATPOWERON_INVALID;
       _dutyCycleAtPowerOn := Y_DUTYCYCLEATPOWERON_INVALID;
       _valueCallbackPwmOutput := nil;
@@ -811,6 +859,12 @@ implementation
       if (member^.name = 'pwmTransition') then
         begin
           _pwmTransition := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'invertedOutput') then
+        begin
+          _invertedOutput := member^.ivalue;
          result := 1;
          exit;
          end;
@@ -984,6 +1038,32 @@ implementation
     begin
       rest_val := newval;
       result := _setAttr('pwmTransition',rest_val);
+    end;
+
+  function TYPwmOutput.get_invertedOutput():Integer;
+    var
+      res : Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_INVERTEDOUTPUT_INVALID;
+              exit;
+            end;
+        end;
+      res := self._invertedOutput;
+      result := res;
+      exit;
+    end;
+
+
+  function TYPwmOutput.set_invertedOutput(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      if(newval>0) then rest_val := '1' else rest_val := '0';
+      result := _setAttr('invertedOutput',rest_val);
     end;
 
   function TYPwmOutput.get_enabledAtPowerOn():Integer;

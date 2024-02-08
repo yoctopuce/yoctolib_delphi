@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ * $Id: yocto_serialport.pas 58903 2024-01-11 16:44:48Z mvuilleu $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -101,6 +101,7 @@ type
     //--- (generated code: YSnoopingRecord declaration)
     // Attributes (function value cache)
     _tim                      : LongInt;
+    _pos                      : LongInt;
     _dir                      : LongInt;
     _msg                      : string;
     //--- (end of generated code: YSnoopingRecord declaration)
@@ -121,6 +122,18 @@ public
     /// </returns>
     ///-
     function get_time():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the absolute position of the message end.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the absolute position of the message end.
+    /// </returns>
+    ///-
+    function get_pos():LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -3581,6 +3594,13 @@ end;
     end;
 
 
+  function TYSnoopingRecord.get_pos():LongInt;
+    begin
+      result := self._pos;
+      exit;
+    end;
+
+
   function TYSnoopingRecord.get_direction():LongInt;
     begin
       result := self._dir;
@@ -3608,6 +3628,8 @@ constructor TYSnoopingRecord.create(data:string);
    p := TJsonParser.create(data,false);
    node:= p.GetChildNode(nil,'t');
    self._tim:=node^.ivalue;
+   node:= p.GetChildNode(nil,'p');
+   self._pos:=node^.ivalue;
    node:= p.GetChildNode(nil,'m');
    tmp := string(node^.svalue);
    c := tmp[1];

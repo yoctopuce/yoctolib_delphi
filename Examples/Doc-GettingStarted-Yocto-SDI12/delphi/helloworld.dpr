@@ -2,7 +2,7 @@
  *
  *  $Id: svn_id $
  *
- *  An example that show how to use a  Yocto-SDI12
+ *  An example that shows how to use a  Yocto-SDI12
  *
  *  You can find more information on our web site:
  *   Yocto-SDI12 documentation:

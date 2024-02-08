@@ -1,4 +1,3 @@
-Delphi v1.10.57762
+Delphi v1.10.59271
 
-- Fix connection to HTTP server that use chunked encoding written in lower case
-- Fix potential missing serial number information in YHub when used with PreRegisterHub
+- test release

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 56655 2023-09-22 08:17:50Z seb $
+ * $Id: yocto_api.pas 59221 2024-02-05 15:46:32Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -88,6 +88,7 @@ type
   intArr          = TLongIntArray;    // for backward compatibility
   pTLongIntArray  = ^TLongIntArray;
   TYDataLoggerRawData = array of array of double;
+  TBooleanArray   = array of Boolean;
 
   yCalibrationHandler = function (rawValue:double; calibType: integer; params : TLongIntArray; rawValues,refValues:TDoubleArray ):double;
 
@@ -128,7 +129,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '57762';
+  YOCTO_API_BUILD_NO        = '59271';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -8678,7 +8679,12 @@ var
       end;
 
       node := p.GetChildNode(nil,key);
-      _json_get_key := string(node^.svalue);
+      if node^.recordtype = JSON_STRING then
+        _json_get_key := string(node^.svalue)
+      else if node^.recordtype = JSON_INTEGER then
+        _json_get_key := intToStr(node^.ivalue)
+      else
+        _json_get_key := '<json_get_key_error>';
       p.free();
     end;
 
@@ -12057,7 +12063,7 @@ var
       SetLength(rawValues, 0);
       SetLength(refValues, 0);
       // Load function parameters if not yet loaded
-      if self._scale = 0 then
+      if (self._scale = 0) or(self._cacheExpiration <= yGetTickCount) then
         begin
           if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
@@ -12675,7 +12681,7 @@ var
         end
       else
         begin
-          if (length(self._settings) <> 0) then
+          if (length(self._settings) <> 0) and(self._progress_c <> 101) then
             begin
               self._progress_msg := 'restoring settings';
               m := TYModule.FindModule(self._serial + '.module');

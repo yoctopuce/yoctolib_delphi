@@ -122,6 +122,7 @@ type
   //--- (generated code: YSdi12SnoopingRecord declaration)
     // Attributes (function value cache)
     _tim                      : LongInt;
+    _pos                      : LongInt;
     _dir                      : LongInt;
     _msg                      : string;
     //--- (end of generated code: YSdi12SnoopingRecord declaration)
@@ -141,6 +142,18 @@ type
     /// </returns>
     ///-
     function get_time():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the absolute position of the message end.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the absolute position of the message end.
+    /// </returns>
+    ///-
+    function get_pos():LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -203,28 +216,163 @@ type
     constructor Create(sdi12Port: TYSdi12Port; infoStr: string);
     //--- (generated code: YSdi12Sensor accessors declaration)
 
+    ////
+    /// <summary>
+    ///   Returns the sensor address.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the sensor address.
+    /// </returns>
+    ///-
     function get_sensorAddress():string; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the compatible SDI-12 version of the sensor.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the compatible SDI-12 version of the sensor.
+    /// </returns>
+    ///-
     function get_sensorProtocol():string; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the sensor vendor identification.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the sensor vendor identification.
+    /// </returns>
+    ///-
     function get_sensorVendor():string; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the sensor model number.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the sensor model number.
+    /// </returns>
+    ///-
     function get_sensorModel():string; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the sensor version.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the sensor version.
+    /// </returns>
+    ///-
     function get_sensorVersion():string; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the sensor serial number.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the sensor serial number.
+    /// </returns>
+    ///-
     function get_sensorSerial():string; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the number of sensor measurements.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the number of sensor measurements.
+    /// </returns>
+    ///-
     function get_measureCount():LongInt; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the sensor measurement command.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="measureIndex">
+    ///   measurement index
+    /// </param>
+    /// <returns>
+    ///   the sensor measurement command.
+    /// </returns>
+    ///-
     function get_measureCommand(measureIndex: LongInt):string; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns sensor measurement position.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="measureIndex">
+    ///   measurement index
+    /// </param>
+    /// <returns>
+    ///   the sensor measurement command.
+    /// </returns>
+    ///-
     function get_measurePosition(measureIndex: LongInt):LongInt; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the measured value symbol.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="measureIndex">
+    ///   measurement index
+    /// </param>
+    /// <returns>
+    ///   the sensor measurement command.
+    /// </returns>
+    ///-
     function get_measureSymbol(measureIndex: LongInt):string; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the unit of the measured value.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="measureIndex">
+    ///   measurement index
+    /// </param>
+    /// <returns>
+    ///   the sensor measurement command.
+    /// </returns>
+    ///-
     function get_measureUnit(measureIndex: LongInt):string; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the description of the measured value.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="measureIndex">
+    ///   measurement index
+    /// </param>
+    /// <returns>
+    ///   the sensor measurement command.
+    /// </returns>
+    ///-
     function get_measureDescription(measureIndex: LongInt):string; overload; virtual;
 
     function get_typeMeasure():TStringArrayArray; overload; virtual;
@@ -1463,6 +1611,8 @@ implementation
       p := TJsonParser.create(data,false);
       node:= p.GetChildNode(nil,'t');
       self._tim:=node^.ivalue;
+      node:= p.GetChildNode(nil,'p');
+      self._pos:=node^.ivalue;
       node:= p.GetChildNode(nil,'m');
       tmp := string(node^.svalue);
       c := tmp[1];
@@ -1479,6 +1629,13 @@ implementation
   function TYSdi12SnoopingRecord.get_time():LongInt;
     begin
       result := self._tim;
+      exit;
+    end;
+
+
+  function TYSdi12SnoopingRecord.get_pos():LongInt;
+    begin
+      result := self._pos;
       exit;
     end;
 
@@ -1643,13 +1800,16 @@ implementation
       i : LongInt;
       j : LongInt;
       listVal : TStringArray;
+      size : LongInt;
       val_pos : LongInt;
       listVal_pos : LongInt;
+      data_pos : LongInt;
     begin
       SetLength(data, 0);
       SetLength(listVal, 0);
 
       k := 0;
+      size := 4;
       while k < 10 do
         begin
           infoNbVal := self._sdi12Port.querySdi12(self._addr,  'IM'+inttostr(k), 5000);
@@ -1670,11 +1830,18 @@ implementation
                       data := _stringSplit(data[0], ',');
                       listVal_pos := 0;
                       SetLength(listVal, length(data)+2);
+                      data_pos := length(data);
+                      SetLength(data, data_pos+size);
                       listVal[listVal_pos] := 'M'+inttostr(k);
                       inc(listVal_pos);
                       listVal[listVal_pos] := IntToStr(i+1);
                       inc(listVal_pos);
                       j := 0;
+                      while length(data) < size do
+                        begin
+                          data[data_pos] := '';
+                          inc(data_pos);
+                        end;
                       while j < length(data) do
                         begin
                           listVal[listVal_pos] := data[j];
