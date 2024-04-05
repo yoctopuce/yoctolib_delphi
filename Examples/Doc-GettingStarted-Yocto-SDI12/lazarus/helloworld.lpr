@@ -2,11 +2,9 @@
  *
  *  $Id: svn_id $
  *
- *  An example that show how to use a  Yocto-SDI12
+ *  Doc-GettingStarted-Yocto-SDI12 example
  *
  *  You can find more information on our web site:
- *   Yocto-SDI12 documentation:
- *      https://www.yoctopuce.com/EN/products/yocto-sdi12/doc.html
  *   Delphi API Reference:
  *      https://www.yoctopuce.com/EN/doc/reference/yoctolib-delphi-EN.html
  *
@@ -40,7 +38,7 @@ var
  errmsg,target : string;
  m : TYModule;
  sdi12Port : TYSdi12Port;
- singleSensor : TYSdi12Sensor;
+ singleSensor : TYSdi12SensorInfo;
  valSensor : TDoubleArray;
  j :integer;
 

@@ -1,8 +1,8 @@
 {*********************************************************************
  *
- *  $Id: helloworld.lpr 52639 2023-01-06 10:10:58Z seb $
+ *  $Id: helloworld.lpr 59602 2024-03-04 09:18:09Z seb $
  *
- *  An example that show how to use a  Yocto-RS485
+ *  An example that shows how to use a  Yocto-RS485
  *
  *  You can find more information on our web site:
  *   Yocto-RS485 documentation:

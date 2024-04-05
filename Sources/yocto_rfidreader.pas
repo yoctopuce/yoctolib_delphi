@@ -172,8 +172,12 @@ type
 
     ////
     /// <summary>
-    ///   Returns the index of the first usable storage block on the RFID tag.
+    ///   Returns the index of the block available for data storage on the RFID tag.
     /// <para>
+    ///   Some tags have special block used to configure the tag behavior, these
+    ///   blocks must be handled with precaution. However, the  block return by
+    ///   <c>get_tagFirstBlock()</c> can be locked, use <c>get_tagLockState()</c>
+    ///   to find out  which block are locked.
     /// </para>
     /// </summary>
     /// <returns>
@@ -184,7 +188,11 @@ type
 
     ////
     /// <summary>
-    ///   Returns the index of the last usable storage block on the RFID tag.
+    ///   Returns the index of the last last black available for data storage on the RFID tag,
+    ///   However, this block can be locked, use <c>get_tagLockState()</c> to find out
+    ///   which block are locked.
+    /// <para>
+    /// </para>
     /// <para>
     /// </para>
     /// </summary>
@@ -214,11 +222,15 @@ type
   //--- (generated code: YRfidOptions class start)
   ////
   /// <summary>
-  ///   TYRfidOptions Class: Extra parameters for performing RFID tag operations
+  ///   TYRfidOptions Class: Additional parameters for operations on RFID tags.
   /// <para>
-  ///   <c>YRfidOptions</c> objects are used to provide optional
-  ///   parameters to RFID commands that interact with tags, and in
-  ///   particular to provide security keys when required.
+  /// </para>
+  /// <para>
+  ///   The <c>YRfidOptions</c> objects are used to specify additional
+  ///   optional parameters to RFID commands that interact with tags,
+  ///   including security keys. When instantiated,the parameters of
+  ///   this object are pre-initialized to a value  which corresponds
+  ///   to the most common usage.
   /// </para>
   /// </summary>
   ///-
@@ -304,7 +316,7 @@ type
     ///   By default, the Yoctopuce
     ///   library's read/write functions detect overruns and do not run
     ///   commands that are likely to fail. If you nevertheless wish to
-    ///   access more memory than the tag announces, you can try to use
+    ///   try to access more memory than the tag announces, you can try to use
     ///   this option.
     /// </para>
     /// </summary>
@@ -444,6 +456,7 @@ const Y_INVLD_BLOCK_MODE_COMBINATION  = -152;
 const Y_INVLD_ACCESS_MODE_COMBINATION = -153;
 const Y_INVALID_SIZE                  = -154;
 const Y_BAD_PASSWORD_FORMAT           = -155;
+const Y_RADIO_IS_OFF                  = -156;
 //--- (end of generated code: YRfidStatus definitions)
 
 type
@@ -452,7 +465,9 @@ type
   //--- (generated code: YRfidStatus class start)
   ////
   /// <summary>
-  ///   TYRfidStatus Class: Detailled information about the result of RFID tag operations
+  ///   TYRfidStatus Class: Detailled information about the result of RFID tag operations, allowing to find out what happened exactly after a tag operation failure.
+  /// <para>
+  /// </para>
   /// <para>
   ///   <c>YRfidStatus</c> objects provide additional information about
   ///   operations on RFID tags, including the range of blocks affected
@@ -461,6 +476,9 @@ type
   ///   This makes it possible, for example, to distinguish communication
   ///   errors that can be recovered by an additional attempt, from
   ///   security or other errors on the tag.
+  ///   Combined with the <c>EnableDryRun</c> option in <c>RfidOptions</c>,
+  ///   this structure can be used to predict which blocks will be affected
+  ///   by a write operation.
   /// </para>
   /// </summary>
   ///-
@@ -594,8 +612,33 @@ type
   /// <summary>
   ///   TYRfidReader Class: RfidReader function interface
   /// <para>
-  ///   The <c>RfidReader</c> class provides access detect,
-  ///   read and write RFID tags.
+  ///   The <c>YRfidReader</c> class allows you to detect RFID tags, as well as
+  ///   read and write on these tags if the security settings allow it.
+  /// </para>
+  /// <para>
+  ///   Short reminder:
+  /// </para>
+  /// <para>
+  /// </para>
+  /// <para>
+  ///   - A tag's memory is generally organized in fixed-size blocks.
+  /// </para>
+  /// <para>
+  ///   - At tag level, each block must be read and written in its entirety.
+  /// </para>
+  /// <para>
+  ///   - Some blocks are special configuration blocks, and may alter the tag's behaviour
+  ///   tag behavior if they are rewritten with arbitrary data.
+  /// </para>
+  /// <para>
+  ///   - Data blocks can be set to read-only mode, but on many tags, this operation is irreversible.
+  /// </para>
+  /// <para>
+  /// </para>
+  /// <para>
+  ///   By default, the RfidReader class automatically manages these blocks so that
+  ///   arbitrary size data  can be manipulated of  without risk and without knowledge of
+  ///   tag architecture .
   /// </para>
   /// </summary>
   ///-
@@ -661,7 +704,8 @@ type
     ///   The reader will do
     ///   its best to respect it. Note that the reader cannot detect tag arrival or removal
     ///   while it is  communicating with a tag.  Maximum frequency is limited to 100Hz,
-    ///   but in real life it will be difficult to do better than 50Hz.
+    ///   but in real life it will be difficult to do better than 50Hz.  A zero value
+    ///   will power off the device radio.
     ///   Remember to call the <c>saveToFlash()</c> method of the module if the
     ///   modification must be kept.
     /// </para>
@@ -767,7 +811,7 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a list of strings, corresponding to each tag identifier.
+    ///   a list of strings, corresponding to each tag identifier (UID).
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns an empty list.
@@ -927,7 +971,8 @@ type
     ///   number of bytes is larger than the RFID tag block size. By default
     ///   firstBlock cannot be a special block, and any special block encountered
     ///   in the middle of the read operation will be skipped automatically.
-    ///   If you rather want to read special blocks, use EnableRawAccess option.
+    ///   If you rather want to read special blocks, use the <c>EnableRawAccess</c>
+    ///   field from the <c>options</c> parameter.
     /// </para>
     /// <para>
     /// </para>
@@ -969,7 +1014,8 @@ type
     ///   is larger than the RFID tag block size.  By default
     ///   firstBlock cannot be a special block, and any special block encountered
     ///   in the middle of the read operation will be skipped automatically.
-    ///   If you rather want to read special blocks, use EnableRawAccess option.
+    ///   If you rather want to read special blocks, use the <c>EnableRawAccess</c>
+    ///   field frrm the <c>options</c> parameter.
     /// </para>
     /// <para>
     /// </para>
@@ -1011,7 +1057,8 @@ type
     ///   is larger than the RFID tag block size.  By default
     ///   firstBlock cannot be a special block, and any special block encountered
     ///   in the middle of the read operation will be skipped automatically.
-    ///   If you rather want to read special blocks, use EnableRawAccess option.
+    ///   If you rather want to read special blocks, use the <c>EnableRawAccess</c>
+    ///   field from the <c>options</c> parameter.
     /// </para>
     /// <para>
     /// </para>
@@ -1053,7 +1100,8 @@ type
     ///   is larger than the RFID tag block size.  By default
     ///   firstBlock cannot be a special block, and any special block encountered
     ///   in the middle of the read operation will be skipped automatically.
-    ///   If you rather want to read special blocks, use EnableRawAccess option.
+    ///   If you rather want to read special blocks, use the <c>EnableRawAccess</c>
+    ///   field from the <c>options</c> parameter.
     /// </para>
     /// <para>
     /// </para>
@@ -1094,8 +1142,10 @@ type
     ///   number of bytes to write is larger than the RFID tag block size.
     ///   By default firstBlock cannot be a special block, and any special block
     ///   encountered in the middle of the write operation will be skipped
-    ///   automatically. If you rather want to rewrite special blocks as well,
-    ///   use EnableRawAccess option.
+    ///   automatically. The last data block affected by the operation will
+    ///   be automatically padded with zeros if neccessary.  If you rather want
+    ///   to rewrite special blocks as well,
+    ///   use the <c>EnableRawAccess</c> field from the <c>options</c> parameter.
     /// </para>
     /// <para>
     /// </para>
@@ -1136,8 +1186,10 @@ type
     ///   number of bytes to write is larger than the RFID tag block size.
     ///   By default firstBlock cannot be a special block, and any special block
     ///   encountered in the middle of the write operation will be skipped
-    ///   automatically. If you rather want to rewrite special blocks as well,
-    ///   use EnableRawAccess option.
+    ///   automatically. The last data block affected by the operation will
+    ///   be automatically padded with zeros if neccessary.
+    ///   If you rather want to rewrite special blocks as well,
+    ///   use the <c>EnableRawAccess</c> field from the <c>options</c> parameter.
     /// </para>
     /// <para>
     /// </para>
@@ -1178,8 +1230,10 @@ type
     ///   number of bytes to write is larger than the RFID tag block size.
     ///   By default firstBlock cannot be a special block, and any special block
     ///   encountered in the middle of the write operation will be skipped
-    ///   automatically. If you rather want to rewrite special blocks as well,
-    ///   use EnableRawAccess option.
+    ///   automatically. The last data block affected by the operation will
+    ///   be automatically padded with zeros if neccessary.
+    ///   If you rather want to rewrite special blocks as well,
+    ///   use the <c>EnableRawAccess</c> field from the <c>options</c> parameter.
     /// </para>
     /// <para>
     /// </para>
@@ -1218,10 +1272,16 @@ type
     /// <para>
     ///   The write operation may span accross multiple blocks if the
     ///   number of bytes to write is larger than the RFID tag block size.
+    ///   Note that only the characters présent  in  the provided string
+    ///   will be written, there is no notion of string length. If your
+    ///   string data have variable length, you'll have to encode the
+    ///   string length yourself.
     ///   By default firstBlock cannot be a special block, and any special block
     ///   encountered in the middle of the write operation will be skipped
-    ///   automatically. If you rather want to rewrite special blocks as well,
-    ///   use EnableRawAccess option.
+    ///   automatically. The last data block affected by the operation will
+    ///   be automatically padded with zeros if neccessary.
+    ///   If you rather want to rewrite special blocks as well,
+    ///   use the <c>EnableRawAccess</c> field from the <c>options</c> parameter.
     /// </para>
     /// <para>
     /// </para>
@@ -1253,6 +1313,182 @@ type
     /// </para>
     ///-
     function tagWriteStr(tagId: string; firstBlock: LongInt; text: string; options: TYRfidOptions; var status: TYRfidStatus):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Reads an RFID tag AFI byte (ISO 15693 only).
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="tagId">
+    ///   identifier of the tag to use
+    /// </param>
+    /// <param name="options">
+    ///   an <c>YRfidOptions</c> object with the optional
+    ///   command execution parameters, such as security key
+    ///   if required
+    /// </param>
+    /// <param name="status">
+    ///   an <c>RfidStatus</c> object that will contain
+    ///   the detailled status of the operation
+    /// </param>
+    /// <returns>
+    ///   the AFI value (0...255)
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code. When it
+    ///   happens, you can get more information from the <c>status</c> object.
+    /// </para>
+    ///-
+    function tagGetAFI(tagId: string; options: TYRfidOptions; var status: TYRfidStatus):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Change an RFID tag AFI byte (ISO 15693 only).
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="tagId">
+    ///   identifier of the tag to use
+    /// </param>
+    /// <param name="afi">
+    ///   the AFI value to write (0...255)
+    /// </param>
+    /// <param name="options">
+    ///   an <c>YRfidOptions</c> object with the optional
+    ///   command execution parameters, such as security key
+    ///   if required
+    /// </param>
+    /// <param name="status">
+    ///   an <c>RfidStatus</c> object that will contain
+    ///   the detailled status of the operation
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code. When it
+    ///   happens, you can get more information from the <c>status</c> object.
+    /// </para>
+    ///-
+    function tagSetAFI(tagId: string; afi: LongInt; options: TYRfidOptions; var status: TYRfidStatus):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Locks the RFID tag AFI byte (ISO 15693 only).
+    /// <para>
+    ///   This operation is definitive and irreversible.
+    /// </para>
+    /// </summary>
+    /// <param name="tagId">
+    ///   identifier of the tag to use
+    /// </param>
+    /// <param name="options">
+    ///   an <c>YRfidOptions</c> object with the optional
+    ///   command execution parameters, such as security key
+    ///   if required
+    /// </param>
+    /// <param name="status">
+    ///   an <c>RfidStatus</c> object that will contain
+    ///   the detailled status of the operation
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code. When it
+    ///   happens, you can get more information from the <c>status</c> object.
+    /// </para>
+    ///-
+    function tagLockAFI(tagId: string; options: TYRfidOptions; var status: TYRfidStatus):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Reads an RFID tag DSFID byte (ISO 15693 only).
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="tagId">
+    ///   identifier of the tag to use
+    /// </param>
+    /// <param name="options">
+    ///   an <c>YRfidOptions</c> object with the optional
+    ///   command execution parameters, such as security key
+    ///   if required
+    /// </param>
+    /// <param name="status">
+    ///   an <c>RfidStatus</c> object that will contain
+    ///   the detailled status of the operation
+    /// </param>
+    /// <returns>
+    ///   the DSFID value (0...255)
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code. When it
+    ///   happens, you can get more information from the <c>status</c> object.
+    /// </para>
+    ///-
+    function tagGetDSFID(tagId: string; options: TYRfidOptions; var status: TYRfidStatus):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Change an RFID tag DSFID byte (ISO 15693 only).
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="tagId">
+    ///   identifier of the tag to use
+    /// </param>
+    /// <param name="dsfid">
+    ///   the DSFID value to write (0...255)
+    /// </param>
+    /// <param name="options">
+    ///   an <c>YRfidOptions</c> object with the optional
+    ///   command execution parameters, such as security key
+    ///   if required
+    /// </param>
+    /// <param name="status">
+    ///   an <c>RfidStatus</c> object that will contain
+    ///   the detailled status of the operation
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code. When it
+    ///   happens, you can get more information from the <c>status</c> object.
+    /// </para>
+    ///-
+    function tagSetDSFID(tagId: string; dsfid: LongInt; options: TYRfidOptions; var status: TYRfidStatus):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Locks the RFID tag DSFID byte (ISO 15693 only).
+    /// <para>
+    ///   This operation is definitive and irreversible.
+    /// </para>
+    /// </summary>
+    /// <param name="tagId">
+    ///   identifier of the tag to use
+    /// </param>
+    /// <param name="options">
+    ///   an <c>YRfidOptions</c> object with the optional
+    ///   command execution parameters, such as security key
+    ///   if required
+    /// </param>
+    /// <param name="status">
+    ///   an <c>RfidStatus</c> object that will contain
+    ///   the detailled status of the operation
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code. When it
+    ///   happens, you can get more information from the <c>status</c> object.
+    /// </para>
+    ///-
+    function tagLockDSFID(tagId: string; options: TYRfidOptions; var status: TYRfidStatus):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -1746,11 +1982,12 @@ implementation
             end;
           if errCode = Y_BLOCK_ALREADY_LOCKED then
             begin
-              errMsg := 'Block is already locked and thus cannot be locked again.';
+              errMsg := 'Block / byte is already locked and thus cannot be locked again.'
+              + '';
             end;
           if errCode = Y_BLOCK_LOCKED then
             begin
-              errMsg := 'Block is locked and its content cannot be changed';
+              errMsg := 'Block / byte is locked and its content cannot be changed';
             end;
           if errCode = Y_BLOCK_NOT_SUCESSFULLY_PROGRAMMED then
             begin
@@ -2093,6 +2330,10 @@ implementation
           if errCode = Y_BAD_PASSWORD_FORMAT then
             begin
               errMsg := 'Bad password format or type';
+            end;
+          if errCode = Y_RADIO_IS_OFF then
+            begin
+              errMsg := 'Radio is OFF (refreshRate=0).';
             end;
           if errBlk >= 0 then
             begin
@@ -2623,6 +2864,116 @@ implementation
       buff := _StrToByte(text);
 
       result := self.tagWriteBin(tagId,  firstBlock,  buff,  options, status);
+      exit;
+    end;
+
+
+  function TYRfidReader.tagGetAFI(tagId: string; options: TYRfidOptions; var status: TYRfidStatus):LongInt;
+    var
+      optstr : string;
+      url : string;
+      json : TByteArray;
+      res : LongInt;
+    begin
+      optstr := options.imm_getParams;
+      url := 'rfid.json?a=rdsf&t='+tagId+'&b=0'+optstr;
+
+      json := self._download(url);
+      self._chkerror(tagId,  json, status);
+      if status.get_yapiError = YAPI_SUCCESS then
+        begin
+          res := _atoi(self._json_get_key(json, 'res'));
+        end
+      else
+        begin
+          res := status.get_yapiError;
+        end;
+      result := res;
+      exit;
+    end;
+
+
+  function TYRfidReader.tagSetAFI(tagId: string; afi: LongInt; options: TYRfidOptions; var status: TYRfidStatus):LongInt;
+    var
+      optstr : string;
+      url : string;
+      json : TByteArray;
+    begin
+      optstr := options.imm_getParams;
+      url := 'rfid.json?a=wrsf&t='+tagId+'&b=0&v='+inttostr(afi)+''+optstr;
+
+      json := self._download(url);
+      result := self._chkerror(tagId,  json, status);
+      exit;
+    end;
+
+
+  function TYRfidReader.tagLockAFI(tagId: string; options: TYRfidOptions; var status: TYRfidStatus):LongInt;
+    var
+      optstr : string;
+      url : string;
+      json : TByteArray;
+    begin
+      optstr := options.imm_getParams;
+      url := 'rfid.json?a=lksf&t='+tagId+'&b=0'+optstr;
+
+      json := self._download(url);
+      result := self._chkerror(tagId,  json, status);
+      exit;
+    end;
+
+
+  function TYRfidReader.tagGetDSFID(tagId: string; options: TYRfidOptions; var status: TYRfidStatus):LongInt;
+    var
+      optstr : string;
+      url : string;
+      json : TByteArray;
+      res : LongInt;
+    begin
+      optstr := options.imm_getParams;
+      url := 'rfid.json?a=rdsf&t='+tagId+'&b=1'+optstr;
+
+      json := self._download(url);
+      self._chkerror(tagId,  json, status);
+      if status.get_yapiError = YAPI_SUCCESS then
+        begin
+          res := _atoi(self._json_get_key(json, 'res'));
+        end
+      else
+        begin
+          res := status.get_yapiError;
+        end;
+      result := res;
+      exit;
+    end;
+
+
+  function TYRfidReader.tagSetDSFID(tagId: string; dsfid: LongInt; options: TYRfidOptions; var status: TYRfidStatus):LongInt;
+    var
+      optstr : string;
+      url : string;
+      json : TByteArray;
+    begin
+      optstr := options.imm_getParams;
+      url := 'rfid.json?a=wrsf&t='+tagId+'&b=1&v='+inttostr(dsfid)+''+optstr;
+
+      json := self._download(url);
+      result := self._chkerror(tagId,  json, status);
+      exit;
+    end;
+
+
+  function TYRfidReader.tagLockDSFID(tagId: string; options: TYRfidOptions; var status: TYRfidStatus):LongInt;
+    var
+      optstr : string;
+      url : string;
+      json : TByteArray;
+    begin
+      optstr := options.imm_getParams;
+      url := 'rfid.json?a=lksf&t='+tagId+'&b=1'+optstr;
+
+      json := self._download(url);
+      result := self._chkerror(tagId,  json, status);
       exit;
     end;
 

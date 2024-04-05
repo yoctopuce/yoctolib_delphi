@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_i2cport.pas 58903 2024-01-11 16:44:48Z mvuilleu $
+ *  $Id: yocto_i2cport.pas 59641 2024-03-05 20:50:20Z mvuilleu $
  *
  *  Implements yFindI2cPort(), the high-level API for I2cPort functions
  *
@@ -1095,6 +1095,32 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
     /// </para>
     ///-
     function writeArray(byteList: TLongIntArray):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Retrieves messages (both direction) in the I2C port buffer, starting at current position.
+    /// <para>
+    /// </para>
+    /// <para>
+    ///   If no message is found, the search waits for one up to the specified maximum timeout
+    ///   (in milliseconds).
+    /// </para>
+    /// </summary>
+    /// <param name="maxWait">
+    ///   the maximum number of milliseconds to wait for a message if none is found
+    ///   in the receive buffer.
+    /// </param>
+    /// <param name="maxMsg">
+    ///   the maximum number of messages to be returned by the function; up to 254.
+    /// </param>
+    /// <returns>
+    ///   an array of <c>YI2cSnoopingRecord</c> objects containing the messages found, if any.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty array.
+    /// </para>
+    ///-
+    function snoopMessagesEx(maxWait: LongInt; maxMsg: LongInt):TYI2cSnoopingRecordArray; overload; virtual;
 
     ////
     /// <summary>
@@ -2317,7 +2343,7 @@ implementation
     end;
 
 
-  function TYI2cPort.snoopMessages(maxWait: LongInt):TYI2cSnoopingRecordArray;
+  function TYI2cPort.snoopMessagesEx(maxWait: LongInt; maxMsg: LongInt):TYI2cSnoopingRecordArray;
     var
       url : string;
       msgbin : TByteArray;
@@ -2329,7 +2355,7 @@ implementation
     begin
       SetLength(msgarr, 0);
 
-      url := 'rxmsg.json?pos='+inttostr( self._rxptr)+'&maxw='+inttostr(maxWait)+'&t=0';
+      url := 'rxmsg.json?pos='+inttostr( self._rxptr)+'&maxw='+inttostr( maxWait)+'&t=0&len='+inttostr(maxMsg);
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
       msglen := length(msgarr);
@@ -2352,6 +2378,13 @@ implementation
         end;
       SetLength(res, res_pos);;
       result := res;
+      exit;
+    end;
+
+
+  function TYI2cPort.snoopMessages(maxWait: LongInt):TYI2cSnoopingRecordArray;
+    begin
+      result := self.snoopMessagesEx(maxWait, 255);
       exit;
     end;
 

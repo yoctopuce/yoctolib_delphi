@@ -1,8 +1,8 @@
 {*********************************************************************
  *
- *  $Id: helloworld.lpr 48374 2022-01-28 15:44:48Z mvuilleu $
+ *  $Id: helloworld.lpr 59602 2024-03-04 09:18:09Z seb $
  *
- *  An example that show how to use a  Yocto-I2C
+ *  An example that shows how to use a  Yocto-I2C
  *
  *  You can find more information on our web site:
  *   Yocto-I2C documentation:

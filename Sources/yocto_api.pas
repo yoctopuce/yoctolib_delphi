@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 59221 2024-02-05 15:46:32Z seb $
+ * $Id: yocto_api.pas 59953 2024-03-18 09:15:08Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -129,7 +129,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '59271';
+  YOCTO_API_BUILD_NO        = '60394';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -1850,8 +1850,10 @@ type
     /// </para>
     /// </summary>
     /// <param name="callback">
-    ///   the callback function to call, or a NIL pointer. The callback function should take two
-    ///   arguments: the module object that emitted the log message, and the character string containing the log.
+    ///   the callback function to call, or a NIL pointer.
+    ///   The callback function should take two
+    ///   arguments: the module object that emitted the log message,
+    ///   and the character string containing the log.
     ///   On failure, throws an exception or returns a negative error code.
     /// </param>
     ///-
@@ -2670,7 +2672,7 @@ end;
 
     ////
     /// <summary>
-    ///   Returns the sensor health state code, which is zero when there is an up-to-date measure
+    ///   Returns the sensor state code, which is zero when there is an up-to-date measure
     ///   available or a positive code if the sensor is not able to provide a measure right now.
     /// <para>
     /// </para>
@@ -2678,7 +2680,7 @@ end;
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the sensor health state code, which is zero when there is an up-to-date measure
+    ///   an integer corresponding to the sensor state code, which is zero when there is an up-to-date measure
     ///   available or a positive code if the sensor is not able to provide a measure right now
     /// </returns>
     /// <para>
@@ -4303,7 +4305,7 @@ end;
   ///   sensors. Recording can happen automatically, without requiring a permanent
   ///   connection to a computer.
   ///   The <c>YDataLogger</c> class controls the global parameters of the internal data
-  ///   logger. Recording control (start/stop) as well as data retreival is done at
+  ///   logger. Recording control (start/stop) as well as data retrieval is done at
   ///   sensor objects level.
   /// </para>
   /// </summary>

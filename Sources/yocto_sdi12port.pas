@@ -57,9 +57,9 @@ uses
 
 //--- (end of generated code: YSdi12SnoopingRecord definitions)
 
-//--- (generated code: YSdi12Sensor definitions)
+//--- (generated code: YSdi12SensorInfo definitions)
 
-//--- (end of generated code: YSdi12Sensor definitions)
+//--- (end of generated code: YSdi12SensorInfo definitions)
 
 //--- (generated code: YSdi12Port definitions)
 
@@ -97,8 +97,8 @@ type
   TYSdi12SnoopingRecord = class;
   TYSdi12SnoopingRecordArray = array of TYSdi12SnoopingRecord;
 
-  TYSdi12Sensor = class;
-  TYSdi12SensorArray = array of TYSdi12Sensor;
+  TYSdi12SensorInfo = class;
+  TYSdi12SensorInfoArray = array of TYSdi12SensorInfo;
 
   TStringArrayArray = array of TStringArray;
 
@@ -184,10 +184,10 @@ type
   end;
 
 
-  //--- (generated code: YSdi12Sensor class start)
+  //--- (generated code: YSdi12SensorInfo class start)
   ////
   /// <summary>
-  ///   TYSdi12Sensor Class: Description of a discovered SDI12 sensor, returned by <c>sdi12Port.discoverSingleSensor</c> and <c>sdi12Port.
+  ///   TYSdi12SensorInfo Class: Description of a discovered SDI12 sensor, returned by <c>sdi12Port.discoverSingleSensor</c> and <c>sdi12Port.
   /// <para>
   ///   discoverAllSensors</c> methods
   /// </para>
@@ -197,12 +197,13 @@ type
   /// </para>
   /// </summary>
   ///-
-  TYSdi12Sensor=class(TObject)
-  //--- (end of generated code: YSdi12Sensor class start)
+  TYSdi12SensorInfo=class(TObject)
+  //--- (end of generated code: YSdi12SensorInfo class start)
   protected
-  //--- (generated code: YSdi12Sensor declaration)
+  //--- (generated code: YSdi12SensorInfo declaration)
     // Attributes (function value cache)
     _sdi12Port                : TYSdi12Port;
+    _isValid                  : boolean;
     _addr                     : string;
     _proto                    : string;
     _mfg                      : string;
@@ -210,11 +211,26 @@ type
     _ver                      : string;
     _sn                       : string;
     _valuesDesc               : TStringArrayArray;
-    //--- (end of generated code: YSdi12Sensor declaration)
+    //--- (end of generated code: YSdi12SensorInfo declaration)
 
   public
     constructor Create(sdi12Port: TYSdi12Port; infoStr: string);
-    //--- (generated code: YSdi12Sensor accessors declaration)
+
+    procedure _throw(errcode: LongInt; msg: string); overload; virtual;
+
+    //--- (generated code: YSdi12SensorInfo accessors declaration)
+
+    ////
+    /// <summary>
+    ///   Returns the sensor state.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the sensor state.
+    /// </returns>
+    ///-
+    function isValid():boolean; overload; virtual;
 
     ////
     /// <summary>
@@ -292,6 +308,8 @@ type
     /// <summary>
     ///   Returns the number of sensor measurements.
     /// <para>
+    ///   This function only works if the sensor is in version 1.4 SDI-12
+    ///   and supports metadata commands.
     /// </para>
     /// </summary>
     /// <returns>
@@ -304,6 +322,8 @@ type
     /// <summary>
     ///   Returns the sensor measurement command.
     /// <para>
+    ///   This function only works if the sensor is in version 1.4 SDI-12
+    ///   and supports metadata commands.
     /// </para>
     /// </summary>
     /// <param name="measureIndex">
@@ -311,6 +331,7 @@ type
     /// </param>
     /// <returns>
     ///   the sensor measurement command.
+    ///   On failure, throws an exception or returns an empty string.
     /// </returns>
     ///-
     function get_measureCommand(measureIndex: LongInt):string; overload; virtual;
@@ -319,6 +340,8 @@ type
     /// <summary>
     ///   Returns sensor measurement position.
     /// <para>
+    ///   This function only works if the sensor is in version 1.4 SDI-12
+    ///   and supports metadata commands.
     /// </para>
     /// </summary>
     /// <param name="measureIndex">
@@ -326,6 +349,7 @@ type
     /// </param>
     /// <returns>
     ///   the sensor measurement command.
+    ///   On failure, throws an exception or returns 0.
     /// </returns>
     ///-
     function get_measurePosition(measureIndex: LongInt):LongInt; overload; virtual;
@@ -334,6 +358,8 @@ type
     /// <summary>
     ///   Returns the measured value symbol.
     /// <para>
+    ///   This function only works if the sensor is in version 1.4 SDI-12
+    ///   and supports metadata commands.
     /// </para>
     /// </summary>
     /// <param name="measureIndex">
@@ -341,6 +367,7 @@ type
     /// </param>
     /// <returns>
     ///   the sensor measurement command.
+    ///   On failure, throws an exception or returns an empty string.
     /// </returns>
     ///-
     function get_measureSymbol(measureIndex: LongInt):string; overload; virtual;
@@ -349,6 +376,8 @@ type
     /// <summary>
     ///   Returns the unit of the measured value.
     /// <para>
+    ///   This function only works if the sensor is in version 1.4 SDI-12
+    ///   and supports metadata commands.
     /// </para>
     /// </summary>
     /// <param name="measureIndex">
@@ -356,6 +385,7 @@ type
     /// </param>
     /// <returns>
     ///   the sensor measurement command.
+    ///   On failure, throws an exception or returns an empty string.
     /// </returns>
     ///-
     function get_measureUnit(measureIndex: LongInt):string; overload; virtual;
@@ -364,6 +394,8 @@ type
     /// <summary>
     ///   Returns the description of the measured value.
     /// <para>
+    ///   This function only works if the sensor is in version 1.4 SDI-12
+    ///   and supports metadata commands.
     /// </para>
     /// </summary>
     /// <param name="measureIndex">
@@ -371,6 +403,7 @@ type
     /// </param>
     /// <returns>
     ///   the sensor measurement command.
+    ///   On failure, throws an exception or returns an empty string.
     /// </returns>
     ///-
     function get_measureDescription(measureIndex: LongInt):string; overload; virtual;
@@ -382,7 +415,7 @@ type
     procedure _queryValueInfo(); overload; virtual;
 
 
-  //--- (end of generated code: YSdi12Sensor accessors declaration)
+  //--- (end of generated code: YSdi12SensorInfo accessors declaration)
   end;
 
   //--- (generated code: YSdi12Port class start)
@@ -1340,13 +1373,13 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   the reply returned by the sensor, as a YSdi12Sensor object.
+    ///   the reply returned by the sensor, as a YSdi12SensorInfo object.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns an empty string.
     /// </para>
     ///-
-    function discoverSingleSensor():TYSdi12Sensor; overload; virtual;
+    function discoverSingleSensor():TYSdi12SensorInfo; overload; virtual;
 
     ////
     /// <summary>
@@ -1358,13 +1391,13 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   all the information from every connected sensor, as an array of YSdi12Sensor object.
+    ///   all the information from every connected sensor, as an array of YSdi12SensorInfo object.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns an empty string.
     /// </para>
     ///-
-    function discoverAllSensors():TYSdi12SensorArray; overload; virtual;
+    function discoverAllSensors():TYSdi12SensorInfoArray; overload; virtual;
 
     ////
     /// <summary>
@@ -1409,13 +1442,13 @@ type
     ///   New sensor address, as a string
     /// </param>
     /// <returns>
-    ///   the sensor address and information , as a YSdi12Sensor object.
+    ///   the sensor address and information , as a YSdi12SensorInfo object.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns an empty string.
     /// </para>
     ///-
-    function changeAddress(oldAddress: string; newAddress: string):TYSdi12Sensor; overload; virtual;
+    function changeAddress(oldAddress: string; newAddress: string):TYSdi12SensorInfo; overload; virtual;
 
     ////
     /// <summary>
@@ -1434,7 +1467,7 @@ type
     ///   On failure, throws an exception or returns an empty string.
     /// </para>
     ///-
-    function getSensorInformation(sensorAddr: string):TYSdi12Sensor; overload; virtual;
+    function getSensorInformation(sensorAddr: string):TYSdi12SensorInfo; overload; virtual;
 
     ////
     /// <summary>
@@ -1488,6 +1521,32 @@ type
     ///   the maximum number of milliseconds to wait for a message if none is found
     ///   in the receive buffer.
     /// </param>
+    /// <param name="maxMsg">
+    ///   the maximum number of messages to be returned by the function; up to 254.
+    /// </param>
+    /// <returns>
+    ///   an array of <c>YSdi12SnoopingRecord</c> objects containing the messages found, if any.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty array.
+    /// </para>
+    ///-
+    function snoopMessagesEx(maxWait: LongInt; maxMsg: LongInt):TYSdi12SnoopingRecordArray; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Retrieves messages (both direction) in the SDI12 port buffer, starting at current position.
+    /// <para>
+    /// </para>
+    /// <para>
+    ///   If no message is found, the search waits for one up to the specified maximum timeout
+    ///   (in milliseconds).
+    /// </para>
+    /// </summary>
+    /// <param name="maxWait">
+    ///   the maximum number of milliseconds to wait for a message if none is found
+    ///   in the receive buffer.
+    /// </param>
     /// <returns>
     ///   an array of <c>YSdi12SnoopingRecord</c> objects containing the messages found, if any.
     /// </returns>
@@ -1503,13 +1562,13 @@ type
     ///   Continues the enumeration of SDI12 ports started using <c>yFirstSdi12Port()</c>.
     /// <para>
     ///   Caution: You can't make any assumption about the returned SDI12 ports order.
-    ///   If you want to find a specific a SDI12 port, use <c>Sdi12Port.findSdi12Port()</c>
+    ///   If you want to find a specific an SDI12 port, use <c>Sdi12Port.findSdi12Port()</c>
     ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>
     ///   a pointer to a <c>YSdi12Port</c> object, corresponding to
-    ///   a SDI12 port currently online, or a <c>NIL</c> pointer
+    ///   an SDI12 port currently online, or a <c>NIL</c> pointer
     ///   if there are no more SDI12 ports to enumerate.
     /// </returns>
     ///-
@@ -1529,7 +1588,7 @@ type
 //--- (generated code: YSdi12Port functions declaration)
   ////
   /// <summary>
-  ///   Retrieves a SDI12 port for a given identifier.
+  ///   Retrieves an SDI12 port for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
   /// </para>
@@ -1557,7 +1616,7 @@ type
   ///   it is invoked. The returned object is nevertheless valid.
   ///   Use the method <c>YSdi12Port.isOnline()</c> to test if the SDI12 port is
   ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   a SDI12 port by logical name, no error is notified: the first instance
+  ///   an SDI12 port by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
   /// </para>
@@ -1657,108 +1716,152 @@ implementation
 //--- (end of generated code: YSdi12SnoopingRecord implementation)
 
 
-  constructor TYSdi12Sensor.Create(sdi12Port: TYSdi12Port; infoStr: string);
+  constructor TYSdi12SensorInfo.Create(sdi12Port: TYSdi12Port; infoStr: string);
     begin
-      //--- (generated code: YSdi12Sensor accessors initialization)
-      //--- (end of generated code: YSdi12Sensor accessors initialization)
+      //--- (generated code: YSdi12SensorInfo accessors initialization)
+      //--- (end of generated code: YSdi12SensorInfo accessors initialization)
       self._sdi12Port := sdi12Port;
       self._parseInfoStr(infoStr);
     end;
 
-//--- (generated code: YSdi12Sensor implementation)
 
-  function TYSdi12Sensor.get_sensorAddress():string;
+  procedure TYSdi12SensorInfo._throw(errcode: LongInt; msg: string);
+    begin
+      self._sdi12Port._throw(errcode, msg);
+    end;
+
+
+//--- (generated code: YSdi12SensorInfo implementation)
+
+  function TYSdi12SensorInfo.isValid():boolean;
+    begin
+      result := self._isValid;
+      exit;
+    end;
+
+
+  function TYSdi12SensorInfo.get_sensorAddress():string;
     begin
       result := self._addr;
       exit;
     end;
 
 
-  function TYSdi12Sensor.get_sensorProtocol():string;
+  function TYSdi12SensorInfo.get_sensorProtocol():string;
     begin
       result := self._proto;
       exit;
     end;
 
 
-  function TYSdi12Sensor.get_sensorVendor():string;
+  function TYSdi12SensorInfo.get_sensorVendor():string;
     begin
       result := self._mfg;
       exit;
     end;
 
 
-  function TYSdi12Sensor.get_sensorModel():string;
+  function TYSdi12SensorInfo.get_sensorModel():string;
     begin
       result := self._model;
       exit;
     end;
 
 
-  function TYSdi12Sensor.get_sensorVersion():string;
+  function TYSdi12SensorInfo.get_sensorVersion():string;
     begin
       result := self._ver;
       exit;
     end;
 
 
-  function TYSdi12Sensor.get_sensorSerial():string;
+  function TYSdi12SensorInfo.get_sensorSerial():string;
     begin
       result := self._sn;
       exit;
     end;
 
 
-  function TYSdi12Sensor.get_measureCount():LongInt;
+  function TYSdi12SensorInfo.get_measureCount():LongInt;
     begin
       result := length(self._valuesDesc);
       exit;
     end;
 
 
-  function TYSdi12Sensor.get_measureCommand(measureIndex: LongInt):string;
+  function TYSdi12SensorInfo.get_measureCommand(measureIndex: LongInt):string;
     begin
+      if not(measureIndex < length(self._valuesDesc)) then
+        begin
+          self._throw( YAPI_INVALID_ARGUMENT, 'Invalid measure index');
+          result:='';
+          exit;
+        end;
       result := self._valuesDesc[measureIndex][0];
       exit;
     end;
 
 
-  function TYSdi12Sensor.get_measurePosition(measureIndex: LongInt):LongInt;
+  function TYSdi12SensorInfo.get_measurePosition(measureIndex: LongInt):LongInt;
     begin
+      if not(measureIndex < length(self._valuesDesc)) then
+        begin
+          self._throw( YAPI_INVALID_ARGUMENT, 'Invalid measure index');
+          result:=0;
+          exit;
+        end;
       result := _atoi(self._valuesDesc[measureIndex][2]);
       exit;
     end;
 
 
-  function TYSdi12Sensor.get_measureSymbol(measureIndex: LongInt):string;
+  function TYSdi12SensorInfo.get_measureSymbol(measureIndex: LongInt):string;
     begin
+      if not(measureIndex < length(self._valuesDesc)) then
+        begin
+          self._throw( YAPI_INVALID_ARGUMENT, 'Invalid measure index');
+          result:='';
+          exit;
+        end;
       result := self._valuesDesc[measureIndex][3];
       exit;
     end;
 
 
-  function TYSdi12Sensor.get_measureUnit(measureIndex: LongInt):string;
+  function TYSdi12SensorInfo.get_measureUnit(measureIndex: LongInt):string;
     begin
+      if not(measureIndex < length(self._valuesDesc)) then
+        begin
+          self._throw( YAPI_INVALID_ARGUMENT, 'Invalid measure index');
+          result:='';
+          exit;
+        end;
       result := self._valuesDesc[measureIndex][4];
       exit;
     end;
 
 
-  function TYSdi12Sensor.get_measureDescription(measureIndex: LongInt):string;
+  function TYSdi12SensorInfo.get_measureDescription(measureIndex: LongInt):string;
     begin
+      if not(measureIndex < length(self._valuesDesc)) then
+        begin
+          self._throw( YAPI_INVALID_ARGUMENT, 'Invalid measure index');
+          result:='';
+          exit;
+        end;
       result := self._valuesDesc[measureIndex][5];
       exit;
     end;
 
 
-  function TYSdi12Sensor.get_typeMeasure():TStringArrayArray;
+  function TYSdi12SensorInfo.get_typeMeasure():TStringArrayArray;
     begin
       result := self._valuesDesc;
       exit;
     end;
 
 
-  procedure TYSdi12Sensor._parseInfoStr(infoStr: string);
+  procedure TYSdi12SensorInfo._parseInfoStr(infoStr: string);
     var
       errmsg : string;
     begin
@@ -1773,6 +1876,7 @@ implementation
               self._model := errmsg;
               self._ver := errmsg;
               self._sn := errmsg;
+              self._isValid := false;
             end
           else
             begin
@@ -1782,12 +1886,13 @@ implementation
               self._model := Copy(infoStr,  11 + 1, 6);
               self._ver := Copy(infoStr,  17 + 1, 3);
               self._sn := Copy(infoStr,  20 + 1, Length(infoStr)-20);
+              self._isValid := true;
             end;
         end;
     end;
 
 
-  procedure TYSdi12Sensor._queryValueInfo();
+  procedure TYSdi12SensorInfo._queryValueInfo();
     var
       val : TStringArrayArray;
       data : TStringArray;
@@ -1862,7 +1967,7 @@ implementation
     end;
 
 
-//--- (end of generated code: YSdi12Sensor implementation)
+//--- (end of generated code: YSdi12SensorInfo implementation)
 
 
   constructor TYSdi12Port.Create(func:string);
@@ -3022,14 +3127,14 @@ implementation
     end;
 
 
-  function TYSdi12Port.discoverSingleSensor():TYSdi12Sensor;
+  function TYSdi12Port.discoverSingleSensor():TYSdi12SensorInfo;
     var
       resStr : string;
     begin
       resStr := self.querySdi12('?', '', 5000);
       if (resStr = '') then
         begin
-          result := TYSdi12Sensor.create(self, 'ERSensor Not Found');
+          result := TYSdi12SensorInfo.create(self, 'ERSensor Not Found');
           exit;
         end;
 
@@ -3038,9 +3143,9 @@ implementation
     end;
 
 
-  function TYSdi12Port.discoverAllSensors():TYSdi12SensorArray;
+  function TYSdi12Port.discoverAllSensors():TYSdi12SensorInfoArray;
     var
-      sensors : TYSdi12SensorArray;
+      sensors : TYSdi12SensorInfoArray;
       idSens : TStringArray;
       res : string;
       i : LongInt;
@@ -3145,9 +3250,9 @@ implementation
     end;
 
 
-  function TYSdi12Port.changeAddress(oldAddress: string; newAddress: string):TYSdi12Sensor;
+  function TYSdi12Port.changeAddress(oldAddress: string; newAddress: string):TYSdi12SensorInfo;
     var
-      addr : TYSdi12Sensor;
+      addr : TYSdi12SensorInfo;
     begin
       self.querySdi12(oldAddress,  'A' + newAddress, 1000);
       addr := self.getSensorInformation(newAddress);
@@ -3156,18 +3261,18 @@ implementation
     end;
 
 
-  function TYSdi12Port.getSensorInformation(sensorAddr: string):TYSdi12Sensor;
+  function TYSdi12Port.getSensorInformation(sensorAddr: string):TYSdi12SensorInfo;
     var
       res : string;
-      sensor : TYSdi12Sensor;
+      sensor : TYSdi12SensorInfo;
     begin
       res := self.querySdi12(sensorAddr, 'I', 1000);
       if (res = '') then
         begin
-          result := TYSdi12Sensor.create(self, 'ERSensor Not Found');
+          result := TYSdi12SensorInfo.create(self, 'ERSensor Not Found');
           exit;
         end;
-      sensor :=  TYSdi12Sensor.create(self, res);
+      sensor :=  TYSdi12SensorInfo.create(self, res);
       sensor._queryValueInfo;
       result := sensor;
       exit;
@@ -3197,7 +3302,7 @@ implementation
     end;
 
 
-  function TYSdi12Port.snoopMessages(maxWait: LongInt):TYSdi12SnoopingRecordArray;
+  function TYSdi12Port.snoopMessagesEx(maxWait: LongInt; maxMsg: LongInt):TYSdi12SnoopingRecordArray;
     var
       url : string;
       msgbin : TByteArray;
@@ -3209,7 +3314,7 @@ implementation
     begin
       SetLength(msgarr, 0);
 
-      url := 'rxmsg.json?pos='+inttostr( self._rxptr)+'&maxw='+inttostr(maxWait)+'&t=0';
+      url := 'rxmsg.json?pos='+inttostr( self._rxptr)+'&maxw='+inttostr( maxWait)+'&t=0&len='+inttostr(maxMsg);
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
       msglen := length(msgarr);
@@ -3232,6 +3337,13 @@ implementation
         end;
       SetLength(res, res_pos);;
       result := res;
+      exit;
+    end;
+
+
+  function TYSdi12Port.snoopMessages(maxWait: LongInt):TYSdi12SnoopingRecordArray;
+    begin
+      result := self.snoopMessagesEx(maxWait, 255);
       exit;
     end;
 

@@ -1143,16 +1143,16 @@ implementation
       if recOfs < self._recOfs then
         begin
           // load optional value multiplier
-          mult1 := self._decodeU16(sdata, self._recOfs);
+          mult1 := self._decodeU16(sdata, recOfs);
           recOfs := recOfs + 2;
           if self._var2size > 0 then
             begin
-              mult2 := self._decodeU16(sdata, self._recOfs);
+              mult2 := self._decodeU16(sdata, recOfs);
               recOfs := recOfs + 2;
             end;
           if self._var3size > 0 then
             begin
-              mult3 := self._decodeU16(sdata, self._recOfs);
+              mult3 := self._decodeU16(sdata, recOfs);
               recOfs := recOfs + 2;
             end;
         end;

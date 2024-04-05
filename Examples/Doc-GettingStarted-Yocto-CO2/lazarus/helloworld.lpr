@@ -1,8 +1,8 @@
 {*********************************************************************
  *
- *  $Id: helloworld.lpr 47192 2021-11-08 18:02:19Z seb $
+ *  $Id: helloworld.lpr 59602 2024-03-04 09:18:09Z seb $
  *
- *  An example that show how to use a  Yocto-CO2
+ *  An example that shows how to use a  Yocto-CO2
  *
  *  You can find more information on our web site:
  *   Yocto-CO2 documentation:

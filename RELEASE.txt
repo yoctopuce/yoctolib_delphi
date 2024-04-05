@@ -1,3 +1,11 @@
-Delphi v1.10.59271
+Delphi v1.10.60394
 
-- test release
+- Add support for Yocto-RFID
+- Add YThreshold class
+- Add position indicator in SnoopingRecords
+- Add snoopMessagesEx function to serial communication classes
+- Fix warning about malformed XML comment
+- Fix cache latency on method YSensor.loadCalibrationPoints()
+- Fix handling of long strings in many parse situations (including json_get_key)
+- Fix error message when trying to update V2.0 firmware with V1.0 library
+- Fix parsing of URL with domain in YAPI::RegisterHub

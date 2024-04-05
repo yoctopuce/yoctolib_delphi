@@ -2,11 +2,11 @@
  *
  *  $Id: helloworld.dpr 47192 2021-11-08 18:02:19Z seb $
  *
- *  An example that show how to use a  Yocto-MaxiKnob
+ *  An example that shows how to use a Yocto-RFID-xxxx
  *
  *  You can find more information on our web site:
- *   Yocto-MaxiKnob documentation:
- *      https://www.yoctopuce.com/EN/products/yocto-maxiknob/doc.html
+ *   Yocto-RFID-15693 documentation:
+ *      https://www.yoctopuce.com/EN/products/yocto-rfid-15693/doc.html
  *   Delphi API Reference:
  *      https://www.yoctopuce.com/EN/doc/reference/yoctolib-delphi-EN.html
  *

@@ -1,25 +1,11 @@
 {*********************************************************************
  *
- *  $Id: helloworld.dpr 58172 2023-11-30 17:10:23Z martinm $
+ *  $Id: helloworld.dpr 59874 2024-03-14 11:47:58Z seb $
  *
- *  An example that shows how to use a  Yocto-MaxiKnob
+ *  An example that show how to use a  Yocto-MaxiKnob
  *
  *  You can find more information on our web site:
  *   Yocto-MaxiKnob documentation:
- *      https://www.yoctopuce.com/EN/products/yocto-maxiknob/doc.html
- *   Delphi API Reference:
- *      https://www.yoctopuce.com/EN/doc/reference/yoctolib-delphi-EN.html
- *
- *********************************************************************}
-
-{*********************************************************************
- *
- *  $Id: helloworld.dpr 58172 2023-11-30 17:10:23Z martinm $
- *
- *  An example that shows how to use a  Yocto-MaxiKnob
- *
- *  You can find more information on our web site:
- *   Yocto-MaxiBuzzer documentation:
  *      https://www.yoctopuce.com/EN/products/yocto-maxiknob/doc.html
  *   Delphi API Reference:
  *      https://www.yoctopuce.com/EN/doc/reference/yoctolib-delphi-EN.html
