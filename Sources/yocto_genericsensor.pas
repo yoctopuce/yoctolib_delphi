@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_genericsensor.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_genericsensor.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindGenericSensor(), the high-level API for GenericSensor functions
  *
@@ -278,7 +278,7 @@ type
     /// <summary>
     ///   Changes the electric signal bias for zero shift adjustment.
     /// <para>
-    ///   If your electric signal reads positive when it should be zero, setup
+    ///   If your electric signal reads positive when it should be zero, set up
     ///   a positive signalBias of the same value to fix the zero shift.
     ///   Remember to call the <c>saveToFlash()</c>
     ///   method of the module if the modification must be kept.
@@ -895,7 +895,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYGenericSensor.create(func);
-          TYFunction._AddToCache('GenericSensor',  func, obj);
+          TYFunction._AddToCache('GenericSensor', func, obj);
         end;
       result := obj;
       exit;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_voc.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_voc.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindVoc(), the high-level API for Voc functions
  *
@@ -322,7 +322,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYVoc.create(func);
-          TYFunction._AddToCache('Voc',  func, obj);
+          TYFunction._AddToCache('Voc', func, obj);
         end;
       result := obj;
       exit;

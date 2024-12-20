@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ * $Id: yocto_display.pas 63506 2024-11-28 10:42:13Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -1899,7 +1899,7 @@ destructor TYDisplay.destroy();
       if obj = nil then
         begin
           obj :=  TYDisplay.create(func);
-          TYFunction._AddToCache('Display',  func, obj);
+          TYFunction._AddToCache('Display', func, obj);
         end;
       result := obj;
       exit;
@@ -2043,7 +2043,7 @@ destructor TYDisplay.destroy();
       layercount := self.get_layerCount;
       if not((layerId >= 0) and(layerId < layercount)) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'invalid DisplayLayer index');
+          self._throw(YAPI_INVALID_ARGUMENT,'invalid DisplayLayer index');
           result:=nil;
           exit;
         end;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_pressure.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_pressure.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindPressure(), the high-level API for Pressure functions
  *
@@ -323,7 +323,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYPressure.create(func);
-          TYFunction._AddToCache('Pressure',  func, obj);
+          TYFunction._AddToCache('Pressure', func, obj);
         end;
       result := obj;
       exit;

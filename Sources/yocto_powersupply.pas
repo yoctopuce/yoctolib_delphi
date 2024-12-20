@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_powersupply.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_powersupply.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindPowerSupply(), the high-level API for PowerSupply functions
  *
@@ -987,7 +987,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYPowerSupply.create(func);
-          TYFunction._AddToCache('PowerSupply',  func, obj);
+          TYFunction._AddToCache('PowerSupply', func, obj);
         end;
       result := obj;
       exit;
@@ -1044,7 +1044,7 @@ implementation
         begin
           V_target  := 0.0;
         end;
-      newval := ''+inttostr( round(V_target*65536))+':'+inttostr(ms_duration);
+      newval := ''+inttostr(round(V_target*65536))+':'+inttostr(ms_duration);
 
       result := self.set_voltageTransition(newval);
       exit;

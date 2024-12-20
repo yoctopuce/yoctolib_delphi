@@ -1051,7 +1051,7 @@ implementation
       buffSize := length(sdata);
       if not(buffSize >= 24) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'Invalid snapshot data (too short)');
+          self._throw(YAPI_INVALID_ARGUMENT,'Invalid snapshot data (too short)');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
@@ -1061,25 +1061,25 @@ implementation
       self._var3size := sdata[3] - 48;
       if not(self._fmt = 83) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'Unsupported snapshot format');
+          self._throw(YAPI_INVALID_ARGUMENT,'Unsupported snapshot format');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
       if not((self._var1size >= 2) and(self._var1size <= 4)) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'Invalid sample size');
+          self._throw(YAPI_INVALID_ARGUMENT,'Invalid sample size');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
       if not((self._var2size >= 0) and(self._var1size <= 4)) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'Invalid sample size');
+          self._throw(YAPI_INVALID_ARGUMENT,'Invalid sample size');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
       if not((self._var3size >= 0) and(self._var1size <= 4)) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'Invalid sample size');
+          self._throw(YAPI_INVALID_ARGUMENT,'Invalid sample size');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
@@ -1103,15 +1103,15 @@ implementation
       self._nRecs := self._decodeU16(sdata, 6);
       self._samplesPerSec := self._decodeU16(sdata, 8);
       self._trigType := self._decodeU16(sdata, 10);
-      self._trigVal := self._decodeVal(sdata,  12, 4) / 1000;
+      self._trigVal := self._decodeVal(sdata, 12, 4) / 1000;
       self._trigPos := self._decodeU16(sdata, 16);
       ms := self._decodeU16(sdata, 18);
-      self._trigUTC := self._decodeVal(sdata,  20, 4);
+      self._trigUTC := self._decodeVal(sdata, 20, 4);
       self._trigUTC := self._trigUTC + (ms / 1000.0);
       recOfs := 24;
       while sdata[recOfs] >= 32 do
         begin
-          self._var1unit := ''+ self._var1unit+''+chr(sdata[recOfs]);
+          self._var1unit := ''+self._var1unit+''+chr(sdata[recOfs]);
           recOfs := recOfs + 1;
         end;
       if self._var2size > 0 then
@@ -1119,7 +1119,7 @@ implementation
           recOfs := recOfs + 1;
           while sdata[recOfs] >= 32 do
             begin
-              self._var2unit := ''+ self._var2unit+''+chr(sdata[recOfs]);
+              self._var2unit := ''+self._var2unit+''+chr(sdata[recOfs]);
               recOfs := recOfs + 1;
             end;
         end;
@@ -1128,7 +1128,7 @@ implementation
           recOfs := recOfs + 1;
           while sdata[recOfs] >= 32 do
             begin
-              self._var3unit := ''+ self._var3unit+''+chr(sdata[recOfs]);
+              self._var3unit := ''+self._var3unit+''+chr(sdata[recOfs]);
               recOfs := recOfs + 1;
             end;
         end;
@@ -1162,7 +1162,7 @@ implementation
       count := self._nRecs;
       while (count > 0) and(recOfs + self._var1size <= buffSize) do
         begin
-          v := self._decodeVal(sdata,  recOfs, self._var1size) / 1000.0;
+          v := self._decodeVal(sdata, recOfs, self._var1size) / 1000.0;
           self._var1samples[var1samples_pos] := v*mult1;
           inc(var1samples_pos);
           recOfs := recOfs + recSize;
@@ -1176,7 +1176,7 @@ implementation
           count := self._nRecs;
           while (count > 0) and(recOfs + self._var2size <= buffSize) do
             begin
-              v := self._decodeVal(sdata,  recOfs, self._var2size) / 1000.0;
+              v := self._decodeVal(sdata, recOfs, self._var2size) / 1000.0;
               self._var2samples[var2samples_pos] := v*mult2;
               inc(var2samples_pos);
               recOfs := recOfs + recSize;
@@ -1191,7 +1191,7 @@ implementation
           count := self._nRecs;
           while (count > 0) and(recOfs + self._var3size <= buffSize) do
             begin
-              v := self._decodeVal(sdata,  recOfs, self._var3size) / 1000.0;
+              v := self._decodeVal(sdata, recOfs, self._var3size) / 1000.0;
               self._var3samples[var3samples_pos] := v*mult3;
               inc(var3samples_pos);
               recOfs := recOfs + recSize;
@@ -1263,7 +1263,7 @@ implementation
     begin
       if not(self._nVars >= 2) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'There is no serie 2 in this capture data');
+          self._throw(YAPI_INVALID_ARGUMENT,'There is no serie 2 in this capture data');
           result:='';
           exit;
         end;
@@ -1276,7 +1276,7 @@ implementation
     begin
       if not(self._nVars >= 3) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'There is no serie 3 in this capture data');
+          self._throw(YAPI_INVALID_ARGUMENT,'There is no serie 3 in this capture data');
           result:='';
           exit;
         end;
@@ -1296,7 +1296,7 @@ implementation
     begin
       if not(self._nVars >= 2) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'There is no serie 2 in this capture data');
+          self._throw(YAPI_INVALID_ARGUMENT,'There is no serie 2 in this capture data');
           result:=self._var2samples;
           exit;
         end;
@@ -1309,7 +1309,7 @@ implementation
     begin
       if not(self._nVars >= 3) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'There is no serie 3 in this capture data');
+          self._throw(YAPI_INVALID_ARGUMENT,'There is no serie 3 in this capture data');
           result:=self._var3samples;
           exit;
         end;
@@ -1610,7 +1610,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYInputCapture.create(func);
-          TYFunction._AddToCache('InputCapture',  func, obj);
+          TYFunction._AddToCache('InputCapture', func, obj);
         end;
       result := obj;
       exit;
@@ -1684,7 +1684,7 @@ implementation
           msDuration := 1000;
         end;
       snapStart := (-msDuration div 2);
-      snapUrl := 'snap.bin?t='+inttostr( snapStart)+'&d='+inttostr(msDuration);
+      snapUrl := 'snap.bin?t='+inttostr(snapStart)+'&d='+inttostr(msDuration);
 
       snapData := self._download(snapUrl);
       result := TYInputCaptureData.create(self, snapData);

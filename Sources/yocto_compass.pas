@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_compass.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_compass.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindCompass(), the high-level API for Compass functions
  *
@@ -476,7 +476,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYCompass.create(func);
-          TYFunction._AddToCache('Compass',  func, obj);
+          TYFunction._AddToCache('Compass', func, obj);
         end;
       result := obj;
       exit;

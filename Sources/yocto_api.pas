@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 59953 2024-03-18 09:15:08Z seb $
+ * $Id: yocto_api.pas 63506 2024-11-28 10:42:13Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -129,7 +129,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '60394';
+  YOCTO_API_BUILD_NO        = '63797';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -2287,7 +2287,7 @@ end;
   ///   The <c>YSensor</c> class is the parent class for all Yoctopuce sensor types. It can be
   ///   used to read the current value and unit of any sensor, read the min/max
   ///   value, configure autonomous recording frequency and access recorded data.
-  ///   It also provide a function to register a callback invoked each time the
+  ///   It also provides a function to register a callback invoked each time the
   ///   observed value changes, or at a predefined interval. Using this class rather
   ///   than a specific subclass makes it possible to create generic applications
   ///   that work with any Yoctopuce sensor, even those that do not yet exist.
@@ -4961,7 +4961,7 @@ end;
   /// <para>
   ///   From an operating system standpoint, it is generally not required to call
   ///   this function since the OS will automatically free allocated resources
-  ///   once your program is completed. However there are two situations when
+  ///   once your program is completed. However, there are two situations when
   ///   you may really want to use that function:
   /// </para>
   /// <para>
@@ -5073,7 +5073,7 @@ type
 
   ////
   /// <summary>
-  ///   Setup the Yoctopuce library to use modules connected on a given machine.
+  ///   Set up the Yoctopuce library to use modules connected on a given machine.
   /// <para>
   ///   Idealy this
   ///   call will be made once at the begining of your application.  The
@@ -5112,7 +5112,7 @@ type
   ///   while trying to access the USB modules. In particular, this means
   ///   that you must stop the VirtualHub software before starting
   ///   an application that uses direct USB access. The workaround
-  ///   for this limitation is to setup the library to use the VirtualHub
+  ///   for this limitation is to set up the library to use the VirtualHub
   ///   rather than direct USB access.
   /// </para>
   /// <para>
@@ -5178,7 +5178,7 @@ type
 
   ////
   /// <summary>
-  ///   Setup the Yoctopuce library to no more use modules connected on a previously
+  ///   Set up the Yoctopuce library to no more use modules connected on a previously
   ///   registered machine with RegisterHub.
   /// <para>
   /// </para>
@@ -5326,7 +5326,7 @@ type
   ///   Checks if a given string is valid as logical name for a module or a function.
   /// <para>
   ///   A valid logical name has a maximum of 19 characters, all among
-  ///   <c>A..Z</c>, <c>a..z</c>, <c>0..9</c>, <c>_</c>, and <c>-</c>.
+  ///   <c>A...Z</c>, <c>a...z</c>, <c>0...9</c>, <c>_</c>, and <c>-</c>.
   ///   If you try to configure a logical name with an incorrect string,
   ///   the invalid characters are ignored.
   /// </para>
@@ -8294,7 +8294,7 @@ var
       if obj = nil then
         begin
           obj :=  TYFunction.create(func);
-          TYFunction._AddToCache('Function',  func, obj);
+          TYFunction._AddToCache('Function', func, obj);
         end;
       result := obj;
       exit;
@@ -8361,7 +8361,7 @@ var
       url : string;
       attrVal : TByteArray;
     begin
-      url := 'api/'+ self.get_functionId+'/'+attrName;
+      url := 'api/'+self.get_functionId+'/'+attrName;
       attrVal := self._download(url);
       result := _ByteToString(attrVal);
       exit;
@@ -9728,7 +9728,7 @@ var
       if obj = nil then
         begin
           obj :=  TYModule.create(cleanHwId);
-          TYFunction._AddToCache('Module',  cleanHwId, obj);
+          TYFunction._AddToCache('Module', cleanHwId, obj);
         end;
       result := obj;
       exit;
@@ -9787,7 +9787,7 @@ var
       prodrel := self.get_productRelease;
       if prodrel > 1 then
         begin
-          fullname := ''+ prodname+' rev. '+chr(64 + prodrel);
+          fullname := ''+prodname+' rev. '+chr(64 + prodrel);
         end
       else
         begin
@@ -9945,7 +9945,7 @@ var
         end;
       //may throw an exception
       serial := self.get_serialNumber;
-      tmp_res := TYFirmwareUpdate.CheckFirmware(serial,  path, release);
+      tmp_res := TYFirmwareUpdate.CheckFirmware(serial, path, release);
       if (pos('error:', tmp_res) - 1) = 0 then
         begin
           self._throw(YAPI_INVALID_ARGUMENT, tmp_res);
@@ -10011,15 +10011,15 @@ var
       ext_settings := ', "extras":[';
       templist := self.get_functionIds('Temperature');
       sep := '';
-      for ii_0:=0 to length( templist)-1 do
+      for ii_0:=0 to length(templist)-1 do
         begin
           if _atoi(self.get_firmwareRelease) > 9000 then
             begin
-              url := 'api/'+ templist[ii_0]+'/sensorType';
+              url := 'api/'+templist[ii_0]+'/sensorType';
               t_type := _ByteToString(self._download(url));
               if (t_type = 'RES_NTC') or (t_type = 'RES_LINEAR') then
                 begin
-                  id := Copy( templist[ii_0],  11 + 1, Length( templist[ii_0]) - 11);
+                  id := Copy(templist[ii_0], 11 + 1, Length(templist[ii_0]) - 11);
                   if (id = '') then
                     begin
                       id := '1';
@@ -10027,7 +10027,7 @@ var
                   temp_data_bin := self._download('extra.json?page='+id);
                   if length(temp_data_bin) > 0 then
                     begin
-                      item := ''+ sep+'{"fid":"'+  templist[ii_0]+'", "json":'+_ByteToString(temp_data_bin)+'}'#10'';
+                      item := ''+sep+'{"fid":"'+templist[ii_0]+'", "json":'+_ByteToString(temp_data_bin)+'}'#10'';
                       ext_settings := ext_settings + item;
                       sep := ',';
                     end;
@@ -10045,14 +10045,14 @@ var
             end;
           filelist := self._json_get_array(json);
           sep := '';
-          for ii_1:=0 to length( filelist)-1 do
+          for ii_1:=0 to length(filelist)-1 do
             begin
-              name := self._json_get_key(_StrToByte( filelist[ii_1]), 'name');
+              name := self._json_get_key(_StrToByte(filelist[ii_1]), 'name');
               if (Length(name) > 0) and not((name = 'startupConf.json')) then
                 begin
                   file_data_bin := self._download(self._escapeAttr(name));
                   file_data := _bytesToHexStr(file_data_bin, 0, length(file_data_bin));
-                  item := ''+ sep+'{"name":"'+ name+'", "data":"'+file_data+'"}'#10'';
+                  item := ''+sep+'{"name":"'+name+'", "data":"'+file_data+'"}'#10'';
                   ext_settings := ext_settings + item;
                   sep := ',';
                 end;
@@ -10085,7 +10085,7 @@ var
         begin
           curr := values[ofs];
           currTemp := values[ofs + 1];
-          url := 'api/'+ funcId+'.json?command=m'+ curr+':'+currTemp;
+          url := 'api/'+funcId+'.json?command=m'+curr+':'+currTemp;
           self._download(url);
           ofs := ofs + 2;
         end;
@@ -10103,11 +10103,11 @@ var
     begin
       SetLength(extras, 0);
       extras := self._json_get_array(_StrToByte(jsonExtra));
-      for ii_0:=0 to length( extras)-1 do
+      for ii_0:=0 to length(extras)-1 do
         begin
-          functionId := self._get_json_path( extras[ii_0], 'fid');
+          functionId := self._get_json_path(extras[ii_0], 'fid');
           functionId := self._decode_json_string(functionId);
-          data := self._get_json_path( extras[ii_0], 'json');
+          data := self._get_json_path(extras[ii_0], 'json');
           if self.hasFunction(functionId) then
             begin
               self.loadThermistorExtra(functionId, data);
@@ -10155,17 +10155,17 @@ var
           res := self._decode_json_string(res);
           if not((res = 'ok')) then
             begin
-              self._throw( YAPI_IO_ERROR, 'format failed');
+              self._throw(YAPI_IO_ERROR,'format failed');
               result:=YAPI_IO_ERROR;
               exit;
             end;
           json_files := self._get_json_path(json, 'files');
           files := self._json_get_array(_StrToByte(json_files));
-          for ii_0:=0 to length( files)-1 do
+          for ii_0:=0 to length(files)-1 do
             begin
-              name := self._get_json_path( files[ii_0], 'name');
+              name := self._get_json_path(files[ii_0], 'name');
               name := self._decode_json_string(name);
-              data := self._get_json_path( files[ii_0], 'data');
+              data := self._get_json_path(files[ii_0], 'data');
               data := self._decode_json_string(data);
               if (name = '') then
                 begin
@@ -10181,7 +10181,7 @@ var
       globalres := self.set_allSettings(_StrToByte(json_api));
       if not(fuperror = 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'Error during file upload');
+          self._throw(YAPI_IO_ERROR,'Error during file upload');
           result:=YAPI_IO_ERROR;
           exit;
         end;
@@ -10549,12 +10549,12 @@ var
               if paramScale > 0 then
                 begin
                   // scalar decoding
-                  calibData[ i] := (calibData[i] - paramOffset) / paramScale;
+                  calibData[i] := (calibData[i] - paramOffset) / paramScale;
                 end
               else
                 begin
                   // floating-point decoding
-                  calibData[ i] := _decimalToDouble(round(calibData[i]));
+                  calibData[i] := _decimalToDouble(round(calibData[i]));
                 end;
               i := i + 1;
             end;
@@ -10752,9 +10752,9 @@ var
               result := YAPI_INVALID_ARGUMENT;
               exit;
             end;
-          jpath := Copy(each_str,  0 + 1, eqpos);
+          jpath := Copy(each_str, 0 + 1, eqpos);
           eqpos := eqpos + 1;
-          value := Copy(each_str,  eqpos + 1, leng - eqpos);
+          value := Copy(each_str, eqpos + 1, leng - eqpos);
           old_jpath[jpath_pos] := jpath;
           inc(jpath_pos);
           old_jpath_len[len_pos] := Length(jpath);
@@ -10794,9 +10794,9 @@ var
               result := YAPI_INVALID_ARGUMENT;
               exit;
             end;
-          jpath := Copy(each_str,  0 + 1, eqpos);
+          jpath := Copy(each_str, 0 + 1, eqpos);
           eqpos := eqpos + 1;
-          value := Copy(each_str,  eqpos + 1, leng - eqpos);
+          value := Copy(each_str, eqpos + 1, leng - eqpos);
           new_jpath[jpath_pos] := jpath;
           inc(jpath_pos);
           new_jpath_len[len_pos] := Length(jpath);
@@ -10819,9 +10819,9 @@ var
             begin
               continue;
             end;
-          fun := Copy(njpath,  0 + 1, cpos);
+          fun := Copy(njpath, 0 + 1, cpos);
           cpos := cpos + 1;
-          attr := Copy(njpath,  cpos + 1, leng - cpos);
+          attr := Copy(njpath, cpos + 1, leng - cpos);
           do_update := true;
           if (fun = 'services') then
             begin
@@ -10989,7 +10989,7 @@ var
               newval := new_val_arr[i];
               j := 0;
               found := false;
-              while  (j < length(old_jpath)) and not(found) do
+              while (j < length(old_jpath)) and not(found) do
                 begin
                   if (new_jpath_len[i] = old_jpath_len[j]) and((new_jpath[i] = old_jpath[j])) then
                     begin
@@ -11013,7 +11013,7 @@ var
                   new_calib := newval;
                   j := 0;
                   found := false;
-                  while  (j < length(old_jpath)) and not(found) do
+                  while (j < length(old_jpath)) and not(found) do
                     begin
                       if (new_jpath_len[i] = old_jpath_len[j]) and((new_jpath[i] = old_jpath[j])) then
                         begin
@@ -11025,7 +11025,7 @@ var
                   tmp := fun + '/unit';
                   j := 0;
                   found := false;
-                  while  (j < length(new_jpath)) and not(found) do
+                  while (j < length(new_jpath)) and not(found) do
                     begin
                       if (tmp = new_jpath[j]) then
                         begin
@@ -11037,7 +11037,7 @@ var
                   tmp := fun + '/sensorType';
                   j := 0;
                   found := false;
-                  while  (j < length(new_jpath)) and not(found) do
+                  while (j < length(new_jpath)) and not(found) do
                     begin
                       if (tmp = new_jpath[j]) then
                         begin
@@ -11046,7 +11046,7 @@ var
                         end;
                       j := j + 1;
                     end;
-                  newval := self.calibConvert(old_calib,  new_val_arr[i],  unit_name, sensorType);
+                  newval := self.calibConvert(old_calib, new_val_arr[i], unit_name, sensorType);
                   url := 'api/' + fun + '.json?' + attr + '=' + self._escapeAttr(newval);
                   subres := self._tryExec(url);
                   if (res = YAPI_SUCCESS) and(subres <> YAPI_SUCCESS) then
@@ -11706,7 +11706,7 @@ var
       if obj = nil then
         begin
           obj :=  TYSensor.create(func);
-          TYFunction._AddToCache('Sensor',  func, obj);
+          TYFunction._AddToCache('Sensor', func, obj);
         end;
       result := obj;
       exit;
@@ -11973,7 +11973,7 @@ var
       res := self._download('api/dataLogger/recording?recording=1');
       if not(length(res) > 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'unable to start datalogger');
+          self._throw(YAPI_IO_ERROR,'unable to start datalogger');
           result:=YAPI_IO_ERROR;
           exit;
         end;
@@ -11989,7 +11989,7 @@ var
       res := self._download('api/dataLogger/recording?recording=0');
       if not(length(res) > 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'unable to stop datalogger');
+          self._throw(YAPI_IO_ERROR,'unable to stop datalogger');
           result:=YAPI_IO_ERROR;
           exit;
         end;
@@ -12140,7 +12140,7 @@ var
       idx := 0;
       while idx < npt do
         begin
-          res := ''+ res+','+_yapiFloatToStr( rawValues[idx])+','+_yapiFloatToStr(refValues[idx]);
+          res := ''+res+','+_yapiFloatToStr(rawValues[idx])+','+_yapiFloatToStr(refValues[idx]);
           idx := idx + 1;
         end;
       result := res;
@@ -12694,7 +12694,7 @@ var
                 end;
               if self._progress < 95 then
                 begin
-                  prod_prefix := Copy(m.get_productName,  0 + 1, 8);
+                  prod_prefix := Copy(m.get_productName, 0 + 1, 8);
                   if (prod_prefix = 'YoctoHub') then
                     begin
                       ySleep(1000, ignoreErrMsg);
@@ -12864,7 +12864,7 @@ var
       if (leng >= 6) and(('error:' = Copy(err, 0 + 1, 6))) then
         begin
           self._progress := -1;
-          self._progress_msg := Copy(err,  6 + 1, leng - 6);
+          self._progress_msg := Copy(err, 6 + 1, leng - 6);
         end
       else
         begin
@@ -13120,8 +13120,7 @@ var
     var
       url : string;
     begin
-      url := 'logger.json?id='+
-      self._functionId+'&run='+inttostr(self._runNo)+'&utc='+inttostr(self._utcStamp);
+      url := 'logger.json?id='+self._functionId+'&run='+inttostr(self._runNo)+'&utc='+inttostr(self._utcStamp);
       result := url;
       exit;
     end;
@@ -13131,8 +13130,7 @@ var
     var
       url : string;
     begin
-      url := 'logger.json?id='+
-      self._functionId+'&run='+inttostr(self._runNo)+'&utc=';
+      url := 'logger.json?id='+self._functionId+'&run='+inttostr(self._runNo)+'&utc=';
       result := url;
       exit;
     end;
@@ -13599,17 +13597,17 @@ var
       preview_pos := length(self._preview);
       SetLength(self._preview, preview_pos+length(self._streams));
       // Parse complete streams
-      for ii_0:=0 to length( self._streams)-1 do
+      for ii_0:=0 to length(self._streams)-1 do
         begin
-          streamStartTimeMs := round( self._streams[ii_0].get_realStartTimeUTC * 1000);
-          streamDuration :=  self._streams[ii_0].get_realDuration;
+          streamStartTimeMs := round(self._streams[ii_0].get_realStartTimeUTC * 1000);
+          streamDuration := self._streams[ii_0].get_realDuration;
           streamEndTimeMs := streamStartTimeMs + round(streamDuration * 1000);
           if (streamStartTimeMs >= self._startTimeMs) and((self._endTimeMs = 0) or(streamEndTimeMs <= self._endTimeMs)) then
             begin
               // stream that are completely inside the dataset
-              previewMinVal :=  self._streams[ii_0].get_minValue;
-              previewAvgVal :=  self._streams[ii_0].get_averageValue;
-              previewMaxVal :=  self._streams[ii_0].get_maxValue;
+              previewMinVal := self._streams[ii_0].get_minValue;
+              previewAvgVal := self._streams[ii_0].get_averageValue;
+              previewMaxVal := self._streams[ii_0].get_maxValue;
               previewStartMs := streamStartTimeMs;
               previewStopMs := streamEndTimeMs;
               previewDuration := streamDuration;
@@ -13618,21 +13616,21 @@ var
             begin
               // stream that are partially in the dataset
               // we need to parse data to filter value outside the dataset
-              if not( self._streams[ii_0]._wasLoaded) then
+              if not(self._streams[ii_0]._wasLoaded) then
                 begin
-                  url :=  self._streams[ii_0]._get_url;
+                  url := self._streams[ii_0]._get_url;
                   data := self._parent._download(url);
                   self._streams[ii_0]._parseStream(data);
                 end;
-              dataRows :=  self._streams[ii_0].get_dataRows;
+              dataRows := self._streams[ii_0].get_dataRows;
               if length(dataRows) = 0 then
                 begin
                   result := self.get_progress;
                   exit;
                 end;
               tim := streamStartTimeMs;
-              fitv := round( self._streams[ii_0].get_firstDataSamplesInterval * 1000);
-              itv := round( self._streams[ii_0].get_dataSamplesInterval * 1000);
+              fitv := round(self._streams[ii_0].get_firstDataSamplesInterval * 1000);
+              itv := round(self._streams[ii_0].get_dataSamplesInterval * 1000);
               nCols := length(dataRows[0]);
               minCol := 0;
               if nCols > 2 then
@@ -13924,7 +13922,7 @@ var
           exit;
         end;
       mo := self._parent.get_module;
-      self._hardwareId := ''+ mo.get_serialNumber+'.'+self.get_functionId;
+      self._hardwareId := ''+mo.get_serialNumber+'.'+self.get_functionId;
       result := self._hardwareId;
       exit;
     end;
@@ -13985,7 +13983,7 @@ var
           result := 100;
           exit;
         end;
-      result := (1 + (1 + self._progress) * 98  div (1 + length(self._streams)));
+      result := (1 + (1 + self._progress) * 98 div (1 + length(self._streams)));
       exit;
     end;
 
@@ -14270,13 +14268,13 @@ var
                     begin
                       currprogress := 100;
                     end;
-                  self._progresss[ s] := currprogress;
+                  self._progresss[s] := currprogress;
                   measures := self._datasets[s].get_measures();
                 end;
               if idx < length(measures) then
                 begin
                   currnexttim := measures[idx].get_endTimeUTC();
-                  self._nexttim[ s] := currnexttim;
+                  self._nexttim[s] := currnexttim;
                 end;
             end;
           if currnexttim > 0 then
@@ -14311,8 +14309,8 @@ var
               newvalue := measures[idx].get_averageValue();
               datarec[datarec_pos] := newvalue;
               inc(datarec_pos);
-              self._nexttim[ s] := 0.0;
-              self._nextidx[ s] := idx + 1;
+              self._nexttim[s] := 0.0;
+              self._nextidx[s] := idx + 1;
             end
           else
             begin
@@ -14701,7 +14699,7 @@ const
       if obj = nil then
         begin
           obj :=  TYDataLogger.create(func);
-          TYFunction._AddToCache('DataLogger',  func, obj);
+          TYFunction._AddToCache('DataLogger', func, obj);
         end;
       result := obj;
       exit;

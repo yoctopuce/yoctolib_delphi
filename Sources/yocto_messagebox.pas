@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ * $Id: yocto_messagebox.pas 63506 2024-11-28 10:42:13Z seb $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *
@@ -1048,7 +1048,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYMessageBox.create(func);
-          TYFunction._AddToCache('MessageBox',  func, obj);
+          TYFunction._AddToCache('MessageBox', func, obj);
         end;
       result := obj;
       exit;
@@ -1171,21 +1171,21 @@ implementation
       chrPos := (pos('#', cmd) - 1);
       while chrPos >= 0 do
         begin
-          cmd := ''+ Copy(cmd,  0 + 1, chrPos)+''+chr( 37)+'23'+Copy(cmd,  chrPos+1 + 1, cmdLen-chrPos-1);
+          cmd := ''+Copy(cmd, 0 + 1, chrPos)+''+chr(37)+'23'+Copy(cmd, chrPos+1 + 1, cmdLen-chrPos-1);
           cmdLen := cmdLen + 2;
           chrPos := (pos('#', cmd) - 1);
         end;
       chrPos := (pos('+', cmd) - 1);
       while chrPos >= 0 do
         begin
-          cmd := ''+ Copy(cmd,  0 + 1, chrPos)+''+chr( 37)+'2B'+Copy(cmd,  chrPos+1 + 1, cmdLen-chrPos-1);
+          cmd := ''+Copy(cmd, 0 + 1, chrPos)+''+chr(37)+'2B'+Copy(cmd, chrPos+1 + 1, cmdLen-chrPos-1);
           cmdLen := cmdLen + 2;
           chrPos := (pos('+', cmd) - 1);
         end;
       chrPos := (pos('=', cmd) - 1);
       while chrPos >= 0 do
         begin
-          cmd := ''+ Copy(cmd,  0 + 1, chrPos)+''+chr( 37)+'3D'+Copy(cmd,  chrPos+1 + 1, cmdLen-chrPos-1);
+          cmd := ''+Copy(cmd, 0 + 1, chrPos)+''+chr(37)+'3D'+Copy(cmd, chrPos+1 + 1, cmdLen-chrPos-1);
           cmdLen := cmdLen + 2;
           chrPos := (pos('=', cmd) - 1);
         end;
@@ -1208,8 +1208,8 @@ implementation
             begin
               // continuation detected
               suffixlen := bufflen - idx;
-              cmd := 'at.txt?cmd='+Copy(buffstr,  buffstrlen - suffixlen + 1, suffixlen);
-              buffstr := Copy(buffstr,  0 + 1, buffstrlen - suffixlen);
+              cmd := 'at.txt?cmd='+Copy(buffstr, buffstrlen - suffixlen + 1, suffixlen);
+              buffstr := Copy(buffstr, 0 + 1, buffstrlen - suffixlen);
               waitMore := waitMore - 1;
             end
           else
@@ -1217,7 +1217,7 @@ implementation
               // request complete
               waitMore := 0;
             end;
-          res := ''+ res+''+buffstr;
+          res := ''+res+''+buffstr;
         end;
       result := res;
       exit;
@@ -1329,14 +1329,14 @@ implementation
           i := i + 1;
         end;
       // exceptions in range 20-7A
-      self._gsm2unicode[ 36] := 164;
-      self._gsm2unicode[ 64] := 161;
-      self._gsm2unicode[ 91] := 196;
-      self._gsm2unicode[ 92] := 214;
-      self._gsm2unicode[ 93] := 209;
-      self._gsm2unicode[ 94] := 220;
-      self._gsm2unicode[ 95] := 167;
-      self._gsm2unicode[ 96] := 191;
+      self._gsm2unicode[36] := 164;
+      self._gsm2unicode[64] := 161;
+      self._gsm2unicode[91] := 196;
+      self._gsm2unicode[92] := 214;
+      self._gsm2unicode[93] := 209;
+      self._gsm2unicode[94] := 220;
+      self._gsm2unicode[95] := 167;
+      self._gsm2unicode[96] := 191;
       // 7B-7F
       self._gsm2unicode[gsm2unicode_pos] := 228;
       inc(gsm2unicode_pos);
@@ -2843,13 +2843,13 @@ implementation
           while i < siz do
             begin
               byt := addr[ofs+i+1];
-              res := ''+ res+''+AnsiLowerCase(inttohex( ((byt) and 15),1))+''+AnsiLowerCase(inttohex(((byt) shr 4),1));
+              res := ''+res+''+AnsiLowerCase(inttohex(((byt) and 15),1))+''+AnsiLowerCase(inttohex(((byt) shr 4),1));
               i := i + 1;
             end;
           // remove padding digit if needed
           if ((addr[ofs+siz]) shr 4) = 15 then
             begin
-              res := Copy(res,  0 + 1, Length(res)-1);
+              res := Copy(res, 0 + 1, Length(res)-1);
             end;
           result := res;
           exit;
@@ -2911,7 +2911,7 @@ implementation
       if (Copy(exp, 4 + 1, 1) = '-') or (Copy(exp, 4 + 1, 1) = '/') then
         begin
           // ignore century
-          exp := Copy(exp,  2 + 1, explen-2);
+          exp := Copy(exp, 2 + 1, explen-2);
           explen := Length(exp);
         end;
       expasc := _StrToByte(exp);
@@ -3015,7 +3015,7 @@ implementation
       while (i < siz) and(i < 6) do
         begin
           byt := exp[ofs+i];
-          res := ''+ res+''+AnsiLowerCase(inttohex( ((byt) and 15),1))+''+AnsiLowerCase(inttohex(((byt) shr 4),1));
+          res := ''+res+''+AnsiLowerCase(inttohex(((byt) and 15),1))+''+AnsiLowerCase(inttohex(((byt) shr 4),1));
           if i < 3 then
             begin
               if i < 2 then
@@ -3056,7 +3056,7 @@ implementation
             begin
               ss := '0'+ss;
             end;
-          res := ''+ res+''+ sign+''+ hh+':'+ss;
+          res := ''+res+''+sign+''+hh+':'+ss;
         end;
       result := res;
       exit;
@@ -3385,8 +3385,7 @@ implementation
               if (iei = 0) and(ielen = 3) then
                 begin
                   // concatenated SMS, 8-bit ref
-                  sig := ''+ self._orig+'-'+ self._dest+'-'+AnsiLowerCase(inttohex(
-                  self._mref,02))+'-'+AnsiLowerCase(inttohex(self._udh[i],02));
+                  sig := ''+self._orig+'-'+self._dest+'-'+AnsiLowerCase(inttohex(self._mref,02))+'-'+AnsiLowerCase(inttohex(self._udh[i],02));
                   self._aggSig := sig;
                   self._aggCnt := self._udh[i+1];
                   self._aggIdx := self._udh[i+2];
@@ -3394,8 +3393,7 @@ implementation
               if (iei = 8) and(ielen = 4) then
                 begin
                   // concatenated SMS, 16-bit ref
-                  sig := ''+ self._orig+'-'+ self._dest+'-'+AnsiLowerCase(inttohex(
-                  self._mref,02))+'-'+AnsiLowerCase(inttohex( self._udh[i],02))+''+AnsiLowerCase(inttohex(self._udh[i+1],02));
+                  sig := ''+self._orig+'-'+self._dest+'-'+AnsiLowerCase(inttohex(self._mref,02))+'-'+AnsiLowerCase(inttohex(self._udh[i],02))+''+AnsiLowerCase(inttohex(self._udh[i+1],02));
                   self._aggSig := sig;
                   self._aggCnt := self._udh[i+2];
                   self._aggIdx := self._udh[i+3];
@@ -3426,7 +3424,7 @@ implementation
       self._pdu := pdu;
       self._npdu := 1;
       // parse meta-data
-      self._smsc := self.decodeAddress(pdu,  1, 2*(pdu[0]-1));
+      self._smsc := self.decodeAddress(pdu, 1, 2*(pdu[0]-1));
       rpos := 1+pdu[0];
       pdutyp := pdu[rpos];
       rpos := rpos + 1;
@@ -3435,7 +3433,7 @@ implementation
         begin
           addrlen := pdu[rpos];
           rpos := rpos + 1;
-          self._orig := self.decodeAddress(pdu,  rpos, addrlen);
+          self._orig := self.decodeAddress(pdu, rpos, addrlen);
           self._dest := '';
           tslen := 7;
         end
@@ -3445,7 +3443,7 @@ implementation
           rpos := rpos + 1;
           addrlen := pdu[rpos];
           rpos := rpos + 1;
-          self._dest := self.decodeAddress(pdu,  rpos, addrlen);
+          self._dest := self.decodeAddress(pdu, rpos, addrlen);
           self._orig := '';
           if (((pdutyp) and 16)) <> 0 then
             begin
@@ -3470,7 +3468,7 @@ implementation
       rpos := rpos + 1;
       self._alphab := (((((dcs) shr 2))) and 3);
       self._mclass := ((dcs) and (16+3));
-      self._stamp := self.decodeTimeStamp(pdu,  rpos, tslen);
+      self._stamp := self.decodeTimeStamp(pdu, rpos, tslen);
       rpos := rpos + tslen;
       // parse user data (including udh)
       nbits := 0;

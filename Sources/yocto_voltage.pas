@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_voltage.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_voltage.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindVoltage(), the high-level API for Voltage functions
  *
@@ -407,7 +407,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYVoltage.create(func);
-          TYFunction._AddToCache('Voltage',  func, obj);
+          TYFunction._AddToCache('Voltage', func, obj);
         end;
       result := obj;
       exit;

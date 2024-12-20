@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_voltageoutput.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_voltageoutput.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindVoltageOutput(), the high-level API for VoltageOutput functions
  *
@@ -507,7 +507,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYVoltageOutput.create(func);
-          TYFunction._AddToCache('VoltageOutput',  func, obj);
+          TYFunction._AddToCache('VoltageOutput', func, obj);
         end;
       result := obj;
       exit;
@@ -568,7 +568,7 @@ implementation
         begin
           V_target := 10.0;
         end;
-      newval := ''+inttostr( round(V_target*65536))+':'+inttostr(ms_duration);
+      newval := ''+inttostr(round(V_target*65536))+':'+inttostr(ms_duration);
 
       result := self.set_voltageTransition(newval);
       exit;

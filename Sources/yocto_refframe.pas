@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_refframe.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_refframe.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindRefFrame(), the high-level API for RefFrame functions
  *
@@ -84,7 +84,7 @@ type
   ///   TYRefFrame Class: 3D reference frame configuration interface, available for instance in the
   ///   Yocto-3D-V2 or the Yocto-Inclinometer
   /// <para>
-  ///   The <c>YRefFrame</c> class is used to setup the base orientation of the Yoctopuce inertial
+  ///   The <c>YRefFrame</c> class is used to set up the base orientation of the Yoctopuce inertial
   ///   sensors. Thanks to this, orientation functions relative to the earth surface plane
   ///   can use the proper reference frame. For some devices, the class also implements a
   ///   tridimensional sensor calibration process, which can compensate for local variations
@@ -144,7 +144,7 @@ type
     ///   heading and the reference bearing indicated here.
     /// </para>
     /// <para>
-    ///   For instance, if you setup as reference bearing the value of the earth
+    ///   For instance, if you set up as reference bearing the value of the earth
     ///   magnetic declination, the compass will provide the orientation relative
     ///   to the geographic North.
     /// </para>
@@ -874,7 +874,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYRefFrame.create(func);
-          TYFunction._AddToCache('RefFrame',  func, obj);
+          TYFunction._AddToCache('RefFrame', func, obj);
         end;
       result := obj;
       exit;
@@ -1022,20 +1022,20 @@ implementation
               b := self._calibDataAcc[idx];
               if a > b then
                 begin
-                  self._calibDataAcc[ idx-1] := b;
-                  self._calibDataAcc[ idx] := a;
+                  self._calibDataAcc[idx-1] := b;
+                  self._calibDataAcc[idx] := a;
                   xa := self._calibDataAccX[idx-1];
                   xb := self._calibDataAccX[idx];
-                  self._calibDataAccX[ idx-1] := xb;
-                  self._calibDataAccX[ idx] := xa;
+                  self._calibDataAccX[idx-1] := xb;
+                  self._calibDataAccX[idx] := xa;
                   xa := self._calibDataAccY[idx-1];
                   xb := self._calibDataAccY[idx];
-                  self._calibDataAccY[ idx-1] := xb;
-                  self._calibDataAccY[ idx] := xa;
+                  self._calibDataAccY[idx-1] := xb;
+                  self._calibDataAccY[idx] := xa;
                   xa := self._calibDataAccZ[idx-1];
                   xb := self._calibDataAccZ[idx];
-                  self._calibDataAccZ[ idx-1] := xb;
-                  self._calibDataAccZ[ idx] := xa;
+                  self._calibDataAccZ[idx-1] := xb;
+                  self._calibDataAccZ[idx] := xa;
                   changed := changed + 1;
                 end
               else
@@ -1275,9 +1275,7 @@ implementation
       intpos := (self._calibStage - 1) * self._calibCount;
       self._calibSort(intpos, intpos + self._calibCount);
       intpos := intpos + (self._calibCount div 2);
-      self._calibLogMsg := 'Stage '+inttostr( self._calibStage)+': median is '+inttostr(
-      round(1000*self._calibDataAccX[intpos]))+','+inttostr(
-      round(1000*self._calibDataAccY[intpos]))+','+inttostr(round(1000*self._calibDataAccZ[intpos]));
+      self._calibLogMsg := 'Stage '+inttostr(self._calibStage)+': median is '+inttostr(round(1000*self._calibDataAccX[intpos]))+','+inttostr(round(1000*self._calibDataAccY[intpos]))+','+inttostr(round(1000*self._calibDataAccZ[intpos]));
       // move to next stage
       self._calibStage := self._calibStage + 1;
       if self._calibStage < 7 then
@@ -1323,7 +1321,7 @@ implementation
           yVal := self._calibDataAccY[intpos] - self._calibAccYOfs;
           zVal := self._calibDataAccZ[intpos] - self._calibAccZOfs;
           norm := Sqrt(xVal * xVal + yVal * yVal + zVal * zVal);
-          self._calibDataAcc[ intpos] := norm;
+          self._calibDataAcc[intpos] := norm;
           intpos := intpos + 1;
         end;
       idx := 0;
@@ -1575,7 +1573,7 @@ implementation
       scaleLo := ((((scaleY) and 15)) shl 12) + ((scaleX) shl 2) + scaleExp;
       scaleHi := ((scaleZ) shl 6) + ((scaleY) shr 4);
       // Save calibration parameters
-      newcalib := '5,'+inttostr( shiftX)+','+inttostr( shiftY)+','+inttostr( shiftZ)+','+inttostr( scaleLo)+','+inttostr(scaleHi);
+      newcalib := '5,'+inttostr(shiftX)+','+inttostr(shiftY)+','+inttostr(shiftZ)+','+inttostr(scaleLo)+','+inttostr(scaleHi);
       self._calibStage := 0;
       result := self.set_calibrationParam(newcalib);
       exit;

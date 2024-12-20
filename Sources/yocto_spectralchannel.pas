@@ -1,8 +1,8 @@
 {*********************************************************************
  *
- *  $Id: yocto_groundspeed.pas 63506 2024-11-28 10:42:13Z seb $
+ *  $Id: svn_id $
  *
- *  Implements yFindGroundSpeed(), the high-level API for GroundSpeed functions
+ *  Implements yFindSpectralChannel(), the high-level API for SpectralChannel functions
  *
  *  - - - - - - - - - License information: - - - - - - - - -
  *
@@ -38,7 +38,7 @@
  *********************************************************************}
 
 
-unit yocto_groundspeed;
+unit yocto_spectralchannel;
 {$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
@@ -50,45 +50,66 @@ uses
 {$ENDIF}
   yocto_api, yjson;
 
-//--- (YGroundSpeed definitions)
+//--- (YSpectralChannel definitions)
 
+const Y_RAWCOUNT_INVALID              = YAPI_INVALID_INT;
 
-//--- (end of YGroundSpeed definitions)
+//--- (end of YSpectralChannel definitions)
 
-//--- (YGroundSpeed yapiwrapper declaration)
-//--- (end of YGroundSpeed yapiwrapper declaration)
+//--- (YSpectralChannel yapiwrapper declaration)
+//--- (end of YSpectralChannel yapiwrapper declaration)
 
 type
 
-  TYGroundSpeed = class;
-  //--- (YGroundSpeed class start)
-  TYGroundSpeedValueCallback = procedure(func: TYGroundSpeed; value:string);
-  TYGroundSpeedTimedReportCallback = procedure(func: TYGroundSpeed; value:TYMeasure);
+  TYSpectralChannel = class;
+  //--- (YSpectralChannel class start)
+  TYSpectralChannelValueCallback = procedure(func: TYSpectralChannel; value:string);
+  TYSpectralChannelTimedReportCallback = procedure(func: TYSpectralChannel; value:TYMeasure);
 
   ////
   /// <summary>
-  ///   TYGroundSpeed Class: ground speed sensor control interface, available for instance in the Yocto-GPS-V2
+  ///   TYSpectralChannel Class: spectral analysis channel control interface
   /// <para>
-  ///   The <c>YGroundSpeed</c> class allows you to read and configure Yoctopuce ground speed sensors.
+  ///   The <c>YSpectralChannel</c> class allows you to read and configure Yoctopuce spectral analysis channels.
   ///   It inherits from <c>YSensor</c> class the core functions to read measurements,
   ///   to register callback functions, and to access the autonomous datalogger.
   /// </para>
   /// </summary>
   ///-
-  TYGroundSpeed=class(TYSensor)
-  //--- (end of YGroundSpeed class start)
+  TYSpectralChannel=class(TYSensor)
+  //--- (end of YSpectralChannel class start)
   protected
-  //--- (YGroundSpeed declaration)
+  //--- (YSpectralChannel declaration)
     // Attributes (function value cache)
-    _valueCallbackGroundSpeed : TYGroundSpeedValueCallback;
-    _timedReportCallbackGroundSpeed : TYGroundSpeedTimedReportCallback;
+    _rawCount                 : LongInt;
+    _valueCallbackSpectralChannel : TYSpectralChannelValueCallback;
+    _timedReportCallbackSpectralChannel : TYSpectralChannelTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-    //--- (end of YGroundSpeed declaration)
+    //--- (end of YSpectralChannel declaration)
 
   public
-    //--- (YGroundSpeed accessors declaration)
+    //--- (YSpectralChannel accessors declaration)
     constructor Create(func:string);
+
+    ////
+    /// <summary>
+    ///   Retrieves the raw count of data samples.
+    /// <para>
+    ///   This method returns the current value of rawCount, representing the total number of samples collected
+    ///   by the sensor.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YSpectralChannel.RAWCOUNT_INVALID</c>.
+    /// </para>
+    ///-
+    function get_rawCount():LongInt;
 
     ////
     /// <summary>
@@ -118,7 +139,7 @@ type
     /// <para>
     ///   This function does not require that $THEFUNCTION$ is online at the time
     ///   it is invoked. The returned object is nevertheless valid.
-    ///   Use the method <c>YGroundSpeed.isOnline()</c> to test if $THEFUNCTION$ is
+    ///   Use the method <c>YSpectralChannel.isOnline()</c> to test if $THEFUNCTION$ is
     ///   indeed online at a given time. In case of ambiguity when looking for
     ///   $AFUNCTION$ by logical name, no error is notified: the first instance
     ///   found is returned. The search is performed first by hardware name,
@@ -137,10 +158,10 @@ type
     ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
-    ///   a <c>YGroundSpeed</c> object allowing you to drive $THEFUNCTION$.
+    ///   a <c>YSpectralChannel</c> object allowing you to drive $THEFUNCTION$.
     /// </returns>
     ///-
-    class function FindGroundSpeed(func: string):TYGroundSpeed;
+    class function FindSpectralChannel(func: string):TYSpectralChannel;
 
     ////
     /// <summary>
@@ -160,7 +181,7 @@ type
     /// @noreturn
     /// </param>
     ///-
-    function registerValueCallback(callback: TYGroundSpeedValueCallback):LongInt; overload;
+    function registerValueCallback(callback: TYSpectralChannelValueCallback):LongInt; overload;
 
     function _invokeValueCallback(value: string):LongInt; override;
 
@@ -182,27 +203,27 @@ type
     /// @noreturn
     /// </param>
     ///-
-    function registerTimedReportCallback(callback: TYGroundSpeedTimedReportCallback):LongInt; overload;
+    function registerTimedReportCallback(callback: TYSpectralChannelTimedReportCallback):LongInt; overload;
 
     function _invokeTimedReportCallback(value: TYMeasure):LongInt; override;
 
 
     ////
     /// <summary>
-    ///   Continues the enumeration of ground speed sensors started using <c>yFirstGroundSpeed()</c>.
+    ///   Continues the enumeration of spectral analysis channels started using <c>yFirstSpectralChannel()</c>.
     /// <para>
-    ///   Caution: You can't make any assumption about the returned ground speed sensors order.
-    ///   If you want to find a specific a ground speed sensor, use <c>GroundSpeed.findGroundSpeed()</c>
+    ///   Caution: You can't make any assumption about the returned spectral analysis channels order.
+    ///   If you want to find a specific a spectral analysis channel, use <c>SpectralChannel.findSpectralChannel()</c>
     ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a pointer to a <c>YGroundSpeed</c> object, corresponding to
-    ///   a ground speed sensor currently online, or a <c>NIL</c> pointer
-    ///   if there are no more ground speed sensors to enumerate.
+    ///   a pointer to a <c>YSpectralChannel</c> object, corresponding to
+    ///   a spectral analysis channel currently online, or a <c>NIL</c> pointer
+    ///   if there are no more spectral analysis channels to enumerate.
     /// </returns>
     ///-
-    function nextGroundSpeed():TYGroundSpeed;
+    function nextSpectralChannel():TYSpectralChannel;
     ////
     /// <summary>
     ///   c
@@ -211,14 +232,14 @@ type
     /// </para>
     /// </summary>
     ///-
-    class function FirstGroundSpeed():TYGroundSpeed;
-  //--- (end of YGroundSpeed accessors declaration)
+    class function FirstSpectralChannel():TYSpectralChannel;
+  //--- (end of YSpectralChannel accessors declaration)
   end;
 
-//--- (YGroundSpeed functions declaration)
+//--- (YSpectralChannel functions declaration)
   ////
   /// <summary>
-  ///   Retrieves a ground speed sensor for a given identifier.
+  ///   Retrieves a spectral analysis channel for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
   /// </para>
@@ -242,11 +263,11 @@ type
   /// <para>
   /// </para>
   /// <para>
-  ///   This function does not require that the ground speed sensor is online at the time
+  ///   This function does not require that the spectral analysis channel is online at the time
   ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YGroundSpeed.isOnline()</c> to test if the ground speed sensor is
+  ///   Use the method <c>YSpectralChannel.isOnline()</c> to test if the spectral analysis channel is
   ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   a ground speed sensor by logical name, no error is notified: the first instance
+  ///   a spectral analysis channel by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
   /// </para>
@@ -259,77 +280,102 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the ground speed sensor, for instance
-  ///   <c>YGNSSMK2.groundSpeed</c>.
+  ///   a string that uniquely characterizes the spectral analysis channel, for instance
+  ///   <c>MyDevice.spectralChannel1</c>.
   /// </param>
   /// <returns>
-  ///   a <c>YGroundSpeed</c> object allowing you to drive the ground speed sensor.
+  ///   a <c>YSpectralChannel</c> object allowing you to drive the spectral analysis channel.
   /// </returns>
   ///-
-  function yFindGroundSpeed(func:string):TYGroundSpeed;
+  function yFindSpectralChannel(func:string):TYSpectralChannel;
   ////
   /// <summary>
-  ///   Starts the enumeration of ground speed sensors currently accessible.
+  ///   Starts the enumeration of spectral analysis channels currently accessible.
   /// <para>
-  ///   Use the method <c>YGroundSpeed.nextGroundSpeed()</c> to iterate on
-  ///   next ground speed sensors.
+  ///   Use the method <c>YSpectralChannel.nextSpectralChannel()</c> to iterate on
+  ///   next spectral analysis channels.
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a pointer to a <c>YGroundSpeed</c> object, corresponding to
-  ///   the first ground speed sensor currently online, or a <c>NIL</c> pointer
+  ///   a pointer to a <c>YSpectralChannel</c> object, corresponding to
+  ///   the first spectral analysis channel currently online, or a <c>NIL</c> pointer
   ///   if there are none.
   /// </returns>
   ///-
-  function yFirstGroundSpeed():TYGroundSpeed;
+  function yFirstSpectralChannel():TYSpectralChannel;
 
-//--- (end of YGroundSpeed functions declaration)
+//--- (end of YSpectralChannel functions declaration)
 
 implementation
 
-//--- (YGroundSpeed dlldef)
-//--- (end of YGroundSpeed dlldef)
+//--- (YSpectralChannel dlldef)
+//--- (end of YSpectralChannel dlldef)
 
-  constructor TYGroundSpeed.Create(func:string);
+  constructor TYSpectralChannel.Create(func:string);
     begin
       inherited Create(func);
-      _className := 'GroundSpeed';
-      //--- (YGroundSpeed accessors initialization)
-      _valueCallbackGroundSpeed := nil;
-      _timedReportCallbackGroundSpeed := nil;
-      //--- (end of YGroundSpeed accessors initialization)
+      _className := 'SpectralChannel';
+      //--- (YSpectralChannel accessors initialization)
+      _rawCount := Y_RAWCOUNT_INVALID;
+      _valueCallbackSpectralChannel := nil;
+      _timedReportCallbackSpectralChannel := nil;
+      //--- (end of YSpectralChannel accessors initialization)
     end;
 
-//--- (YGroundSpeed yapiwrapper)
-//--- (end of YGroundSpeed yapiwrapper)
+//--- (YSpectralChannel yapiwrapper)
+//--- (end of YSpectralChannel yapiwrapper)
 
-//--- (YGroundSpeed implementation)
+//--- (YSpectralChannel implementation)
 {$HINTS OFF}
-  function TYGroundSpeed._parseAttr(member:PJSONRECORD):integer;
+  function TYSpectralChannel._parseAttr(member:PJSONRECORD):integer;
     var
       sub : PJSONRECORD;
       i,l        : integer;
     begin
+      if (member^.name = 'rawCount') then
+        begin
+          _rawCount := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
 
-  class function TYGroundSpeed.FindGroundSpeed(func: string):TYGroundSpeed;
+  function TYSpectralChannel.get_rawCount():LongInt;
     var
-      obj : TYGroundSpeed;
+      res : LongInt;
     begin
-      obj := TYGroundSpeed(TYFunction._FindFromCache('GroundSpeed', func));
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_RAWCOUNT_INVALID;
+              exit;
+            end;
+        end;
+      res := self._rawCount;
+      result := res;
+      exit;
+    end;
+
+
+  class function TYSpectralChannel.FindSpectralChannel(func: string):TYSpectralChannel;
+    var
+      obj : TYSpectralChannel;
+    begin
+      obj := TYSpectralChannel(TYFunction._FindFromCache('SpectralChannel', func));
       if obj = nil then
         begin
-          obj :=  TYGroundSpeed.create(func);
-          TYFunction._AddToCache('GroundSpeed', func, obj);
+          obj :=  TYSpectralChannel.create(func);
+          TYFunction._AddToCache('SpectralChannel', func, obj);
         end;
       result := obj;
       exit;
     end;
 
 
-  function TYGroundSpeed.registerValueCallback(callback: TYGroundSpeedValueCallback):LongInt;
+  function TYSpectralChannel.registerValueCallback(callback: TYSpectralChannelValueCallback):LongInt;
     var
       val : string;
     begin
@@ -341,7 +387,7 @@ implementation
         begin
           TYFunction._UpdateValueCallbackList(self, false);
         end;
-      self._valueCallbackGroundSpeed := callback;
+      self._valueCallbackSpectralChannel := callback;
       // Immediately invoke value callback with current value
       if (addr(callback) <> nil) and self.isOnline then
         begin
@@ -356,11 +402,11 @@ implementation
     end;
 
 
-  function TYGroundSpeed._invokeValueCallback(value: string):LongInt;
+  function TYSpectralChannel._invokeValueCallback(value: string):LongInt;
     begin
-      if (addr(self._valueCallbackGroundSpeed) <> nil) then
+      if (addr(self._valueCallbackSpectralChannel) <> nil) then
         begin
-          self._valueCallbackGroundSpeed(self, value);
+          self._valueCallbackSpectralChannel(self, value);
         end
       else
         begin
@@ -371,7 +417,7 @@ implementation
     end;
 
 
-  function TYGroundSpeed.registerTimedReportCallback(callback: TYGroundSpeedTimedReportCallback):LongInt;
+  function TYSpectralChannel.registerTimedReportCallback(callback: TYSpectralChannelTimedReportCallback):LongInt;
     var
       sensor : TYSensor;
     begin
@@ -384,17 +430,17 @@ implementation
         begin
           TYFunction._UpdateTimedReportCallbackList(sensor, false);
         end;
-      self._timedReportCallbackGroundSpeed := callback;
+      self._timedReportCallbackSpectralChannel := callback;
       result := 0;
       exit;
     end;
 
 
-  function TYGroundSpeed._invokeTimedReportCallback(value: TYMeasure):LongInt;
+  function TYSpectralChannel._invokeTimedReportCallback(value: TYMeasure):LongInt;
     begin
-      if (addr(self._timedReportCallbackGroundSpeed) <> nil) then
+      if (addr(self._timedReportCallbackSpectralChannel) <> nil) then
         begin
-          self._timedReportCallbackGroundSpeed(self, value);
+          self._timedReportCallbackSpectralChannel(self, value);
         end
       else
         begin
@@ -405,31 +451,31 @@ implementation
     end;
 
 
-  function TYGroundSpeed.nextGroundSpeed(): TYGroundSpeed;
+  function TYSpectralChannel.nextSpectralChannel(): TYSpectralChannel;
     var
       hwid: string;
     begin
       if YISERR(_nextFunction(hwid)) then
         begin
-          nextGroundSpeed := nil;
+          nextSpectralChannel := nil;
           exit;
         end;
       if hwid = '' then
         begin
-          nextGroundSpeed := nil;
+          nextSpectralChannel := nil;
           exit;
         end;
-      nextGroundSpeed := TYGroundSpeed.FindGroundSpeed(hwid);
+      nextSpectralChannel := TYSpectralChannel.FindSpectralChannel(hwid);
     end;
 
-  class function TYGroundSpeed.FirstGroundSpeed(): TYGroundSpeed;
+  class function TYSpectralChannel.FirstSpectralChannel(): TYSpectralChannel;
     var
       v_fundescr      : YFUN_DESCR;
       dev             : YDEV_DESCR;
       neededsize, err : integer;
       serial, funcId, funcName, funcVal, errmsg : string;
     begin
-      err := yapiGetFunctionsByClass('GroundSpeed', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
+      err := yapiGetFunctionsByClass('SpectralChannel', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
       if (YISERR(err) or (neededsize = 0)) then
         begin
           result := nil;
@@ -440,36 +486,36 @@ implementation
           result := nil;
           exit;
         end;
-     result := TYGroundSpeed.FindGroundSpeed(serial+'.'+funcId);
+     result := TYSpectralChannel.FindSpectralChannel(serial+'.'+funcId);
     end;
 
-//--- (end of YGroundSpeed implementation)
+//--- (end of YSpectralChannel implementation)
 
-//--- (YGroundSpeed functions)
+//--- (YSpectralChannel functions)
 
-  function yFindGroundSpeed(func:string): TYGroundSpeed;
+  function yFindSpectralChannel(func:string): TYSpectralChannel;
     begin
-      result := TYGroundSpeed.FindGroundSpeed(func);
+      result := TYSpectralChannel.FindSpectralChannel(func);
     end;
 
-  function yFirstGroundSpeed(): TYGroundSpeed;
+  function yFirstSpectralChannel(): TYSpectralChannel;
     begin
-      result := TYGroundSpeed.FirstGroundSpeed();
+      result := TYSpectralChannel.FirstSpectralChannel();
     end;
 
-  procedure _GroundSpeedCleanup();
+  procedure _SpectralChannelCleanup();
     begin
     end;
 
-//--- (end of YGroundSpeed functions)
+//--- (end of YSpectralChannel functions)
 
 initialization
-  //--- (YGroundSpeed initialization)
-  //--- (end of YGroundSpeed initialization)
+  //--- (YSpectralChannel initialization)
+  //--- (end of YSpectralChannel initialization)
 
 finalization
-  //--- (YGroundSpeed cleanup)
-  _GroundSpeedCleanup();
-  //--- (end of YGroundSpeed cleanup)
+  //--- (YSpectralChannel cleanup)
+  _SpectralChannelCleanup();
+  //--- (end of YSpectralChannel cleanup)
 
 end.

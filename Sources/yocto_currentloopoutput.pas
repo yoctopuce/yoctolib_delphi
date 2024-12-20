@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_currentloopoutput.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_currentloopoutput.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
  *
@@ -562,7 +562,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYCurrentLoopOutput.create(func);
-          TYFunction._AddToCache('CurrentLoopOutput',  func, obj);
+          TYFunction._AddToCache('CurrentLoopOutput', func, obj);
         end;
       result := obj;
       exit;
@@ -623,7 +623,7 @@ implementation
         begin
           mA_target := 21.0;
         end;
-      newval := ''+inttostr( round(mA_target*65536))+':'+inttostr(ms_duration);
+      newval := ''+inttostr(round(mA_target*65536))+':'+inttostr(ms_duration);
 
       result := self.set_currentTransition(newval);
       exit;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_audioout.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_audioout.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindAudioOut(), the high-level API for AudioOut functions
  *
@@ -586,7 +586,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYAudioOut.create(func);
-          TYFunction._AddToCache('AudioOut',  func, obj);
+          TYFunction._AddToCache('AudioOut', func, obj);
         end;
       result := obj;
       exit;

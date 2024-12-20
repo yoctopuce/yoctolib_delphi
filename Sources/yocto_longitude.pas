@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_longitude.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_longitude.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindLongitude(), the high-level API for Longitude functions
  *
@@ -322,7 +322,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYLongitude.create(func);
-          TYFunction._AddToCache('Longitude',  func, obj);
+          TYFunction._AddToCache('Longitude', func, obj);
         end;
       result := obj;
       exit;

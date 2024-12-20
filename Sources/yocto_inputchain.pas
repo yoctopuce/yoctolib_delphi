@@ -564,7 +564,7 @@ type
     /// <summary>
     ///   Resets the application watchdog countdown.
     /// <para>
-    ///   If you have setup a non-zero <c>watchdogPeriod</c>, you should
+    ///   If you have set up a non-zero <c>watchdogPeriod</c>, you should
     ///   call this function on a regular basis to prevent the application
     ///   inactivity error to be triggered.
     /// </para>
@@ -1125,7 +1125,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYInputChain.create(func);
-          TYFunction._AddToCache('InputChain',  func, obj);
+          TYFunction._AddToCache('InputChain', func, obj);
         end;
       result := obj;
       exit;
@@ -1276,14 +1276,14 @@ implementation
       arrLen := length(eventArr);
       if not(arrLen > 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'fail to download events');
+          self._throw(YAPI_IO_ERROR,'fail to download events');
           result:=YAPI_IO_ERROR;
           exit;
         end;
       // last element of array is the new position preceeded by '@'
       arrLen := arrLen - 1;
       lenStr := eventArr[arrLen];
-      lenStr := Copy(lenStr,  1 + 1, Length(lenStr)-1);
+      lenStr := Copy(lenStr, 1 + 1, Length(lenStr)-1);
       // update processed event position pointer
       self._eventPos := _atoi(lenStr);
       // now generate callbacks for each event received
@@ -1294,24 +1294,24 @@ implementation
           eventLen := Length(eventStr);
           if eventLen >= 1 then
             begin
-              hexStamp := Copy(eventStr,  0 + 1, 8);
+              hexStamp := Copy(eventStr, 0 + 1, 8);
               evtStamp := StrToInt('$0' + hexStamp);
               typePos := (pos(':', eventStr) - 1)+1;
               if (evtStamp >= self._eventStamp) and(typePos > 8) then
                 begin
                   self._eventStamp := evtStamp;
                   dataPos := (pos('=', eventStr) - 1)+1;
-                  evtType := Copy(eventStr,  typePos + 1, 1);
+                  evtType := Copy(eventStr, typePos + 1, 1);
                   evtData := '';
                   evtChange := '';
                   if dataPos > 10 then
                     begin
-                      evtData := Copy(eventStr,  dataPos + 1, Length(eventStr)-dataPos);
+                      evtData := Copy(eventStr, dataPos + 1, Length(eventStr)-dataPos);
                       if (pos(evtType, '1234567') - 1) >= 0 then
                         begin
                           chainIdx := _atoi(evtType) - 1;
                           evtChange := self._strXor(evtData, self._eventChains[chainIdx]);
-                          self._eventChains[ chainIdx] := evtData;
+                          self._eventChains[chainIdx] := evtData;
                         end;
                     end;
                   self._stateChangeCallback(self, evtStamp, evtType, evtData, evtChange);
@@ -1337,22 +1337,22 @@ implementation
       lenB := Length(b);
       if lenA > lenB then
         begin
-          res := Copy(a,  0 + 1, lenA-lenB);
-          a := Copy(a,  lenA-lenB + 1, lenB);
+          res := Copy(a, 0 + 1, lenA-lenB);
+          a := Copy(a, lenA-lenB + 1, lenB);
           lenA := lenB;
         end
       else
         begin
           res := '';
-          b := Copy(b,  lenA-lenB + 1, lenA);
+          b := Copy(b, lenA-lenB + 1, lenA);
         end;
       // scan strings and compare digit by digit
       idx := 0;
       while idx < lenA do
         begin
-          digitA := StrToInt('$0' + Copy(a,  idx + 1, 1));
-          digitB := StrToInt('$0' + Copy(b,  idx + 1, 1));
-          res := ''+ res+''+AnsiLowerCase(inttohex(((digitA) xor (digitB)),1));
+          digitA := StrToInt('$0' + Copy(a, idx + 1, 1));
+          digitB := StrToInt('$0' + Copy(b, idx + 1, 1));
+          res := ''+res+''+AnsiLowerCase(inttohex(((digitA) xor (digitB)),1));
           idx := idx + 1;
         end;
       result := res;
@@ -1376,7 +1376,7 @@ implementation
       while idx > 0 do
         begin
           idx := idx - 1;
-          digit := StrToInt('$0' + Copy(hexstr,  idx + 1, 1));
+          digit := StrToInt('$0' + Copy(hexstr, idx + 1, 1));
           res[res_pos] := ((digit) and 1);
           inc(res_pos);
           res[res_pos] := ((((digit) shr 1)) and 1);

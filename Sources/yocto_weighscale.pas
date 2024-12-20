@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_weighscale.pas 56230 2023-08-21 15:20:59Z mvuilleu $
+ *  $Id: yocto_weighscale.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindWeighScale(), the high-level API for WeighScale functions
  *
@@ -1129,7 +1129,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYWeighScale.create(func);
-          TYFunction._AddToCache('WeighScale',  func, obj);
+          TYFunction._AddToCache('WeighScale', func, obj);
         end;
       result := obj;
       exit;
@@ -1221,7 +1221,7 @@ implementation
 
   function TYWeighScale.setupSpan(currWeight: double; maxWeight: double):LongInt;
     begin
-      result := self.set_command('S'+inttostr( round(1000*currWeight))+':'+inttostr(round(1000*maxWeight)));
+      result := self.set_command('S'+inttostr(round(1000*currWeight))+':'+inttostr(round(1000*maxWeight)));
       exit;
     end;
 
@@ -1240,13 +1240,13 @@ implementation
       siz := length(tempValues);
       if not(siz <> 1) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'thermal compensation table must have at least two points');
+          self._throw(YAPI_INVALID_ARGUMENT,'thermal compensation table must have at least two points');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
       if not(siz = length(compValues)) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'table sizes mismatch');
+          self._throw(YAPI_INVALID_ARGUMENT,'table sizes mismatch');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
@@ -1254,7 +1254,7 @@ implementation
       res := self.set_command(''+inttostr(tableIndex)+'Z');
       if not(res=YAPI_SUCCESS) then
         begin
-          self._throw( YAPI_IO_ERROR, 'unable to reset thermal compensation table');
+          self._throw(YAPI_IO_ERROR,'unable to reset thermal compensation table');
           result:=YAPI_IO_ERROR;
           exit;
         end;
@@ -1280,10 +1280,10 @@ implementation
             end;
           if found > 0 then
             begin
-              res := self.set_command(''+inttostr( tableIndex)+'m'+inttostr( round(1000*curr))+':'+inttostr(round(1000*currComp)));
+              res := self.set_command(''+inttostr(tableIndex)+'m'+inttostr(round(1000*curr))+':'+inttostr(round(1000*currComp)));
               if not(res=YAPI_SUCCESS) then
                 begin
-                  self._throw( YAPI_IO_ERROR, 'unable to set thermal compensation table');
+                  self._throw(YAPI_IO_ERROR,'unable to set thermal compensation table');
                   result:=YAPI_IO_ERROR;
                   exit;
                 end;
@@ -1310,7 +1310,7 @@ implementation
       SetLength(paramlist, 0);
 
       id := self.get_functionId;
-      id := Copy(id,  10 + 1, Length(id) - 10);
+      id := Copy(id, 10 + 1, Length(id) - 10);
       bin_json := self._download('extra.json?page='+inttostr((4*_atoi(id))+tableIndex));
       paramlist := self._json_get_array(bin_json);
       // convert all values to float and append records
@@ -1339,56 +1339,56 @@ implementation
 
   function TYWeighScale.set_offsetAvgCompensationTable(tempValues: TDoubleArray; compValues: TDoubleArray):LongInt;
     begin
-      result := self.setCompensationTable(0,  tempValues, compValues);
+      result := self.setCompensationTable(0, tempValues, compValues);
       exit;
     end;
 
 
   function TYWeighScale.loadOffsetAvgCompensationTable(var tempValues: TDoubleArray; var compValues: TDoubleArray):LongInt;
     begin
-      result := self.loadCompensationTable(0,  tempValues, compValues);
+      result := self.loadCompensationTable(0, tempValues, compValues);
       exit;
     end;
 
 
   function TYWeighScale.set_offsetChgCompensationTable(tempValues: TDoubleArray; compValues: TDoubleArray):LongInt;
     begin
-      result := self.setCompensationTable(1,  tempValues, compValues);
+      result := self.setCompensationTable(1, tempValues, compValues);
       exit;
     end;
 
 
   function TYWeighScale.loadOffsetChgCompensationTable(var tempValues: TDoubleArray; var compValues: TDoubleArray):LongInt;
     begin
-      result := self.loadCompensationTable(1,  tempValues, compValues);
+      result := self.loadCompensationTable(1, tempValues, compValues);
       exit;
     end;
 
 
   function TYWeighScale.set_spanAvgCompensationTable(tempValues: TDoubleArray; compValues: TDoubleArray):LongInt;
     begin
-      result := self.setCompensationTable(2,  tempValues, compValues);
+      result := self.setCompensationTable(2, tempValues, compValues);
       exit;
     end;
 
 
   function TYWeighScale.loadSpanAvgCompensationTable(var tempValues: TDoubleArray; var compValues: TDoubleArray):LongInt;
     begin
-      result := self.loadCompensationTable(2,  tempValues, compValues);
+      result := self.loadCompensationTable(2, tempValues, compValues);
       exit;
     end;
 
 
   function TYWeighScale.set_spanChgCompensationTable(tempValues: TDoubleArray; compValues: TDoubleArray):LongInt;
     begin
-      result := self.setCompensationTable(3,  tempValues, compValues);
+      result := self.setCompensationTable(3, tempValues, compValues);
       exit;
     end;
 
 
   function TYWeighScale.loadSpanChgCompensationTable(var tempValues: TDoubleArray; var compValues: TDoubleArray):LongInt;
     begin
-      result := self.loadCompensationTable(3,  tempValues, compValues);
+      result := self.loadCompensationTable(3, tempValues, compValues);
       exit;
     end;
 

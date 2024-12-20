@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_multicellweighscale.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_multicellweighscale.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindMultiCellWeighScale(), the high-level API for MultiCellWeighScale functions
  *
@@ -1060,7 +1060,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYMultiCellWeighScale.create(func);
-          TYFunction._AddToCache('MultiCellWeighScale',  func, obj);
+          TYFunction._AddToCache('MultiCellWeighScale', func, obj);
         end;
       result := obj;
       exit;
@@ -1152,7 +1152,7 @@ implementation
 
   function TYMultiCellWeighScale.setupSpan(currWeight: double; maxWeight: double):LongInt;
     begin
-      result := self.set_command('S'+inttostr( round(1000*currWeight))+':'+inttostr(round(1000*maxWeight)));
+      result := self.set_command('S'+inttostr(round(1000*currWeight))+':'+inttostr(round(1000*maxWeight)));
       exit;
     end;
 

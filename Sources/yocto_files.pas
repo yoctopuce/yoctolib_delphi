@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ * $Id: yocto_files.pas 63506 2024-11-28 10:42:13Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -573,7 +573,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYFiles.create(func);
-          TYFunction._AddToCache('Files',  func, obj);
+          TYFunction._AddToCache('Files', func, obj);
         end;
       result := obj;
       exit;
@@ -642,7 +642,7 @@ implementation
       res := self._json_get_key(json, 'res');
       if not((res = 'ok')) then
         begin
-          self._throw( YAPI_IO_ERROR, 'format failed');
+          self._throw(YAPI_IO_ERROR,'format failed');
           result:=YAPI_IO_ERROR;
           exit;
         end;
@@ -687,7 +687,7 @@ implementation
         end;
       json := self.sendCommand('dir&f='+filename);
       filelist := self._json_get_array(json);
-      if length(filelist) > 0  then
+      if length(filelist) > 0 then
         begin
           result := true;
           exit;
@@ -720,7 +720,7 @@ implementation
       res  := self._json_get_key(json, 'res');
       if not((res = 'ok')) then
         begin
-          self._throw( YAPI_IO_ERROR, 'unable to remove file');
+          self._throw(YAPI_IO_ERROR,'unable to remove file');
           result:=YAPI_IO_ERROR;
           exit;
         end;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ * $Id: yocto_cellular.pas 63506 2024-11-28 10:42:13Z seb $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -760,7 +760,7 @@ type
     ////
     /// <summary>
     ///   Sends a PUK code to unlock the SIM card after three failed PIN code attempts, and
-    ///   setup a new PIN into the SIM card.
+    ///   set up a new PIN into the SIM card.
     /// <para>
     ///   Only ten consecutive tentatives are permitted:
     ///   after that, the SIM card will be blocked permanently without any mean of recovery
@@ -1691,7 +1691,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYCellular.create(func);
-          TYFunction._AddToCache('Cellular',  func, obj);
+          TYFunction._AddToCache('Cellular', func, obj);
         end;
       result := obj;
       exit;
@@ -1747,7 +1747,7 @@ implementation
       gsmMsg := self.get_message;
       if not((Copy(gsmMsg, 0 + 1, 13) = 'Enter SIM PUK')) then
         begin
-          self._throw(YAPI_INVALID_ARGUMENT, 'PUK not expected at this time');
+          self._throw(YAPI_INVALID_ARGUMENT,'PUK not expected at this time');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
@@ -1802,21 +1802,21 @@ implementation
       chrPos := (pos('#', cmd) - 1);
       while chrPos >= 0 do
         begin
-          cmd := ''+ Copy(cmd,  0 + 1, chrPos)+''+chr( 37)+'23'+Copy(cmd,  chrPos+1 + 1, cmdLen-chrPos-1);
+          cmd := ''+Copy(cmd, 0 + 1, chrPos)+''+chr(37)+'23'+Copy(cmd, chrPos+1 + 1, cmdLen-chrPos-1);
           cmdLen := cmdLen + 2;
           chrPos := (pos('#', cmd) - 1);
         end;
       chrPos := (pos('+', cmd) - 1);
       while chrPos >= 0 do
         begin
-          cmd := ''+ Copy(cmd,  0 + 1, chrPos)+''+chr( 37)+'2B'+Copy(cmd,  chrPos+1 + 1, cmdLen-chrPos-1);
+          cmd := ''+Copy(cmd, 0 + 1, chrPos)+''+chr(37)+'2B'+Copy(cmd, chrPos+1 + 1, cmdLen-chrPos-1);
           cmdLen := cmdLen + 2;
           chrPos := (pos('+', cmd) - 1);
         end;
       chrPos := (pos('=', cmd) - 1);
       while chrPos >= 0 do
         begin
-          cmd := ''+ Copy(cmd,  0 + 1, chrPos)+''+chr( 37)+'3D'+Copy(cmd,  chrPos+1 + 1, cmdLen-chrPos-1);
+          cmd := ''+Copy(cmd, 0 + 1, chrPos)+''+chr(37)+'3D'+Copy(cmd, chrPos+1 + 1, cmdLen-chrPos-1);
           cmdLen := cmdLen + 2;
           chrPos := (pos('=', cmd) - 1);
         end;
@@ -1839,8 +1839,8 @@ implementation
             begin
               // continuation detected
               suffixlen := bufflen - idx;
-              cmd := 'at.txt?cmd='+Copy(buffstr,  buffstrlen - suffixlen + 1, suffixlen);
-              buffstr := Copy(buffstr,  0 + 1, buffstrlen - suffixlen);
+              cmd := 'at.txt?cmd='+Copy(buffstr, buffstrlen - suffixlen + 1, suffixlen);
+              buffstr := Copy(buffstr, 0 + 1, buffstrlen - suffixlen);
               waitMore := waitMore - 1;
             end
           else
@@ -1848,7 +1848,7 @@ implementation
               // request complete
               waitMore := 0;
             end;
-          res := ''+ res+''+buffstr;
+          res := ''+res+''+buffstr;
         end;
       result := res;
       exit;
@@ -1873,16 +1873,16 @@ implementation
       while idx >= 0 do
         begin
           slen := slen - (idx+1);
-          cops := Copy(cops,  idx+1 + 1, slen);
+          cops := Copy(cops, idx+1 + 1, slen);
           idx := (pos('"', cops) - 1);
           if idx > 0 then
             begin
               slen := slen - (idx+1);
-              cops := Copy(cops,  idx+1 + 1, slen);
+              cops := Copy(cops, idx+1 + 1, slen);
               idx := (pos('"', cops) - 1);
               if idx > 0 then
                 begin
-                  res[res_pos] := Copy(cops,  0 + 1, idx);
+                  res[res_pos] := Copy(cops, 0 + 1, idx);
                   inc(res_pos);
                 end;
             end;
@@ -9750,7 +9750,7 @@ implementation
       nlines := length(lines);
       if not(nlines > 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'fail to retrieve profile list');
+          self._throw(YAPI_IO_ERROR,'fail to retrieve profile list');
           result:=res;
           exit;
         end;
@@ -9763,7 +9763,7 @@ implementation
           cpos := (pos(':', line) - 1);
           if cpos > 0 then
             begin
-              profno := _atoi(Copy(line,  0 + 1, cpos));
+              profno := _atoi(Copy(line, 0 + 1, cpos));
               if profno > 1 then
                 begin
                   res[res_pos] := line;

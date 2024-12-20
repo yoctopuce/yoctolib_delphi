@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_segmenteddisplay.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_segmenteddisplay.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindSegmentedDisplay(), the high-level API for SegmentedDisplay functions
  *
@@ -413,7 +413,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYSegmentedDisplay.create(func);
-          TYFunction._AddToCache('SegmentedDisplay',  func, obj);
+          TYFunction._AddToCache('SegmentedDisplay', func, obj);
         end;
       result := obj;
       exit;

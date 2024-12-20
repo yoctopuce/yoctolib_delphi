@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_dualpower.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_dualpower.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindDualPower(), the high-level API for DualPower functions
  *
@@ -476,7 +476,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYDualPower.create(func);
-          TYFunction._AddToCache('DualPower',  func, obj);
+          TYFunction._AddToCache('DualPower', func, obj);
         end;
       result := obj;
       exit;

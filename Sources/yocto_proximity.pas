@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_proximity.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_proximity.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindProximity(), the high-level API for Proximity functions
  *
@@ -88,7 +88,7 @@ type
   ///   The <c>YProximity</c> class allows you to read and configure Yoctopuce proximity sensors.
   ///   It inherits from <c>YSensor</c> class the core functions to read measurements,
   ///   to register callback functions, and to access the autonomous datalogger.
-  ///   This class adds the ability to setup a detection threshold and to count the
+  ///   This class adds the ability to set up a detection threshold and to count the
   ///   number of detected state changes.
   /// </para>
   /// </summary>
@@ -1030,7 +1030,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYProximity.create(func);
-          TYFunction._AddToCache('Proximity',  func, obj);
+          TYFunction._AddToCache('Proximity', func, obj);
         end;
       result := obj;
       exit;

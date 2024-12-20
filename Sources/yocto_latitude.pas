@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_latitude.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_latitude.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindLatitude(), the high-level API for Latitude functions
  *
@@ -322,7 +322,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYLatitude.create(func);
-          TYFunction._AddToCache('Latitude',  func, obj);
+          TYFunction._AddToCache('Latitude', func, obj);
         end;
       result := obj;
       exit;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_steppermotor.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_steppermotor.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindStepperMotor(), the high-level API for StepperMotor functions
  *
@@ -169,7 +169,7 @@ type
     /// <summary>
     ///   Changes the current logical motor position, measured in steps.
     /// <para>
-    ///   This command does not cause any motor move, as its purpose is only to setup
+    ///   This command does not cause any motor move, as its purpose is only to set up
     ///   the origin of the position counter. The fractional part of the position,
     ///   that corresponds to the physical position of the rotor, is not changed.
     ///   To trigger a motor move, use methods <c>moveTo()</c> or <c>moveRel()</c>
@@ -1437,7 +1437,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYStepperMotor.create(func);
-          TYFunction._AddToCache('StepperMotor',  func, obj);
+          TYFunction._AddToCache('StepperMotor', func, obj);
         end;
       result := obj;
       exit;
@@ -1494,8 +1494,8 @@ implementation
       res : LongInt;
     begin
       id := self.get_functionId;
-      id := Copy(id,  12 + 1, 1);
-      url := 'cmd.txt?'+ id+'='+command;
+      id := Copy(id, 12 + 1, 1);
+      url := 'cmd.txt?'+id+'='+command;
       //may throw an exception
       retBin := self._download(url);
       res := retBin[0];
@@ -1503,7 +1503,7 @@ implementation
         begin
           if not(res = 48) then
             begin
-              self._throw( YAPI_DEVICE_BUSY, 'Motor command pipeline is full, try again later');
+              self._throw(YAPI_DEVICE_BUSY,'Motor command pipeline is full, try again later');
               result:=YAPI_DEVICE_BUSY;
               exit;
             end;
@@ -1512,7 +1512,7 @@ implementation
         begin
           if not(res = 48) then
             begin
-              self._throw( YAPI_IO_ERROR, 'Motor command failed permanently');
+              self._throw(YAPI_IO_ERROR,'Motor command failed permanently');
               result:=YAPI_IO_ERROR;
               exit;
             end;
@@ -1589,7 +1589,7 @@ implementation
     begin
       if not(dir <> 0) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'direction must be +1 or -1');
+          self._throw(YAPI_INVALID_ARGUMENT,'direction must be +1 or -1');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;

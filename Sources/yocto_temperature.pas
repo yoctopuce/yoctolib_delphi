@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_temperature.pas 56230 2023-08-21 15:20:59Z mvuilleu $
+ *  $Id: yocto_temperature.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindTemperature(), the high-level API for Temperature functions
  *
@@ -693,7 +693,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYTemperature.create(func);
-          TYFunction._AddToCache('Temperature',  func, obj);
+          TYFunction._AddToCache('Temperature', func, obj);
         end;
       result := obj;
       exit;
@@ -822,13 +822,13 @@ implementation
       siz := length(tempValues);
       if not(siz >= 2) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'thermistor response table must have at least two points');
+          self._throw(YAPI_INVALID_ARGUMENT,'thermistor response table must have at least two points');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
       if not(siz = length(resValues)) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'table sizes mismatch');
+          self._throw(YAPI_INVALID_ARGUMENT,'table sizes mismatch');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
@@ -836,7 +836,7 @@ implementation
       res := self.set_command('Z');
       if not(res=YAPI_SUCCESS) then
         begin
-          self._throw( YAPI_IO_ERROR, 'unable to reset thermistor parameters');
+          self._throw(YAPI_IO_ERROR,'unable to reset thermistor parameters');
           result:=YAPI_IO_ERROR;
           exit;
         end;
@@ -862,10 +862,10 @@ implementation
             end;
           if found > 0 then
             begin
-              res := self.set_command('m'+inttostr( round(1000*curr))+':'+inttostr(round(1000*currTemp)));
+              res := self.set_command('m'+inttostr(round(1000*curr))+':'+inttostr(round(1000*currTemp)));
               if not(res=YAPI_SUCCESS) then
                 begin
-                  self._throw( YAPI_IO_ERROR, 'unable to reset thermistor parameters');
+                  self._throw(YAPI_IO_ERROR,'unable to reset thermistor parameters');
                   result:=YAPI_IO_ERROR;
                   exit;
                 end;
@@ -899,7 +899,7 @@ implementation
       SetLength(resValues, 0);
 
       id := self.get_functionId;
-      id := Copy(id,  11 + 1, Length(id) - 11);
+      id := Copy(id, 11 + 1, Length(id) - 11);
       if (id = '') then
         begin
           id := '1';

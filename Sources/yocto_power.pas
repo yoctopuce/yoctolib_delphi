@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_power.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_power.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindPower(), the high-level API for Power functions
  *
@@ -636,7 +636,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYPower.create(func);
-          TYFunction._AddToCache('Power',  func, obj);
+          TYFunction._AddToCache('Power', func, obj);
         end;
       result := obj;
       exit;

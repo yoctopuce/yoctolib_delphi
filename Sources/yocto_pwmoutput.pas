@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_pwmoutput.pas 58892 2024-01-11 11:11:28Z mvuilleu $
+ *  $Id: yocto_pwmoutput.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindPwmOutput(), the high-level API for PwmOutput functions
  *
@@ -85,7 +85,7 @@ type
   ///   TYPwmOutput Class: PWM generator control interface, available for instance in the Yocto-PWM-Tx
   /// <para>
   ///   The <c>YPwmOutput</c> class allows you to drive a pulse-width modulated output (PWM).
-  ///   You can configure the frequency as well as the duty cycle, and setup progressive
+  ///   You can configure the frequency as well as the duty cycle, and set up progressive
   ///   transitions.
   /// </para>
   /// </summary>
@@ -1126,7 +1126,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYPwmOutput.create(func);
-          TYFunction._AddToCache('PwmOutput',  func, obj);
+          TYFunction._AddToCache('PwmOutput', func, obj);
         end;
       result := obj;
       exit;
@@ -1183,7 +1183,7 @@ implementation
         begin
           ms_target := 0.0;
         end;
-      newval := ''+inttostr( round(ms_target*65536))+'ms:'+inttostr(ms_duration);
+      newval := ''+inttostr(round(ms_target*65536))+'ms:'+inttostr(ms_duration);
       result := self.set_pwmTransition(newval);
       exit;
     end;
@@ -1201,7 +1201,7 @@ implementation
         begin
           target := 100.0;
         end;
-      newval := ''+inttostr( round(target*65536))+':'+inttostr(ms_duration);
+      newval := ''+inttostr(round(target*65536))+':'+inttostr(ms_duration);
       result := self.set_pwmTransition(newval);
       exit;
     end;
@@ -1215,7 +1215,7 @@ implementation
         begin
           target := 0.001;
         end;
-      newval := ''+_yapiFloatToStr( target)+'Hz:'+inttostr(ms_duration);
+      newval := ''+_yapiFloatToStr(target)+'Hz:'+inttostr(ms_duration);
       result := self.set_pwmTransition(newval);
       exit;
     end;
@@ -1225,7 +1225,7 @@ implementation
     var
       newval : string;
     begin
-      newval := ''+_yapiFloatToStr( target)+'ps:'+inttostr(ms_duration);
+      newval := ''+_yapiFloatToStr(target)+'ps:'+inttostr(ms_duration);
       result := self.set_pwmTransition(newval);
       exit;
     end;
@@ -1239,7 +1239,7 @@ implementation
         begin
           ms_target := 0.0;
         end;
-      newval := ''+inttostr( round(ms_target*65536))+'ms*'+inttostr(n_pulses);
+      newval := ''+inttostr(round(ms_target*65536))+'ms*'+inttostr(n_pulses);
       result := self.set_pwmTransition(newval);
       exit;
     end;
@@ -1257,7 +1257,7 @@ implementation
         begin
           target := 100.0;
         end;
-      newval := ''+inttostr( round(target*65536))+'*'+inttostr(n_pulses);
+      newval := ''+inttostr(round(target*65536))+'*'+inttostr(n_pulses);
       result := self.set_pwmTransition(newval);
       exit;
     end;
@@ -1271,7 +1271,7 @@ implementation
         begin
           target := 0.001;
         end;
-      newval := ''+_yapiFloatToStr( target)+'Hz*'+inttostr(n_pulses);
+      newval := ''+_yapiFloatToStr(target)+'Hz*'+inttostr(n_pulses);
       result := self.set_pwmTransition(newval);
       exit;
     end;

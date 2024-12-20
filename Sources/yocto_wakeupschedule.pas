@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_wakeupschedule.pas 56230 2023-08-21 15:20:59Z mvuilleu $
+ *  $Id: yocto_wakeupschedule.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindWakeUpSchedule(), the high-level API for WakeUpSchedule functions
  *
@@ -906,7 +906,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYWakeUpSchedule.create(func);
-          TYFunction._AddToCache('WakeUpSchedule',  func, obj);
+          TYFunction._AddToCache('WakeUpSchedule', func, obj);
         end;
       result := obj;
       exit;

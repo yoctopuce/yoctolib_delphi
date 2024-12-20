@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_poweroutput.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_poweroutput.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindPowerOutput(), the high-level API for PowerOutput functions
  *
@@ -385,7 +385,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYPowerOutput.create(func);
-          TYFunction._AddToCache('PowerOutput',  func, obj);
+          TYFunction._AddToCache('PowerOutput', func, obj);
         end;
       result := obj;
       exit;

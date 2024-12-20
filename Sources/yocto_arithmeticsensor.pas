@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_arithmeticsensor.pas 56230 2023-08-21 15:20:59Z mvuilleu $
+ *  $Id: yocto_arithmeticsensor.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindArithmeticSensor(), the high-level API for ArithmeticSensor functions
  *
@@ -537,7 +537,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYArithmeticSensor.create(func);
-          TYFunction._AddToCache('ArithmeticSensor',  func, obj);
+          TYFunction._AddToCache('ArithmeticSensor', func, obj);
         end;
       result := obj;
       exit;
@@ -630,19 +630,19 @@ implementation
       resval : double;
     begin
       id := self.get_functionId;
-      id := Copy(id,  16 + 1, Length(id) - 16);
+      id := Copy(id, 16 + 1, Length(id) - 16);
       fname := 'arithmExpr'+id+'.txt';
 
-      content := '// '+ descr+''#10''+expr;
+      content := '// '+descr+''#10''+expr;
       data := self._uploadEx(fname, _StrToByte(content));
       diags := _ByteToString(data);
       if not((Copy(diags, 0 + 1, 8) = 'Result: ')) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, diags);
+          self._throw(YAPI_INVALID_ARGUMENT,diags);
           result:=YAPI_INVALID_DOUBLE;
           exit;
         end;
-      resval := _yapiStrToFloat(Copy(diags,  8 + 1, Length(diags)-8));
+      resval := _yapiStrToFloat(Copy(diags, 8 + 1, Length(diags)-8));
       result := resval;
       exit;
     end;
@@ -656,14 +656,14 @@ implementation
       idx : LongInt;
     begin
       id := self.get_functionId;
-      id := Copy(id,  16 + 1, Length(id) - 16);
+      id := Copy(id, 16 + 1, Length(id) - 16);
       fname := 'arithmExpr'+id+'.txt';
 
       content := _ByteToString(self._download(fname));
       idx := (pos(''#10'', content) - 1);
       if idx > 0 then
         begin
-          content := Copy(content,  idx+1 + 1, Length(content)-(idx+1));
+          content := Copy(content, idx+1 + 1, Length(content)-(idx+1));
         end;
       result := content;
       exit;
@@ -682,13 +682,13 @@ implementation
       siz := length(inputValues);
       if not(siz > 1) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'auxiliary function must be defined by at least two points');
+          self._throw(YAPI_INVALID_ARGUMENT,'auxiliary function must be defined by at least two points');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
       if not(siz = length(outputValues)) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'table sizes mismatch');
+          self._throw(YAPI_INVALID_ARGUMENT,'table sizes mismatch');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
@@ -698,7 +698,7 @@ implementation
         begin
           inputVal := inputValues[idx];
           outputVal := outputValues[idx];
-          defstr := ''+ defstr+''+_yapiFloatToStr( inputVal)+':'+_yapiFloatToStr(outputVal)+''#10'';
+          defstr := ''+defstr+''+_yapiFloatToStr(inputVal)+':'+_yapiFloatToStr(outputVal)+''#10'';
           idx := idx + 1;
         end;
       fname := 'userMap'+name+'.txt';
@@ -721,7 +721,7 @@ implementation
       siz := length(defbin);
       if not(siz > 0) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'auxiliary function does not exist');
+          self._throw(YAPI_INVALID_ARGUMENT,'auxiliary function does not exist');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;

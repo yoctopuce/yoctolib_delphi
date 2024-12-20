@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ * $Id: yocto_wireless.pas 63506 2024-11-28 10:42:13Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -842,7 +842,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYWireless.create(func);
-          TYFunction._AddToCache('Wireless',  func, obj);
+          TYFunction._AddToCache('Wireless', func, obj);
         end;
       result := obj;
       exit;
@@ -904,21 +904,21 @@ implementation
 
   function TYWireless.joinNetwork(ssid: string; securityKey: string):LongInt;
     begin
-      result := self.set_wlanConfig('INFRA:'+ ssid+'\'+securityKey);
+      result := self.set_wlanConfig('INFRA:'+ssid+'\'+securityKey);
       exit;
     end;
 
 
   function TYWireless.adhocNetwork(ssid: string; securityKey: string):LongInt;
     begin
-      result := self.set_wlanConfig('ADHOC:'+ ssid+'\'+securityKey);
+      result := self.set_wlanConfig('ADHOC:'+ssid+'\'+securityKey);
       exit;
     end;
 
 
   function TYWireless.softAPNetwork(ssid: string; securityKey: string):LongInt;
     begin
-      result := self.set_wlanConfig('SOFTAP:'+ ssid+'\'+securityKey);
+      result := self.set_wlanConfig('SOFTAP:'+ssid+'\'+securityKey);
       exit;
     end;
 

@@ -540,7 +540,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYThreshold.create(func);
-          TYFunction._AddToCache('Threshold',  func, obj);
+          TYFunction._AddToCache('Threshold', func, obj);
         end;
       result := obj;
       exit;

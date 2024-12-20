@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_network.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_network.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindNetwork(), the high-level API for Network functions
  *
@@ -293,7 +293,7 @@ type
     /// <para>
     /// </para>
     /// <para>
-    ///   If the network interface is setup to use a static IP address, the string starts with "STATIC:" and
+    ///   If the network interface is set up to use a static IP address, the string starts with "STATIC:" and
     ///   is followed by three
     ///   parameters, separated by "/". The first is the device IP address, followed by the subnet mask
     ///   length, and finally the
@@ -1358,7 +1358,7 @@ type
 
     ////
     /// <summary>
-    ///   Setup periodic HTTP callbacks (simplified function).
+    ///   Set up periodic HTTP callbacks (simplified function).
     /// <para>
     /// </para>
     /// </summary>
@@ -2364,7 +2364,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYNetwork.create(func);
-          TYFunction._AddToCache('Network',  func, obj);
+          TYFunction._AddToCache('Network', func, obj);
         end;
       result := obj;
       exit;
@@ -2415,7 +2415,7 @@ implementation
 
   function TYNetwork.useDHCP(fallbackIpAddr: string; fallbackSubnetMaskLen: LongInt; fallbackRouter: string):LongInt;
     begin
-      result := self.set_ipConfig('DHCP:'+ fallbackIpAddr+'/'+inttostr( fallbackSubnetMaskLen)+'/'+fallbackRouter);
+      result := self.set_ipConfig('DHCP:'+fallbackIpAddr+'/'+inttostr(fallbackSubnetMaskLen)+'/'+fallbackRouter);
       exit;
     end;
 
@@ -2429,7 +2429,7 @@ implementation
 
   function TYNetwork.useStaticIP(ipAddress: string; subnetMaskLen: LongInt; router: string):LongInt;
     begin
-      result := self.set_ipConfig('STATIC:'+ ipAddress+'/'+inttostr( subnetMaskLen)+'/'+router);
+      result := self.set_ipConfig('STATIC:'+ipAddress+'/'+inttostr(subnetMaskLen)+'/'+router);
       exit;
     end;
 

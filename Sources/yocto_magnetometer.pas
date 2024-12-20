@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_magnetometer.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_magnetometer.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindMagnetometer(), the high-level API for Magnetometer functions
  *
@@ -76,7 +76,7 @@ type
   ///   The <c>YSensor</c> class is the parent class for all Yoctopuce sensor types. It can be
   ///   used to read the current value and unit of any sensor, read the min/max
   ///   value, configure autonomous recording frequency and access recorded data.
-  ///   It also provide a function to register a callback invoked each time the
+  ///   It also provides a function to register a callback invoked each time the
   ///   observed value changes, or at a predefined interval. Using this class rather
   ///   than a specific subclass makes it possible to create generic applications
   ///   that work with any Yoctopuce sensor, even those that do not yet exist.
@@ -538,7 +538,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYMagnetometer.create(func);
-          TYFunction._AddToCache('Magnetometer',  func, obj);
+          TYFunction._AddToCache('Magnetometer', func, obj);
         end;
       result := obj;
       exit;

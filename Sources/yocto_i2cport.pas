@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_i2cport.pas 59641 2024-03-05 20:50:20Z mvuilleu $
+ *  $Id: yocto_i2cport.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindI2cPort(), the high-level API for I2cPort functions
  *
@@ -1679,7 +1679,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYI2cPort.create(func);
-          TYFunction._AddToCache('I2cPort',  func, obj);
+          TYFunction._AddToCache('I2cPort', func, obj);
         end;
       result := obj;
       exit;
@@ -1781,7 +1781,7 @@ implementation
       SetLength(msgarr, 0);
       SetLength(res, 0);
 
-      url := 'rxmsg.json?pos='+inttostr( self._rxptr)+'&maxw='+inttostr( maxWait)+'&pat='+pattern;
+      url := 'rxmsg.json?pos='+inttostr(self._rxptr)+'&maxw='+inttostr(maxWait)+'&pat='+pattern;
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
       msglen := length(msgarr);
@@ -1833,7 +1833,7 @@ implementation
       databin := self._download('rxcnt.bin?pos='+inttostr(self._rxptr));
       availPosStr := _ByteToString(databin);
       atPos := (pos('@', availPosStr) - 1);
-      res := _atoi(Copy(availPosStr,  0 + 1, atPos));
+      res := _atoi(Copy(availPosStr, 0 + 1, atPos));
       result := res;
       exit;
     end;
@@ -1849,7 +1849,7 @@ implementation
       databin := self._download('rxcnt.bin?pos='+inttostr(self._rxptr));
       availPosStr := _ByteToString(databin);
       atPos := (pos('@', availPosStr) - 1);
-      res := _atoi(Copy(availPosStr,  atPos+1 + 1, Length(availPosStr)-atPos-1));
+      res := _atoi(Copy(availPosStr, atPos+1 + 1, Length(availPosStr)-atPos-1));
       result := res;
       exit;
     end;
@@ -1868,14 +1868,14 @@ implementation
       if Length(query) <= 80 then
         begin
           // fast query
-          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=!'+self._escapeAttr(query);
+          url := 'rxmsg.json?len=1&maxw='+inttostr(maxWait)+'&cmd=!'+self._escapeAttr(query);
         end
       else
         begin
           // long query
           prevpos := self.end_tell;
           self._upload('txdata', _StrToByte(query + ''#13''#10''));
-          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&pos='+inttostr(prevpos);
+          url := 'rxmsg.json?len=1&maxw='+inttostr(maxWait)+'&pos='+inttostr(prevpos);
         end;
 
       msgbin := self._download(url);
@@ -1913,14 +1913,14 @@ implementation
       if Length(hexString) <= 80 then
         begin
           // fast query
-          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=$'+hexString;
+          url := 'rxmsg.json?len=1&maxw='+inttostr(maxWait)+'&cmd=$'+hexString;
         end
       else
         begin
           // long query
           prevpos := self.end_tell;
           self._upload('txdata', _hexStrToBin(hexString));
-          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&pos='+inttostr(prevpos);
+          url := 'rxmsg.json?len=1&maxw='+inttostr(maxWait)+'&pos='+inttostr(prevpos);
         end;
 
       msgbin := self._download(url);
@@ -1985,28 +1985,28 @@ implementation
       while idx < nBytes do
         begin
           val := buff[idx];
-          msg := ''+ msg+''+AnsiLowerCase(inttohex(val,02));
+          msg := ''+msg+''+AnsiLowerCase(inttohex(val,02));
           idx := idx + 1;
         end;
 
       reply := self.queryLine(msg, 1000);
       if not(Length(reply) > 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'No response from I2C device');
+          self._throw(YAPI_IO_ERROR,'No response from I2C device');
           result:=YAPI_IO_ERROR;
           exit;
         end;
       idx := (pos('[N]!', reply) - 1);
       if not(idx < 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'No I2C ACK received');
+          self._throw(YAPI_IO_ERROR,'No I2C ACK received');
           result:=YAPI_IO_ERROR;
           exit;
         end;
       idx := (pos('!', reply) - 1);
       if not(idx < 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'I2C protocol error');
+          self._throw(YAPI_IO_ERROR,'I2C protocol error');
           result:=YAPI_IO_ERROR;
           exit;
         end;
@@ -2029,28 +2029,28 @@ implementation
       while idx < nBytes do
         begin
           val := values[idx];
-          msg := ''+ msg+''+AnsiLowerCase(inttohex(val,02));
+          msg := ''+msg+''+AnsiLowerCase(inttohex(val,02));
           idx := idx + 1;
         end;
 
       reply := self.queryLine(msg, 1000);
       if not(Length(reply) > 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'No response from I2C device');
+          self._throw(YAPI_IO_ERROR,'No response from I2C device');
           result:=YAPI_IO_ERROR;
           exit;
         end;
       idx := (pos('[N]!', reply) - 1);
       if not(idx < 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'No I2C ACK received');
+          self._throw(YAPI_IO_ERROR,'No I2C ACK received');
           result:=YAPI_IO_ERROR;
           exit;
         end;
       idx := (pos('!', reply) - 1);
       if not(idx < 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'I2C protocol error');
+          self._throw(YAPI_IO_ERROR,'I2C protocol error');
           result:=YAPI_IO_ERROR;
           exit;
         end;
@@ -2071,7 +2071,7 @@ implementation
       setlength(rcvbytes,0);
       if not(rcvCount<=512) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'Cannot read more than 512 bytes');
+          self._throw(YAPI_INVALID_ARGUMENT,'Cannot read more than 512 bytes');
           result:=rcvbytes;
           exit;
         end;
@@ -2081,7 +2081,7 @@ implementation
       while idx < nBytes do
         begin
           val := buff[idx];
-          msg := ''+ msg+''+AnsiLowerCase(inttohex(val,02));
+          msg := ''+msg+''+AnsiLowerCase(inttohex(val,02));
           idx := idx + 1;
         end;
       idx := 0;
@@ -2094,7 +2094,7 @@ implementation
             end;
           if rcvCount - idx > 2 then
             begin
-              msg := ''+ msg+'xx*'+AnsiUpperCase(inttohex((rcvCount - idx),02));
+              msg := ''+msg+'xx*'+AnsiUpperCase(inttohex((rcvCount - idx),02));
               idx := rcvCount;
             end;
         end;
@@ -2107,25 +2107,25 @@ implementation
       reply := self.queryLine(msg, 1000);
       if not(Length(reply) > 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'No response from I2C device');
+          self._throw(YAPI_IO_ERROR,'No response from I2C device');
           result:=rcvbytes;
           exit;
         end;
       idx := (pos('[N]!', reply) - 1);
       if not(idx < 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'No I2C ACK received');
+          self._throw(YAPI_IO_ERROR,'No I2C ACK received');
           result:=rcvbytes;
           exit;
         end;
       idx := (pos('!', reply) - 1);
       if not(idx < 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'I2C protocol error');
+          self._throw(YAPI_IO_ERROR,'I2C protocol error');
           result:=rcvbytes;
           exit;
         end;
-      reply := Copy(reply,  Length(reply)-2*rcvCount + 1, 2*rcvCount);
+      reply := Copy(reply, Length(reply)-2*rcvCount + 1, 2*rcvCount);
       rcvbytes := _hexStrToBin(reply);
       result := rcvbytes;
       exit;
@@ -2146,7 +2146,7 @@ implementation
       SetLength(res, 0);
       if not(rcvCount<=512) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'Cannot read more than 512 bytes');
+          self._throw(YAPI_INVALID_ARGUMENT,'Cannot read more than 512 bytes');
           result:=res;
           exit;
         end;
@@ -2156,7 +2156,7 @@ implementation
       while idx < nBytes do
         begin
           val := values[idx];
-          msg := ''+ msg+''+AnsiLowerCase(inttohex(val,02));
+          msg := ''+msg+''+AnsiLowerCase(inttohex(val,02));
           idx := idx + 1;
         end;
       idx := 0;
@@ -2169,7 +2169,7 @@ implementation
             end;
           if rcvCount - idx > 2 then
             begin
-              msg := ''+ msg+'xx*'+AnsiUpperCase(inttohex((rcvCount - idx),02));
+              msg := ''+msg+'xx*'+AnsiUpperCase(inttohex((rcvCount - idx),02));
               idx := rcvCount;
             end;
         end;
@@ -2182,25 +2182,25 @@ implementation
       reply := self.queryLine(msg, 1000);
       if not(Length(reply) > 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'No response from I2C device');
+          self._throw(YAPI_IO_ERROR,'No response from I2C device');
           result:=res;
           exit;
         end;
       idx := (pos('[N]!', reply) - 1);
       if not(idx < 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'No I2C ACK received');
+          self._throw(YAPI_IO_ERROR,'No I2C ACK received');
           result:=res;
           exit;
         end;
       idx := (pos('!', reply) - 1);
       if not(idx < 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'I2C protocol error');
+          self._throw(YAPI_IO_ERROR,'I2C protocol error');
           result:=res;
           exit;
         end;
-      reply := Copy(reply,  Length(reply)-2*rcvCount + 1, 2*rcvCount);
+      reply := Copy(reply, Length(reply)-2*rcvCount + 1, 2*rcvCount);
       rcvbytes := _hexStrToBin(reply);
       res_pos := 0;
       SetLength(res, rcvCount);;
@@ -2312,7 +2312,7 @@ implementation
       while idx < nBytes do
         begin
           val := buff[idx];
-          msg := ''+ msg+''+AnsiLowerCase(inttohex(val,02));
+          msg := ''+msg+''+AnsiLowerCase(inttohex(val,02));
           idx := idx + 1;
         end;
 
@@ -2334,7 +2334,7 @@ implementation
       while idx < nBytes do
         begin
           val := byteList[idx];
-          msg := ''+ msg+''+AnsiLowerCase(inttohex(val,02));
+          msg := ''+msg+''+AnsiLowerCase(inttohex(val,02));
           idx := idx + 1;
         end;
 
@@ -2355,7 +2355,7 @@ implementation
     begin
       SetLength(msgarr, 0);
 
-      url := 'rxmsg.json?pos='+inttostr( self._rxptr)+'&maxw='+inttostr( maxWait)+'&t=0&len='+inttostr(maxMsg);
+      url := 'rxmsg.json?pos='+inttostr(self._rxptr)+'&maxw='+inttostr(maxWait)+'&t=0&len='+inttostr(maxMsg);
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
       msglen := length(msgarr);

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_multiaxiscontroller.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_multiaxiscontroller.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
  *
@@ -587,7 +587,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYMultiAxisController.create(func);
-          TYFunction._AddToCache('MultiAxisController',  func, obj);
+          TYFunction._AddToCache('MultiAxisController', func, obj);
         end;
       result := obj;
       exit;
@@ -650,7 +650,7 @@ implementation
         begin
           if not(res = 48) then
             begin
-              self._throw( YAPI_DEVICE_BUSY, 'Motor command pipeline is full, try again later');
+              self._throw(YAPI_DEVICE_BUSY,'Motor command pipeline is full, try again later');
               result:=YAPI_DEVICE_BUSY;
               exit;
             end;
@@ -659,7 +659,7 @@ implementation
         begin
           if not(res = 48) then
             begin
-              self._throw( YAPI_IO_ERROR, 'Motor command failed permanently');
+              self._throw(YAPI_IO_ERROR,'Motor command failed permanently');
               result:=YAPI_IO_ERROR;
               exit;
             end;
@@ -687,7 +687,7 @@ implementation
       i := 1;
       while i < ndim do
         begin
-          cmd := ''+ cmd+','+inttostr(round(1000*speed[i]));
+          cmd := ''+cmd+','+inttostr(round(1000*speed[i]));
           i := i + 1;
         end;
       result := self.sendCommand(cmd);
@@ -706,7 +706,7 @@ implementation
       i := 1;
       while i < ndim do
         begin
-          cmd := ''+ cmd+','+inttostr(round(16*absPos[i]));
+          cmd := ''+cmd+','+inttostr(round(16*absPos[i]));
           i := i + 1;
         end;
       result := self.sendCommand(cmd);
@@ -725,7 +725,7 @@ implementation
       i := 1;
       while i < ndim do
         begin
-          cmd := ''+ cmd+','+inttostr(round(16*relPos[i]));
+          cmd := ''+cmd+','+inttostr(round(16*relPos[i]));
           i := i + 1;
         end;
       result := self.sendCommand(cmd);

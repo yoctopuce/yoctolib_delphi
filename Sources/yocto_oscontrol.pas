@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_oscontrol.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_oscontrol.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindOsControl(), the high-level API for OsControl functions
  *
@@ -52,7 +52,7 @@ uses
 
 //--- (YOsControl definitions)
 
-const Y_SHUTDOWNCOUNTDOWN_INVALID     = YAPI_INVALID_UINT;
+const Y_SHUTDOWNCOUNTDOWN_INVALID     = YAPI_INVALID_INT;
 
 //--- (end of YOsControl definitions)
 
@@ -203,6 +203,24 @@ type
     /// </para>
     ///-
     function shutdown(secBeforeShutDown: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Schedules an OS reboot after a given number of seconds.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="secBeforeReboot">
+    ///   number of seconds before reboot
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function reboot(secBeforeReboot: LongInt):LongInt; overload; virtual;
 
 
     ////
@@ -372,7 +390,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYOsControl.create(func);
-          TYFunction._AddToCache('OsControl',  func, obj);
+          TYFunction._AddToCache('OsControl', func, obj);
         end;
       result := obj;
       exit;
@@ -424,6 +442,13 @@ implementation
   function TYOsControl.shutdown(secBeforeShutDown: LongInt):LongInt;
     begin
       result := self.set_shutdownCountdown(secBeforeShutDown);
+      exit;
+    end;
+
+
+  function TYOsControl.reboot(secBeforeReboot: LongInt):LongInt;
+    begin
+      result := self.set_shutdownCountdown(0 - secBeforeReboot);
       exit;
     end;
 

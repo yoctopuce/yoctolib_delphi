@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_spiport.pas 59641 2024-03-05 20:50:20Z mvuilleu $
+ *  $Id: yocto_spiport.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -1850,7 +1850,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYSpiPort.create(func);
-          TYFunction._AddToCache('SpiPort',  func, obj);
+          TYFunction._AddToCache('SpiPort', func, obj);
         end;
       result := obj;
       exit;
@@ -1952,7 +1952,7 @@ implementation
       SetLength(msgarr, 0);
       SetLength(res, 0);
 
-      url := 'rxmsg.json?pos='+inttostr( self._rxptr)+'&maxw='+inttostr( maxWait)+'&pat='+pattern;
+      url := 'rxmsg.json?pos='+inttostr(self._rxptr)+'&maxw='+inttostr(maxWait)+'&pat='+pattern;
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
       msglen := length(msgarr);
@@ -2004,7 +2004,7 @@ implementation
       databin := self._download('rxcnt.bin?pos='+inttostr(self._rxptr));
       availPosStr := _ByteToString(databin);
       atPos := (pos('@', availPosStr) - 1);
-      res := _atoi(Copy(availPosStr,  0 + 1, atPos));
+      res := _atoi(Copy(availPosStr, 0 + 1, atPos));
       result := res;
       exit;
     end;
@@ -2020,7 +2020,7 @@ implementation
       databin := self._download('rxcnt.bin?pos='+inttostr(self._rxptr));
       availPosStr := _ByteToString(databin);
       atPos := (pos('@', availPosStr) - 1);
-      res := _atoi(Copy(availPosStr,  atPos+1 + 1, Length(availPosStr)-atPos-1));
+      res := _atoi(Copy(availPosStr, atPos+1 + 1, Length(availPosStr)-atPos-1));
       result := res;
       exit;
     end;
@@ -2039,14 +2039,14 @@ implementation
       if Length(query) <= 80 then
         begin
           // fast query
-          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=!'+self._escapeAttr(query);
+          url := 'rxmsg.json?len=1&maxw='+inttostr(maxWait)+'&cmd=!'+self._escapeAttr(query);
         end
       else
         begin
           // long query
           prevpos := self.end_tell;
           self._upload('txdata', _StrToByte(query + ''#13''#10''));
-          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&pos='+inttostr(prevpos);
+          url := 'rxmsg.json?len=1&maxw='+inttostr(maxWait)+'&pos='+inttostr(prevpos);
         end;
 
       msgbin := self._download(url);
@@ -2084,14 +2084,14 @@ implementation
       if Length(hexString) <= 80 then
         begin
           // fast query
-          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=$'+hexString;
+          url := 'rxmsg.json?len=1&maxw='+inttostr(maxWait)+'&cmd=$'+hexString;
         end
       else
         begin
           // long query
           prevpos := self.end_tell;
           self._upload('txdata', _hexStrToBin(hexString));
-          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&pos='+inttostr(prevpos);
+          url := 'rxmsg.json?len=1&maxw='+inttostr(maxWait)+'&pos='+inttostr(prevpos);
         end;
 
       msgbin := self._download(url);
@@ -2238,7 +2238,7 @@ implementation
       idx := 0;
       while idx < bufflen do
         begin
-          hexb := StrToInt('$0' + Copy(hexString,  2 * idx + 1, 2));
+          hexb := StrToInt('$0' + Copy(hexString, 2 * idx + 1, 2));
           buff[idx] := hexb;
           idx := idx + 1;
         end;
@@ -2371,7 +2371,7 @@ implementation
           nChars := 65535;
         end;
 
-      buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
+      buff := self._download('rxdata.bin?pos='+inttostr(self._rxptr)+'&len='+inttostr(nChars));
       bufflen := length(buff) - 1;
       endpos := 0;
       mult := 1;
@@ -2382,7 +2382,7 @@ implementation
           bufflen := bufflen - 1;
         end;
       self._rxptr := endpos;
-      res := Copy(_ByteToString(buff),  0 + 1, bufflen);
+      res := Copy(_ByteToString(buff), 0 + 1, bufflen);
       result := res;
       exit;
     end;
@@ -2402,7 +2402,7 @@ implementation
           nChars := 65535;
         end;
 
-      buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
+      buff := self._download('rxdata.bin?pos='+inttostr(self._rxptr)+'&len='+inttostr(nChars));
       bufflen := length(buff) - 1;
       endpos := 0;
       mult := 1;
@@ -2441,7 +2441,7 @@ implementation
           nChars := 65535;
         end;
 
-      buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
+      buff := self._download('rxdata.bin?pos='+inttostr(self._rxptr)+'&len='+inttostr(nChars));
       bufflen := length(buff) - 1;
       endpos := 0;
       mult := 1;
@@ -2482,7 +2482,7 @@ implementation
           nBytes := 65535;
         end;
 
-      buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nBytes));
+      buff := self._download('rxdata.bin?pos='+inttostr(self._rxptr)+'&len='+inttostr(nBytes));
       bufflen := length(buff) - 1;
       endpos := 0;
       mult := 1;
@@ -2497,12 +2497,12 @@ implementation
       ofs := 0;
       while ofs + 3 < bufflen do
         begin
-          res := ''+ res+''+AnsiUpperCase(inttohex( buff[ofs],02))+''+AnsiUpperCase(inttohex( buff[ofs + 1],02))+''+AnsiUpperCase(inttohex( buff[ofs + 2],02))+''+AnsiUpperCase(inttohex(buff[ofs + 3],02));
+          res := ''+res+''+AnsiUpperCase(inttohex(buff[ofs],02))+''+AnsiUpperCase(inttohex(buff[ofs + 1],02))+''+AnsiUpperCase(inttohex(buff[ofs + 2],02))+''+AnsiUpperCase(inttohex(buff[ofs + 3],02));
           ofs := ofs + 4;
         end;
       while ofs < bufflen do
         begin
-          res := ''+ res+''+AnsiUpperCase(inttohex(buff[ofs],02));
+          res := ''+res+''+AnsiUpperCase(inttohex(buff[ofs],02));
           ofs := ofs + 1;
         end;
       result := res;
@@ -2529,7 +2529,7 @@ implementation
     begin
       SetLength(msgarr, 0);
 
-      url := 'rxmsg.json?pos='+inttostr( self._rxptr)+'&maxw='+inttostr( maxWait)+'&t=0&len='+inttostr(maxMsg);
+      url := 'rxmsg.json?pos='+inttostr(self._rxptr)+'&maxw='+inttostr(maxWait)+'&t=0&len='+inttostr(maxMsg);
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
       msglen := length(msgarr);

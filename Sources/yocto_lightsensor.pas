@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_lightsensor.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_lightsensor.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindLightSensor(), the high-level API for LightSensor functions
  *
@@ -488,7 +488,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYLightSensor.create(func);
-          TYFunction._AddToCache('LightSensor',  func, obj);
+          TYFunction._AddToCache('LightSensor', func, obj);
         end;
       result := obj;
       exit;

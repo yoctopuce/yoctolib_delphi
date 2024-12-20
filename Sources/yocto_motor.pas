@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_motor.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_motor.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindMotor(), the high-level API for Motor functions
  *
@@ -1055,7 +1055,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYMotor.create(func);
-          TYFunction._AddToCache('Motor',  func, obj);
+          TYFunction._AddToCache('Motor', func, obj);
         end;
       result := obj;
       exit;

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 59641 2024-03-05 20:50:20Z mvuilleu $
+ * $Id: yocto_serialport.pas 63506 2024-11-28 10:42:13Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -2077,7 +2077,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYSerialPort.create(func);
-          TYFunction._AddToCache('SerialPort',  func, obj);
+          TYFunction._AddToCache('SerialPort', func, obj);
         end;
       result := obj;
       exit;
@@ -2179,7 +2179,7 @@ implementation
       SetLength(msgarr, 0);
       SetLength(res, 0);
 
-      url := 'rxmsg.json?pos='+inttostr( self._rxptr)+'&maxw='+inttostr( maxWait)+'&pat='+pattern;
+      url := 'rxmsg.json?pos='+inttostr(self._rxptr)+'&maxw='+inttostr(maxWait)+'&pat='+pattern;
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
       msglen := length(msgarr);
@@ -2231,7 +2231,7 @@ implementation
       databin := self._download('rxcnt.bin?pos='+inttostr(self._rxptr));
       availPosStr := _ByteToString(databin);
       atPos := (pos('@', availPosStr) - 1);
-      res := _atoi(Copy(availPosStr,  0 + 1, atPos));
+      res := _atoi(Copy(availPosStr, 0 + 1, atPos));
       result := res;
       exit;
     end;
@@ -2247,7 +2247,7 @@ implementation
       databin := self._download('rxcnt.bin?pos='+inttostr(self._rxptr));
       availPosStr := _ByteToString(databin);
       atPos := (pos('@', availPosStr) - 1);
-      res := _atoi(Copy(availPosStr,  atPos+1 + 1, Length(availPosStr)-atPos-1));
+      res := _atoi(Copy(availPosStr, atPos+1 + 1, Length(availPosStr)-atPos-1));
       result := res;
       exit;
     end;
@@ -2266,14 +2266,14 @@ implementation
       if Length(query) <= 80 then
         begin
           // fast query
-          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=!'+self._escapeAttr(query);
+          url := 'rxmsg.json?len=1&maxw='+inttostr(maxWait)+'&cmd=!'+self._escapeAttr(query);
         end
       else
         begin
           // long query
           prevpos := self.end_tell;
           self._upload('txdata', _StrToByte(query + ''#13''#10''));
-          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&pos='+inttostr(prevpos);
+          url := 'rxmsg.json?len=1&maxw='+inttostr(maxWait)+'&pos='+inttostr(prevpos);
         end;
 
       msgbin := self._download(url);
@@ -2311,14 +2311,14 @@ implementation
       if Length(hexString) <= 80 then
         begin
           // fast query
-          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=$'+hexString;
+          url := 'rxmsg.json?len=1&maxw='+inttostr(maxWait)+'&cmd=$'+hexString;
         end
       else
         begin
           // long query
           prevpos := self.end_tell;
           self._upload('txdata', _hexStrToBin(hexString));
-          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&pos='+inttostr(prevpos);
+          url := 'rxmsg.json?len=1&maxw='+inttostr(maxWait)+'&pos='+inttostr(prevpos);
         end;
 
       msgbin := self._download(url);
@@ -2465,7 +2465,7 @@ implementation
       idx := 0;
       while idx < bufflen do
         begin
-          hexb := StrToInt('$0' + Copy(hexString,  2 * idx + 1, 2));
+          hexb := StrToInt('$0' + Copy(hexString, 2 * idx + 1, 2));
           buff[idx] := hexb;
           idx := idx + 1;
         end;
@@ -2598,7 +2598,7 @@ implementation
           nChars := 65535;
         end;
 
-      buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
+      buff := self._download('rxdata.bin?pos='+inttostr(self._rxptr)+'&len='+inttostr(nChars));
       bufflen := length(buff) - 1;
       endpos := 0;
       mult := 1;
@@ -2609,7 +2609,7 @@ implementation
           bufflen := bufflen - 1;
         end;
       self._rxptr := endpos;
-      res := Copy(_ByteToString(buff),  0 + 1, bufflen);
+      res := Copy(_ByteToString(buff), 0 + 1, bufflen);
       result := res;
       exit;
     end;
@@ -2629,7 +2629,7 @@ implementation
           nChars := 65535;
         end;
 
-      buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
+      buff := self._download('rxdata.bin?pos='+inttostr(self._rxptr)+'&len='+inttostr(nChars));
       bufflen := length(buff) - 1;
       endpos := 0;
       mult := 1;
@@ -2668,7 +2668,7 @@ implementation
           nChars := 65535;
         end;
 
-      buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
+      buff := self._download('rxdata.bin?pos='+inttostr(self._rxptr)+'&len='+inttostr(nChars));
       bufflen := length(buff) - 1;
       endpos := 0;
       mult := 1;
@@ -2709,7 +2709,7 @@ implementation
           nBytes := 65535;
         end;
 
-      buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nBytes));
+      buff := self._download('rxdata.bin?pos='+inttostr(self._rxptr)+'&len='+inttostr(nBytes));
       bufflen := length(buff) - 1;
       endpos := 0;
       mult := 1;
@@ -2724,12 +2724,12 @@ implementation
       ofs := 0;
       while ofs + 3 < bufflen do
         begin
-          res := ''+ res+''+AnsiUpperCase(inttohex( buff[ofs],02))+''+AnsiUpperCase(inttohex( buff[ofs + 1],02))+''+AnsiUpperCase(inttohex( buff[ofs + 2],02))+''+AnsiUpperCase(inttohex(buff[ofs + 3],02));
+          res := ''+res+''+AnsiUpperCase(inttohex(buff[ofs],02))+''+AnsiUpperCase(inttohex(buff[ofs + 1],02))+''+AnsiUpperCase(inttohex(buff[ofs + 2],02))+''+AnsiUpperCase(inttohex(buff[ofs + 3],02));
           ofs := ofs + 4;
         end;
       while ofs < bufflen do
         begin
-          res := ''+ res+''+AnsiUpperCase(inttohex(buff[ofs],02));
+          res := ''+res+''+AnsiUpperCase(inttohex(buff[ofs],02));
           ofs := ofs + 1;
         end;
       result := res;
@@ -2759,7 +2759,7 @@ implementation
       buff := self._download('cts.txt');
       if not(length(buff) = 1) then
         begin
-          self._throw( YAPI_IO_ERROR, 'invalid CTS reply');
+          self._throw(YAPI_IO_ERROR,'invalid CTS reply');
           result:=YAPI_IO_ERROR;
           exit;
         end;
@@ -2781,7 +2781,7 @@ implementation
     begin
       SetLength(msgarr, 0);
 
-      url := 'rxmsg.json?pos='+inttostr( self._rxptr)+'&maxw='+inttostr( maxWait)+'&t=0&len='+inttostr(maxMsg);
+      url := 'rxmsg.json?pos='+inttostr(self._rxptr)+'&maxw='+inttostr(maxWait)+'&t=0&len='+inttostr(maxMsg);
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
       msglen := length(msgarr);
@@ -2882,7 +2882,7 @@ implementation
     var
       buff : TByteArray;
     begin
-      buff := _StrToByte(''+chr( 2)+''+ text+''+chr(3));
+      buff := _StrToByte(''+chr(2)+''+text+''+chr(3));
       // send string using file upload
       result := self._upload('txdata', buff);
       exit;
@@ -2916,32 +2916,32 @@ implementation
       SetLength(reps, 0);
       funCode := pduBytes[0];
       nib := ((funCode) shr 4);
-      pat := ''+AnsiUpperCase(inttohex( slaveNo,02))+'['+AnsiUpperCase(inttohex( nib,1))+''+AnsiUpperCase(inttohex( (nib+8),1))+']'+AnsiUpperCase(inttohex(((funCode) and 15),1))+'.*';
-      cmd := ''+AnsiUpperCase(inttohex( slaveNo,02))+''+AnsiUpperCase(inttohex(funCode,02));
+      pat := ''+AnsiUpperCase(inttohex(slaveNo,02))+'['+AnsiUpperCase(inttohex(nib,1))+''+AnsiUpperCase(inttohex((nib+8),1))+']'+AnsiUpperCase(inttohex(((funCode) and 15),1))+'.*';
+      cmd := ''+AnsiUpperCase(inttohex(slaveNo,02))+''+AnsiUpperCase(inttohex(funCode,02));
       i := 1;
       while i < length(pduBytes) do
         begin
-          cmd := ''+ cmd+''+AnsiUpperCase(inttohex(((pduBytes[i]) and ($0ff)),02));
+          cmd := ''+cmd+''+AnsiUpperCase(inttohex(((pduBytes[i]) and ($0ff)),02));
           i := i + 1;
         end;
       if Length(cmd) <= 80 then
         begin
           // fast query
-          url := 'rxmsg.json?cmd=:'+ cmd+'&pat=:'+pat;
+          url := 'rxmsg.json?cmd=:'+cmd+'&pat=:'+pat;
         end
       else
         begin
           // long query
           prevpos := self.end_tell;
           self._upload('txdata:', _hexStrToBin(cmd));
-          url := 'rxmsg.json?pos='+inttostr( prevpos)+'&maxw=2000&pat=:'+pat;
+          url := 'rxmsg.json?pos='+inttostr(prevpos)+'&maxw=2000&pat=:'+pat;
         end;
 
       msgs := self._download(url);
       reps := self._json_get_array(msgs);
       if not(length(reps) > 1) then
         begin
-          self._throw( YAPI_IO_ERROR, 'no reply from MODBUS slave');
+          self._throw(YAPI_IO_ERROR,'no reply from MODBUS slave');
           result:=res;
           exit;
         end;
@@ -2965,25 +2965,25 @@ implementation
               i := res[1];
               if not(i > 1) then
                 begin
-                  self._throw( YAPI_NOT_SUPPORTED, 'MODBUS error: unsupported function code');
+                  self._throw(YAPI_NOT_SUPPORTED,'MODBUS error: unsupported function code');
                   result:=res;
                   exit;
                 end;
               if not(i > 2) then
                 begin
-                  self._throw( YAPI_INVALID_ARGUMENT, 'MODBUS error: illegal data address');
+                  self._throw(YAPI_INVALID_ARGUMENT,'MODBUS error: illegal data address');
                   result:=res;
                   exit;
                 end;
               if not(i > 3) then
                 begin
-                  self._throw( YAPI_INVALID_ARGUMENT, 'MODBUS error: illegal data value');
+                  self._throw(YAPI_INVALID_ARGUMENT,'MODBUS error: illegal data value');
                   result:=res;
                   exit;
                 end;
               if not(i > 4) then
                 begin
-                  self._throw( YAPI_INVALID_ARGUMENT, 'MODBUS error: failed to execute function');
+                  self._throw(YAPI_INVALID_ARGUMENT,'MODBUS error: failed to execute function');
                   result:=res;
                   exit;
                 end;
@@ -3153,7 +3153,7 @@ implementation
     begin
       if not(nWords<=256) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'Cannot read more than 256 words');
+          self._throw(YAPI_INVALID_ARGUMENT,'Cannot read more than 256 words');
           result:=res;
           exit;
         end;

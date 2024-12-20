@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_carbondioxide.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_carbondioxide.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindCarbonDioxide(), the high-level API for CarbonDioxide functions
  *
@@ -524,7 +524,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYCarbonDioxide.create(func);
-          TYFunction._AddToCache('CarbonDioxide',  func, obj);
+          TYFunction._AddToCache('CarbonDioxide', func, obj);
         end;
       result := obj;
       exit;

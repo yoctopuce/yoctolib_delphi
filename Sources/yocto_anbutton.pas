@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_anbutton.pas 56268 2023-08-25 17:43:56Z mvuilleu $
+ *  $Id: yocto_anbutton.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindAnButton(), the high-level API for AnButton functions
  *
@@ -1044,7 +1044,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYAnButton.create(func);
-          TYFunction._AddToCache('AnButton',  func, obj);
+          TYFunction._AddToCache('AnButton', func, obj);
         end;
       result := obj;
       exit;

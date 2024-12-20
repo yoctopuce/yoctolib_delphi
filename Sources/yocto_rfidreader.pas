@@ -1275,13 +1275,21 @@ type
     ///   Note that only the characters présent  in  the provided string
     ///   will be written, there is no notion of string length. If your
     ///   string data have variable length, you'll have to encode the
-    ///   string length yourself.
+    ///   string length yourself, with a terminal zero for instannce.
+    /// </para>
+    /// <para>
+    ///   This function only works with ISO-latin characters, if you wish to
+    ///   write strings encoded with alternate character sets, you'll have to
+    ///   use tagWriteBin() function.
+    /// </para>
+    /// <para>
     ///   By default firstBlock cannot be a special block, and any special block
     ///   encountered in the middle of the write operation will be skipped
     ///   automatically. The last data block affected by the operation will
     ///   be automatically padded with zeros if neccessary.
     ///   If you rather want to rewrite special blocks as well,
-    ///   use the <c>EnableRawAccess</c> field from the <c>options</c> parameter.
+    ///   use the <c>EnableRawAccess</c> field from the <c>options</c> parameter
+    ///   (definitely not recommanded).
     /// </para>
     /// <para>
     /// </para>
@@ -1811,7 +1819,7 @@ implementation
       res := '&o='+inttostr(opt);
       if self.KeyType <> 0 then
         begin
-          res := ''+ res+'&k='+AnsiLowerCase(inttohex( self.KeyType,02))+':'+self.HexKey;
+          res := ''+res+'&k='+AnsiLowerCase(inttohex(self.KeyType,02))+':'+self.HexKey;
         end;
       result := res;
       exit;
@@ -2337,7 +2345,7 @@ implementation
             end;
           if errBlk >= 0 then
             begin
-              errMsg := ''+ errMsg+' (block '+inttostr(errBlk)+')';
+              errMsg := ''+errMsg+' (block '+inttostr(errBlk)+')';
             end;
         end;
       self._tagId := tagId;
@@ -2444,7 +2452,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYRfidReader.create(func);
-          TYFunction._AddToCache('RfidReader',  func, obj);
+          TYFunction._AddToCache('RfidReader', func, obj);
         end;
       result := obj;
       exit;
@@ -2525,11 +2533,11 @@ implementation
               lab := -1;
             end;
         end;
-      status.imm_init(tagId,  errCode,  errBlk,  fab, lab);
+      status.imm_init(tagId, errCode, errBlk, fab, lab);
       retcode := status.get_yapiError;
       if not(retcode = YAPI_SUCCESS) then
         begin
-          self._throw( retcode, status.get_errorMessage);
+          self._throw(retcode,status.get_errorMessage);
           result:=retcode;
           exit;
         end;
@@ -2546,7 +2554,7 @@ implementation
       status :=  TYRfidStatus.create();
 
       json := self._download('rfid.json?a=reset');
-      result := self._chkerror('',  json, status);
+      result := self._chkerror('', json, status);
       exit;
     end;
 
@@ -2596,7 +2604,7 @@ implementation
       url := 'rfid.json?a=info&t='+tagId;
 
       json := self._download(url);
-      self._chkerror(tagId,  json, status);
+      self._chkerror(tagId, json, status);
       tagType := _atoi(self._json_get_key(json, 'type'));
       size := _atoi(self._json_get_key(json, 'size'));
       usable := _atoi(self._json_get_key(json, 'usable'));
@@ -2604,7 +2612,7 @@ implementation
       fblk := _atoi(self._json_get_key(json, 'fblk'));
       lblk := _atoi(self._json_get_key(json, 'lblk'));
       res :=  TYRfidTagInfo.create();
-      res.imm_init(tagId,  tagType,  size,  usable,  blksize,  fblk, lblk);
+      res.imm_init(tagId, tagType, size, usable, blksize, fblk, lblk);
       result := res;
       exit;
     end;
@@ -2620,7 +2628,7 @@ implementation
       url := 'rfid.json?a=lock&t='+tagId+'&b='+inttostr(firstBlock)+'&n='+inttostr(nBlocks)+''+optstr;
 
       json := self._download(url);
-      result := self._chkerror(tagId,  json, status);
+      result := self._chkerror(tagId, json, status);
       exit;
     end;
 
@@ -2641,7 +2649,7 @@ implementation
       url := 'rfid.json?a=chkl&t='+tagId+'&b='+inttostr(firstBlock)+'&n='+inttostr(nBlocks)+''+optstr;
 
       json := self._download(url);
-      self._chkerror(tagId,  json, status);
+      self._chkerror(tagId, json, status);
       if status.get_yapiError <> YAPI_SUCCESS then
         begin
           result := res;
@@ -2681,7 +2689,7 @@ implementation
       url := 'rfid.json?a=chks&t='+tagId+'&b='+inttostr(firstBlock)+'&n='+inttostr(nBlocks)+''+optstr;
 
       json := self._download(url);
-      self._chkerror(tagId,  json, status);
+      self._chkerror(tagId, json, status);
       if status.get_yapiError <> YAPI_SUCCESS then
         begin
           result := res;
@@ -2716,7 +2724,7 @@ implementation
       url := 'rfid.json?a=read&t='+tagId+'&b='+inttostr(firstBlock)+'&n='+inttostr(nBytes)+''+optstr;
 
       json := self._download(url);
-      self._chkerror(tagId,  json, status);
+      self._chkerror(tagId, json, status);
       if status.get_yapiError = YAPI_SUCCESS then
         begin
           hexbuf := self._json_get_key(json, 'res');
@@ -2732,7 +2740,7 @@ implementation
 
   function TYRfidReader.tagReadBin(tagId: string; firstBlock: LongInt; nBytes: LongInt; options: TYRfidOptions; var status: TYRfidStatus):TByteArray;
     begin
-      result := _hexStrToBin(self.tagReadHex(tagId,  firstBlock,  nBytes,  options, status));
+      result := _hexStrToBin(self.tagReadHex(tagId, firstBlock, nBytes, options, status));
       exit;
     end;
 
@@ -2745,7 +2753,7 @@ implementation
       res : TLongIntArray;
       res_pos : LongInt;
     begin
-      blk := self.tagReadBin(tagId,  firstBlock,  nBytes,  options, status);
+      blk := self.tagReadBin(tagId, firstBlock, nBytes, options, status);
       endidx := length(blk);
       res_pos := length(res);
       SetLength(res, res_pos+endidx);;
@@ -2764,7 +2772,7 @@ implementation
 
   function TYRfidReader.tagReadStr(tagId: string; firstBlock: LongInt; nChars: LongInt; options: TYRfidOptions; var status: TYRfidStatus):string;
     begin
-      result := _ByteToString(self.tagReadBin(tagId,  firstBlock,  nChars,  options, status));
+      result := _ByteToString(self.tagReadBin(tagId, firstBlock, nChars, options, status));
       exit;
     end;
 
@@ -2782,7 +2790,7 @@ implementation
         begin
           // short data, use an URL-based command
           hexstr := _bytesToHexStr(buff, 0, length(buff));
-          result := self.tagWriteHex(tagId,  firstBlock,  hexstr,  options, status);
+          result := self.tagWriteHex(tagId, firstBlock, hexstr, options, status);
           exit;
         end
       else
@@ -2791,7 +2799,7 @@ implementation
           optstr := options.imm_getParams;
           fname := 'Rfid:t='+tagId+'&b='+inttostr(firstBlock)+'&n='+inttostr(buflen)+''+optstr;
           json := self._uploadEx(fname, buff);
-          result := self._chkerror(tagId,  json, status);
+          result := self._chkerror(tagId, json, status);
           exit;
         end;
     end;
@@ -2814,7 +2822,7 @@ implementation
           idx := idx + 1;
         end;
 
-      result := self.tagWriteBin(tagId,  firstBlock,  buff,  options, status);
+      result := self.tagWriteBin(tagId, firstBlock, buff, options, status);
       exit;
     end;
 
@@ -2837,7 +2845,7 @@ implementation
           optstr := options.imm_getParams;
           url := 'rfid.json?a=writ&t='+tagId+'&b='+inttostr(firstBlock)+'&w='+hexString+''+optstr;
           json := self._download(url);
-          result := self._chkerror(tagId,  json, status);
+          result := self._chkerror(tagId, json, status);
           exit;
         end
       else
@@ -2847,11 +2855,11 @@ implementation
           idx := 0;
           while idx < bufflen do
             begin
-              hexb := StrToInt('$0' + Copy(hexString,  2 * idx + 1, 2));
+              hexb := StrToInt('$0' + Copy(hexString, 2 * idx + 1, 2));
               buff[idx] := hexb;
               idx := idx + 1;
             end;
-          result := self.tagWriteBin(tagId,  firstBlock,  buff,  options, status);
+          result := self.tagWriteBin(tagId, firstBlock, buff, options, status);
           exit;
         end;
     end;
@@ -2863,7 +2871,7 @@ implementation
     begin
       buff := _StrToByte(text);
 
-      result := self.tagWriteBin(tagId,  firstBlock,  buff,  options, status);
+      result := self.tagWriteBin(tagId, firstBlock, buff, options, status);
       exit;
     end;
 
@@ -2879,7 +2887,7 @@ implementation
       url := 'rfid.json?a=rdsf&t='+tagId+'&b=0'+optstr;
 
       json := self._download(url);
-      self._chkerror(tagId,  json, status);
+      self._chkerror(tagId, json, status);
       if status.get_yapiError = YAPI_SUCCESS then
         begin
           res := _atoi(self._json_get_key(json, 'res'));
@@ -2903,7 +2911,7 @@ implementation
       url := 'rfid.json?a=wrsf&t='+tagId+'&b=0&v='+inttostr(afi)+''+optstr;
 
       json := self._download(url);
-      result := self._chkerror(tagId,  json, status);
+      result := self._chkerror(tagId, json, status);
       exit;
     end;
 
@@ -2918,7 +2926,7 @@ implementation
       url := 'rfid.json?a=lksf&t='+tagId+'&b=0'+optstr;
 
       json := self._download(url);
-      result := self._chkerror(tagId,  json, status);
+      result := self._chkerror(tagId, json, status);
       exit;
     end;
 
@@ -2934,7 +2942,7 @@ implementation
       url := 'rfid.json?a=rdsf&t='+tagId+'&b=1'+optstr;
 
       json := self._download(url);
-      self._chkerror(tagId,  json, status);
+      self._chkerror(tagId, json, status);
       if status.get_yapiError = YAPI_SUCCESS then
         begin
           res := _atoi(self._json_get_key(json, 'res'));
@@ -2958,7 +2966,7 @@ implementation
       url := 'rfid.json?a=wrsf&t='+tagId+'&b=1&v='+inttostr(dsfid)+''+optstr;
 
       json := self._download(url);
-      result := self._chkerror(tagId,  json, status);
+      result := self._chkerror(tagId, json, status);
       exit;
     end;
 
@@ -2973,7 +2981,7 @@ implementation
       url := 'rfid.json?a=lksf&t='+tagId+'&b=1'+optstr;
 
       json := self._download(url);
-      result := self._chkerror(tagId,  json, status);
+      result := self._chkerror(tagId, json, status);
       exit;
     end;
 
@@ -3055,14 +3063,14 @@ implementation
           arrLen := length(eventArr);
           if not(arrLen > 0) then
             begin
-              self._throw( YAPI_IO_ERROR, 'fail to download events');
+              self._throw(YAPI_IO_ERROR,'fail to download events');
               result:=YAPI_IO_ERROR;
               exit;
             end;
           // first element of array is the new position preceeded by '@'
           arrPos := 1;
           lenStr := eventArr[0];
-          lenStr := Copy(lenStr,  1 + 1, Length(lenStr)-1);
+          lenStr := Copy(lenStr, 1 + 1, Length(lenStr)-1);
           // update processed event position pointer
           self._eventPos := _atoi(lenStr);
         end
@@ -3076,7 +3084,7 @@ implementation
           arrLen := length(eventArr);
           if not(arrLen > 0) then
             begin
-              self._throw( YAPI_IO_ERROR, 'fail to download events');
+              self._throw(YAPI_IO_ERROR,'fail to download events');
               result:=YAPI_IO_ERROR;
               exit;
             end;
@@ -3084,7 +3092,7 @@ implementation
           arrPos := 0;
           arrLen := arrLen - 1;
           lenStr := eventArr[arrLen];
-          lenStr := Copy(lenStr,  1 + 1, Length(lenStr)-1);
+          lenStr := Copy(lenStr, 1 + 1, Length(lenStr)-1);
           // update processed event position pointer
           self._eventPos := _atoi(lenStr);
         end;
@@ -3096,20 +3104,20 @@ implementation
           typePos := (pos(':', eventStr) - 1)+1;
           if (eventLen >= 14) and(typePos > 10) then
             begin
-              hexStamp := Copy(eventStr,  0 + 1, 8);
+              hexStamp := Copy(eventStr, 0 + 1, 8);
               intStamp := StrToInt('$0' + hexStamp);
               if intStamp >= self._eventStamp then
                 begin
                   self._eventStamp := intStamp;
-                  binMStamp := _StrToByte(Copy(eventStr,  8 + 1, 2));
+                  binMStamp := _StrToByte(Copy(eventStr, 8 + 1, 2));
                   msStamp := (binMStamp[0]-64) * 32 + binMStamp[1];
                   evtStamp := intStamp + (0.001 * msStamp);
                   dataPos := (pos('=', eventStr) - 1)+1;
-                  evtType := Copy(eventStr,  typePos + 1, 1);
+                  evtType := Copy(eventStr, typePos + 1, 1);
                   evtData := '';
                   if dataPos > 10 then
                     begin
-                      evtData := Copy(eventStr,  dataPos + 1, eventLen-dataPos);
+                      evtData := Copy(eventStr, dataPos + 1, eventLen-dataPos);
                     end;
                   if (addr(self._eventCallback) <> nil) then
                     begin

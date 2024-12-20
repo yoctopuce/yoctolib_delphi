@@ -1793,7 +1793,7 @@ implementation
     begin
       if not(measureIndex < length(self._valuesDesc)) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'Invalid measure index');
+          self._throw(YAPI_INVALID_ARGUMENT,'Invalid measure index');
           result:='';
           exit;
         end;
@@ -1806,7 +1806,7 @@ implementation
     begin
       if not(measureIndex < length(self._valuesDesc)) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'Invalid measure index');
+          self._throw(YAPI_INVALID_ARGUMENT,'Invalid measure index');
           result:=0;
           exit;
         end;
@@ -1819,7 +1819,7 @@ implementation
     begin
       if not(measureIndex < length(self._valuesDesc)) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'Invalid measure index');
+          self._throw(YAPI_INVALID_ARGUMENT,'Invalid measure index');
           result:='';
           exit;
         end;
@@ -1832,7 +1832,7 @@ implementation
     begin
       if not(measureIndex < length(self._valuesDesc)) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'Invalid measure index');
+          self._throw(YAPI_INVALID_ARGUMENT,'Invalid measure index');
           result:='';
           exit;
         end;
@@ -1845,7 +1845,7 @@ implementation
     begin
       if not(measureIndex < length(self._valuesDesc)) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'Invalid measure index');
+          self._throw(YAPI_INVALID_ARGUMENT,'Invalid measure index');
           result:='';
           exit;
         end;
@@ -1867,9 +1867,9 @@ implementation
     begin
       if Length(infoStr) > 1 then
         begin
-          if (Copy(infoStr,  0 + 1, 2) = 'ER') then
+          if (Copy(infoStr, 0 + 1, 2) = 'ER') then
             begin
-              errmsg := Copy(infoStr,  2 + 1, Length(infoStr)-2);
+              errmsg := Copy(infoStr, 2 + 1, Length(infoStr)-2);
               self._addr := errmsg;
               self._proto := errmsg;
               self._mfg := errmsg;
@@ -1880,12 +1880,12 @@ implementation
             end
           else
             begin
-              self._addr := Copy(infoStr,  0 + 1, 1);
-              self._proto := Copy(infoStr,  1 + 1, 2);
-              self._mfg := Copy(infoStr,  3 + 1, 8);
-              self._model := Copy(infoStr,  11 + 1, 6);
-              self._ver := Copy(infoStr,  17 + 1, 3);
-              self._sn := Copy(infoStr,  20 + 1, Length(infoStr)-20);
+              self._addr := Copy(infoStr, 0 + 1, 1);
+              self._proto := Copy(infoStr, 1 + 1, 2);
+              self._mfg := Copy(infoStr, 3 + 1, 8);
+              self._model := Copy(infoStr, 11 + 1, 6);
+              self._ver := Copy(infoStr, 17 + 1, 3);
+              self._sn := Copy(infoStr, 20 + 1, Length(infoStr)-20);
               self._isValid := true;
             end;
         end;
@@ -1917,10 +1917,10 @@ implementation
       size := 4;
       while k < 10 do
         begin
-          infoNbVal := self._sdi12Port.querySdi12(self._addr,  'IM'+inttostr(k), 5000);
+          infoNbVal := self._sdi12Port.querySdi12(self._addr, 'IM'+inttostr(k), 5000);
           if Length(infoNbVal) > 1 then
             begin
-              value := Copy(infoNbVal,  4 + 1, Length(infoNbVal)-4);
+              value := Copy(infoNbVal, 4 + 1, Length(infoNbVal)-4);
               nbVal := _atoi(value);
               if nbVal <> 0 then
                 begin
@@ -1929,8 +1929,8 @@ implementation
                   i := 0;
                   while i < nbVal do
                     begin
-                      cmd := 'IM'+inttostr( k)+'_00'+inttostr(i+1);
-                      infoVal := self._sdi12Port.querySdi12(self._addr,  cmd, 5000);
+                      cmd := 'IM'+inttostr(k)+'_00'+inttostr(i+1);
+                      infoVal := self._sdi12Port.querySdi12(self._addr, cmd, 5000);
                       data := _stringSplit(infoVal, ';');
                       data := _stringSplit(data[0], ',');
                       listVal_pos := 0;
@@ -2402,7 +2402,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYSdi12Port.create(func);
-          TYFunction._AddToCache('Sdi12Port',  func, obj);
+          TYFunction._AddToCache('Sdi12Port', func, obj);
         end;
       result := obj;
       exit;
@@ -2504,7 +2504,7 @@ implementation
       SetLength(msgarr, 0);
       SetLength(res, 0);
 
-      url := 'rxmsg.json?pos='+inttostr( self._rxptr)+'&maxw='+inttostr( maxWait)+'&pat='+pattern;
+      url := 'rxmsg.json?pos='+inttostr(self._rxptr)+'&maxw='+inttostr(maxWait)+'&pat='+pattern;
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
       msglen := length(msgarr);
@@ -2556,7 +2556,7 @@ implementation
       databin := self._download('rxcnt.bin?pos='+inttostr(self._rxptr));
       availPosStr := _ByteToString(databin);
       atPos := (pos('@', availPosStr) - 1);
-      res := _atoi(Copy(availPosStr,  0 + 1, atPos));
+      res := _atoi(Copy(availPosStr, 0 + 1, atPos));
       result := res;
       exit;
     end;
@@ -2572,7 +2572,7 @@ implementation
       databin := self._download('rxcnt.bin?pos='+inttostr(self._rxptr));
       availPosStr := _ByteToString(databin);
       atPos := (pos('@', availPosStr) - 1);
-      res := _atoi(Copy(availPosStr,  atPos+1 + 1, Length(availPosStr)-atPos-1));
+      res := _atoi(Copy(availPosStr, atPos+1 + 1, Length(availPosStr)-atPos-1));
       result := res;
       exit;
     end;
@@ -2591,14 +2591,14 @@ implementation
       if Length(query) <= 80 then
         begin
           // fast query
-          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=!'+self._escapeAttr(query);
+          url := 'rxmsg.json?len=1&maxw='+inttostr(maxWait)+'&cmd=!'+self._escapeAttr(query);
         end
       else
         begin
           // long query
           prevpos := self.end_tell;
           self._upload('txdata', _StrToByte(query + ''#13''#10''));
-          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&pos='+inttostr(prevpos);
+          url := 'rxmsg.json?len=1&maxw='+inttostr(maxWait)+'&pos='+inttostr(prevpos);
         end;
 
       msgbin := self._download(url);
@@ -2636,14 +2636,14 @@ implementation
       if Length(hexString) <= 80 then
         begin
           // fast query
-          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd=$'+hexString;
+          url := 'rxmsg.json?len=1&maxw='+inttostr(maxWait)+'&cmd=$'+hexString;
         end
       else
         begin
           // long query
           prevpos := self.end_tell;
           self._upload('txdata', _hexStrToBin(hexString));
-          url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&pos='+inttostr(prevpos);
+          url := 'rxmsg.json?len=1&maxw='+inttostr(maxWait)+'&pos='+inttostr(prevpos);
         end;
 
       msgbin := self._download(url);
@@ -2790,7 +2790,7 @@ implementation
       idx := 0;
       while idx < bufflen do
         begin
-          hexb := StrToInt('$0' + Copy(hexString,  2 * idx + 1, 2));
+          hexb := StrToInt('$0' + Copy(hexString, 2 * idx + 1, 2));
           buff[idx] := hexb;
           idx := idx + 1;
         end;
@@ -2923,7 +2923,7 @@ implementation
           nChars := 65535;
         end;
 
-      buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
+      buff := self._download('rxdata.bin?pos='+inttostr(self._rxptr)+'&len='+inttostr(nChars));
       bufflen := length(buff) - 1;
       endpos := 0;
       mult := 1;
@@ -2934,7 +2934,7 @@ implementation
           bufflen := bufflen - 1;
         end;
       self._rxptr := endpos;
-      res := Copy(_ByteToString(buff),  0 + 1, bufflen);
+      res := Copy(_ByteToString(buff), 0 + 1, bufflen);
       result := res;
       exit;
     end;
@@ -2954,7 +2954,7 @@ implementation
           nChars := 65535;
         end;
 
-      buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
+      buff := self._download('rxdata.bin?pos='+inttostr(self._rxptr)+'&len='+inttostr(nChars));
       bufflen := length(buff) - 1;
       endpos := 0;
       mult := 1;
@@ -2993,7 +2993,7 @@ implementation
           nChars := 65535;
         end;
 
-      buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nChars));
+      buff := self._download('rxdata.bin?pos='+inttostr(self._rxptr)+'&len='+inttostr(nChars));
       bufflen := length(buff) - 1;
       endpos := 0;
       mult := 1;
@@ -3034,7 +3034,7 @@ implementation
           nBytes := 65535;
         end;
 
-      buff := self._download('rxdata.bin?pos='+inttostr( self._rxptr)+'&len='+inttostr(nBytes));
+      buff := self._download('rxdata.bin?pos='+inttostr(self._rxptr)+'&len='+inttostr(nBytes));
       bufflen := length(buff) - 1;
       endpos := 0;
       mult := 1;
@@ -3049,12 +3049,12 @@ implementation
       ofs := 0;
       while ofs + 3 < bufflen do
         begin
-          res := ''+ res+''+AnsiUpperCase(inttohex( buff[ofs],02))+''+AnsiUpperCase(inttohex( buff[ofs + 1],02))+''+AnsiUpperCase(inttohex( buff[ofs + 2],02))+''+AnsiUpperCase(inttohex(buff[ofs + 3],02));
+          res := ''+res+''+AnsiUpperCase(inttohex(buff[ofs],02))+''+AnsiUpperCase(inttohex(buff[ofs + 1],02))+''+AnsiUpperCase(inttohex(buff[ofs + 2],02))+''+AnsiUpperCase(inttohex(buff[ofs + 3],02));
           ofs := ofs + 4;
         end;
       while ofs < bufflen do
         begin
-          res := ''+ res+''+AnsiUpperCase(inttohex(buff[ofs],02));
+          res := ''+res+''+AnsiUpperCase(inttohex(buff[ofs],02));
           ofs := ofs + 1;
         end;
       result := res;
@@ -3079,9 +3079,9 @@ implementation
       pattern := sensorAddr;
       if Length(cmd) > 0 then
         begin
-          cmdChar := Copy(cmd,  0 + 1, 1);
+          cmdChar := Copy(cmd, 0 + 1, 1);
         end;
-      if (sensorAddr = '?')  then
+      if (sensorAddr = '?') then
         begin
           pattern := '.*';
         end
@@ -3097,8 +3097,8 @@ implementation
             end;
         end;
       pattern := self._escapeAttr(pattern);
-      fullCmd := self._escapeAttr('+'+ sensorAddr+''+cmd+'!');
-      url := 'rxmsg.json?len=1&maxw='+inttostr( maxWait)+'&cmd='+ fullCmd+'&pat='+pattern;
+      fullCmd := self._escapeAttr('+'+sensorAddr+''+cmd+'!');
+      url := 'rxmsg.json?len=1&maxw='+inttostr(maxWait)+'&cmd='+fullCmd+'&pat='+pattern;
 
       msgbin := self._download(url);
       if length(msgbin)<2 then
@@ -3254,7 +3254,7 @@ implementation
     var
       addr : TYSdi12SensorInfo;
     begin
-      self.querySdi12(oldAddress,  'A' + newAddress, 1000);
+      self.querySdi12(oldAddress, 'A' + newAddress, 1000);
       addr := self.getSensorInformation(newAddress);
       result := addr;
       exit;
@@ -3295,7 +3295,7 @@ implementation
       wait : string;
     begin
       wait := self.querySdi12(sensorAddr, 'C', 1000);
-      wait := Copy(wait,  1 + 1, 3);
+      wait := Copy(wait, 1 + 1, 3);
       timewait := _atoi(wait) * 1000;
       result := timewait;
       exit;
@@ -3314,7 +3314,7 @@ implementation
     begin
       SetLength(msgarr, 0);
 
-      url := 'rxmsg.json?pos='+inttostr( self._rxptr)+'&maxw='+inttostr( maxWait)+'&t=0&len='+inttostr(maxMsg);
+      url := 'rxmsg.json?pos='+inttostr(self._rxptr)+'&maxw='+inttostr(maxWait)+'&t=0&len='+inttostr(maxMsg);
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
       msglen := length(msgarr);

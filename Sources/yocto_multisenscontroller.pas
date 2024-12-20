@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_multisenscontroller.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_multisenscontroller.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindMultiSensController(), the high-level API for MultiSensController functions
  *
@@ -77,7 +77,7 @@ type
   ///   TYMultiSensController Class: Sensor chain configuration interface, available for instance in the
   ///   Yocto-Temperature-IR
   /// <para>
-  ///   The <c>YMultiSensController</c> class allows you to setup a customized
+  ///   The <c>YMultiSensController</c> class allows you to set up a customized
   ///   sensor chain on devices featuring that functionality.
   /// </para>
   /// </summary>
@@ -630,7 +630,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYMultiSensController.create(func);
-          TYFunction._AddToCache('MultiSensController',  func, obj);
+          TYFunction._AddToCache('MultiSensController', func, obj);
         end;
       result := obj;
       exit;
@@ -689,7 +689,7 @@ implementation
       res := self.set_command(cmd);
       if not(res = YAPI_SUCCESS) then
         begin
-          self._throw( YAPI_IO_ERROR, 'unable to trigger address change');
+          self._throw(YAPI_IO_ERROR,'unable to trigger address change');
           result:=YAPI_IO_ERROR;
           exit;
         end;
@@ -697,13 +697,13 @@ implementation
       res := self.get_lastAddressDetected;
       if not(res > 0) then
         begin
-          self._throw( YAPI_IO_ERROR, 'IR sensor not found');
+          self._throw(YAPI_IO_ERROR,'IR sensor not found');
           result:=YAPI_IO_ERROR;
           exit;
         end;
       if not(res = addr) then
         begin
-          self._throw( YAPI_IO_ERROR, 'address change failed');
+          self._throw(YAPI_IO_ERROR,'address change failed');
           result:=YAPI_IO_ERROR;
           exit;
         end;
@@ -720,7 +720,7 @@ implementation
       res := self.set_command('a');
       if not(res = YAPI_SUCCESS) then
         begin
-          self._throw( YAPI_IO_ERROR, 'unable to trigger address detection');
+          self._throw(YAPI_IO_ERROR,'unable to trigger address detection');
           result:=res;
           exit;
         end;

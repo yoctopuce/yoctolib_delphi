@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_digitalio.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_digitalio.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindDigitalIO(), the high-level API for DigitalIO functions
  *
@@ -82,7 +82,7 @@ type
   ///   Yocto-Maxi-IO-V2
   /// <para>
   ///   The <c>YDigitalIO</c> class allows you drive a Yoctopuce digital input/output port.
-  ///   It can be used to setup the direction of each channel, to read the state of each channel
+  ///   It can be used to set up the direction of each channel, to read the state of each channel
   ///   and to switch the state of each channel configures as an output.
   ///   You can work on all channels at once, or one by one. Most functions
   ///   use a binary representation for channels where bit 0 matches channel #0 , bit 1 matches channel
@@ -305,17 +305,17 @@ type
 
     ////
     /// <summary>
-    ///   Returns the port state diagnostics (Yocto-IO and Yocto-MaxiIO-V2 only).
+    ///   Returns the port state diagnostics.
     /// <para>
-    ///   Bit 0 indicates a shortcut on
-    ///   output 0, etc. Bit 8 indicates a power failure, and bit 9 signals overheating (overcurrent).
+    ///   Bit 0 indicates a shortcut on output 0, etc.
+    ///   Bit 8 indicates a power failure, and bit 9 signals overheating (overcurrent).
     ///   During normal use, all diagnostic bits should stay clear.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the port state diagnostics (Yocto-IO and Yocto-MaxiIO-V2 only)
+    ///   an integer corresponding to the port state diagnostics
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>YDigitalIO.PORTDIAGS_INVALID</c>.
@@ -1080,7 +1080,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYDigitalIO.create(func);
-          TYFunction._AddToCache('DigitalIO',  func, obj);
+          TYFunction._AddToCache('DigitalIO', func, obj);
         end;
       result := obj;
       exit;
@@ -1133,13 +1133,13 @@ implementation
     begin
       if not(bitstate >= 0) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'invalid bit state');
+          self._throw(YAPI_INVALID_ARGUMENT,'invalid bit state');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
       if not(bitstate <= 1) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'invalid bit state');
+          self._throw(YAPI_INVALID_ARGUMENT,'invalid bit state');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
@@ -1169,13 +1169,13 @@ implementation
     begin
       if not(bitdirection >= 0) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'invalid direction');
+          self._throw(YAPI_INVALID_ARGUMENT,'invalid direction');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
       if not(bitdirection <= 1) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'invalid direction');
+          self._throw(YAPI_INVALID_ARGUMENT,'invalid direction');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
@@ -1198,13 +1198,13 @@ implementation
     begin
       if not(bitpolarity >= 0) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'invalid bit polarity');
+          self._throw(YAPI_INVALID_ARGUMENT,'invalid bit polarity');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
       if not(bitpolarity <= 1) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'invalid bit polarity');
+          self._throw(YAPI_INVALID_ARGUMENT,'invalid bit polarity');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
@@ -1227,13 +1227,13 @@ implementation
     begin
       if not(opendrain >= 0) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'invalid state');
+          self._throw(YAPI_INVALID_ARGUMENT,'invalid state');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
       if not(opendrain <= 1) then
         begin
-          self._throw( YAPI_INVALID_ARGUMENT, 'invalid state');
+          self._throw(YAPI_INVALID_ARGUMENT,'invalid state');
           result:=YAPI_INVALID_ARGUMENT;
           exit;
         end;
@@ -1254,7 +1254,7 @@ implementation
 
   function TYDigitalIO.pulse(bitno: LongInt; ms_duration: LongInt):LongInt;
     begin
-      result := self.set_command('Z'+inttostr( bitno)+',0,'+inttostr(ms_duration));
+      result := self.set_command('Z'+inttostr(bitno)+',0,'+inttostr(ms_duration));
       exit;
     end;
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_realtimeclock.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_realtimeclock.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindRealTimeClock(), the high-level API for RealTimeClock functions
  *
@@ -630,7 +630,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYRealTimeClock.create(func);
-          TYFunction._AddToCache('RealTimeClock',  func, obj);
+          TYFunction._AddToCache('RealTimeClock', func, obj);
         end;
       result := obj;
       exit;

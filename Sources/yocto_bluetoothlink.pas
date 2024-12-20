@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_bluetoothlink.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_bluetoothlink.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindBluetoothLink(), the high-level API for BluetoothLink functions
  *
@@ -943,7 +943,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYBluetoothLink.create(func);
-          TYFunction._AddToCache('BluetoothLink',  func, obj);
+          TYFunction._AddToCache('BluetoothLink', func, obj);
         end;
       result := obj;
       exit;

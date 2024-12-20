@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_relay.pas 56084 2023-08-15 16:13:01Z mvuilleu $
+ *  $Id: yocto_relay.pas 63506 2024-11-28 10:42:13Z seb $
  *
  *  Implements yFindRelay(), the high-level API for Relay functions
  *
@@ -1001,7 +1001,7 @@ implementation
       if obj = nil then
         begin
           obj :=  TYRelay.create(func);
-          TYFunction._AddToCache('Relay',  func, obj);
+          TYFunction._AddToCache('Relay', func, obj);
         end;
       result := obj;
       exit;
