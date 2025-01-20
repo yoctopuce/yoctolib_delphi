@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_colorled.pas 63506 2024-11-28 10:42:13Z seb $
+ *  $Id: yocto_colorled.pas 64080 2025-01-07 09:33:07Z seb $
  *
  *  Implements yFindColorLed(), the high-level API for ColorLed functions
  *
@@ -277,8 +277,9 @@ type
     /// <summary>
     ///   Changes the color that the LED displays by default when the module is turned on.
     /// <para>
-    ///   Remember to call the <c>saveToFlash()</c>
-    ///   method of the module if the modification must be kept.
+    ///   Remember to call the <c>saveLedsConfigAtPowerOn()</c> method of the module if the modification must be kept.
+    ///   Note: for the original modules Yocto-Color (version 1) et Yocto-PowerColor, the  <c>saveToFlash()</c>
+    ///   method must be used instead.
     /// </para>
     /// <para>
     /// </para>
@@ -513,6 +514,21 @@ type
     /// </returns>
     ///-
     function resetBlinkSeq():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Saves the LEDs power-on configuration.
+    /// <para>
+    ///   Warning: this method is not supported by
+    ///   Yocto-Color (version 1) and Yocto-PowerColor modules. For these devices, the <c>saveToFlash()</c>
+    ///   method of the module must be used instead.
+    /// </para>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    /// </summary>
+    ///-
+    function saveLedsConfigAtPowerOn():LongInt; overload; virtual;
 
 
     ////
@@ -1102,6 +1118,13 @@ implementation
   function TYColorLed.resetBlinkSeq():LongInt;
     begin
       result := self.sendCommand('Z');
+      exit;
+    end;
+
+
+  function TYColorLed.saveLedsConfigAtPowerOn():LongInt;
+    begin
+      result := self.sendCommand('W');
       exit;
     end;
 

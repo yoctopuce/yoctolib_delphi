@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_i2cport.pas 63506 2024-11-28 10:42:13Z seb $
+ *  $Id: yocto_i2cport.pas 64093 2025-01-08 10:53:52Z seb $
  *
  *  Implements yFindI2cPort(), the high-level API for I2cPort functions
  *
@@ -989,8 +989,7 @@ TYI2cSnoopingRecordARRAY = array of TYI2cSnoopingRecord;
 
     ////
     /// <summary>
-    ///   Sends a text-encoded I2C code stream to the I2C bus, and terminate
-    ///   the message en relâchant le bus.
+    ///   Sends a text-encoded I2C code stream to the I2C bus, and release the bus.
     /// <para>
     ///   An I2C code stream is a string made of hexadecimal data bytes,
     ///   but that may also include the I2C state transitions code:

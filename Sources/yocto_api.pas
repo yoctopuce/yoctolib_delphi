@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 63506 2024-11-28 10:42:13Z seb $
+ * $Id: yocto_api.pas 64030 2025-01-06 15:27:46Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -129,7 +129,7 @@ const
 
   YOCTO_API_VERSION_STR     = '1.10';
   YOCTO_API_VERSION_BCD     = $0110;
-  YOCTO_API_BUILD_NO        = '63797';
+  YOCTO_API_BUILD_NO        = '64286';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -10696,6 +10696,8 @@ var
       fun : string;
       attr : string;
       value : string;
+      old_serial : string;
+      new_serial : string;
       url : string;
       tmp : string;
       new_calib : string;
@@ -10730,6 +10732,7 @@ var
         begin
           settings := _StrToByte(tmp);
         end;
+      old_serial := '';
       oldval := '';
       newval := '';
       old_json_flat := self._flattenJsonStruct(settings);
@@ -10761,6 +10764,10 @@ var
           inc(len_pos);
           old_val_arr[arr_pos] := value;
           inc(arr_pos);
+          if (jpath = 'module/serialNumber') then
+            begin
+              old_serial := value;
+            end;
         end;
       SetLength(old_jpath, jpath_pos);;
       SetLength(old_jpath_len, len_pos);;
@@ -10773,6 +10780,11 @@ var
         ySleep(500, ignoreErrMsg);
         actualSettings := self._download('api.json');
       End;
+      new_serial := self.get_serialNumber;
+      if (old_serial = new_serial) or (old_serial = '') then
+        begin
+          old_serial := '_NO_SERIAL_FILTER_';
+        end;
       actualSettings := self._flattenJsonStruct(actualSettings);
       new_dslist := self._json_get_array(actualSettings);
       jpath_pos := length(new_jpath);
@@ -10986,16 +10998,16 @@ var
           if do_update then
             begin
               do_update := false;
-              newval := new_val_arr[i];
               j := 0;
               found := false;
+              newval := new_val_arr[i];
               while (j < length(old_jpath)) and not(found) do
                 begin
                   if (new_jpath_len[i] = old_jpath_len[j]) and((new_jpath[i] = old_jpath[j])) then
                     begin
                       found := true;
                       oldval := old_val_arr[j];
-                      if not((newval = oldval)) then
+                      if not((newval = oldval)) and not((oldval = old_serial)) then
                         begin
                           do_update := true;
                         end;

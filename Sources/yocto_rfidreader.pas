@@ -268,12 +268,12 @@ type
     HexKey                   : string;
     ////
     /// <summary>
-    ///   Force the use of single-block commands to access RFID tag memory blocks.
+    ///   Forces the use of single-block commands to access RFID tag memory blocks.
     /// <para>
     ///   By default, the Yoctopuce library uses the most efficient access strategy
     ///   generally available for each tag type, but you can force the use of
     ///   single-block commands if the RFID tags you are using do not support
-    ///   multi-block commands. If opération speed is not a priority, choose
+    ///   multi-block commands. If operation speed is not a priority, choose
     ///   single-block mode as it will work with any mode.
     /// </para>
     /// </summary>
@@ -281,7 +281,7 @@ type
     ForceSingleBlockAccess   : boolean;
     ////
     /// <summary>
-    ///   Force the use of multi-block commands to access RFID tag memory blocks.
+    ///   Forces the use of multi-block commands to access RFID tag memory blocks.
     /// <para>
     ///   By default, the Yoctopuce library uses the most efficient access strategy
     ///   generally available for each tag type, but you can force the use of
@@ -289,14 +289,14 @@ type
     ///   do support multi-block commands. Be  aware that even if a tag allows multi-block
     ///   operations, the maximum number of blocks that can be written or read at the same
     ///   time can be (very) limited. If the tag does not support multi-block mode
-    ///   for the wanted opération, the option will be ignored.
+    ///   for the wanted operation, the option will be ignored.
     /// </para>
     /// </summary>
     ///-
     ForceMultiBlockAccess    : boolean;
     ////
     /// <summary>
-    ///   Enable direct access to RFID tag control blocks.
+    ///   Enables direct access to RFID tag control blocks.
     /// <para>
     ///   By default, Yoctopuce library read and write functions only work
     ///   on data blocks and automatically skip special blocks, as specific functions are provided
@@ -324,7 +324,7 @@ type
     DisableBoundaryChecks    : boolean;
     ////
     /// <summary>
-    ///   Enable simulation mode to check the affected block range as well
+    ///   Enables simulation mode to check the affected block range as well
     ///   as access rights.
     /// <para>
     ///   When this option is active, the operation is
@@ -627,8 +627,8 @@ type
   ///   - At tag level, each block must be read and written in its entirety.
   /// </para>
   /// <para>
-  ///   - Some blocks are special configuration blocks, and may alter the tag's behaviour
-  ///   tag behavior if they are rewritten with arbitrary data.
+  ///   - Some blocks are special configuration blocks, and may alter the tag's behavior
+  ///   if they are rewritten with arbitrary data.
   /// </para>
   /// <para>
   ///   - Data blocks can be set to read-only mode, but on many tags, this operation is irreversible.
@@ -638,7 +638,7 @@ type
   /// <para>
   ///   By default, the RfidReader class automatically manages these blocks so that
   ///   arbitrary size data  can be manipulated of  without risk and without knowledge of
-  ///   tag architecture .
+  ///   tag architecture.
   /// </para>
   /// </summary>
   ///-
@@ -821,9 +821,9 @@ type
 
     ////
     /// <summary>
-    ///   Retourne la description des propriétés d'un tag RFID présent.
+    ///   Returns a description of the properties of an existing RFID tag.
     /// <para>
-    ///   Cette fonction peut causer des communications avec le tag.
+    ///   This function can cause communications with the tag.
     /// </para>
     /// <para>
     /// </para>
@@ -847,7 +847,7 @@ type
 
     ////
     /// <summary>
-    ///   Change an RFID tag configuration to prevents any further write to
+    ///   Changes an RFID tag configuration to prevents any further write to
     ///   the selected blocks.
     /// <para>
     ///   This operation is definitive and irreversible.
@@ -1272,7 +1272,7 @@ type
     /// <para>
     ///   The write operation may span accross multiple blocks if the
     ///   number of bytes to write is larger than the RFID tag block size.
-    ///   Note that only the characters présent  in  the provided string
+    ///   Note that only the characters present in the provided string
     ///   will be written, there is no notion of string length. If your
     ///   string data have variable length, you'll have to encode the
     ///   string length yourself, with a terminal zero for instannce.
@@ -1352,7 +1352,7 @@ type
 
     ////
     /// <summary>
-    ///   Change an RFID tag AFI byte (ISO 15693 only).
+    ///   Changes an RFID tag AFI byte (ISO 15693 only).
     /// <para>
     /// </para>
     /// </summary>
@@ -1440,7 +1440,7 @@ type
 
     ////
     /// <summary>
-    ///   Change an RFID tag DSFID byte (ISO 15693 only).
+    ///   Changes an RFID tag DSFID byte (ISO 15693 only).
     /// <para>
     /// </para>
     /// </summary>

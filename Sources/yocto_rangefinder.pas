@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_rangefinder.pas 63506 2024-11-28 10:42:13Z seb $
+ *  $Id: yocto_rangefinder.pas 64093 2025-01-08 10:53:52Z seb $
  *
  *  Implements yFindRangeFinder(), the high-level API for RangeFinder functions
  *
@@ -391,7 +391,7 @@ type
     ///   That
     ///   calibration process needs no physical interaction with the sensor. It is performed
     ///   automatically at device startup, but it is recommended to start it again when the
-    ///   temperature delta since the latest calibration exceeds 8°C.
+    ///   temperature delta since the latest calibration exceeds 8 degrees Celsius.
     /// </para>
     /// </summary>
     /// <returns>

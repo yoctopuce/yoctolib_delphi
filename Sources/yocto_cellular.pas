@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 63506 2024-11-28 10:42:13Z seb $
+ * $Id: yocto_cellular.pas 64093 2025-01-08 10:53:52Z seb $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -2179,7 +2179,7 @@ implementation
                                         end;
                                       if plmnid = 20814 then
                                         begin
-                                          result := 'SNCF Réseau';
+                                          result := 'SNCF Reseau';
                                           exit;
                                         end;
                                     end
@@ -2885,7 +2885,7 @@ implementation
                                         end;
                                       if plmnid = 24414 then
                                         begin
-                                          result := 'Ålcom';
+                                          result := 'Alcom';
                                           exit;
                                         end;
                                     end
@@ -3129,7 +3129,7 @@ implementation
                                         end;
                                       if plmnid = 25905 then
                                         begin
-                                          result := 'Unité';
+                                          result := 'Unite';
                                           exit;
                                         end;
                                     end
@@ -3314,7 +3314,7 @@ implementation
                                         begin
                                           if plmnid = 27401 then
                                             begin
-                                              result := 'Síminn';
+                                              result := 'Siminn';
                                               exit;
                                             end;
                                           if plmnid = 27402 then
@@ -3509,12 +3509,12 @@ implementation
                                         end;
                                       if plmnid = 28603 then
                                         begin
-                                          result := 'Türk Telekom';
+                                          result := 'Turk Telekom';
                                           exit;
                                         end;
                                       if plmnid = 28801 then
                                         begin
-                                          result := 'Føroya Tele';
+                                          result := 'Foroya Tele';
                                           exit;
                                         end;
                                       if plmnid = 28802 then
@@ -3658,12 +3658,12 @@ implementation
                                         end;
                                       if plmnid = 34002 then
                                         begin
-                                          result := 'SFR Caraïbe BL/GF/GP/MF/MQ';
+                                          result := 'SFR Caraibe BL/GF/GP/MF/MQ';
                                           exit;
                                         end;
                                       if plmnid = 34002 then
                                         begin
-                                          result := 'SFR Caraïbe GF';
+                                          result := 'SFR Caraibe GF';
                                           exit;
                                         end;
                                       if plmnid = 34003 then
@@ -6549,7 +6549,7 @@ implementation
                                         end;
                                       if plmnid = 61207 then
                                         begin
-                                          result := 'café';
+                                          result := 'cafe';
                                           exit;
                                         end;
                                     end
@@ -7415,7 +7415,7 @@ implementation
                                             end;
                                           if plmnid = 64701 then
                                             begin
-                                              result := 'Maoré Mobile';
+                                              result := 'Maore Mobile';
                                               exit;
                                             end;
                                           if plmnid = 64702 then
@@ -7440,7 +7440,7 @@ implementation
                                         end;
                                       if plmnid = 64710 then
                                         begin
-                                          result := 'SFR Réunion';
+                                          result := 'SFR Reunion';
                                           exit;
                                         end;
                                       if plmnid = 64801 then
@@ -7711,12 +7711,12 @@ implementation
                                         begin
                                           if plmnid = 71201 then
                                             begin
-                                              result := 'Kölbi ICE';
+                                              result := 'Kolbi ICE';
                                               exit;
                                             end;
                                           if plmnid = 71202 then
                                             begin
-                                              result := 'Kölbi ICE';
+                                              result := 'Kolbi ICE';
                                               exit;
                                             end;
                                           if plmnid = 71203 then
