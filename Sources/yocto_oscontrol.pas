@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_oscontrol.pas 63506 2024-11-28 10:42:13Z seb $
+ *  $Id: svn_id $
  *
  *  Implements yFindOsControl(), the high-level API for OsControl functions
  *

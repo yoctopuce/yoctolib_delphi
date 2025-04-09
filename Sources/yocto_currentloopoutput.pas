@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_currentloopoutput.pas 63506 2024-11-28 10:42:13Z seb $
+ *  $Id: svn_id $
  *
  *  Implements yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
  *

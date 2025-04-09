@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_steppermotor.pas 63506 2024-11-28 10:42:13Z seb $
+ *  $Id: svn_id $
  *
  *  Implements yFindStepperMotor(), the high-level API for StepperMotor functions
  *

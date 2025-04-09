@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_relay.pas 63506 2024-11-28 10:42:13Z seb $
+ *  $Id: svn_id $
  *
  *  Implements yFindRelay(), the high-level API for Relay functions
  *

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_wakeupmonitor.pas 63506 2024-11-28 10:42:13Z seb $
+ *  $Id: svn_id $
  *
  *  Implements yFindWakeUpMonitor(), the high-level API for WakeUpMonitor functions
  *
@@ -61,6 +61,7 @@ const Y_WAKEUPREASON_ENDOFSLEEP = 2;
 const Y_WAKEUPREASON_EXTSIG1 = 3;
 const Y_WAKEUPREASON_SCHEDULE1 = 4;
 const Y_WAKEUPREASON_SCHEDULE2 = 5;
+const Y_WAKEUPREASON_SCHEDULE3 = 6;
 const Y_WAKEUPREASON_INVALID = -1;
 const Y_WAKEUPSTATE_SLEEPING = 0;
 const Y_WAKEUPSTATE_AWAKE = 1;
@@ -240,8 +241,8 @@ type
     /// <returns>
     ///   a value among <c>YWakeUpMonitor.WAKEUPREASON_USBPOWER</c>, <c>YWakeUpMonitor.WAKEUPREASON_EXTPOWER</c>,
     ///   <c>YWakeUpMonitor.WAKEUPREASON_ENDOFSLEEP</c>, <c>YWakeUpMonitor.WAKEUPREASON_EXTSIG1</c>,
-    ///   <c>YWakeUpMonitor.WAKEUPREASON_SCHEDULE1</c> and <c>YWakeUpMonitor.WAKEUPREASON_SCHEDULE2</c>
-    ///   corresponding to the latest wake up reason
+    ///   <c>YWakeUpMonitor.WAKEUPREASON_SCHEDULE1</c>, <c>YWakeUpMonitor.WAKEUPREASON_SCHEDULE2</c> and
+    ///   <c>YWakeUpMonitor.WAKEUPREASON_SCHEDULE3</c> corresponding to the latest wake up reason
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>YWakeUpMonitor.WAKEUPREASON_INVALID</c>.

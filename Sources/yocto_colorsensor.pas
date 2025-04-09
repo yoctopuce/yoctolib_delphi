@@ -2,7 +2,7 @@
  *
  *  $Id: svn_id $
  *
- *  Implements yFindSpectralSensor(), the high-level API for SpectralSensor functions
+ *  Implements yFindColorSensor(), the high-level API for ColorSensor functions
  *
  *  - - - - - - - - - License information: - - - - - - - - -
  *
@@ -38,7 +38,7 @@
  *********************************************************************}
 
 
-unit yocto_spectralsensor;
+unit yocto_colorsensor;
 {$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
@@ -50,16 +50,19 @@ uses
 {$ENDIF}
   yocto_api, yjson;
 
-//--- (YSpectralSensor definitions)
+//--- (YColorSensor definitions)
 
-const Y_LEDCURRENT_INVALID            = YAPI_INVALID_INT;
-const Y_RESOLUTION_INVALID            = YAPI_INVALID_DOUBLE;
-const Y_INTEGRATIONTIME_INVALID       = YAPI_INVALID_INT;
-const Y_GAIN_INVALID                  = YAPI_INVALID_INT;
 const Y_ESTIMATIONMODEL_REFLECTION = 0;
 const Y_ESTIMATIONMODEL_EMISSION = 1;
 const Y_ESTIMATIONMODEL_INVALID = -1;
+const Y_WORKINGMODE_AUTO = 0;
+const Y_WORKINGMODE_EXPERT = 1;
+const Y_WORKINGMODE_INVALID = -1;
 const Y_SATURATION_INVALID            = YAPI_INVALID_UINT;
+const Y_LEDCURRENT_INVALID            = YAPI_INVALID_UINT;
+const Y_LEDCALIBRATION_INVALID        = YAPI_INVALID_UINT;
+const Y_INTEGRATIONTIME_INVALID       = YAPI_INVALID_UINT;
+const Y_GAIN_INVALID                  = YAPI_INVALID_UINT;
 const Y_ESTIMATEDRGB_INVALID          = YAPI_INVALID_UINT;
 const Y_ESTIMATEDHSL_INVALID          = YAPI_INVALID_UINT;
 const Y_ESTIMATEDXYZ_INVALID          = YAPI_INVALID_STRING;
@@ -69,43 +72,53 @@ const Y_NEARRAL2_INVALID              = YAPI_INVALID_STRING;
 const Y_NEARRAL3_INVALID              = YAPI_INVALID_STRING;
 const Y_NEARHTMLCOLOR_INVALID         = YAPI_INVALID_STRING;
 const Y_NEARSIMPLECOLOR_INVALID       = YAPI_INVALID_STRING;
-const Y_LEDCURRENTATPOWERON_INVALID   = YAPI_INVALID_INT;
-const Y_INTEGRATIONTIMEATPOWERON_INVALID = YAPI_INVALID_INT;
-const Y_GAINATPOWERON_INVALID         = YAPI_INVALID_INT;
+const Y_NEARSIMPLECOLORINDEX_BROWN = 0;
+const Y_NEARSIMPLECOLORINDEX_RED = 1;
+const Y_NEARSIMPLECOLORINDEX_ORANGE = 2;
+const Y_NEARSIMPLECOLORINDEX_YELLOW = 3;
+const Y_NEARSIMPLECOLORINDEX_WHITE = 4;
+const Y_NEARSIMPLECOLORINDEX_GRAY = 5;
+const Y_NEARSIMPLECOLORINDEX_BLACK = 6;
+const Y_NEARSIMPLECOLORINDEX_GREEN = 7;
+const Y_NEARSIMPLECOLORINDEX_BLUE = 8;
+const Y_NEARSIMPLECOLORINDEX_PURPLE = 9;
+const Y_NEARSIMPLECOLORINDEX_PINK = 10;
+const Y_NEARSIMPLECOLORINDEX_INVALID = -1;
 
-//--- (end of YSpectralSensor definitions)
+//--- (end of YColorSensor definitions)
 
-//--- (YSpectralSensor yapiwrapper declaration)
-//--- (end of YSpectralSensor yapiwrapper declaration)
+//--- (YColorSensor yapiwrapper declaration)
+//--- (end of YColorSensor yapiwrapper declaration)
 
 type
 
-  TYSpectralSensor = class;
-  //--- (YSpectralSensor class start)
-  TYSpectralSensorValueCallback = procedure(func: TYSpectralSensor; value:string);
-  TYSpectralSensorTimedReportCallback = procedure(func: TYSpectralSensor; value:TYMeasure);
+  TYColorSensor = class;
+  //--- (YColorSensor class start)
+  TYColorSensorValueCallback = procedure(func: TYColorSensor; value:string);
+  TYColorSensorTimedReportCallback = procedure(func: TYColorSensor; value:TYMeasure);
 
   ////
   /// <summary>
-  ///   TYSpectralSensor Class: spectral sensor control interface
+  ///   TYColorSensor Class: color sensor control interface
   /// <para>
-  ///   The <c>YSpectralSensor</c> class allows you to read and configure Yoctopuce spectral sensors.
+  ///   The <c>YColorSensor</c> class allows you to read and configure Yoctopuce color sensors.
   ///   It inherits from <c>YSensor</c> class the core functions to read measurements,
   ///   to register callback functions, and to access the autonomous datalogger.
   /// </para>
   /// </summary>
   ///-
-  TYSpectralSensor=class(TYFunction)
-  //--- (end of YSpectralSensor class start)
+  TYColorSensor=class(TYFunction)
+  //--- (end of YColorSensor class start)
   protected
-  //--- (YSpectralSensor declaration)
+  //--- (YColorSensor declaration)
     // Attributes (function value cache)
+    _estimationModel          : Integer;
+    _workingMode              : Integer;
+    _saturation               : LongInt;
     _ledCurrent               : LongInt;
-    _resolution               : double;
+    _ledCalibration           : LongInt;
     _integrationTime          : LongInt;
     _gain                     : LongInt;
-    _estimationModel          : Integer;
-    _saturation               : LongInt;
     _estimatedRGB             : LongInt;
     _estimatedHSL             : LongInt;
     _estimatedXYZ             : string;
@@ -115,24 +128,122 @@ type
     _nearRAL3                 : string;
     _nearHTMLColor            : string;
     _nearSimpleColor          : string;
-    _ledCurrentAtPowerOn      : LongInt;
-    _integrationTimeAtPowerOn : LongInt;
-    _gainAtPowerOn            : LongInt;
-    _valueCallbackSpectralSensor : TYSpectralSensorValueCallback;
+    _nearSimpleColorIndex     : Integer;
+    _valueCallbackColorSensor : TYColorSensorValueCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-    //--- (end of YSpectralSensor declaration)
+    //--- (end of YColorSensor declaration)
 
   public
-    //--- (YSpectralSensor accessors declaration)
+    //--- (YColorSensor accessors declaration)
     constructor Create(func:string);
+
+    ////
+    /// <summary>
+    ///   Returns the model for color estimation.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   either <c>YColorSensor.ESTIMATIONMODEL_REFLECTION</c> or <c>YColorSensor.ESTIMATIONMODEL_EMISSION</c>,
+    ///   according to the model for color estimation
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YColorSensor.ESTIMATIONMODEL_INVALID</c>.
+    /// </para>
+    ///-
+    function get_estimationModel():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the model for color estimation.
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   either <c>YColorSensor.ESTIMATIONMODEL_REFLECTION</c> or <c>YColorSensor.ESTIMATIONMODEL_EMISSION</c>,
+    ///   according to the model for color estimation
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_estimationModel(newval:Integer):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the active working mode.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   either <c>YColorSensor.WORKINGMODE_AUTO</c> or <c>YColorSensor.WORKINGMODE_EXPERT</c>, according to
+    ///   the active working mode
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YColorSensor.WORKINGMODE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_workingMode():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the operating mode.
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   either <c>YColorSensor.WORKINGMODE_AUTO</c> or <c>YColorSensor.WORKINGMODE_EXPERT</c>, according to
+    ///   the operating mode
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_workingMode(newval:Integer):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the current saturation of the sensor.
+    /// <para>
+    ///   This function updates the sensor's saturation value.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the current saturation of the sensor
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YColorSensor.SATURATION_INVALID</c>.
+    /// </para>
+    ///-
+    function get_saturation():LongInt;
 
     ////
     /// <summary>
     ///   Returns the current value of the LED.
     /// <para>
-    ///   This method retrieves the current flowing through the LED
-    ///   and returns it as an integer or an object.
     /// </para>
     /// <para>
     /// </para>
@@ -141,7 +252,7 @@ type
     ///   an integer corresponding to the current value of the LED
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>YSpectralSensor.LEDCURRENT_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YColorSensor.LEDCURRENT_INVALID</c>.
     /// </para>
     ///-
     function get_ledCurrent():LongInt;
@@ -172,17 +283,32 @@ type
 
     ////
     /// <summary>
-    ///   Changes the resolution of the measured physical values.
+    ///   Returns the LED current at calibration.
     /// <para>
-    ///   The resolution corresponds to the numerical precision
-    ///   when displaying value. It does not change the precision of the measure itself.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the LED current at calibration
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YColorSensor.LEDCALIBRATION_INVALID</c>.
+    /// </para>
+    ///-
+    function get_ledCalibration():LongInt;
+
+    ////
+    /// <summary>
+    ///   Sets the LED current for calibration.
+    /// <para>
     ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a floating point number corresponding to the resolution of the measured physical values
+    ///   an integer
     /// </param>
     /// <para>
     /// </para>
@@ -193,9 +319,7 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function set_resolution(newval:double):integer;
-
-    function get_resolution():double;
+    function set_ledCalibration(newval:LongInt):integer;
 
     ////
     /// <summary>
@@ -211,24 +335,25 @@ type
     ///   an integer corresponding to the current integration time
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>YSpectralSensor.INTEGRATIONTIME_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YColorSensor.INTEGRATIONTIME_INVALID</c>.
     /// </para>
     ///-
     function get_integrationTime():LongInt;
 
     ////
     /// <summary>
-    ///   Sets the integration time for data processing.
+    ///   Changes the integration time for data processing.
     /// <para>
-    ///   This method takes a parameter `val` and assigns it
+    ///   This method takes a parameter and assigns it
     ///   as the new integration time. This affects the duration
     ///   for which data is integrated before being processed.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer
+    ///   an integer corresponding to the integration time for data processing
     /// </param>
     /// <para>
     /// </para>
@@ -243,7 +368,7 @@ type
 
     ////
     /// <summary>
-    ///   Retrieves the current gain.
+    ///   Returns the current gain.
     /// <para>
     ///   This method updates the gain value.
     /// </para>
@@ -251,27 +376,28 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer
+    ///   an integer corresponding to the current gain
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>YSpectralSensor.GAIN_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YColorSensor.GAIN_INVALID</c>.
     /// </para>
     ///-
     function get_gain():LongInt;
 
     ////
     /// <summary>
-    ///   Sets the gain for signal processing.
+    ///   Changes the gain for signal processing.
     /// <para>
-    ///   This method takes a parameter `val` and assigns it
+    ///   This method takes a parameter and assigns it
     ///   as the new gain. This affects the sensitivity and
     ///   intensity of the processed signal.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer
+    ///   an integer corresponding to the gain for signal processing
     /// </param>
     /// <para>
     /// </para>
@@ -286,70 +412,8 @@ type
 
     ////
     /// <summary>
-    ///   Returns the model for color estimation.
-    /// <para>
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   either <c>YSpectralSensor.ESTIMATIONMODEL_REFLECTION</c> or <c>YSpectralSensor.ESTIMATIONMODEL_EMISSION</c>,
-    ///   according to the model for color estimation
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>YSpectralSensor.ESTIMATIONMODEL_INVALID</c>.
-    /// </para>
-    ///-
-    function get_estimationModel():Integer;
-
-    ////
-    /// <summary>
-    ///   Changes the model for color estimation.
-    /// <para>
-    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="newval">
-    ///   either <c>YSpectralSensor.ESTIMATIONMODEL_REFLECTION</c> or <c>YSpectralSensor.ESTIMATIONMODEL_EMISSION</c>,
-    ///   according to the model for color estimation
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_estimationModel(newval:Integer):integer;
-
-    ////
-    /// <summary>
-    ///   Returns the current saturation of the sensor.
-    /// <para>
-    ///   This function updates the sensor's saturation value.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <returns>
-    ///   an integer corresponding to the current saturation of the sensor
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns <c>YSpectralSensor.SATURATION_INVALID</c>.
-    /// </para>
-    ///-
-    function get_saturation():LongInt;
-
-    ////
-    /// <summary>
     ///   Returns the estimated color in RGB format (0xRRGGBB).
     /// <para>
-    ///   This method retrieves the estimated color values
-    ///   and returns them as an RGB object or structure.
     /// </para>
     /// <para>
     /// </para>
@@ -358,7 +422,7 @@ type
     ///   an integer corresponding to the estimated color in RGB format (0xRRGGBB)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>YSpectralSensor.ESTIMATEDRGB_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YColorSensor.ESTIMATEDRGB_INVALID</c>.
     /// </para>
     ///-
     function get_estimatedRGB():LongInt;
@@ -367,8 +431,6 @@ type
     /// <summary>
     ///   Returns the estimated color in HSL (Hue, Saturation, Lightness) format.
     /// <para>
-    ///   This method retrieves the estimated color values
-    ///   and returns them as an HSL object or structure.
     /// </para>
     /// <para>
     /// </para>
@@ -377,7 +439,7 @@ type
     ///   an integer corresponding to the estimated color in HSL (Hue, Saturation, Lightness) format
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>YSpectralSensor.ESTIMATEDHSL_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YColorSensor.ESTIMATEDHSL_INVALID</c>.
     /// </para>
     ///-
     function get_estimatedHSL():LongInt;
@@ -386,8 +448,6 @@ type
     /// <summary>
     ///   Returns the estimated color in XYZ format.
     /// <para>
-    ///   This method retrieves the estimated color values
-    ///   and returns them as an XYZ object or structure.
     /// </para>
     /// <para>
     /// </para>
@@ -396,7 +456,7 @@ type
     ///   a string corresponding to the estimated color in XYZ format
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>YSpectralSensor.ESTIMATEDXYZ_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YColorSensor.ESTIMATEDXYZ_INVALID</c>.
     /// </para>
     ///-
     function get_estimatedXYZ():string;
@@ -405,8 +465,6 @@ type
     /// <summary>
     ///   Returns the estimated color in OkLab format.
     /// <para>
-    ///   This method retrieves the estimated color values
-    ///   and returns them as an OkLab object or structure.
     /// </para>
     /// <para>
     /// </para>
@@ -415,25 +473,83 @@ type
     ///   a string corresponding to the estimated color in OkLab format
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>YSpectralSensor.ESTIMATEDOKLAB_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YColorSensor.ESTIMATEDOKLAB_INVALID</c>.
     /// </para>
     ///-
     function get_estimatedOkLab():string;
 
+    ////
+    /// <summary>
+    ///   Returns the estimated color in RAL format.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the estimated color in RAL format
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YColorSensor.NEARRAL1_INVALID</c>.
+    /// </para>
+    ///-
     function get_nearRAL1():string;
 
+    ////
+    /// <summary>
+    ///   Returns the estimated color in RAL format.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the estimated color in RAL format
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YColorSensor.NEARRAL2_INVALID</c>.
+    /// </para>
+    ///-
     function get_nearRAL2():string;
 
+    ////
+    /// <summary>
+    ///   Returns the estimated color in RAL format.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the estimated color in RAL format
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YColorSensor.NEARRAL3_INVALID</c>.
+    /// </para>
+    ///-
     function get_nearRAL3():string;
 
+    ////
+    /// <summary>
+    ///   Returns the estimated HTML color .
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the estimated HTML color
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YColorSensor.NEARHTMLCOLOR_INVALID</c>.
+    /// </para>
+    ///-
     function get_nearHTMLColor():string;
 
     ////
     /// <summary>
-    ///   Returns the estimated color.
+    ///   Returns the estimated color .
     /// <para>
-    ///   This method retrieves the estimated color values
-    ///   and returns them as the color name.
     /// </para>
     /// <para>
     /// </para>
@@ -442,107 +558,33 @@ type
     ///   a string corresponding to the estimated color
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>YSpectralSensor.NEARSIMPLECOLOR_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YColorSensor.NEARSIMPLECOLOR_INVALID</c>.
     /// </para>
     ///-
     function get_nearSimpleColor():string;
 
-    function get_ledCurrentAtPowerOn():LongInt;
-
     ////
     /// <summary>
-    ///   Sets the LED current at power-on.
+    ///   Returns the estimated color as an index.
     /// <para>
-    ///   This method takes a parameter `val` and assigns it to startupLumin, representing the LED current defined
-    ///   at startup.
-    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="newval">
-    ///   an integer
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_ledCurrentAtPowerOn(newval:LongInt):integer;
-
-    ////
-    /// <summary>
-    ///   Retrieves the integration time at power-on.
-    /// <para>
-    ///   This method updates the power-on integration time value.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer
+    ///   a value among <c>YColorSensor.NEARSIMPLECOLORINDEX_BROWN</c>,
+    ///   <c>YColorSensor.NEARSIMPLECOLORINDEX_RED</c>, <c>YColorSensor.NEARSIMPLECOLORINDEX_ORANGE</c>,
+    ///   <c>YColorSensor.NEARSIMPLECOLORINDEX_YELLOW</c>, <c>YColorSensor.NEARSIMPLECOLORINDEX_WHITE</c>,
+    ///   <c>YColorSensor.NEARSIMPLECOLORINDEX_GRAY</c>, <c>YColorSensor.NEARSIMPLECOLORINDEX_BLACK</c>,
+    ///   <c>YColorSensor.NEARSIMPLECOLORINDEX_GREEN</c>, <c>YColorSensor.NEARSIMPLECOLORINDEX_BLUE</c>,
+    ///   <c>YColorSensor.NEARSIMPLECOLORINDEX_PURPLE</c> and <c>YColorSensor.NEARSIMPLECOLORINDEX_PINK</c>
+    ///   corresponding to the estimated color as an index
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>YSpectralSensor.INTEGRATIONTIMEATPOWERON_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YColorSensor.NEARSIMPLECOLORINDEX_INVALID</c>.
     /// </para>
     ///-
-    function get_integrationTimeAtPowerOn():LongInt;
-
-    ////
-    /// <summary>
-    ///   Sets the integration time at power-on.
-    /// <para>
-    ///   This method takes a parameter `val` and assigns it to integrationTimeAtPowerOn, representing the
-    ///   integration time
-    ///   defined at startup.
-    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="newval">
-    ///   an integer
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_integrationTimeAtPowerOn(newval:LongInt):integer;
-
-    function get_gainAtPowerOn():LongInt;
-
-    ////
-    /// <summary>
-    ///   Sets the gain at power-on.
-    /// <para>
-    ///   This method takes a parameter `val` and assigns it to startupGain, representing the gain defined at startup.
-    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
-    /// </para>
-    /// <para>
-    /// </para>
-    /// </summary>
-    /// <param name="newval">
-    ///   an integer
-    /// </param>
-    /// <para>
-    /// </para>
-    /// <returns>
-    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function set_gainAtPowerOn(newval:LongInt):integer;
+    function get_nearSimpleColorIndex():Integer;
 
     ////
     /// <summary>
@@ -572,7 +614,7 @@ type
     /// <para>
     ///   This function does not require that $THEFUNCTION$ is online at the time
     ///   it is invoked. The returned object is nevertheless valid.
-    ///   Use the method <c>YSpectralSensor.isOnline()</c> to test if $THEFUNCTION$ is
+    ///   Use the method <c>YColorSensor.isOnline()</c> to test if $THEFUNCTION$ is
     ///   indeed online at a given time. In case of ambiguity when looking for
     ///   $AFUNCTION$ by logical name, no error is notified: the first instance
     ///   found is returned. The search is performed first by hardware name,
@@ -591,10 +633,10 @@ type
     ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
-    ///   a <c>YSpectralSensor</c> object allowing you to drive $THEFUNCTION$.
+    ///   a <c>YColorSensor</c> object allowing you to drive $THEFUNCTION$.
     /// </returns>
     ///-
-    class function FindSpectralSensor(func: string):TYSpectralSensor;
+    class function FindColorSensor(func: string):TYColorSensor;
 
     ////
     /// <summary>
@@ -614,27 +656,47 @@ type
     /// @noreturn
     /// </param>
     ///-
-    function registerValueCallback(callback: TYSpectralSensorValueCallback):LongInt; overload;
+    function registerValueCallback(callback: TYColorSensorValueCallback):LongInt; overload;
 
     function _invokeValueCallback(value: string):LongInt; override;
+
+    ////
+    /// <summary>
+    ///   Turns on the LEDs at the current used during calibration.
+    /// <para>
+    ///   On failure, throws an exception or returns Y_DATA_INVALID.
+    /// </para>
+    /// </summary>
+    ///-
+    function turnLedOn():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Turns off the LEDs.
+    /// <para>
+    ///   On failure, throws an exception or returns Y_DATA_INVALID.
+    /// </para>
+    /// </summary>
+    ///-
+    function turnLedOff():LongInt; overload; virtual;
 
 
     ////
     /// <summary>
-    ///   Continues the enumeration of spectral sensors started using <c>yFirstSpectralSensor()</c>.
+    ///   Continues the enumeration of color sensors started using <c>yFirstColorSensor()</c>.
     /// <para>
-    ///   Caution: You can't make any assumption about the returned spectral sensors order.
-    ///   If you want to find a specific a spectral sensor, use <c>SpectralSensor.findSpectralSensor()</c>
+    ///   Caution: You can't make any assumption about the returned color sensors order.
+    ///   If you want to find a specific a color sensor, use <c>ColorSensor.findColorSensor()</c>
     ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a pointer to a <c>YSpectralSensor</c> object, corresponding to
-    ///   a spectral sensor currently online, or a <c>NIL</c> pointer
-    ///   if there are no more spectral sensors to enumerate.
+    ///   a pointer to a <c>YColorSensor</c> object, corresponding to
+    ///   a color sensor currently online, or a <c>NIL</c> pointer
+    ///   if there are no more color sensors to enumerate.
     /// </returns>
     ///-
-    function nextSpectralSensor():TYSpectralSensor;
+    function nextColorSensor():TYColorSensor;
     ////
     /// <summary>
     ///   c
@@ -643,14 +705,14 @@ type
     /// </para>
     /// </summary>
     ///-
-    class function FirstSpectralSensor():TYSpectralSensor;
-  //--- (end of YSpectralSensor accessors declaration)
+    class function FirstColorSensor():TYColorSensor;
+  //--- (end of YColorSensor accessors declaration)
   end;
 
-//--- (YSpectralSensor functions declaration)
+//--- (YColorSensor functions declaration)
   ////
   /// <summary>
-  ///   Retrieves a spectral sensor for a given identifier.
+  ///   Retrieves a color sensor for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
   /// </para>
@@ -674,11 +736,11 @@ type
   /// <para>
   /// </para>
   /// <para>
-  ///   This function does not require that the spectral sensor is online at the time
+  ///   This function does not require that the color sensor is online at the time
   ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YSpectralSensor.isOnline()</c> to test if the spectral sensor is
+  ///   Use the method <c>YColorSensor.isOnline()</c> to test if the color sensor is
   ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   a spectral sensor by logical name, no error is notified: the first instance
+  ///   a color sensor by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
   /// </para>
@@ -691,48 +753,49 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the spectral sensor, for instance
-  ///   <c>MyDevice.spectralSensor</c>.
+  ///   a string that uniquely characterizes the color sensor, for instance
+  ///   <c>MyDevice.colorSensor</c>.
   /// </param>
   /// <returns>
-  ///   a <c>YSpectralSensor</c> object allowing you to drive the spectral sensor.
+  ///   a <c>YColorSensor</c> object allowing you to drive the color sensor.
   /// </returns>
   ///-
-  function yFindSpectralSensor(func:string):TYSpectralSensor;
+  function yFindColorSensor(func:string):TYColorSensor;
   ////
   /// <summary>
-  ///   Starts the enumeration of spectral sensors currently accessible.
+  ///   Starts the enumeration of color sensors currently accessible.
   /// <para>
-  ///   Use the method <c>YSpectralSensor.nextSpectralSensor()</c> to iterate on
-  ///   next spectral sensors.
+  ///   Use the method <c>YColorSensor.nextColorSensor()</c> to iterate on
+  ///   next color sensors.
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a pointer to a <c>YSpectralSensor</c> object, corresponding to
-  ///   the first spectral sensor currently online, or a <c>NIL</c> pointer
+  ///   a pointer to a <c>YColorSensor</c> object, corresponding to
+  ///   the first color sensor currently online, or a <c>NIL</c> pointer
   ///   if there are none.
   /// </returns>
   ///-
-  function yFirstSpectralSensor():TYSpectralSensor;
+  function yFirstColorSensor():TYColorSensor;
 
-//--- (end of YSpectralSensor functions declaration)
+//--- (end of YColorSensor functions declaration)
 
 implementation
 
-//--- (YSpectralSensor dlldef)
-//--- (end of YSpectralSensor dlldef)
+//--- (YColorSensor dlldef)
+//--- (end of YColorSensor dlldef)
 
-  constructor TYSpectralSensor.Create(func:string);
+  constructor TYColorSensor.Create(func:string);
     begin
       inherited Create(func);
-      _className := 'SpectralSensor';
-      //--- (YSpectralSensor accessors initialization)
+      _className := 'ColorSensor';
+      //--- (YColorSensor accessors initialization)
+      _estimationModel := Y_ESTIMATIONMODEL_INVALID;
+      _workingMode := Y_WORKINGMODE_INVALID;
+      _saturation := Y_SATURATION_INVALID;
       _ledCurrent := Y_LEDCURRENT_INVALID;
-      _resolution := Y_RESOLUTION_INVALID;
+      _ledCalibration := Y_LEDCALIBRATION_INVALID;
       _integrationTime := Y_INTEGRATIONTIME_INVALID;
       _gain := Y_GAIN_INVALID;
-      _estimationModel := Y_ESTIMATIONMODEL_INVALID;
-      _saturation := Y_SATURATION_INVALID;
       _estimatedRGB := Y_ESTIMATEDRGB_INVALID;
       _estimatedHSL := Y_ESTIMATEDHSL_INVALID;
       _estimatedXYZ := Y_ESTIMATEDXYZ_INVALID;
@@ -742,32 +805,48 @@ implementation
       _nearRAL3 := Y_NEARRAL3_INVALID;
       _nearHTMLColor := Y_NEARHTMLCOLOR_INVALID;
       _nearSimpleColor := Y_NEARSIMPLECOLOR_INVALID;
-      _ledCurrentAtPowerOn := Y_LEDCURRENTATPOWERON_INVALID;
-      _integrationTimeAtPowerOn := Y_INTEGRATIONTIMEATPOWERON_INVALID;
-      _gainAtPowerOn := Y_GAINATPOWERON_INVALID;
-      _valueCallbackSpectralSensor := nil;
-      //--- (end of YSpectralSensor accessors initialization)
+      _nearSimpleColorIndex := Y_NEARSIMPLECOLORINDEX_INVALID;
+      _valueCallbackColorSensor := nil;
+      //--- (end of YColorSensor accessors initialization)
     end;
 
-//--- (YSpectralSensor yapiwrapper)
-//--- (end of YSpectralSensor yapiwrapper)
+//--- (YColorSensor yapiwrapper)
+//--- (end of YColorSensor yapiwrapper)
 
-//--- (YSpectralSensor implementation)
+//--- (YColorSensor implementation)
 {$HINTS OFF}
-  function TYSpectralSensor._parseAttr(member:PJSONRECORD):integer;
+  function TYColorSensor._parseAttr(member:PJSONRECORD):integer;
     var
       sub : PJSONRECORD;
       i,l        : integer;
     begin
+      if (member^.name = 'estimationModel') then
+        begin
+          _estimationModel := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'workingMode') then
+        begin
+          _workingMode := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'saturation') then
+        begin
+          _saturation := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
       if (member^.name = 'ledCurrent') then
         begin
           _ledCurrent := integer(member^.ivalue);
          result := 1;
          exit;
          end;
-      if (member^.name = 'resolution') then
+      if (member^.name = 'ledCalibration') then
         begin
-          _resolution := round(member^.ivalue / 65.536) / 1000.0;
+          _ledCalibration := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -780,18 +859,6 @@ implementation
       if (member^.name = 'gain') then
         begin
           _gain := integer(member^.ivalue);
-         result := 1;
-         exit;
-         end;
-      if (member^.name = 'estimationModel') then
-        begin
-          _estimationModel := integer(member^.ivalue);
-         result := 1;
-         exit;
-         end;
-      if (member^.name = 'saturation') then
-        begin
-          _saturation := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -849,21 +916,9 @@ implementation
          result := 1;
          exit;
          end;
-      if (member^.name = 'ledCurrentAtPowerOn') then
+      if (member^.name = 'nearSimpleColorIndex') then
         begin
-          _ledCurrentAtPowerOn := integer(member^.ivalue);
-         result := 1;
-         exit;
-         end;
-      if (member^.name = 'integrationTimeAtPowerOn') then
-        begin
-          _integrationTimeAtPowerOn := integer(member^.ivalue);
-         result := 1;
-         exit;
-         end;
-      if (member^.name = 'gainAtPowerOn') then
-        begin
-          _gainAtPowerOn := integer(member^.ivalue);
+          _nearSimpleColorIndex := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -871,111 +926,7 @@ implementation
     end;
 {$HINTS ON}
 
-  function TYSpectralSensor.get_ledCurrent():LongInt;
-    var
-      res : LongInt;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
-            begin
-              result := Y_LEDCURRENT_INVALID;
-              exit;
-            end;
-        end;
-      res := self._ledCurrent;
-      result := res;
-      exit;
-    end;
-
-
-  function TYSpectralSensor.set_ledCurrent(newval:LongInt):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := inttostr(newval);
-      result := _setAttr('ledCurrent',rest_val);
-    end;
-
-  function TYSpectralSensor.set_resolution(newval:double):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := inttostr(round(newval * 65536.0));
-      result := _setAttr('resolution',rest_val);
-    end;
-
-  function TYSpectralSensor.get_resolution():double;
-    var
-      res : double;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
-            begin
-              result := Y_RESOLUTION_INVALID;
-              exit;
-            end;
-        end;
-      res := self._resolution;
-      result := res;
-      exit;
-    end;
-
-
-  function TYSpectralSensor.get_integrationTime():LongInt;
-    var
-      res : LongInt;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
-            begin
-              result := Y_INTEGRATIONTIME_INVALID;
-              exit;
-            end;
-        end;
-      res := self._integrationTime;
-      result := res;
-      exit;
-    end;
-
-
-  function TYSpectralSensor.set_integrationTime(newval:LongInt):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := inttostr(newval);
-      result := _setAttr('integrationTime',rest_val);
-    end;
-
-  function TYSpectralSensor.get_gain():LongInt;
-    var
-      res : LongInt;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
-            begin
-              result := Y_GAIN_INVALID;
-              exit;
-            end;
-        end;
-      res := self._gain;
-      result := res;
-      exit;
-    end;
-
-
-  function TYSpectralSensor.set_gain(newval:LongInt):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := inttostr(newval);
-      result := _setAttr('gain',rest_val);
-    end;
-
-  function TYSpectralSensor.get_estimationModel():Integer;
+  function TYColorSensor.get_estimationModel():Integer;
     var
       res : Integer;
     begin
@@ -993,7 +944,7 @@ implementation
     end;
 
 
-  function TYSpectralSensor.set_estimationModel(newval:Integer):integer;
+  function TYColorSensor.set_estimationModel(newval:Integer):integer;
     var
       rest_val: string;
     begin
@@ -1001,7 +952,33 @@ implementation
       result := _setAttr('estimationModel',rest_val);
     end;
 
-  function TYSpectralSensor.get_saturation():LongInt;
+  function TYColorSensor.get_workingMode():Integer;
+    var
+      res : Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_WORKINGMODE_INVALID;
+              exit;
+            end;
+        end;
+      res := self._workingMode;
+      result := res;
+      exit;
+    end;
+
+
+  function TYColorSensor.set_workingMode(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('workingMode',rest_val);
+    end;
+
+  function TYColorSensor.get_saturation():LongInt;
     var
       res : LongInt;
     begin
@@ -1019,7 +996,111 @@ implementation
     end;
 
 
-  function TYSpectralSensor.get_estimatedRGB():LongInt;
+  function TYColorSensor.get_ledCurrent():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_LEDCURRENT_INVALID;
+              exit;
+            end;
+        end;
+      res := self._ledCurrent;
+      result := res;
+      exit;
+    end;
+
+
+  function TYColorSensor.set_ledCurrent(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('ledCurrent',rest_val);
+    end;
+
+  function TYColorSensor.get_ledCalibration():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_LEDCALIBRATION_INVALID;
+              exit;
+            end;
+        end;
+      res := self._ledCalibration;
+      result := res;
+      exit;
+    end;
+
+
+  function TYColorSensor.set_ledCalibration(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('ledCalibration',rest_val);
+    end;
+
+  function TYColorSensor.get_integrationTime():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_INTEGRATIONTIME_INVALID;
+              exit;
+            end;
+        end;
+      res := self._integrationTime;
+      result := res;
+      exit;
+    end;
+
+
+  function TYColorSensor.set_integrationTime(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('integrationTime',rest_val);
+    end;
+
+  function TYColorSensor.get_gain():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_GAIN_INVALID;
+              exit;
+            end;
+        end;
+      res := self._gain;
+      result := res;
+      exit;
+    end;
+
+
+  function TYColorSensor.set_gain(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('gain',rest_val);
+    end;
+
+  function TYColorSensor.get_estimatedRGB():LongInt;
     var
       res : LongInt;
     begin
@@ -1037,7 +1118,7 @@ implementation
     end;
 
 
-  function TYSpectralSensor.get_estimatedHSL():LongInt;
+  function TYColorSensor.get_estimatedHSL():LongInt;
     var
       res : LongInt;
     begin
@@ -1055,7 +1136,7 @@ implementation
     end;
 
 
-  function TYSpectralSensor.get_estimatedXYZ():string;
+  function TYColorSensor.get_estimatedXYZ():string;
     var
       res : string;
     begin
@@ -1073,7 +1154,7 @@ implementation
     end;
 
 
-  function TYSpectralSensor.get_estimatedOkLab():string;
+  function TYColorSensor.get_estimatedOkLab():string;
     var
       res : string;
     begin
@@ -1091,7 +1172,7 @@ implementation
     end;
 
 
-  function TYSpectralSensor.get_nearRAL1():string;
+  function TYColorSensor.get_nearRAL1():string;
     var
       res : string;
     begin
@@ -1109,7 +1190,7 @@ implementation
     end;
 
 
-  function TYSpectralSensor.get_nearRAL2():string;
+  function TYColorSensor.get_nearRAL2():string;
     var
       res : string;
     begin
@@ -1127,7 +1208,7 @@ implementation
     end;
 
 
-  function TYSpectralSensor.get_nearRAL3():string;
+  function TYColorSensor.get_nearRAL3():string;
     var
       res : string;
     begin
@@ -1145,7 +1226,7 @@ implementation
     end;
 
 
-  function TYSpectralSensor.get_nearHTMLColor():string;
+  function TYColorSensor.get_nearHTMLColor():string;
     var
       res : string;
     begin
@@ -1163,7 +1244,7 @@ implementation
     end;
 
 
-  function TYSpectralSensor.get_nearSimpleColor():string;
+  function TYColorSensor.get_nearSimpleColor():string;
     var
       res : string;
     begin
@@ -1181,100 +1262,40 @@ implementation
     end;
 
 
-  function TYSpectralSensor.get_ledCurrentAtPowerOn():LongInt;
+  function TYColorSensor.get_nearSimpleColorIndex():Integer;
     var
-      res : LongInt;
+      res : Integer;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
           if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
-              result := Y_LEDCURRENTATPOWERON_INVALID;
+              result := Y_NEARSIMPLECOLORINDEX_INVALID;
               exit;
             end;
         end;
-      res := self._ledCurrentAtPowerOn;
+      res := self._nearSimpleColorIndex;
       result := res;
       exit;
     end;
 
 
-  function TYSpectralSensor.set_ledCurrentAtPowerOn(newval:LongInt):integer;
+  class function TYColorSensor.FindColorSensor(func: string):TYColorSensor;
     var
-      rest_val: string;
+      obj : TYColorSensor;
     begin
-      rest_val := inttostr(newval);
-      result := _setAttr('ledCurrentAtPowerOn',rest_val);
-    end;
-
-  function TYSpectralSensor.get_integrationTimeAtPowerOn():LongInt;
-    var
-      res : LongInt;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
-            begin
-              result := Y_INTEGRATIONTIMEATPOWERON_INVALID;
-              exit;
-            end;
-        end;
-      res := self._integrationTimeAtPowerOn;
-      result := res;
-      exit;
-    end;
-
-
-  function TYSpectralSensor.set_integrationTimeAtPowerOn(newval:LongInt):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := inttostr(newval);
-      result := _setAttr('integrationTimeAtPowerOn',rest_val);
-    end;
-
-  function TYSpectralSensor.get_gainAtPowerOn():LongInt;
-    var
-      res : LongInt;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
-            begin
-              result := Y_GAINATPOWERON_INVALID;
-              exit;
-            end;
-        end;
-      res := self._gainAtPowerOn;
-      result := res;
-      exit;
-    end;
-
-
-  function TYSpectralSensor.set_gainAtPowerOn(newval:LongInt):integer;
-    var
-      rest_val: string;
-    begin
-      rest_val := inttostr(newval);
-      result := _setAttr('gainAtPowerOn',rest_val);
-    end;
-
-  class function TYSpectralSensor.FindSpectralSensor(func: string):TYSpectralSensor;
-    var
-      obj : TYSpectralSensor;
-    begin
-      obj := TYSpectralSensor(TYFunction._FindFromCache('SpectralSensor', func));
+      obj := TYColorSensor(TYFunction._FindFromCache('ColorSensor', func));
       if obj = nil then
         begin
-          obj :=  TYSpectralSensor.create(func);
-          TYFunction._AddToCache('SpectralSensor', func, obj);
+          obj :=  TYColorSensor.create(func);
+          TYFunction._AddToCache('ColorSensor', func, obj);
         end;
       result := obj;
       exit;
     end;
 
 
-  function TYSpectralSensor.registerValueCallback(callback: TYSpectralSensorValueCallback):LongInt;
+  function TYColorSensor.registerValueCallback(callback: TYColorSensorValueCallback):LongInt;
     var
       val : string;
     begin
@@ -1286,7 +1307,7 @@ implementation
         begin
           TYFunction._UpdateValueCallbackList(self, false);
         end;
-      self._valueCallbackSpectralSensor := callback;
+      self._valueCallbackColorSensor := callback;
       // Immediately invoke value callback with current value
       if (addr(callback) <> nil) and self.isOnline then
         begin
@@ -1301,11 +1322,11 @@ implementation
     end;
 
 
-  function TYSpectralSensor._invokeValueCallback(value: string):LongInt;
+  function TYColorSensor._invokeValueCallback(value: string):LongInt;
     begin
-      if (addr(self._valueCallbackSpectralSensor) <> nil) then
+      if (addr(self._valueCallbackColorSensor) <> nil) then
         begin
-          self._valueCallbackSpectralSensor(self, value);
+          self._valueCallbackColorSensor(self, value);
         end
       else
         begin
@@ -1316,31 +1337,45 @@ implementation
     end;
 
 
-  function TYSpectralSensor.nextSpectralSensor(): TYSpectralSensor;
+  function TYColorSensor.turnLedOn():LongInt;
+    begin
+      result := self.set_ledCurrent(self.get_ledCalibration);
+      exit;
+    end;
+
+
+  function TYColorSensor.turnLedOff():LongInt;
+    begin
+      result := self.set_ledCurrent(0);
+      exit;
+    end;
+
+
+  function TYColorSensor.nextColorSensor(): TYColorSensor;
     var
       hwid: string;
     begin
       if YISERR(_nextFunction(hwid)) then
         begin
-          nextSpectralSensor := nil;
+          nextColorSensor := nil;
           exit;
         end;
       if hwid = '' then
         begin
-          nextSpectralSensor := nil;
+          nextColorSensor := nil;
           exit;
         end;
-      nextSpectralSensor := TYSpectralSensor.FindSpectralSensor(hwid);
+      nextColorSensor := TYColorSensor.FindColorSensor(hwid);
     end;
 
-  class function TYSpectralSensor.FirstSpectralSensor(): TYSpectralSensor;
+  class function TYColorSensor.FirstColorSensor(): TYColorSensor;
     var
       v_fundescr      : YFUN_DESCR;
       dev             : YDEV_DESCR;
       neededsize, err : integer;
       serial, funcId, funcName, funcVal, errmsg : string;
     begin
-      err := yapiGetFunctionsByClass('SpectralSensor', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
+      err := yapiGetFunctionsByClass('ColorSensor', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
       if (YISERR(err) or (neededsize = 0)) then
         begin
           result := nil;
@@ -1351,36 +1386,36 @@ implementation
           result := nil;
           exit;
         end;
-     result := TYSpectralSensor.FindSpectralSensor(serial+'.'+funcId);
+     result := TYColorSensor.FindColorSensor(serial+'.'+funcId);
     end;
 
-//--- (end of YSpectralSensor implementation)
+//--- (end of YColorSensor implementation)
 
-//--- (YSpectralSensor functions)
+//--- (YColorSensor functions)
 
-  function yFindSpectralSensor(func:string): TYSpectralSensor;
+  function yFindColorSensor(func:string): TYColorSensor;
     begin
-      result := TYSpectralSensor.FindSpectralSensor(func);
+      result := TYColorSensor.FindColorSensor(func);
     end;
 
-  function yFirstSpectralSensor(): TYSpectralSensor;
+  function yFirstColorSensor(): TYColorSensor;
     begin
-      result := TYSpectralSensor.FirstSpectralSensor();
+      result := TYColorSensor.FirstColorSensor();
     end;
 
-  procedure _SpectralSensorCleanup();
+  procedure _ColorSensorCleanup();
     begin
     end;
 
-//--- (end of YSpectralSensor functions)
+//--- (end of YColorSensor functions)
 
 initialization
-  //--- (YSpectralSensor initialization)
-  //--- (end of YSpectralSensor initialization)
+  //--- (YColorSensor initialization)
+  //--- (end of YColorSensor initialization)
 
 finalization
-  //--- (YSpectralSensor cleanup)
-  _SpectralSensorCleanup();
-  //--- (end of YSpectralSensor cleanup)
+  //--- (YColorSensor cleanup)
+  _ColorSensorCleanup();
+  //--- (end of YColorSensor cleanup)
 
 end.

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_lightsensor.pas 63506 2024-11-28 10:42:13Z seb $
+ *  $Id: svn_id $
  *
  *  Implements yFindLightSensor(), the high-level API for LightSensor functions
  *

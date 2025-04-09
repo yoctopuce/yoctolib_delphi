@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_colorled.pas 64080 2025-01-07 09:33:07Z seb $
+ *  $Id: svn_id $
  *
  *  Implements yFindColorLed(), the high-level API for ColorLed functions
  *

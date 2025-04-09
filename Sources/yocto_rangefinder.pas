@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_rangefinder.pas 64093 2025-01-08 10:53:52Z seb $
+ *  $Id: svn_id $
  *
  *  Implements yFindRangeFinder(), the high-level API for RangeFinder functions
  *

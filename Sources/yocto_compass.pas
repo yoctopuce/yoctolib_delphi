@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_compass.pas 63506 2024-11-28 10:42:13Z seb $
+ *  $Id: svn_id $
  *
  *  Implements yFindCompass(), the high-level API for Compass functions
  *

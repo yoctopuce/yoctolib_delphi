@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_motor.pas 63506 2024-11-28 10:42:13Z seb $
+ *  $Id: svn_id $
  *
  *  Implements yFindMotor(), the high-level API for Motor functions
  *

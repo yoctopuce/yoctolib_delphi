@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_gps.pas 63506 2024-11-28 10:42:13Z seb $
+ *  $Id: svn_id $
  *
  *  Implements yFindGps(), the high-level API for Gps functions
  *

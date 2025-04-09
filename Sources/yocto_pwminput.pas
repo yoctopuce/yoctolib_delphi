@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_pwminput.pas 63506 2024-11-28 10:42:13Z seb $
+ *  $Id: svn_id $
  *
  *  Implements yFindPwmInput(), the high-level API for PwmInput functions
  *
@@ -71,6 +71,7 @@ const Y_PWMREPORTMODE_PWM_FREQ_CPM = 9;
 const Y_PWMREPORTMODE_PWM_PERIODCOUNT = 10;
 const Y_PWMREPORTMODE_INVALID = -1;
 const Y_DEBOUNCEPERIOD_INVALID        = YAPI_INVALID_UINT;
+const Y_MINFREQUENCY_INVALID          = YAPI_INVALID_DOUBLE;
 const Y_BANDWIDTH_INVALID             = YAPI_INVALID_UINT;
 const Y_EDGESPERPERIOD_INVALID        = YAPI_INVALID_UINT;
 
@@ -111,6 +112,7 @@ type
     _pulseTimer               : int64;
     _pwmReportMode            : Integer;
     _debouncePeriod           : LongInt;
+    _minFrequency             : double;
     _bandwidth                : LongInt;
     _edgesPerPeriod           : LongInt;
     _valueCallbackPwmInput    : TYPwmInputValueCallback;
@@ -356,6 +358,48 @@ type
 
     ////
     /// <summary>
+    ///   Changes the minimum detected frequency, in Hz.
+    /// <para>
+    ///   Slower signals will be consider as zero frequency.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a floating point number corresponding to the minimum detected frequency, in Hz
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_minFrequency(newval:double):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the minimum detected frequency, in Hz.
+    /// <para>
+    ///   Slower signals will be consider as zero frequency.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a floating point number corresponding to the minimum detected frequency, in Hz
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YPwmInput.MINFREQUENCY_INVALID</c>.
+    /// </para>
+    ///-
+    function get_minFrequency():double;
+
+    ////
+    /// <summary>
     ///   Returns the input signal sampling rate, in kHz.
     /// <para>
     /// </para>
@@ -514,7 +558,22 @@ type
 
     ////
     /// <summary>
-    ///   Returns the pulse counter value as well as its timer.
+    ///   Resets the periodicity detection algorithm.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function resetPeriodDetection():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Resets the pulse counter value as well as its timer.
     /// <para>
     /// </para>
     /// </summary>
@@ -644,6 +703,7 @@ implementation
       _pulseTimer := Y_PULSETIMER_INVALID;
       _pwmReportMode := Y_PWMREPORTMODE_INVALID;
       _debouncePeriod := Y_DEBOUNCEPERIOD_INVALID;
+      _minFrequency := Y_MINFREQUENCY_INVALID;
       _bandwidth := Y_BANDWIDTH_INVALID;
       _edgesPerPeriod := Y_EDGESPERPERIOD_INVALID;
       _valueCallbackPwmInput := nil;
@@ -706,6 +766,12 @@ implementation
       if (member^.name = 'debouncePeriod') then
         begin
           _debouncePeriod := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'minFrequency') then
+        begin
+          _minFrequency := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
@@ -901,6 +967,32 @@ implementation
       result := _setAttr('debouncePeriod',rest_val);
     end;
 
+  function TYPwmInput.set_minFrequency(newval:double):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(round(newval * 65536.0));
+      result := _setAttr('minFrequency',rest_val);
+    end;
+
+  function TYPwmInput.get_minFrequency():double;
+    var
+      res : double;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_MINFREQUENCY_INVALID;
+              exit;
+            end;
+        end;
+      res := self._minFrequency;
+      result := res;
+      exit;
+    end;
+
+
   function TYPwmInput.get_bandwidth():LongInt;
     var
       res : LongInt;
@@ -1032,6 +1124,13 @@ implementation
           inherited _invokeTimedReportCallback(value);
         end;
       result := 0;
+      exit;
+    end;
+
+
+  function TYPwmInput.resetPeriodDetection():LongInt;
+    begin
+      result := self.set_bandwidth(self.get_bandwidth);
       exit;
     end;
 

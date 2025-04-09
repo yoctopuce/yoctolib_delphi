@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_poweroutput.pas 63506 2024-11-28 10:42:13Z seb $
+ *  $Id: svn_id $
  *
  *  Implements yFindPowerOutput(), the high-level API for PowerOutput functions
  *

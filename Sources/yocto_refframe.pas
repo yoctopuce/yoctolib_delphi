@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_refframe.pas 63506 2024-11-28 10:42:13Z seb $
+ *  $Id: svn_id $
  *
  *  Implements yFindRefFrame(), the high-level API for RefFrame functions
  *
