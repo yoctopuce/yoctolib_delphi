@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 65643 2025-04-08 09:37:02Z seb $
+ * $Id: yocto_api.pas 65865 2025-04-15 06:42:38Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -128,8 +128,7 @@ const
   Y_DETECT_ALL : integer = (Y_DETECT_USB or Y_DETECT_NET);
 
   YOCTO_API_VERSION_STR     = '1.11';
-  YOCTO_API_VERSION_BCD     = $010b;
-  YOCTO_API_BUILD_NO        = '65654';
+  YOCTO_API_BUILD_NO        = '65866';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -6751,7 +6750,7 @@ var
       apidate : string;
     begin
       yapiGetAPIVersion(version, apidate);
-      yGetAPIVersion:=  '1.11.654 (' + version + ')';
+      yGetAPIVersion:=  '1.11.5866 (' + version + ')';
     end;
 
 

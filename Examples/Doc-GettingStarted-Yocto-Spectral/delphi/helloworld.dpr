@@ -68,8 +68,8 @@ begin
 
   if (colorSensor.isOnline()) then
     begin
-        colorSensor.set_workingMode(0);
-        colorSensor.set_estimationModel(0);
+        colorSensor.set_workingMode(Y_WORKINGMODE_AUTO);
+        colorSensor.set_estimationModel(Y_ESTIMATIONMODEL_REFLECTION);
         while colorSensor.isOnline() do
         begin
           writeln('Near color :' + colorSensor.get_nearSimpleColor());
