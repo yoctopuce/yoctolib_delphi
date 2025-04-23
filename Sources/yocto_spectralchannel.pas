@@ -53,6 +53,8 @@ uses
 //--- (YSpectralChannel definitions)
 
 const Y_RAWCOUNT_INVALID              = YAPI_INVALID_INT;
+const Y_CHANNELNAME_INVALID           = YAPI_INVALID_STRING;
+const Y_PEAKWAVELENGTH_INVALID        = YAPI_INVALID_INT;
 
 //--- (end of YSpectralChannel definitions)
 
@@ -82,6 +84,8 @@ type
   //--- (YSpectralChannel declaration)
     // Attributes (function value cache)
     _rawCount                 : LongInt;
+    _channelName              : string;
+    _peakWavelength           : LongInt;
     _valueCallbackSpectralChannel : TYSpectralChannelValueCallback;
     _timedReportCallbackSpectralChannel : TYSpectralChannelTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
@@ -94,7 +98,7 @@ type
 
     ////
     /// <summary>
-    ///   Retrieves the raw cspectral intensity value as measured by the sensor, without any scaling or calibration.
+    ///   Retrieves the raw spectral intensity value as measured by the sensor, without any scaling or calibration.
     /// <para>
     /// </para>
     /// <para>
@@ -108,6 +112,40 @@ type
     /// </para>
     ///-
     function get_rawCount():LongInt;
+
+    ////
+    /// <summary>
+    ///   Returns the target spectral band name.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the target spectral band name
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YSpectralChannel.CHANNELNAME_INVALID</c>.
+    /// </para>
+    ///-
+    function get_channelName():string;
+
+    ////
+    /// <summary>
+    ///   Returns the target spectral band peak wavelenght, in nm.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the target spectral band peak wavelenght, in nm
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YSpectralChannel.PEAKWAVELENGTH_INVALID</c>.
+    /// </para>
+    ///-
+    function get_peakWavelength():LongInt;
 
     ////
     /// <summary>
@@ -315,6 +353,8 @@ implementation
       _className := 'SpectralChannel';
       //--- (YSpectralChannel accessors initialization)
       _rawCount := Y_RAWCOUNT_INVALID;
+      _channelName := Y_CHANNELNAME_INVALID;
+      _peakWavelength := Y_PEAKWAVELENGTH_INVALID;
       _valueCallbackSpectralChannel := nil;
       _timedReportCallbackSpectralChannel := nil;
       //--- (end of YSpectralChannel accessors initialization)
@@ -336,6 +376,18 @@ implementation
          result := 1;
          exit;
          end;
+      if (member^.name = 'channelName') then
+        begin
+          _channelName := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'peakWavelength') then
+        begin
+          _peakWavelength := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
@@ -353,6 +405,42 @@ implementation
             end;
         end;
       res := self._rawCount;
+      result := res;
+      exit;
+    end;
+
+
+  function TYSpectralChannel.get_channelName():string;
+    var
+      res : string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_CHANNELNAME_INVALID;
+              exit;
+            end;
+        end;
+      res := self._channelName;
+      result := res;
+      exit;
+    end;
+
+
+  function TYSpectralChannel.get_peakWavelength():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_PEAKWAVELENGTH_INVALID;
+              exit;
+            end;
+        end;
+      res := self._peakWavelength;
       result := res;
       exit;
     end;
