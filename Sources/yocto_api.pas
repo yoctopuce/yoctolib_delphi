@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 65865 2025-04-15 06:42:38Z seb $
+ * $Id: yocto_api.pas 66103 2025-05-02 06:55:47Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -128,7 +128,7 @@ const
   Y_DETECT_ALL : integer = (Y_DETECT_USB or Y_DETECT_NET);
 
   YOCTO_API_VERSION_STR     = '1.11';
-  YOCTO_API_BUILD_NO        = '65971';
+  YOCTO_API_BUILD_NO        = '66320';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -233,6 +233,8 @@ const YAPI_SSL_ERROR                 = -15;     // Error reported by mbedSSL
 const YAPI_RFID_SOFT_ERROR           = -16;     // Recoverable error with RFID tag (eg. tag out of reach), check YRfidStatus for details
 const YAPI_RFID_HARD_ERROR           = -17;     // Serious RFID error (eg. write-protected, out-of-boundary), check YRfidStatus for details
 const YAPI_BUFFER_TOO_SMALL          = -18;     // The buffer provided is too small
+const YAPI_DNS_ERROR                 = -19;     // Error during name resolutions (invalid hostname or dns communication error)
+const YAPI_SSL_UNK_CERT              = -20;     // The certificate is not correctly signed by the trusted CA
 
 const Y_LOGICALNAME_INVALID           = YAPI_INVALID_STRING;
 const Y_ADVERTISEDVALUE_INVALID       = YAPI_INVALID_STRING;
@@ -389,7 +391,9 @@ type
   //--- (generated code: YHub class start)
   ////
   /// <summary>
-  ///   TYHub Class: Hub Interface
+  ///   TYHub Class: YoctoHub or VirtualHub currently in use by the API.
+  /// <para>
+  /// </para>
   /// <para>
   /// </para>
   /// <para>
@@ -6750,7 +6754,7 @@ var
       apidate : string;
     begin
       yapiGetAPIVersion(version, apidate);
-      yGetAPIVersion:=  '1.11.5971 (' + version + ')';
+      yGetAPIVersion:=  '1.11.6320 (' + version + ')';
     end;
 
 
