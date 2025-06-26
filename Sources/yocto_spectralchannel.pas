@@ -132,14 +132,14 @@ type
 
     ////
     /// <summary>
-    ///   Returns the target spectral band peak wavelenght, in nm.
+    ///   Returns the target spectral band peak wavelength, in nm.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the target spectral band peak wavelenght, in nm
+    ///   an integer corresponding to the target spectral band peak wavelength, in nm
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>YSpectralChannel.PEAKWAVELENGTH_INVALID</c>.

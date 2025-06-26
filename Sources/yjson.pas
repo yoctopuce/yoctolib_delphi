@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yjson.pas 35285 2019-05-07 07:37:56Z seb $
+ * $Id: yjson.pas 67454 2025-06-13 10:17:04Z seb $
  *
  * Simple JSON parser to parse the output of Yoctopuce devices
  *
@@ -48,6 +48,8 @@ const
 
 type
   TStringArrayJson =  array of string;
+  TByteArrayJson =  array of byte;
+  TByteArrayArrayJson =  array of TByteArrayJson;
   PJSONRECORD  = ^TJSONRECORD;
   PASONRECORD  = ^ASONRECORD;
   APJSONRECORD =  array of PJSONRECORD;
@@ -103,14 +105,14 @@ type
    constructor create(jsonData:string; withHTTPHeader : boolean);   overload;
    function    GetHTTPcode(var msg:string):integer;
    function    GetChildNode(parent:PJSONRECORD; nodename:string):PJSONRECORD;
-   function    GetAllChilds(parent:PJSONRECORD):TStringArrayJson;
+   function    GetAllChilds(parent:PJSONRECORD):TByteArrayArrayJson;
    function    GetRootNode():PJSONRECORD;
    procedure   SetLogFunction(fct:Tjsonlogfct);
    procedure   DumpStructure( logfct: Tjsonlogfct);
    destructor  Destroy(); override;
    function    getHTTcode():integer;
    function    convertToString(p:PJSONRECORD; showNamePrefix:boolean):string;
-
+   function    convertToBytes(p:PJSONRECORD; showNamePrefix :boolean):TByteArrayJson;
   end;
 
 
@@ -118,6 +120,21 @@ type
 
 
 implementation
+
+
+  function TJsonParser.convertToBytes(p:PJSONRECORD; showNamePrefix :boolean):  TByteArrayJson;
+    var
+      value :string;
+      i: integer;
+      res: TByteArrayJson;
+    begin
+      value := self.convertToString(p, showNamePrefix);
+      SetLength(res, length(value));
+      for i := 0 to Length(value) - 1 do
+        res[i] := ord(value[i + 1]);
+      result := res;
+    end;
+
 
 function  TJsonParser.convertToString(p:PJSONRECORD; showNamePrefix :boolean):string;
  var
@@ -653,11 +670,11 @@ function  TJsonParser.GetChildNode(parent:PJSONRECORD;nodename:string):PJSONRECO
     GetChildNode :=  NIL;
   end;
 
-function TJsonParser.GetAllChilds(parent:PJSONRECORD):  TStringArrayJson;
+function TJsonParser.GetAllChilds(parent:PJSONRECORD):  TByteArrayArrayJson;
  var
   p : PJSONRECORD ;
   i : integer;
-  res : TStringArrayJson;
+  res : TByteArrayArrayJson;
  begin
 
   p := parent;
@@ -666,14 +683,14 @@ function TJsonParser.GetAllChilds(parent:PJSONRECORD):  TStringArrayJson;
     begin
      setlength(res,p^.membercount);
      for i:=0 to  p^.membercount-1 do
-       res[i] := self.convertToString(p^.members^[i],false);
+       res[i] := self.convertToBytes(p^.members^[i],false);
     end
   else
    if  (p^.recordtype = JSON_ARRAY)  then
     begin
      setlength(res,p^.itemcount);
      for i:=0 to  p^.itemcount-1 do
-       res[i] := self.convertToString(p^.items^[i],false);
+       res[i] := self.convertToBytes(p^.items^[i],false);
     end
   else
     setlength(res,0);

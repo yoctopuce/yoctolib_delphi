@@ -70,6 +70,12 @@ const Y_NTPSERVER_INVALID             = YAPI_INVALID_STRING;
 const Y_USERPASSWORD_INVALID          = YAPI_INVALID_STRING;
 const Y_ADMINPASSWORD_INVALID         = YAPI_INVALID_STRING;
 const Y_HTTPPORT_INVALID              = YAPI_INVALID_UINT;
+const Y_HTTPSPORT_INVALID             = YAPI_INVALID_UINT;
+const Y_SECURITYMODE_UNDEFINED = 0;
+const Y_SECURITYMODE_LEGACY = 1;
+const Y_SECURITYMODE_MIXED = 2;
+const Y_SECURITYMODE_SECURE = 3;
+const Y_SECURITYMODE_INVALID = -1;
 const Y_DEFAULTPAGE_INVALID           = YAPI_INVALID_STRING;
 const Y_DISCOVERABLE_FALSE = 0;
 const Y_DISCOVERABLE_TRUE = 1;
@@ -144,6 +150,8 @@ type
     _userPassword             : string;
     _adminPassword            : string;
     _httpPort                 : LongInt;
+    _httpsPort                : LongInt;
+    _securityMode             : Integer;
     _defaultPage              : string;
     _discoverable             : Integer;
     _wwwWatchdogDelay         : LongInt;
@@ -579,6 +587,106 @@ type
     /// </para>
     ///-
     function set_httpPort(newval:LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the secure TCP port used to serve the hub web UI.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the secure TCP port used to serve the hub web UI
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YNetwork.HTTPSPORT_INVALID</c>.
+    /// </para>
+    ///-
+    function get_httpsPort():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the secure TCP port used to serve the hub web UI.
+    /// <para>
+    ///   The default value is port 4443,
+    ///   which is the default for all Web servers. When you change this parameter, remember to call the
+    ///   <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the secure TCP port used to serve the hub web UI
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_httpsPort(newval:LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the security level chosen to prevent unauthorized access to the server.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a value among <c>YNetwork.SECURITYMODE_UNDEFINED</c>, <c>YNetwork.SECURITYMODE_LEGACY</c>,
+    ///   <c>YNetwork.SECURITYMODE_MIXED</c> and <c>YNetwork.SECURITYMODE_SECURE</c> corresponding to the
+    ///   security level chosen to prevent unauthorized access to the server
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YNetwork.SECURITYMODE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_securityMode():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the security level used to prevent unauthorized access to the server.
+    /// <para>
+    ///   The value <c>UNDEFINED</c> causes the security configuration wizard to be
+    ///   displayed the next time you log on to the Web console.
+    ///   The value <c>LEGACY</c> offers unencrypted HTTP access by default, and
+    ///   is designed to provide compatibility with legacy applications that do not
+    ///   handle password or do not support <c>HTTPS</c>. But it should
+    ///   only be used when system security is guaranteed by other means, such as the
+    ///   use of a firewall.
+    ///   The value <c>MIXED</c> requires the configuration of passwords, and allows
+    ///   access via both HTTP (unencrypted) and HTTPS (encrypted), while requiring
+    ///   the Yoctopuce API to be tolerant of certificate characteristics.
+    ///   The value <c>SECURE</c> requires the configuration of passwords and the
+    ///   use of secure communications in all cases.
+    ///   When you change this parameter, remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a value among <c>YNetwork.SECURITYMODE_UNDEFINED</c>, <c>YNetwork.SECURITYMODE_LEGACY</c>,
+    ///   <c>YNetwork.SECURITYMODE_MIXED</c> and <c>YNetwork.SECURITYMODE_SECURE</c> corresponding to the
+    ///   security level used to prevent unauthorized access to the server
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_securityMode(newval:Integer):integer;
 
     ////
     /// <summary>
@@ -1502,6 +1610,8 @@ implementation
       _userPassword := Y_USERPASSWORD_INVALID;
       _adminPassword := Y_ADMINPASSWORD_INVALID;
       _httpPort := Y_HTTPPORT_INVALID;
+      _httpsPort := Y_HTTPSPORT_INVALID;
+      _securityMode := Y_SECURITYMODE_INVALID;
       _defaultPage := Y_DEFAULTPAGE_INVALID;
       _discoverable := Y_DISCOVERABLE_INVALID;
       _wwwWatchdogDelay := Y_WWWWATCHDOGDELAY_INVALID;
@@ -1604,6 +1714,18 @@ implementation
       if (member^.name = 'httpPort') then
         begin
           _httpPort := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'httpsPort') then
+        begin
+          _httpsPort := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'securityMode') then
+        begin
+          _securityMode := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -1989,6 +2111,58 @@ implementation
     begin
       rest_val := inttostr(newval);
       result := _setAttr('httpPort',rest_val);
+    end;
+
+  function TYNetwork.get_httpsPort():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_HTTPSPORT_INVALID;
+              exit;
+            end;
+        end;
+      res := self._httpsPort;
+      result := res;
+      exit;
+    end;
+
+
+  function TYNetwork.set_httpsPort(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('httpsPort',rest_val);
+    end;
+
+  function TYNetwork.get_securityMode():Integer;
+    var
+      res : Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_SECURITYMODE_INVALID;
+              exit;
+            end;
+        end;
+      res := self._securityMode;
+      result := res;
+      exit;
+    end;
+
+
+  function TYNetwork.set_securityMode(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('securityMode',rest_val);
     end;
 
   function TYNetwork.get_defaultPage():string;

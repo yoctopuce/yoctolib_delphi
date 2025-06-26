@@ -1080,7 +1080,7 @@ implementation
           if ch = 46 then
             begin
               // . (duration modifier)
-              num := (num * 2 div 3);
+              num := ((num * 2) div 3);
             end;
           if ((ch = 32) or(i+1 = notesLen)) and((note > -99) or(typ <> 3)) then
             begin

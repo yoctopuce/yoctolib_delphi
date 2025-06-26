@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 63506 2024-11-28 10:42:13Z seb $
+ * $Id: yocto_display.pas 67474 2025-06-16 08:58:53Z seb $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -2038,7 +2038,7 @@ destructor TYDisplay.destroy();
     var
       layercount : LongInt;
       idx : LongInt;
-      allDisplayLayers_pos : LongInt;
+      _allDisplayLayers_pos : LongInt;
     begin
       layercount := self.get_layerCount;
       if not((layerId >= 0) and(layerId < layercount)) then
@@ -2049,16 +2049,16 @@ destructor TYDisplay.destroy();
         end;
       if length(self._allDisplayLayers) = 0 then
         begin
-          allDisplayLayers_pos := length(self._allDisplayLayers);
-          SetLength(self._allDisplayLayers, allDisplayLayers_pos+layercount);
+          _allDisplayLayers_pos := length(self._allDisplayLayers);
+          SetLength(self._allDisplayLayers, _allDisplayLayers_pos+layercount);
           idx := 0;
           while idx < layercount do
             begin
-              self._allDisplayLayers[allDisplayLayers_pos] := TYDisplayLayer.create(self, idx);
-              inc(allDisplayLayers_pos);
+              self._allDisplayLayers[_allDisplayLayers_pos] := TYDisplayLayer.create(self, idx);
+              inc(_allDisplayLayers_pos);
               idx := idx + 1;
             end;
-          SetLength(self._allDisplayLayers, allDisplayLayers_pos);
+          SetLength(self._allDisplayLayers, _allDisplayLayers_pos);
         end;
       result := self._allDisplayLayers[layerId];
       exit;

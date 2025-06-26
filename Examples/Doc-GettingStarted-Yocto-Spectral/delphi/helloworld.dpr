@@ -2,9 +2,11 @@
  *
  *  $Id: svn_id $
  *
- *  Doc-GettingStarted-Yocto-Spectral-C example
+ *  An example that shows how to use a  Yocto-Spectral
  *
  *  You can find more information on our web site:
+ *   Yocto-Spectral documentation:
+ *      https://www.yoctopuce.com/EN/products/yocto-spectral/doc.html
  *   Delphi API Reference:
  *      https://www.yoctopuce.com/EN/doc/reference/yoctolib-delphi-EN.html
  *

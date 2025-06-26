@@ -2562,12 +2562,11 @@ implementation
   function TYRfidReader.get_tagIdList():TStringArray;
     var
       json : TByteArray;
-      jsonList : TStringArray;
+      jsonList : TTByteArrayArray;
       taglist : TStringArray;
       taglist_pos : LongInt;
       ii_0 : LongInt;
     begin
-      SetLength(jsonList, 0);
       SetLength(taglist, 0);
 
       json := self._download('rfid.json?a=list');
@@ -2579,7 +2578,7 @@ implementation
           SetLength(taglist, taglist_pos+length(jsonList));
           for ii_0:=0 to length(jsonList)-1 do
             begin
-              taglist[taglist_pos] := self._json_get_string(_StrToByte(jsonList[ii_0]));
+              taglist[taglist_pos] := self._json_get_string(jsonList[ii_0]);
               inc(taglist_pos);
             end;
           SetLength(taglist, taglist_pos);

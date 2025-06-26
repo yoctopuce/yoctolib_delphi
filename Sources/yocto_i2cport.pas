@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_i2cport.pas 64093 2025-01-08 10:53:52Z seb $
+ *  $Id: yocto_i2cport.pas 66665 2025-05-14 07:32:24Z seb $
  *
  *  Implements yFindI2cPort(), the high-level API for I2cPort functions
  *
@@ -1738,12 +1738,10 @@ implementation
     var
       url : string;
       msgbin : TByteArray;
-      msgarr : TStringArray;
+      msgarr : TTByteArrayArray;
       msglen : LongInt;
       res : string;
     begin
-      SetLength(msgarr, 0);
-
       url := 'rxmsg.json?pos='+inttostr(self._rxptr)+'&len=1&maxw=1';
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
@@ -1755,13 +1753,13 @@ implementation
         end;
       // last element of array is the new position
       msglen := msglen - 1;
-      self._rxptr := _atoi(msgarr[msglen]);
+      self._rxptr := self._decode_json_int(msgarr[msglen]);
       if msglen = 0 then
         begin
           result := '';
           exit;
         end;
-      res := self._json_get_string(_StrToByte(msgarr[0]));
+      res := self._json_get_string(msgarr[0]);
       result := res;
       exit;
     end;
@@ -1771,13 +1769,12 @@ implementation
     var
       url : string;
       msgbin : TByteArray;
-      msgarr : TStringArray;
+      msgarr : TTByteArrayArray;
       msglen : LongInt;
       res : TStringArray;
       idx : LongInt;
       res_pos : LongInt;
     begin
-      SetLength(msgarr, 0);
       SetLength(res, 0);
 
       url := 'rxmsg.json?pos='+inttostr(self._rxptr)+'&maxw='+inttostr(maxWait)+'&pat='+pattern;
@@ -1791,13 +1788,13 @@ implementation
         end;
       // last element of array is the new position
       msglen := msglen - 1;
-      self._rxptr := _atoi(msgarr[msglen]);
+      self._rxptr := self._decode_json_int(msgarr[msglen]);
       idx := 0;
       res_pos := length(res);
       SetLength(res, res_pos+msglen);;
       while idx < msglen do
         begin
-          res[res_pos] := self._json_get_string(_StrToByte(msgarr[idx]));
+          res[res_pos] := self._json_get_string(msgarr[idx]);
           inc(res_pos);
           idx := idx + 1;
         end;
@@ -1859,11 +1856,10 @@ implementation
       prevpos : LongInt;
       url : string;
       msgbin : TByteArray;
-      msgarr : TStringArray;
+      msgarr : TTByteArrayArray;
       msglen : LongInt;
       res : string;
     begin
-      SetLength(msgarr, 0);
       if Length(query) <= 80 then
         begin
           // fast query
@@ -1887,13 +1883,13 @@ implementation
         end;
       // last element of array is the new position
       msglen := msglen - 1;
-      self._rxptr := _atoi(msgarr[msglen]);
+      self._rxptr := self._decode_json_int(msgarr[msglen]);
       if msglen = 0 then
         begin
           result := '';
           exit;
         end;
-      res := self._json_get_string(_StrToByte(msgarr[0]));
+      res := self._json_get_string(msgarr[0]);
       result := res;
       exit;
     end;
@@ -1904,11 +1900,10 @@ implementation
       prevpos : LongInt;
       url : string;
       msgbin : TByteArray;
-      msgarr : TStringArray;
+      msgarr : TTByteArrayArray;
       msglen : LongInt;
       res : string;
     begin
-      SetLength(msgarr, 0);
       if Length(hexString) <= 80 then
         begin
           // fast query
@@ -1932,13 +1927,13 @@ implementation
         end;
       // last element of array is the new position
       msglen := msglen - 1;
-      self._rxptr := _atoi(msgarr[msglen]);
+      self._rxptr := self._decode_json_int(msgarr[msglen]);
       if msglen = 0 then
         begin
           result := '';
           exit;
         end;
-      res := self._json_get_string(_StrToByte(msgarr[0]));
+      res := self._json_get_string(msgarr[0]);
       result := res;
       exit;
     end;
@@ -2346,14 +2341,12 @@ implementation
     var
       url : string;
       msgbin : TByteArray;
-      msgarr : TStringArray;
+      msgarr : TTByteArrayArray;
       msglen : LongInt;
       res : TYI2cSnoopingRecordArray;
       idx : LongInt;
       res_pos : LongInt;
     begin
-      SetLength(msgarr, 0);
-
       url := 'rxmsg.json?pos='+inttostr(self._rxptr)+'&maxw='+inttostr(maxWait)+'&t=0&len='+inttostr(maxMsg);
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
@@ -2365,13 +2358,13 @@ implementation
         end;
       // last element of array is the new position
       msglen := msglen - 1;
-      self._rxptr := _atoi(msgarr[msglen]);
+      self._rxptr := self._decode_json_int(msgarr[msglen]);
       idx := 0;
       res_pos := length(res);
       SetLength(res, res_pos+msglen);;
       while idx < msglen do
         begin
-          res[res_pos] := TYI2cSnoopingRecord.create(msgarr[idx]);
+          res[res_pos] := TYI2cSnoopingRecord.create(_ByteToString(msgarr[idx]));
           inc(res_pos);
           idx := idx + 1;
         end;

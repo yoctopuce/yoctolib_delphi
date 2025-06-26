@@ -55,6 +55,7 @@ uses
 const Y_ENABLED_FALSE = 0;
 const Y_ENABLED_TRUE = 1;
 const Y_ENABLED_INVALID = -1;
+const Y_SIGNALBIAS_INVALID            = YAPI_INVALID_DOUBLE;
 
 //--- (end of YVoltage definitions)
 
@@ -85,6 +86,7 @@ type
   //--- (YVoltage declaration)
     // Attributes (function value cache)
     _enabled                  : Integer;
+    _signalBias               : double;
     _valueCallbackVoltage     : TYVoltageValueCallback;
     _timedReportCallbackVoltage : TYVoltageTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
@@ -141,6 +143,51 @@ type
     /// </para>
     ///-
     function set_enabled(newval:Integer):integer;
+
+    ////
+    /// <summary>
+    ///   Changes the DC bias configured for zero shift adjustment.
+    /// <para>
+    ///   If your DC current reads positive when it should be zero, set up
+    ///   a positive signalBias of the same value to fix the zero shift.
+    ///   Remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a floating point number corresponding to the DC bias configured for zero shift adjustment
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_signalBias(newval:double):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the DC bias configured for zero shift adjustment.
+    /// <para>
+    ///   A positive bias value is used to correct a positive DC bias,
+    ///   while a negative bias value is used to correct a negative DC bias.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a floating point number corresponding to the DC bias configured for zero shift adjustment
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YVoltage.SIGNALBIAS_INVALID</c>.
+    /// </para>
+    ///-
+    function get_signalBias():double;
 
     ////
     /// <summary>
@@ -237,6 +284,27 @@ type
     function registerTimedReportCallback(callback: TYVoltageTimedReportCallback):LongInt; overload;
 
     function _invokeTimedReportCallback(value: TYMeasure):LongInt; override;
+
+    ////
+    /// <summary>
+    ///   Calibrate the device by adjusting <c>signalBias</c> so that the current
+    ///   input voltage is precisely seen as zero.
+    /// <para>
+    ///   Before calling this method, make
+    ///   sure to short the power source inputs as close as possible to the connector, and
+    ///   to disconnect the load to ensure the wires don't capture radiated noise.
+    ///   Remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function zeroAdjust():LongInt; overload; virtual;
 
 
     ////
@@ -348,6 +416,7 @@ implementation
       _className := 'Voltage';
       //--- (YVoltage accessors initialization)
       _enabled := Y_ENABLED_INVALID;
+      _signalBias := Y_SIGNALBIAS_INVALID;
       _valueCallbackVoltage := nil;
       _timedReportCallbackVoltage := nil;
       //--- (end of YVoltage accessors initialization)
@@ -366,6 +435,12 @@ implementation
       if (member^.name = 'enabled') then
         begin
           _enabled := member^.ivalue;
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'signalBias') then
+        begin
+          _signalBias := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
@@ -398,6 +473,32 @@ implementation
       if(newval>0) then rest_val := '1' else rest_val := '0';
       result := _setAttr('enabled',rest_val);
     end;
+
+  function TYVoltage.set_signalBias(newval:double):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(round(newval * 65536.0));
+      result := _setAttr('signalBias',rest_val);
+    end;
+
+  function TYVoltage.get_signalBias():double;
+    var
+      res : double;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_SIGNALBIAS_INVALID;
+              exit;
+            end;
+        end;
+      res := self._signalBias;
+      result := res;
+      exit;
+    end;
+
 
   class function TYVoltage.FindVoltage(func: string):TYVoltage;
     var
@@ -486,6 +587,25 @@ implementation
           inherited _invokeTimedReportCallback(value);
         end;
       result := 0;
+      exit;
+    end;
+
+
+  function TYVoltage.zeroAdjust():LongInt;
+    var
+      currSignal : double;
+      bias : double;
+    begin
+      currSignal := self.get_currentRawValue;
+      bias := self.get_signalBias + currSignal;
+      if not((bias > -0.5) and(bias < 0.5)) then
+        begin
+          self._throw(YAPI_INVALID_ARGUMENT,'suspicious zeroAdjust, please ensure that the power source inpu'
+          + 'ts are shorted');
+          result:=YAPI_INVALID_ARGUMENT;
+          exit;
+        end;
+      result := self.set_signalBias(bias);
       exit;
     end;
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 63506 2024-11-28 10:42:13Z seb $
+ * $Id: yocto_messagebox.pas 67474 2025-06-16 08:58:53Z seb $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *
@@ -1227,12 +1227,10 @@ implementation
   function TYMessageBox.fetchPdu(slot: LongInt):TYSms;
     var
       binPdu : TByteArray;
-      arrPdu : TStringArray;
+      arrPdu : TTByteArrayArray;
       hexPdu : string;
       sms : TYSms;
     begin
-      SetLength(arrPdu, 0);
-
       binPdu := self._download('sms.json?pos='+inttostr(slot)+'&len=1');
       arrPdu := self._json_get_array(binPdu);
       hexPdu := self._decode_json_string(arrPdu[0]);
@@ -1248,84 +1246,84 @@ implementation
     var
       i : LongInt;
       uni : LongInt;
-      gsm2unicode_pos : LongInt;
+      _gsm2unicode_pos : LongInt;
     begin
-      gsm2unicode_pos := 0;
+      _gsm2unicode_pos := 0;
       SetLength(self._gsm2unicode, 256);;
       // 00-07
-      self._gsm2unicode[gsm2unicode_pos] := 64;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 163;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 36;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 165;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 232;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 233;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 249;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 236;
-      inc(gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 64;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 163;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 36;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 165;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 232;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 233;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 249;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 236;
+      inc(_gsm2unicode_pos);
       // 08-0F
-      self._gsm2unicode[gsm2unicode_pos] := 242;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 199;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 10;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 216;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 248;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 13;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 197;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 229;
-      inc(gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 242;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 199;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 10;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 216;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 248;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 13;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 197;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 229;
+      inc(_gsm2unicode_pos);
       // 10-17
-      self._gsm2unicode[gsm2unicode_pos] := 916;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 95;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 934;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 915;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 923;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 937;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 928;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 936;
-      inc(gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 916;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 95;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 934;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 915;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 923;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 937;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 928;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 936;
+      inc(_gsm2unicode_pos);
       // 18-1F
-      self._gsm2unicode[gsm2unicode_pos] := 931;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 920;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 926;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 27;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 198;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 230;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 223;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 201;
-      inc(gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 931;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 920;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 926;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 27;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 198;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 230;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 223;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 201;
+      inc(_gsm2unicode_pos);
       // 20-7A
       i := 32;
       while i <= 122 do
         begin
-          self._gsm2unicode[gsm2unicode_pos] := i;
-          inc(gsm2unicode_pos);
+          self._gsm2unicode[_gsm2unicode_pos] := i;
+          inc(_gsm2unicode_pos);
           i := i + 1;
         end;
       // exceptions in range 20-7A
@@ -1338,17 +1336,17 @@ implementation
       self._gsm2unicode[95] := 167;
       self._gsm2unicode[96] := 191;
       // 7B-7F
-      self._gsm2unicode[gsm2unicode_pos] := 228;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 246;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 241;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 252;
-      inc(gsm2unicode_pos);
-      self._gsm2unicode[gsm2unicode_pos] := 224;
-      inc(gsm2unicode_pos);
-      SetLength(self._gsm2unicode, gsm2unicode_pos);;
+      self._gsm2unicode[_gsm2unicode_pos] := 228;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 246;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 241;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 252;
+      inc(_gsm2unicode_pos);
+      self._gsm2unicode[_gsm2unicode_pos] := 224;
+      inc(_gsm2unicode_pos);
+      SetLength(self._gsm2unicode, _gsm2unicode_pos);;
       // Invert table as well wherever possible
       setlength(self._iso2gsm,256);
       i := 0;
@@ -2804,7 +2802,7 @@ implementation
       if addrType = 80 then
         begin
           // alphanumeric number
-          siz := (4*siz div 7);
+          siz := ((4*siz) div 7);
           setlength(gsm7,siz);
           rpos := 1;
           carry := 0;
@@ -3195,7 +3193,7 @@ implementation
       newpdu : TYSms;
       i : LongInt;
       wpos : LongInt;
-      parts_pos : LongInt;
+      _parts_pos : LongInt;
     begin
       udhsize := length(self._udh);
       udlen := length(self._udata);
@@ -3205,7 +3203,7 @@ implementation
           mss := ((mss * 8 - 6) div 7);
         end;
       self._npdu := ((udlen+mss-1) div mss);
-      parts_pos := 0;
+      _parts_pos := 0;
       SetLength(self._parts, self._npdu);;
       partno := 0;
       wpos := 0;
@@ -3253,8 +3251,8 @@ implementation
           newpdu.set_timestamp(self.get_timestamp);
           newpdu.set_userDataHeader(newudh);
           newpdu.set_userData(newud);
-          self._parts[parts_pos] := newpdu;
-          inc(parts_pos);
+          self._parts[_parts_pos] := newpdu;
+          inc(_parts_pos);
         end;
       result := YAPI_SUCCESS;
       exit;

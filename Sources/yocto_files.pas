@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 63506 2024-11-28 10:42:13Z seb $
+ * $Id: yocto_files.pas 67452 2025-06-13 09:53:42Z seb $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -154,6 +154,7 @@ TYFILERECORDARRAY = array of TYFileRecord;
     _filesCount               : LongInt;
     _freeSpace                : LongInt;
     _valueCallbackFiles       : TYFilesValueCallback;
+    _ver                      : LongInt;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
     //--- (end of generated code: YFiles declaration)
@@ -272,6 +273,8 @@ public
 
     function sendCommand(command: string):TByteArray; overload; virtual;
 
+    function _getVersion():LongInt; overload; virtual;
+
     ////
     /// <summary>
     ///   Reinitialize the filesystem to its clean, unfragmented, empty state.
@@ -312,15 +315,15 @@ public
 
     ////
     /// <summary>
-    ///   Test if a file exist on the filesystem of the module.
+    ///   Tests if a file exists on the filesystem of the module.
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="filename">
-    ///   the file name to test.
+    ///   the filename to test.
     /// </param>
     /// <returns>
-    ///   a true if the file exist, false otherwise.
+    ///   true if the file exists, false otherwise.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception.
@@ -390,6 +393,26 @@ public
     /// </para>
     ///-
     function remove(pathname: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the expected file CRC for a given content.
+    /// <para>
+    ///   Note that the CRC value may vary depending on the version
+    ///   of the filesystem used by the hub, so it is important to
+    ///   use this method if a reference value needs to be computed.
+    /// </para>
+    /// </summary>
+    /// <param name="content">
+    ///   a buffer representing a file content
+    /// </param>
+    /// <returns>
+    ///   the 32-bit CRC summarizing the file content, as it would
+    ///   be returned by the <c>get_crc()</c> method of
+    ///   <c>YFileRecord</c> objects returned by <c>get_list()</c>.
+    /// </returns>
+    ///-
+    function get_content_crc(content: TByteArray):LongInt; overload; virtual;
 
 
     ////
@@ -503,6 +526,7 @@ implementation
       _filesCount := Y_FILESCOUNT_INVALID;
       _freeSpace := Y_FREESPACE_INVALID;
       _valueCallbackFiles := nil;
+      _ver := 0;
       //--- (end of generated code: YFiles accessors initialization)
     end;
 
@@ -633,6 +657,31 @@ implementation
     end;
 
 
+  function TYFiles._getVersion():LongInt;
+    var
+      json : TByteArray;
+    begin
+      if self._ver > 0 then
+        begin
+          result := self._ver;
+          exit;
+        end;
+      //may throw an exception
+      json := self.sendCommand('info');
+      if json[0] <> 123 then
+        begin
+          // ascii code for '{'
+          self._ver := 30;
+        end
+      else
+        begin
+          self._ver := _atoi(self._json_get_key(json, 'ver'));
+        end;
+      result := self._ver;
+      exit;
+    end;
+
+
   function TYFiles.format_fs():LongInt;
     var
       json : TByteArray;
@@ -654,19 +703,18 @@ implementation
   function TYFiles.get_list(pattern: string):TYFileRecordArray;
     var
       json : TByteArray;
-      filelist : TStringArray;
+      filelist : TTByteArrayArray;
       res : TYFileRecordArray;
       res_pos : LongInt;
       ii_0 : LongInt;
     begin
-      SetLength(filelist, 0);
       json := self.sendCommand('dir&f='+pattern);
       filelist := self._json_get_array(json);
       res_pos := 0;
       SetLength(res, length(filelist));;
       for ii_0:=0 to length(filelist)-1 do
         begin
-          res[res_pos] := TYFileRecord.create(filelist[ii_0]);
+          res[res_pos] := TYFileRecord.create(_ByteToString(filelist[ii_0]));
           inc(res_pos);
         end;
       result := res;
@@ -677,9 +725,8 @@ implementation
   function TYFiles.fileExist(filename: string):boolean;
     var
       json : TByteArray;
-      filelist : TStringArray;
+      filelist : TTByteArrayArray;
     begin
-      SetLength(filelist, 0);
       if Length(filename) = 0 then
         begin
           result := false;
@@ -725,6 +772,55 @@ implementation
           exit;
         end;
       result := YAPI_SUCCESS;
+      exit;
+    end;
+
+
+  function TYFiles.get_content_crc(content: TByteArray):LongInt;
+    var
+      fsver : LongInt;
+      sz : LongInt;
+      blkcnt : LongInt;
+      meta : TByteArray;
+      blkidx : LongInt;
+      blksz : LongInt;
+      part : LongInt;
+      res : LongInt;
+    begin
+      sz := length(content);
+      if sz = 0 then
+        begin
+          res := _bincrc(content, 0, 0);
+          result := res;
+          exit;
+        end;
+
+      fsver := self._getVersion;
+      if fsver < 40 then
+        begin
+          res := _bincrc(content, 0, sz);
+          result := res;
+          exit;
+        end;
+      blkcnt := ((sz + 255) div 256);
+      setlength(meta,4 * blkcnt);
+      blkidx := 0;
+      while blkidx < blkcnt do
+        begin
+          blksz := sz - blkidx * 256;
+          if blksz > 256 then
+            begin
+              blksz := 256;
+            end;
+          part := ((_bincrc(content, blkidx * 256, blksz)) xor ($0ffffffff));
+          meta[4 * blkidx] := ((part) and 255);
+          meta[4 * blkidx + 1] := ((((part) shr 8)) and 255);
+          meta[4 * blkidx + 2] := ((((part) shr 16)) and 255);
+          meta[4 * blkidx + 3] := ((((part) shr 24)) and 255);
+          blkidx := blkidx + 1;
+        end;
+      res := ((_bincrc(meta, 0, 4 * blkcnt)) xor ($0ffffffff));
+      result := res;
       exit;
     end;
 

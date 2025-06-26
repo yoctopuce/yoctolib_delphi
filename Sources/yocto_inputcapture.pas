@@ -868,11 +868,18 @@ type
 
     ////
     /// <summary>
-    ///   c
+    ///   Continues the enumeration of instant snapshot triggers started using <c>yFirstInputCapture()</c>.
     /// <para>
-    ///   omment from .yc definition
+    ///   Caution: You can't make any assumption about the returned instant snapshot triggers order.
+    ///   If you want to find a specific an instant snapshot trigger, use <c>InputCapture.findInputCapture()</c>
+    ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
+    /// <returns>
+    ///   a pointer to a <c>YInputCapture</c> object, corresponding to
+    ///   an instant snapshot trigger currently online, or a <c>NIL</c> pointer
+    ///   if there are no more instant snapshot triggers to enumerate.
+    /// </returns>
     ///-
     function nextInputCapture():TYInputCapture;
     ////
@@ -941,11 +948,17 @@ type
   function yFindInputCapture(func:string):TYInputCapture;
   ////
   /// <summary>
-  ///   c
+  ///   Starts the enumeration of instant snapshot triggers currently accessible.
   /// <para>
-  ///   omment from .yc definition
+  ///   Use the method <c>YInputCapture.nextInputCapture()</c> to iterate on
+  ///   next instant snapshot triggers.
   /// </para>
   /// </summary>
+  /// <returns>
+  ///   a pointer to a <c>YInputCapture</c> object, corresponding to
+  ///   the first instant snapshot trigger currently online, or a <c>NIL</c> pointer
+  ///   if there are none.
+  /// </returns>
   ///-
   function yFirstInputCapture():TYInputCapture;
 
@@ -1044,9 +1057,9 @@ implementation
       mult2 : LongInt;
       mult3 : LongInt;
       v : double;
-      var1samples_pos : LongInt;
-      var2samples_pos : LongInt;
-      var3samples_pos : LongInt;
+      _var1samples_pos : LongInt;
+      _var2samples_pos : LongInt;
+      _var3samples_pos : LongInt;
     begin
       buffSize := length(sdata);
       if not(buffSize >= 24) then
@@ -1156,47 +1169,47 @@ implementation
               recOfs := recOfs + 2;
             end;
         end;
-      var1samples_pos := length(self._var1samples);
-      SetLength(self._var1samples, var1samples_pos+self._nRecs);;
+      _var1samples_pos := length(self._var1samples);
+      SetLength(self._var1samples, _var1samples_pos+self._nRecs);;
       recOfs := self._recOfs;
       count := self._nRecs;
       while (count > 0) and(recOfs + self._var1size <= buffSize) do
         begin
           v := self._decodeVal(sdata, recOfs, self._var1size) / 1000.0;
-          self._var1samples[var1samples_pos] := v*mult1;
-          inc(var1samples_pos);
+          self._var1samples[_var1samples_pos] := v*mult1;
+          inc(_var1samples_pos);
           recOfs := recOfs + recSize;
         end;
-      SetLength(self._var1samples, var1samples_pos);;
+      SetLength(self._var1samples, _var1samples_pos);;
       if self._var2size > 0 then
         begin
-          var2samples_pos := length(self._var2samples);
-          SetLength(self._var2samples, var2samples_pos+self._nRecs);
+          _var2samples_pos := length(self._var2samples);
+          SetLength(self._var2samples, _var2samples_pos+self._nRecs);
           recOfs := self._recOfs + self._var1size;
           count := self._nRecs;
           while (count > 0) and(recOfs + self._var2size <= buffSize) do
             begin
               v := self._decodeVal(sdata, recOfs, self._var2size) / 1000.0;
-              self._var2samples[var2samples_pos] := v*mult2;
-              inc(var2samples_pos);
+              self._var2samples[_var2samples_pos] := v*mult2;
+              inc(_var2samples_pos);
               recOfs := recOfs + recSize;
             end;
-          SetLength(self._var2samples, var2samples_pos);
+          SetLength(self._var2samples, _var2samples_pos);
         end;
       if self._var3size > 0 then
         begin
-          var3samples_pos := length(self._var3samples);
-          SetLength(self._var3samples, var3samples_pos+self._nRecs);
+          _var3samples_pos := length(self._var3samples);
+          SetLength(self._var3samples, _var3samples_pos+self._nRecs);
           recOfs := self._recOfs + self._var1size + self._var2size;
           count := self._nRecs;
           while (count > 0) and(recOfs + self._var3size <= buffSize) do
             begin
               v := self._decodeVal(sdata, recOfs, self._var3size) / 1000.0;
-              self._var3samples[var3samples_pos] := v*mult3;
-              inc(var3samples_pos);
+              self._var3samples[_var3samples_pos] := v*mult3;
+              inc(_var3samples_pos);
               recOfs := recOfs + recSize;
             end;
-          SetLength(self._var3samples, var3samples_pos);
+          SetLength(self._var3samples, _var3samples_pos);
         end;
       result := YAPI_SUCCESS;
       exit;

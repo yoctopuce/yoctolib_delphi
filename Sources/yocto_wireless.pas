@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 63506 2024-11-28 10:42:13Z seb $
+ * $Id: yocto_wireless.pas 66665 2025-05-14 07:32:24Z seb $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -926,20 +926,18 @@ implementation
   function TYWireless.get_detectedWlans():TYWlanRecordArray;
     var
       json : TByteArray;
-      wlanlist : TStringArray;
+      wlanlist : TTByteArrayArray;
       res : TYWlanRecordArray;
       res_pos : LongInt;
       ii_0 : LongInt;
     begin
-      SetLength(wlanlist, 0);
-
       json := self._download('wlan.json?by=name');
       wlanlist := self._json_get_array(json);
       res_pos := 0;
       SetLength(res, length(wlanlist));;
       for ii_0:=0 to length(wlanlist)-1 do
         begin
-          res[res_pos] := TYWlanRecord.create(wlanlist[ii_0]);
+          res[res_pos] := TYWlanRecord.create(_ByteToString(wlanlist[ii_0]));
           inc(res_pos);
         end;
       result := res;

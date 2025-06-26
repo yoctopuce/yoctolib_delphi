@@ -1052,11 +1052,11 @@ implementation
 
   function TYRefFrame.start3DCalibration():LongInt;
     var
-      calibOrient_pos : LongInt;
-      calibDataAccX_pos : LongInt;
-      calibDataAccY_pos : LongInt;
-      calibDataAccZ_pos : LongInt;
-      calibDataAcc_pos : LongInt;
+      _calibOrient_pos : LongInt;
+      _calibDataAccX_pos : LongInt;
+      _calibDataAccY_pos : LongInt;
+      _calibDataAccZ_pos : LongInt;
+      _calibDataAcc_pos : LongInt;
     begin
       if not(self.isOnline) then
         begin
@@ -1077,15 +1077,15 @@ implementation
       self._calibProgress := 1;
       self._calibInternalPos := 0;
       self._calibPrevTick := ((yGetTickCount) and ($07FFFFFFF));
-      calibOrient_pos := 0;
+      _calibOrient_pos := 0;
       SetLength(self._calibOrient, 6);;
-      calibDataAccX_pos := 0;
+      _calibDataAccX_pos := 0;
       SetLength(self._calibDataAccX, 6 * self._calibCount);;
-      calibDataAccY_pos := 0;
+      _calibDataAccY_pos := 0;
       SetLength(self._calibDataAccY, 6 * self._calibCount);;
-      calibDataAccZ_pos := 0;
+      _calibDataAccZ_pos := 0;
       SetLength(self._calibDataAccZ, 6 * self._calibCount);;
-      calibDataAcc_pos := 0;
+      _calibDataAcc_pos := 0;
       SetLength(self._calibDataAcc, 6 * self._calibCount);;
       result := YAPI_SUCCESS;
       exit;
@@ -1240,8 +1240,8 @@ implementation
               result := YAPI_SUCCESS;
               exit;
             end;
-          self._calibOrient[calibOrient_pos] := orient;
-          inc(calibOrient_pos);
+          self._calibOrient[_calibOrient_pos] := orient;
+          inc(_calibOrient_pos);
         end
       else
         begin
@@ -1255,19 +1255,19 @@ implementation
         end;
       // Save measure
       self._calibStageHint := 'calibrating..';
-      self._calibDataAccX[calibDataAccX_pos] := xVal;
-      inc(calibDataAccX_pos);
-      self._calibDataAccY[calibDataAccY_pos] := yVal;
-      inc(calibDataAccY_pos);
-      self._calibDataAccZ[calibDataAccZ_pos] := zVal;
-      inc(calibDataAccZ_pos);
-      self._calibDataAcc[calibDataAcc_pos] := norm;
-      inc(calibDataAcc_pos);
+      self._calibDataAccX[_calibDataAccX_pos] := xVal;
+      inc(_calibDataAccX_pos);
+      self._calibDataAccY[_calibDataAccY_pos] := yVal;
+      inc(_calibDataAccY_pos);
+      self._calibDataAccZ[_calibDataAccZ_pos] := zVal;
+      inc(_calibDataAccZ_pos);
+      self._calibDataAcc[_calibDataAcc_pos] := norm;
+      inc(_calibDataAcc_pos);
       self._calibInternalPos := self._calibInternalPos + 1;
-      self._calibProgress := 1 + 16 * (self._calibStage - 1) + (16 * self._calibInternalPos div self._calibCount);
+      self._calibProgress := 1 + 16 * (self._calibStage - 1) + ((16 * self._calibInternalPos) div self._calibCount);
       if self._calibInternalPos < self._calibCount then
         begin
-          self._calibStageProgress := 1 + (99 * self._calibInternalPos div self._calibCount);
+          self._calibStageProgress := 1 + ((99 * self._calibInternalPos) div self._calibCount);
           result := YAPI_SUCCESS;
           exit;
         end;

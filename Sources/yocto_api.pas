@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 66103 2025-05-02 06:55:47Z seb $
+ * $Id: yocto_api.pas 67627 2025-06-20 14:29:43Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -82,6 +82,7 @@ type
 
   TStringArray    = array of string;
   TByteArray      = array of byte;
+  TTByteArrayArray = array of TByteArray;
   TDoubleArray    = array of double;
   floatArr        = TDoubleArray;  // for backward compatibility
   TLongIntArray   = array of LongInt;
@@ -127,8 +128,8 @@ const
   Y_RESEND_MISSING_PKT = 4;
   Y_DETECT_ALL : integer = (Y_DETECT_USB or Y_DETECT_NET);
 
-  YOCTO_API_VERSION_STR     = '1.11';
-  YOCTO_API_BUILD_NO        = '66320';
+  YOCTO_API_VERSION_STR     = '2.1';
+  YOCTO_API_BUILD_NO        = '67663';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -238,6 +239,12 @@ const YAPI_SSL_UNK_CERT              = -20;     // The certificate is not correc
 
 const Y_LOGICALNAME_INVALID           = YAPI_INVALID_STRING;
 const Y_ADVERTISEDVALUE_INVALID       = YAPI_INVALID_STRING;
+
+    // Yoctopuce error codes, used by default as function return value
+const Y_NO_TRUSTED_CA_CHECK = 1;       // Disables certificate checking
+const Y_NO_EXPIRATION_CHECK = 2;       // Disables certificate expiration date checking
+const Y_NO_HOSTNAME_CHECK = 4;         // Disable hostname checking
+const Y_LEGACY = 8;                    // Allow non-secure connection (similar to v1.10)
 
 //--- (end of generated code: YFunction definitions)
 const YAPI_HASH_BUF_SIZE            = 28;
@@ -503,7 +510,7 @@ type
     /// <para>
     ///   The default value is inherited from <c>ySetNetworkTimeout</c>
     ///   at the time when the hub is registered, but it can be updated
-    ///   afterwards for each specific hub if necessary.
+    ///   afterward for each specific hub if necessary.
     /// </para>
     /// <para>
     /// </para>
@@ -521,7 +528,7 @@ type
     /// <para>
     ///   The default value is inherited from <c>ySetNetworkTimeout</c>
     ///   at the time when the hub is registered, but it can be updated
-    ///   afterwards for each specific hub if necessary.
+    ///   afterward for each specific hub if necessary.
     /// </para>
     /// </summary>
     /// <returns>
@@ -711,9 +718,10 @@ type
     function  _download(path:string) :TByteArray;
     function  _request(request: string) :TByteArray; overload;
     function  _request(request: TByteArray) :TByteArray; overload;
-    function  _json_get_array(data: TByteArray) :TStringArray;
-    function  _get_json_path(json, path: string):string;
-    function  _decode_json_string(json: string):string;
+    function  _json_get_array(data: TByteArray) :TTByteArrayArray;
+    function  _get_json_path(json:TByteArray; path: string):TByteArray;
+    function  _decode_json_string(json: TByteArray):string;
+    function  _decode_json_int(json: TByteArray):integer;
     function  _json_get_key(data: TByteArray; key: string):string;
     function  _json_get_string(data: TByteArray):string;
 
@@ -2146,7 +2154,7 @@ type
     ///   a binary buffer with the file content
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns  <c>YAPI_INVALID_STRING</c>.
+    ///   On failure, throws an exception or returns an empty content.
     /// </para>
     ///-
     function download(pathname: string):TByteArray; overload; virtual;
@@ -2163,7 +2171,7 @@ type
     /// </summary>
     /// <returns>
     ///   a binary buffer with module icon, in png format.
-    ///   On failure, throws an exception or returns  <c>YAPI_INVALID_STRING</c>.
+    ///   On failure, throws an exception or returns an empty content.
     /// </returns>
     ///-
     function get_icon2d():TByteArray; overload; virtual;
@@ -3052,6 +3060,22 @@ end;
 
     ////
     /// <summary>
+    ///   Returns the path to the dynamic YAPI library.
+    /// <para>
+    ///   This function is useful for debugging problems loading the
+    ///   dynamic library YAPI. This function is supported by the C#, Python and VB languages. The other
+    ///   libraries return an
+    ///   empty string.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string containing the path of the YAPI dynamic library.
+    /// </returns>
+    ///-
+    function GetYAPISharedLibraryPath():string; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Adds a UDEV rule which authorizes all users to access Yoctopuce modules
     ///   connected to the USB ports.
     /// <para>
@@ -3073,11 +3097,89 @@ end;
 
     ////
     /// <summary>
+    ///   Download the TLS/SSL certificate from the hub.
+    /// <para>
+    ///   This function allows to download a TLS/SSL certificate to add it
+    ///   to the list of trusted certificates using the AddTrustedCertificates method.
+    /// </para>
+    /// </summary>
+    /// <param name="url">
+    ///   the root URL of the VirtualHub V2 or HTTP server.
+    /// </param>
+    /// <param name="mstimeout">
+    ///   the number of milliseconds available to download the certificate.
+    /// </param>
+    /// <returns>
+    ///   a string containing the certificate. In case of error, returns a string starting with "error:".
+    /// </returns>
+    ///-
+    function DownloadHostCertificate(url: string; mstimeout: u64):string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Adds a TLS/SSL certificate to the list of trusted certificates.
+    /// <para>
+    ///   By default, the library
+    ///   library will reject TLS/SSL connections to servers whose certificate is not known. This function
+    ///   function allows to add a list of known certificates. It is also possible to disable the verification
+    ///   using the SetNetworkSecurityOptions method.
+    /// </para>
+    /// </summary>
+    /// <param name="certificate">
+    ///   a string containing one or more certificates.
+    /// </param>
+    /// <returns>
+    ///   an empty string if the certificate has been added correctly.
+    ///   In case of error, returns a string starting with "error:".
+    /// </returns>
+    ///-
+    function AddTrustedCertificates(certificate: string):string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Set the path of Certificate Authority file on local filesystem.
+    /// <para>
+    ///   This method takes as a parameter the path of a file containing all certificates in PEM format.
+    ///   For technical reasons, only one file can be specified. So if you need to connect to several Hubs
+    ///   instances with self-signed certificates, you'll need to use
+    ///   a single file containing all the certificates end-to-end. Passing a empty string will restore the
+    ///   default settings. This option is only supported by PHP library.
+    /// </para>
+    /// </summary>
+    /// <param name="certificatePath">
+    ///   the path of the file containing all certificates in PEM format.
+    /// </param>
+    /// <returns>
+    ///   an empty string if the certificate has been added correctly.
+    ///   In case of error, returns a string starting with "error:".
+    /// </returns>
+    ///-
+    function SetTrustedCertificatesList(certificatePath: string):string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Enables or disables certain TLS/SSL certificate checks.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="opts">
+    ///   The options are <c>YAPI.NO_TRUSTED_CA_CHECK</c>,
+    ///   <c>YAPI.NO_EXPIRATION_CHECK</c>, <c>YAPI.NO_HOSTNAME_CHECK</c>.
+    /// </param>
+    /// <returns>
+    ///   an empty string if the options are taken into account.
+    ///   On error, returns a string beginning with "error:".
+    /// </returns>
+    ///-
+    function SetNetworkSecurityOptions(opts: LongInt):string; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Modifies the network connection delay for <c>yRegisterHub()</c> and <c>yUpdateDeviceList()</c>.
     /// <para>
     ///   This delay impacts only the YoctoHubs and VirtualHub
     ///   which are accessible through the network. By default, this delay is of 20000 milliseconds,
-    ///   but depending or you network you may want to change this delay,
+    ///   but depending on your network you may want to change this delay,
     ///   gor example if your network infrastructure is based on a GSM connection.
     /// </para>
     /// <para>
@@ -3096,7 +3198,7 @@ end;
     /// <para>
     ///   This delay impacts only the YoctoHubs and VirtualHub
     ///   which are accessible through the network. By default, this delay is of 20000 milliseconds,
-    ///   but depending or you network you may want to change this delay,
+    ///   but depending on your network you may want to change this delay,
     ///   for example if your network infrastructure is based on a GSM connection.
     /// </para>
     /// </summary>
@@ -4662,7 +4764,7 @@ end;
     ///-
     function get_dataSets():TYDataSetArray; overload; virtual;
 
-    function parse_dataSets(json: TByteArray):TYDataSetArray; overload; virtual;
+    function parse_dataSets(jsonbuff: TByteArray):TYDataSetArray; overload; virtual;
 
 
     ////
@@ -4800,6 +4902,22 @@ end;
 
     ////
     /// <summary>
+    ///   Returns the path to the dynamic YAPI library.
+    /// <para>
+    ///   This function is useful for debugging problems loading the
+    ///   dynamic library YAPI. This function is supported by the C#, Python and VB languages. The other
+    ///   libraries return an
+    ///   empty string.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string containing the path of the YAPI dynamic library.
+    /// </returns>
+    ///-
+    function yGetYAPISharedLibraryPath():string;
+
+    ////
+    /// <summary>
     ///   Adds a UDEV rule which authorizes all users to access Yoctopuce modules
     ///   connected to the USB ports.
     /// <para>
@@ -4821,11 +4939,89 @@ end;
 
     ////
     /// <summary>
+    ///   Download the TLS/SSL certificate from the hub.
+    /// <para>
+    ///   This function allows to download a TLS/SSL certificate to add it
+    ///   to the list of trusted certificates using the AddTrustedCertificates method.
+    /// </para>
+    /// </summary>
+    /// <param name="url">
+    ///   the root URL of the VirtualHub V2 or HTTP server.
+    /// </param>
+    /// <param name="mstimeout">
+    ///   the number of milliseconds available to download the certificate.
+    /// </param>
+    /// <returns>
+    ///   a string containing the certificate. In case of error, returns a string starting with "error:".
+    /// </returns>
+    ///-
+    function yDownloadHostCertificate(url: string; mstimeout: u64):string;
+
+    ////
+    /// <summary>
+    ///   Adds a TLS/SSL certificate to the list of trusted certificates.
+    /// <para>
+    ///   By default, the library
+    ///   library will reject TLS/SSL connections to servers whose certificate is not known. This function
+    ///   function allows to add a list of known certificates. It is also possible to disable the verification
+    ///   using the SetNetworkSecurityOptions method.
+    /// </para>
+    /// </summary>
+    /// <param name="certificate">
+    ///   a string containing one or more certificates.
+    /// </param>
+    /// <returns>
+    ///   an empty string if the certificate has been added correctly.
+    ///   In case of error, returns a string starting with "error:".
+    /// </returns>
+    ///-
+    function yAddTrustedCertificates(certificate: string):string;
+
+    ////
+    /// <summary>
+    ///   Set the path of Certificate Authority file on local filesystem.
+    /// <para>
+    ///   This method takes as a parameter the path of a file containing all certificates in PEM format.
+    ///   For technical reasons, only one file can be specified. So if you need to connect to several Hubs
+    ///   instances with self-signed certificates, you'll need to use
+    ///   a single file containing all the certificates end-to-end. Passing a empty string will restore the
+    ///   default settings. This option is only supported by PHP library.
+    /// </para>
+    /// </summary>
+    /// <param name="certificatePath">
+    ///   the path of the file containing all certificates in PEM format.
+    /// </param>
+    /// <returns>
+    ///   an empty string if the certificate has been added correctly.
+    ///   In case of error, returns a string starting with "error:".
+    /// </returns>
+    ///-
+    function ySetTrustedCertificatesList(certificatePath: string):string;
+
+    ////
+    /// <summary>
+    ///   Enables or disables certain TLS/SSL certificate checks.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="opts">
+    ///   The options are <c>YAPI.NO_TRUSTED_CA_CHECK</c>,
+    ///   <c>YAPI.NO_EXPIRATION_CHECK</c>, <c>YAPI.NO_HOSTNAME_CHECK</c>.
+    /// </param>
+    /// <returns>
+    ///   an empty string if the options are taken into account.
+    ///   On error, returns a string beginning with "error:".
+    /// </returns>
+    ///-
+    function ySetNetworkSecurityOptions(opts: LongInt):string;
+
+    ////
+    /// <summary>
     ///   Modifies the network connection delay for <c>yRegisterHub()</c> and <c>yUpdateDeviceList()</c>.
     /// <para>
     ///   This delay impacts only the YoctoHubs and VirtualHub
     ///   which are accessible through the network. By default, this delay is of 20000 milliseconds,
-    ///   but depending or you network you may want to change this delay,
+    ///   but depending on your network you may want to change this delay,
     ///   gor example if your network infrastructure is based on a GSM connection.
     /// </para>
     /// <para>
@@ -4844,7 +5040,7 @@ end;
     /// <para>
     ///   This delay impacts only the YoctoHubs and VirtualHub
     ///   which are accessible through the network. By default, this delay is of 20000 milliseconds,
-    ///   but depending or you network you may want to change this delay,
+    ///   but depending on your network you may want to change this delay,
     ///   for example if your network infrastructure is based on a GSM connection.
     /// </para>
     /// </summary>
@@ -5097,7 +5293,7 @@ type
   ///   computer, use the IP address 127.0.0.1. If the given IP is unresponsive, <c>yRegisterHub</c>
   ///   will not return until a time-out defined by <c>ySetNetworkTimeout</c> has elapsed.
   ///   However, it is possible to preventively test a connection  with <c>yTestHub</c>.
-  ///   If you cannot afford a network time-out, you can use the non blocking <c>yPregisterHub</c>
+  ///   If you cannot afford a network time-out, you can use the non-blocking <c>yPregisterHub</c>
   ///   function that will establish the connection as soon as it is available.
   /// </para>
   /// <para>
@@ -5631,6 +5827,7 @@ type
   function _yapiFloatToStr(value:double):string;
   function _stringSplit(str :String; delimiter :Char):TStringArray;
   function _atoi(val:string):integer;
+  function _bincrc(content:TByteArray; ofs:integer; len:integer):integer;
   function _bytesToHexStr(bytes: TByteArray; ofs:integer; len:integer):string;
   function _hexStrToBin(hex_str:string):TByteArray;
   function _bytesMerge(array_a:TByteArray; array_b:TByteArray):TByteArray;
@@ -5920,10 +6117,16 @@ const
   procedure _yapiSetNetworkTimeout(sValidity:integer); cdecl; external dllfile name 'yapiSetNetworkTimeout';
   function _yapiGetNetworkTimeout():integer; cdecl; external dllfile name 'yapiGetNetworkTimeout';
   function _yapiAddUdevRulesForYocto(force:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiAddUdevRulesForYocto';
+  function _yapiSetSSLCertificateSrv(certfile:pansichar; keyfile:pansichar; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiSetSSLCertificateSrv';
+  function _yapiAddSSLCertificateCli(cert:pansichar; cert_len:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiAddSSLCertificateCli';
+  function _yapiSetNetworkSecurityOptions(options:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiSetNetworkSecurityOptions';
+  function _yapiGetRemoteCertificate(rooturl:pansichar; timeout:u64; buffer:pansichar; maxsize:integer; var neededsize:integer; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiGetRemoteCertificate';
   function _yapiGetNextHubRef(hubref:integer):integer; cdecl; external dllfile name 'yapiGetNextHubRef';
   function _yapiGetHubStrAttr(hubref:integer; attrname:pansichar; attrval:pansichar; maxsize:integer; var neededsize:integer):integer; cdecl; external dllfile name 'yapiGetHubStrAttr';
   function _yapiGetHubIntAttr(hubref:integer; attrname:pansichar):integer; cdecl; external dllfile name 'yapiGetHubIntAttr';
   function _yapiSetHubIntAttr(hubref:integer; attrname:pansichar; value:integer):integer; cdecl; external dllfile name 'yapiSetHubIntAttr';
+  function _yapiSetTrustedCertificatesList(certificatePath:pansichar; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiSetTrustedCertificatesList';
+  function _yapiCRC32(data:pansichar; ofs:integer; len:integer):u32; cdecl; external dllfile name 'yapiCRC32';
 //--- (end of generated code: YFunction dlldef)
 
 
@@ -6557,6 +6760,20 @@ var
         end;
     end;
 
+  function _bincrc(content:TByteArray; ofs:integer; len:integer):integer;
+    var
+      res:u64;
+    begin
+      res :=  _yapiCRC32(pansichar(content),ofs, len);
+      if  (res > $07FFFFFFF) then
+         begin
+          _bincrc := res - $0100000000;
+        end
+      else
+        begin
+          _bincrc := res;
+        end;
+    end;
 
   function _bytesToHexStr(bytes: TByteArray; ofs:integer; len:integer):string;
     const
@@ -6754,7 +6971,7 @@ var
       apidate : string;
     begin
       yapiGetAPIVersion(version, apidate);
-      yGetAPIVersion:=  '1.11.6320 (' + version + ')';
+      yGetAPIVersion:=  '2.1.7663 (' + version + ')';
     end;
 
 
@@ -7625,7 +7842,7 @@ var
 
   procedure TYHub.set_networkTimeout(networkMsTimeout: LongInt);
     begin
-      self._setIntAttr('networkTimeout', networkMsTimeout);
+      self._setIntAttr('networkTimeout',networkMsTimeout);
     end;
 
 
@@ -8693,11 +8910,11 @@ var
       p.free();
     end;
 
-  function  TYFunction._json_get_array(data: TByteArray):TStringArray;
+  function  TYFunction._json_get_array(data: TByteArray):TTByteArrayArray;
     var
       st  : string;
       p   : TJSONparser;
-      res : TStringArray;
+      res : TTByteArrayArray;
       size,i:integer;
     begin
       size:=length(data);
@@ -8719,36 +8936,37 @@ var
       end;
 
 
-      res:=TStringArray(p.GetAllChilds(nil));
+      res:=TTByteArrayArray(p.GetAllChilds(nil));
       p.free();
       _json_get_array := res;
     end;
 
-  function  TYFunction._get_json_path(json, path: string):string;
+  function  TYFunction._get_json_path(json:TByteArray; path: string):TByteArray;
     var
       buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
       perror, p: pansichar;
       dllres    : YRETCODE;
-      res : string;
+      res : TByteArray;
     begin
       buffer[0]:=#0;
       perror:=buffer;
       dllres := _yapiJsonGetPath( pansichar(ansistring(path)),
-                                          pansichar(ansistring(json)),
+                                          pansichar(json),
                                           length(json),
                                           p, perror);
       if(dllres<=0) then
         begin
-          _get_json_path := '';
+          _get_json_path := res;
           exit;
         end;
-      res := string(p);
-      SetLength(res, dllres);
+      setlength(res, dllres);
+      if (p <> NIL) then
+        move(p^,res[0],dllres);
       _get_json_path := res;
     end;
 
 
-  function  TYFunction._decode_json_string(json: string):string;
+  function  TYFunction._decode_json_string(json: TByteArray):string;
     var
       bigbuff : pansichar;
       size : LongInt;
@@ -8760,13 +8978,18 @@ var
       else
         begin
           getmem(bigbuff, size);
-          res := _yapiJsonDecodeString(pansichar(ansistring(json)), bigbuff);
+          res := _yapiJsonDecodeString(pansichar(json), bigbuff);
           if (res>0) then
             _decode_json_string := string(bigbuff)
           else
             _decode_json_string := '';
           freemem(bigbuff);
         end;
+    end;
+
+  function  TYFunction._decode_json_int(json: TByteArray):integer;
+    begin
+     _decode_json_int := _atoi(_ByteToString(json));
     end;
 
   function   TYFunction._json_get_string(data: TByteArray):string;
@@ -9991,18 +10214,17 @@ var
       name : string;
       item : string;
       t_type : string;
-      id : string;
+      pageid : string;
       url : string;
       file_data : string;
       file_data_bin : TByteArray;
       temp_data_bin : TByteArray;
       ext_settings : string;
-      filelist : TStringArray;
+      filelist : TTByteArrayArray;
       templist : TStringArray;
       ii_0 : LongInt;
       ii_1 : LongInt;
     begin
-      SetLength(filelist, 0);
       SetLength(templist, 0);
 
       settings := self._download('api.json');
@@ -10022,12 +10244,12 @@ var
               t_type := _ByteToString(self._download(url));
               if (t_type = 'RES_NTC') or (t_type = 'RES_LINEAR') then
                 begin
-                  id := Copy(templist[ii_0], 11 + 1, Length(templist[ii_0]) - 11);
-                  if (id = '') then
+                  pageid := Copy(templist[ii_0], 11 + 1, Length(templist[ii_0]) - 11);
+                  if (pageid = '') then
                     begin
-                      id := '1';
+                      pageid := '1';
                     end;
-                  temp_data_bin := self._download('extra.json?page='+id);
+                  temp_data_bin := self._download('extra.json?page='+pageid);
                   if length(temp_data_bin) > 0 then
                     begin
                       item := ''+sep+'{"fid":"'+templist[ii_0]+'", "json":'+_ByteToString(temp_data_bin)+'}'#10'';
@@ -10040,7 +10262,7 @@ var
       ext_settings := ext_settings + '],'#10'"files":[';
       if self.hasFunction('files') then
         begin
-          json := self._download('files.json?a=dir&f=');
+          json := self._download('files.json?a=dir&d=1&f=');
           if length(json) = 0 then
             begin
               result := json;
@@ -10050,11 +10272,18 @@ var
           sep := '';
           for ii_1:=0 to length(filelist)-1 do
             begin
-              name := self._json_get_key(_StrToByte(filelist[ii_1]), 'name');
+              name := self._json_get_key(filelist[ii_1], 'name');
               if (Length(name) > 0) and not((name = 'startupConf.json')) then
                 begin
-                  file_data_bin := self._download(self._escapeAttr(name));
-                  file_data := _bytesToHexStr(file_data_bin, 0, length(file_data_bin));
+                  if (Copy(name, Length(name)-1 + 1, 1) = '/') then
+                    begin
+                      file_data := '';
+                    end
+                  else
+                    begin
+                      file_data_bin := self._download(self._escapeAttr(name));
+                      file_data := _bytesToHexStr(file_data_bin, 0, length(file_data_bin));
+                    end;
                   item := ''+sep+'{"name":"'+name+'", "data":"'+file_data+'"}'#10'';
                   ext_settings := ext_settings + item;
                   sep := ',';
@@ -10069,14 +10298,15 @@ var
 
   function TYModule.loadThermistorExtra(funcId: string; jsonExtra: string):LongInt;
     var
-      values : TStringArray;
+      values : TTByteArrayArray;
       url : string;
       curr : string;
+      binCurr : TByteArray;
       currTemp : string;
+      binCurrTemp : TByteArray;
       ofs : LongInt;
       size : LongInt;
     begin
-      SetLength(values, 0);
       url := 'api/' + funcId + '.json?command=Z';
 
       self._download(url);
@@ -10086,8 +10316,10 @@ var
       size := length(values);
       while ofs + 1 < size do
         begin
-          curr := values[ofs];
-          currTemp := values[ofs + 1];
+          binCurr := values[ofs];
+          binCurrTemp := values[ofs + 1];
+          curr := self._json_get_string(binCurr);
+          currTemp := self._json_get_string(binCurrTemp);
           url := 'api/'+funcId+'.json?command=m'+curr+':'+currTemp;
           self._download(url);
           ofs := ofs + 2;
@@ -10099,21 +10331,21 @@ var
 
   function TYModule.set_extraSettings(jsonExtra: string):LongInt;
     var
-      extras : TStringArray;
+      extras : TTByteArrayArray;
+      tmp : TByteArray;
       functionId : string;
-      data : string;
+      data : TByteArray;
       ii_0 : LongInt;
     begin
-      SetLength(extras, 0);
       extras := self._json_get_array(_StrToByte(jsonExtra));
       for ii_0:=0 to length(extras)-1 do
         begin
-          functionId := self._get_json_path(extras[ii_0], 'fid');
-          functionId := self._decode_json_string(functionId);
+          tmp := self._get_json_path(extras[ii_0], 'fid');
+          functionId := self._json_get_string(tmp);
           data := self._get_json_path(extras[ii_0], 'json');
           if self.hasFunction(functionId) then
             begin
-              self.loadThermistorExtra(functionId, data);
+              self.loadThermistorExtra(functionId, _ByteToString(data));
             end;
         end;
       result := YAPI_SUCCESS;
@@ -10124,52 +10356,50 @@ var
   function TYModule.set_allSettingsAndFiles(settings: TByteArray):LongInt;
     var
       down : TByteArray;
-      json : string;
-      json_api : string;
-      json_files : string;
-      json_extra : string;
+      json_api : TByteArray;
+      json_files : TByteArray;
+      json_extra : TByteArray;
       fuperror : LongInt;
       globalres : LongInt;
-        files : TStringArray;
+        files : TTByteArrayArray;
         res : string;
+        tmp : TByteArray;
         name : string;
         data : string;
       ii_0 : LongInt;
     begin
-      SetLength(files, 0);
       fuperror := 0;
-      json := _ByteToString(settings);
-      json_api := self._get_json_path(json, 'api');
-      if (json_api = '') then
+      json_api := self._get_json_path(settings, 'api');
+      if length(json_api) = 0 then
         begin
           result := self.set_allSettings(settings);
           exit;
         end;
-      json_extra := self._get_json_path(json, 'extras');
-      if not((json_extra = '')) then
+      json_extra := self._get_json_path(settings, 'extras');
+      if length(json_extra) > 0 then
         begin
-          self.set_extraSettings(json_extra);
+          self.set_extraSettings(_ByteToString(json_extra));
         end;
-      self.set_allSettings(_StrToByte(json_api));
+      self.set_allSettings(json_api);
       if self.hasFunction('files') then
         begin
           down := self._download('files.json?a=format');
-          res := self._get_json_path(_ByteToString(down), 'res');
-          res := self._decode_json_string(res);
+          down := self._get_json_path(down, 'res');
+          res := self._json_get_string(down);
           if not((res = 'ok')) then
             begin
               self._throw(YAPI_IO_ERROR,'format failed');
               result:=YAPI_IO_ERROR;
               exit;
             end;
-          json_files := self._get_json_path(json, 'files');
-          files := self._json_get_array(_StrToByte(json_files));
+          json_files := self._get_json_path(settings, 'files');
+          files := self._json_get_array(json_files);
           for ii_0:=0 to length(files)-1 do
             begin
-              name := self._get_json_path(files[ii_0], 'name');
-              name := self._decode_json_string(name);
-              data := self._get_json_path(files[ii_0], 'data');
-              data := self._decode_json_string(data);
+              tmp := self._get_json_path(files[ii_0], 'name');
+              name := self._json_get_string(tmp);
+              tmp := self._get_json_path(files[ii_0], 'data');
+              data := self._json_get_string(tmp);
               if (name = '') then
                 begin
                   fuperror := fuperror + 1;
@@ -10181,7 +10411,7 @@ var
             end;
         end;
       // Apply settings a second time for file-dependent settings and dynamic sensor nodes
-      globalres := self.set_allSettings(_StrToByte(json_api));
+      globalres := self.set_allSettings(json_api);
       if not(fuperror = 0) then
         begin
           self._throw(YAPI_IO_ERROR,'Error during file upload');
@@ -10678,12 +10908,12 @@ var
     var
       restoreLast : TStringArray;
       old_json_flat : TByteArray;
-      old_dslist : TStringArray;
+      old_dslist : TTByteArrayArray;
       old_jpath : TStringArray;
       old_jpath_len : TLongIntArray;
       old_val_arr : TStringArray;
       actualSettings : TByteArray;
-      new_dslist : TStringArray;
+      new_dslist : TTByteArrayArray;
       new_jpath : TStringArray;
       new_jpath_len : TLongIntArray;
       new_val_arr : TStringArray;
@@ -10703,7 +10933,7 @@ var
       new_serial : string;
       url : string;
       tmp : string;
-      new_calib : string;
+      binTmp : TByteArray;
       sensorType : string;
       unit_name : string;
       newval : string;
@@ -10712,43 +10942,43 @@ var
       each_str : string;
       do_update : boolean;
       found : boolean;
-      jpath_pos : LongInt;
-      len_pos : LongInt;
-      arr_pos : LongInt;
+      old_jpath_pos : LongInt;
+      old_jpath_len_pos : LongInt;
+      old_val_arr_pos : LongInt;
       ii_0 : LongInt;
       ignoreErrMsg : string;
+      new_jpath_pos : LongInt;
+      new_jpath_len_pos : LongInt;
+      new_val_arr_pos : LongInt;
       ii_1 : LongInt;
       restoreLast_pos : LongInt;
       ii_2 : LongInt;
     begin
       SetLength(restoreLast, 0);
-      SetLength(old_dslist, 0);
       SetLength(old_jpath, 0);
       SetLength(old_val_arr, 0);
-      SetLength(new_dslist, 0);
       SetLength(new_jpath, 0);
       SetLength(new_val_arr, 0);
       res := YAPI_SUCCESS;
-      tmp := _ByteToString(settings);
-      tmp := self._get_json_path(tmp, 'api');
-      if not((tmp = '')) then
+      binTmp := self._get_json_path(settings, 'api');
+      if length(binTmp) > 0 then
         begin
-          settings := _StrToByte(tmp);
+          settings := binTmp;
         end;
       old_serial := '';
       oldval := '';
       newval := '';
       old_json_flat := self._flattenJsonStruct(settings);
       old_dslist := self._json_get_array(old_json_flat);
-      jpath_pos := length(old_jpath);
-      SetLength(old_jpath, jpath_pos+length(old_dslist));;
-      len_pos := length(old_jpath_len);
-      SetLength(old_jpath_len, len_pos+length(old_dslist));;
-      arr_pos := length(old_val_arr);
-      SetLength(old_val_arr, arr_pos+length(old_dslist));;
+      old_jpath_pos := length(old_jpath);
+      SetLength(old_jpath, old_jpath_pos+length(old_dslist));;
+      old_jpath_len_pos := length(old_jpath_len);
+      SetLength(old_jpath_len, old_jpath_len_pos+length(old_dslist));;
+      old_val_arr_pos := length(old_val_arr);
+      SetLength(old_val_arr, old_val_arr_pos+length(old_dslist));;
       for ii_0:=0 to length(old_dslist)-1 do
         begin
-          each_str := self._json_get_string(_StrToByte(old_dslist[ii_0]));
+          each_str := self._json_get_string(old_dslist[ii_0]);
           // split json path and attr
           leng := Length(each_str);
           eqpos := (pos('=', each_str) - 1);
@@ -10761,20 +10991,20 @@ var
           jpath := Copy(each_str, 0 + 1, eqpos);
           eqpos := eqpos + 1;
           value := Copy(each_str, eqpos + 1, leng - eqpos);
-          old_jpath[jpath_pos] := jpath;
-          inc(jpath_pos);
-          old_jpath_len[len_pos] := Length(jpath);
-          inc(len_pos);
-          old_val_arr[arr_pos] := value;
-          inc(arr_pos);
+          old_jpath[old_jpath_pos] := jpath;
+          inc(old_jpath_pos);
+          old_jpath_len[old_jpath_len_pos] := Length(jpath);
+          inc(old_jpath_len_pos);
+          old_val_arr[old_val_arr_pos] := value;
+          inc(old_val_arr_pos);
           if (jpath = 'module/serialNumber') then
             begin
               old_serial := value;
             end;
         end;
-      SetLength(old_jpath, jpath_pos);;
-      SetLength(old_jpath_len, len_pos);;
-      SetLength(old_val_arr, arr_pos);;
+      SetLength(old_jpath, old_jpath_pos);;
+      SetLength(old_jpath_len, old_jpath_len_pos);;
+      SetLength(old_val_arr, old_val_arr_pos);;
 
       Try
         actualSettings := self._download('api.json');
@@ -10790,16 +11020,16 @@ var
         end;
       actualSettings := self._flattenJsonStruct(actualSettings);
       new_dslist := self._json_get_array(actualSettings);
-      jpath_pos := length(new_jpath);
-      SetLength(new_jpath, jpath_pos+length(new_dslist));;
-      len_pos := length(new_jpath_len);
-      SetLength(new_jpath_len, len_pos+length(new_dslist));;
-      arr_pos := length(new_val_arr);
-      SetLength(new_val_arr, arr_pos+length(new_dslist));;
+      new_jpath_pos := length(new_jpath);
+      SetLength(new_jpath, new_jpath_pos+length(new_dslist));;
+      new_jpath_len_pos := length(new_jpath_len);
+      SetLength(new_jpath_len, new_jpath_len_pos+length(new_dslist));;
+      new_val_arr_pos := length(new_val_arr);
+      SetLength(new_val_arr, new_val_arr_pos+length(new_dslist));;
       for ii_1:=0 to length(new_dslist)-1 do
         begin
           // remove quotes
-          each_str := self._json_get_string(_StrToByte(new_dslist[ii_1]));
+          each_str := self._json_get_string(new_dslist[ii_1]);
           // split json path and attr
           leng := Length(each_str);
           eqpos := (pos('=', each_str) - 1);
@@ -10812,16 +11042,16 @@ var
           jpath := Copy(each_str, 0 + 1, eqpos);
           eqpos := eqpos + 1;
           value := Copy(each_str, eqpos + 1, leng - eqpos);
-          new_jpath[jpath_pos] := jpath;
-          inc(jpath_pos);
-          new_jpath_len[len_pos] := Length(jpath);
-          inc(len_pos);
-          new_val_arr[arr_pos] := value;
-          inc(arr_pos);
+          new_jpath[new_jpath_pos] := jpath;
+          inc(new_jpath_pos);
+          new_jpath_len[new_jpath_len_pos] := Length(jpath);
+          inc(new_jpath_len_pos);
+          new_val_arr[new_val_arr_pos] := value;
+          inc(new_val_arr_pos);
         end;
-      SetLength(new_jpath, jpath_pos);;
-      SetLength(new_jpath_len, len_pos);;
-      SetLength(new_val_arr, arr_pos);;
+      SetLength(new_jpath, new_jpath_pos);;
+      SetLength(new_jpath_len, new_jpath_len_pos);;
+      SetLength(new_val_arr, new_val_arr_pos);;
       restoreLast_pos := length(restoreLast);
       SetLength(restoreLast, restoreLast_pos+5);;
       i := 0;
@@ -10842,159 +11072,159 @@ var
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'firmwareRelease')) then
+          if do_update and((attr = 'firmwareRelease')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'usbCurrent')) then
+          if do_update and((attr = 'usbCurrent')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'upTime')) then
+          if do_update and((attr = 'upTime')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'persistentSettings')) then
+          if do_update and((attr = 'persistentSettings')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'adminPassword')) then
+          if do_update and((attr = 'adminPassword')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'userPassword')) then
+          if do_update and((attr = 'userPassword')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'rebootCountdown')) then
+          if do_update and((attr = 'rebootCountdown')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'advertisedValue')) then
+          if do_update and((attr = 'advertisedValue')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'poeCurrent')) then
+          if do_update and((attr = 'poeCurrent')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'readiness')) then
+          if do_update and((attr = 'readiness')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'ipAddress')) then
+          if do_update and((attr = 'ipAddress')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'subnetMask')) then
+          if do_update and((attr = 'subnetMask')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'router')) then
+          if do_update and((attr = 'router')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'linkQuality')) then
+          if do_update and((attr = 'linkQuality')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'ssid')) then
+          if do_update and((attr = 'ssid')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'channel')) then
+          if do_update and((attr = 'channel')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'security')) then
+          if do_update and((attr = 'security')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'message')) then
+          if do_update and((attr = 'message')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'signalValue')) then
+          if do_update and((attr = 'signalValue')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'currentValue')) then
+          if do_update and((attr = 'currentValue')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'currentRawValue')) then
+          if do_update and((attr = 'currentRawValue')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'currentRunIndex')) then
+          if do_update and((attr = 'currentRunIndex')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'pulseTimer')) then
+          if do_update and((attr = 'pulseTimer')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'lastTimePressed')) then
+          if do_update and((attr = 'lastTimePressed')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'lastTimeReleased')) then
+          if do_update and((attr = 'lastTimeReleased')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'filesCount')) then
+          if do_update and((attr = 'filesCount')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'freeSpace')) then
+          if do_update and((attr = 'freeSpace')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'timeUTC')) then
+          if do_update and((attr = 'timeUTC')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'rtcTime')) then
+          if do_update and((attr = 'rtcTime')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'unixTime')) then
+          if do_update and((attr = 'unixTime')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'dateTime')) then
+          if do_update and((attr = 'dateTime')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'rawValue')) then
+          if do_update and((attr = 'rawValue')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'lastMsg')) then
+          if do_update and((attr = 'lastMsg')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'delayedPulseTimer')) then
+          if do_update and((attr = 'delayedPulseTimer')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'rxCount')) then
+          if do_update and((attr = 'rxCount')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'txCount')) then
+          if do_update and((attr = 'txCount')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'msgCount')) then
+          if do_update and((attr = 'msgCount')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'rxMsgCount')) then
+          if do_update and((attr = 'rxMsgCount')) then
             begin
               do_update := false;
             end;
-          if (do_update) and((attr = 'txMsgCount')) then
+          if do_update and((attr = 'txMsgCount')) then
             begin
               do_update := false;
             end;
@@ -11025,7 +11255,6 @@ var
                   old_calib := '';
                   unit_name := '';
                   sensorType := '';
-                  new_calib := newval;
                   j := 0;
                   found := false;
                   while (j < length(old_jpath)) and not(found) do
@@ -11148,6 +11377,11 @@ var
       content : TByteArray;
     begin
       content := self._download('logs.txt');
+      if length(content) = 0 then
+        begin
+          result := YAPI_INVALID_STRING;
+          exit;
+        end;
       result := _ByteToString(content);
       exit;
     end;
@@ -11779,9 +12013,9 @@ var
       iRef : LongInt;
       fRaw : double;
       fRef : double;
-      calpar_pos : LongInt;
-      calraw_pos : LongInt;
-      calref_pos : LongInt;
+      _calpar_pos : LongInt;
+      _calraw_pos : LongInt;
+      _calref_pos : LongInt;
     begin
       self._caltyp := -1;
       self._scale := -1;
@@ -11832,19 +12066,19 @@ var
           self._offset := 0;
           self._scale := 1000;
           maxpos := length(iCalib);
-          calpar_pos := 0;
+          _calpar_pos := 0;
           SetLength(self._calpar, maxpos);
           position := 1;
           while position < maxpos do
             begin
-              self._calpar[calpar_pos] := iCalib[position];
-              inc(calpar_pos);
+              self._calpar[_calpar_pos] := iCalib[position];
+              inc(_calpar_pos);
               position := position + 1;
             end;
-          SetLength(self._calpar, calpar_pos);
-          calraw_pos := 0;
+          SetLength(self._calpar, _calpar_pos);
+          _calraw_pos := 0;
           SetLength(self._calraw, maxpos);
-          calref_pos := 0;
+          _calref_pos := 0;
           SetLength(self._calref, maxpos);
           position := 1;
           while position + 1 < maxpos do
@@ -11853,14 +12087,14 @@ var
               fRaw := fRaw / 1000.0;
               fRef := iCalib[position + 1];
               fRef := fRef / 1000.0;
-              self._calraw[calraw_pos] := fRaw;
-              inc(calraw_pos);
-              self._calref[calref_pos] := fRef;
-              inc(calref_pos);
+              self._calraw[_calraw_pos] := fRaw;
+              inc(_calraw_pos);
+              self._calref[_calref_pos] := fRef;
+              inc(_calref_pos);
               position := position + 2;
             end;
-          SetLength(self._calraw, calraw_pos);
-          SetLength(self._calref, calref_pos);
+          SetLength(self._calraw, _calraw_pos);
+          SetLength(self._calref, _calref_pos);
         end
       else
         begin
@@ -11913,30 +12147,30 @@ var
             begin
               maxpos := length(iCalib);
             end;
-          calpar_pos := 0;
+          _calpar_pos := 0;
           SetLength(self._calpar, maxpos);
-          calraw_pos := 0;
+          _calraw_pos := 0;
           SetLength(self._calraw, maxpos);
-          calref_pos := 0;
+          _calref_pos := 0;
           SetLength(self._calref, maxpos);
           position := 3;
           while position + 1 < maxpos do
             begin
               iRaw := iCalib[position];
               iRef := iCalib[position + 1];
-              self._calpar[calpar_pos] := iRaw;
-              inc(calpar_pos);
-              self._calpar[calpar_pos] := iRef;
-              inc(calpar_pos);
-              self._calraw[calraw_pos] := _decimalToDouble(iRaw);
-              inc(calraw_pos);
-              self._calref[calref_pos] := _decimalToDouble(iRef);
-              inc(calref_pos);
+              self._calpar[_calpar_pos] := iRaw;
+              inc(_calpar_pos);
+              self._calpar[_calpar_pos] := iRef;
+              inc(_calpar_pos);
+              self._calraw[_calraw_pos] := _decimalToDouble(iRaw);
+              inc(_calraw_pos);
+              self._calref[_calref_pos] := _decimalToDouble(iRef);
+              inc(_calref_pos);
               position := position + 2;
             end;
-          SetLength(self._calpar, calpar_pos);
-          SetLength(self._calraw, calraw_pos);
-          SetLength(self._calref, calref_pos);
+          SetLength(self._calpar, _calpar_pos);
+          SetLength(self._calraw, _calraw_pos);
+          SetLength(self._calref, _calref_pos);
         end;
       result := 0;
       exit;
@@ -12435,6 +12669,31 @@ var
     end;
 
 
+  function TYAPIContext.GetYAPISharedLibraryPath():string;
+    var
+      errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
+      errmsg : pansichar;
+      smallbuff_buffer : array[0..4096] of ansichar;
+      smallbuff : pansichar;
+      res : LongInt;
+      path : string;
+    begin
+      errmsg_buffer[0]:=#0;errmsg:=errmsg_buffer;
+      smallbuff_buffer[0]:=#0;smallbuff:=smallbuff_buffer;
+      res := _yapiGetDLLPath(smallbuff, 4096, errmsg);
+      if res < 0 then
+        begin
+          path := 'error:' + string(errmsg);
+        end
+      else
+        begin
+          path := string(smallbuff);
+        end;
+      result := path;
+      exit;
+    end;
+
+
   function TYAPIContext.AddUdevRule(force: boolean):string;
     var
       msg : string;
@@ -12463,6 +12722,122 @@ var
         end;
       result := msg;
       exit;
+    end;
+
+
+  function TYAPIContext.DownloadHostCertificate(url: string; mstimeout: u64):string;
+    var
+      errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
+      errmsg : pansichar;
+      smallbuff_buffer : array[0..4096] of ansichar;
+      smallbuff : pansichar;
+      bigbuff : pansichar;
+      buffsize : LongInt;
+      fullsize : LongInt;
+      res : LongInt;
+      certifcate : string;
+    begin
+      errmsg_buffer[0]:=#0;errmsg:=errmsg_buffer;
+      smallbuff_buffer[0]:=#0;smallbuff:=smallbuff_buffer;
+      fullsize := 0;
+      res := _yapiGetRemoteCertificate(pansichar(ansistring(url)), mstimeout, smallbuff, 4096, fullsize, errmsg);
+      if res < 0 then
+        begin
+          if res = YAPI_BUFFER_TOO_SMALL then
+            begin
+              fullsize := fullsize * 2;
+              buffsize := fullsize;
+              getmem(bigbuff, buffsize);
+              res := _yapiGetRemoteCertificate(pansichar(ansistring(url)), mstimeout, bigbuff, buffsize, fullsize, errmsg);
+              if res < 0 then
+                begin
+                  certifcate := 'error:' + string(errmsg);
+                end
+              else
+                begin
+                  certifcate := string(bigbuff);
+                end;
+              freemem(bigbuff);
+            end
+          else
+            begin
+              certifcate := 'error:' + string(errmsg);
+            end;
+          result := certifcate;
+          exit;
+        end
+      else
+        begin
+          certifcate := string(smallbuff);
+        end;
+      result := certifcate;
+      exit;
+    end;
+
+
+  function TYAPIContext.AddTrustedCertificates(certificate: string):string;
+    var
+      errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
+      errmsg : pansichar;
+      size : LongInt;
+      res : LongInt;
+    begin
+      errmsg_buffer[0]:=#0;errmsg:=errmsg_buffer;
+      // null char must be inclued
+      size := Length(certificate) + 1;
+      res := _yapiAddSSLCertificateCli(pansichar(ansistring(certificate)), size, errmsg);
+      if res < 0 then
+        begin
+          result := string(errmsg);
+          exit;
+        end
+      else
+        begin
+          result := '';
+          exit;
+        end;
+    end;
+
+
+  function TYAPIContext.SetTrustedCertificatesList(certificatePath: string):string;
+    var
+      errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
+      errmsg : pansichar;
+      res : LongInt;
+    begin
+      errmsg_buffer[0]:=#0;errmsg:=errmsg_buffer;
+      res := _yapiSetTrustedCertificatesList(pansichar(ansistring(certificatePath)), errmsg);
+      if res < 0 then
+        begin
+          result := string(errmsg);
+          exit;
+        end
+      else
+        begin
+          result := '';
+          exit;
+        end;
+    end;
+
+
+  function TYAPIContext.SetNetworkSecurityOptions(opts: LongInt):string;
+    var
+      errmsg_buffer : array[0..YOCTO_ERRMSG_LEN] of ansichar;
+      errmsg : pansichar;
+      res : LongInt;
+    begin
+      errmsg_buffer[0]:=#0;errmsg:=errmsg_buffer;
+      res := _yapiSetNetworkSecurityOptions(opts, errmsg);
+      if res < 0 then
+        begin
+          result := string(errmsg);
+          exit;
+        end
+      else
+        begin
+          result := '';
+          exit;
+        end;
     end;
 
 
@@ -12584,9 +12959,39 @@ var
     end;
 
 
+  function yGetYAPISharedLibraryPath():string;
+    begin
+        result := _yapiContext.GetYAPISharedLibraryPath();
+    end;
+
+
   function yAddUdevRule(force: boolean):string;
     begin
         result := _yapiContext.AddUdevRule(force);
+    end;
+
+
+  function yDownloadHostCertificate(url: string; mstimeout: u64):string;
+    begin
+        result := _yapiContext.DownloadHostCertificate(url, mstimeout);
+    end;
+
+
+  function yAddTrustedCertificates(certificate: string):string;
+    begin
+        result := _yapiContext.AddTrustedCertificates(certificate);
+    end;
+
+
+  function ySetTrustedCertificatesList(certificatePath: string):string;
+    begin
+        result := _yapiContext.SetTrustedCertificatesList(certificatePath);
+    end;
+
+
+  function ySetNetworkSecurityOptions(opts: LongInt):string;
+    begin
+        result := _yapiContext.SetNetworkSecurityOptions(opts);
     end;
 
 
@@ -12693,7 +13098,7 @@ var
               exit;
             end;
           self._progress_c := res;
-          self._progress := (self._progress_c * 9 div 10);
+          self._progress := ((self._progress_c * 9) div 10);
           self._progress_msg := string(errmsg);
         end
       else
@@ -12907,10 +13312,10 @@ var
       fRaw : double;
       fRef : double;
       iCalib : TLongIntArray;
-      calpar_pos : LongInt;
-      calraw_pos : LongInt;
-      calref_pos : LongInt;
-      columnNames_pos : LongInt;
+      _calpar_pos : LongInt;
+      _calraw_pos : LongInt;
+      _calref_pos : LongInt;
+      _columnNames_pos : LongInt;
     begin
       self._runNo := encoded[0] + (((encoded[1]) shl 16));
       self._utcStamp := encoded[2] + (((encoded[3]) shl 16));
@@ -12974,17 +13379,17 @@ var
         begin
           self._calhdl := _getCalibrationHandler(self._caltyp);
           maxpos := length(iCalib);
-          calpar_pos := 0;
+          _calpar_pos := 0;
           SetLength(self._calpar, length(iCalib));
-          calraw_pos := 0;
+          _calraw_pos := 0;
           SetLength(self._calraw, length(iCalib));
-          calref_pos := 0;
+          _calref_pos := 0;
           SetLength(self._calref, length(iCalib));
           i := 1;
           while i < maxpos do
             begin
-              self._calpar[calpar_pos] := iCalib[i];
-              inc(calpar_pos);
+              self._calpar[_calpar_pos] := iCalib[i];
+              inc(_calpar_pos);
               i := i + 1;
             end;
           i := 1;
@@ -12994,38 +13399,38 @@ var
               fRaw := fRaw / 1000.0;
               fRef := iCalib[i + 1];
               fRef := fRef / 1000.0;
-              self._calraw[calraw_pos] := fRaw;
-              inc(calraw_pos);
-              self._calref[calref_pos] := fRef;
-              inc(calref_pos);
+              self._calraw[_calraw_pos] := fRaw;
+              inc(_calraw_pos);
+              self._calref[_calref_pos] := fRef;
+              inc(_calref_pos);
               i := i + 2;
             end;
-          SetLength(self._calpar, calpar_pos);
-          SetLength(self._calraw, calraw_pos);
-          SetLength(self._calref, calref_pos);
+          SetLength(self._calpar, _calpar_pos);
+          SetLength(self._calraw, _calraw_pos);
+          SetLength(self._calref, _calref_pos);
         end;
       // preload column names for backward-compatibility
       self._functionId := dataset.get_functionId;
       if self._isAvg then
         begin
-          columnNames_pos := 0;
+          _columnNames_pos := 0;
           SetLength(self._columnNames, 3);
-          self._columnNames[columnNames_pos] := ''+self._functionId+'_min';
-          inc(columnNames_pos);
-          self._columnNames[columnNames_pos] := ''+self._functionId+'_avg';
-          inc(columnNames_pos);
-          self._columnNames[columnNames_pos] := ''+self._functionId+'_max';
-          inc(columnNames_pos);
-          SetLength(self._columnNames, columnNames_pos);
+          self._columnNames[_columnNames_pos] := ''+self._functionId+'_min';
+          inc(_columnNames_pos);
+          self._columnNames[_columnNames_pos] := ''+self._functionId+'_avg';
+          inc(_columnNames_pos);
+          self._columnNames[_columnNames_pos] := ''+self._functionId+'_max';
+          inc(_columnNames_pos);
+          SetLength(self._columnNames, _columnNames_pos);
           self._nCols := 3;
         end
       else
         begin
-          columnNames_pos := 0;
+          _columnNames_pos := 0;
           SetLength(self._columnNames, 1);
-          self._columnNames[columnNames_pos] := self._functionId;
-          inc(columnNames_pos);
-          SetLength(self._columnNames, columnNames_pos);
+          self._columnNames[_columnNames_pos] := self._functionId;
+          inc(_columnNames_pos);
+          SetLength(self._columnNames, _columnNames_pos);
           self._nCols := 1;
         end;
       // decode min/avg/max values for the sequence
@@ -13045,7 +13450,7 @@ var
       idx : LongInt;
       udat : TLongIntArray;
       dat : TDoubleArray;
-      values_pos : LongInt;
+      _values_pos : LongInt;
       dat_pos : LongInt;
     begin
       if self._isLoaded and not(self._isClosed) then
@@ -13061,7 +13466,7 @@ var
         end;
 
       udat := _decodeWords(self._parent._json_get_string(sdata));
-      values_pos := 0;
+      _values_pos := 0;
       SetLength(self._values, length(udat));;
       idx := 0;
       if self._isAvg then
@@ -13090,8 +13495,8 @@ var
                 end;
               idx := idx + 6;
               SetLength(dat, dat_pos);
-              self._values[values_pos] := dat;
-              inc(values_pos);
+              self._values[_values_pos] := dat;
+              inc(_values_pos);
             end;
         end
       else
@@ -13111,12 +13516,12 @@ var
                   inc(dat_pos);
                 end;
               SetLength(dat, dat_pos);
-              self._values[values_pos] := dat;
-              inc(values_pos);
+              self._values[_values_pos] := dat;
+              inc(_values_pos);
               idx := idx + 2;
             end;
         end;
-      SetLength(self._values, values_pos);
+      SetLength(self._values, _values_pos);
       self._nRows := length(self._values);
       self._isLoaded := true;
       result := YAPI_SUCCESS;
@@ -13584,7 +13989,7 @@ var
       url : string;
       strdata : string;
       measure_data : TDoubleArray;
-      preview_pos : LongInt;
+      _preview_pos : LongInt;
       ii_0 : LongInt;
     begin
       if self._progress < 0 then
@@ -13609,8 +14014,8 @@ var
       summaryMaxVal := YAPI_MIN_DOUBLE;
       summaryStartMs := YAPI_MAX_DOUBLE;
       summaryStopMs := YAPI_MIN_DOUBLE;
-      preview_pos := length(self._preview);
-      SetLength(self._preview, preview_pos+length(self._streams));
+      _preview_pos := length(self._preview);
+      SetLength(self._preview, _preview_pos+length(self._streams));
       // Parse complete streams
       for ii_0:=0 to length(self._streams)-1 do
         begin
@@ -13724,8 +14129,8 @@ var
                   previewDuration := 0.0;
                 end;
             end;
-          self._preview[preview_pos] := TYMeasure.create(previewStartMs / 1000.0, previewStopMs / 1000.0, previewMinVal, previewAvgVal, previewMaxVal);
-          inc(preview_pos);
+          self._preview[_preview_pos] := TYMeasure.create(previewStartMs / 1000.0, previewStopMs / 1000.0, previewMinVal, previewAvgVal, previewMaxVal);
+          inc(_preview_pos);
           if summaryMinVal > previewMinVal then
             begin
               summaryMinVal := previewMinVal;
@@ -13786,15 +14191,13 @@ var
       suffixes : TStringArray;
       idx : LongInt;
       bulkFile : TByteArray;
-      streamStr : TStringArray;
       urlIdx : LongInt;
-      streamBin : TByteArray;
-      measures_pos : LongInt;
+      streamBin : TTByteArrayArray;
+      _measures_pos : LongInt;
       ii_0 : LongInt;
       suffixes_pos : LongInt;
     begin
       SetLength(suffixes, 0);
-      SetLength(streamStr, 0);
 
       if progress <> self._progress then
         begin
@@ -13847,8 +14250,8 @@ var
         begin
           maxCol := 0;
         end;
-      measures_pos := length(self._measures);
-      SetLength(self._measures, measures_pos+length(dataRows));
+      _measures_pos := length(self._measures);
+      SetLength(self._measures, _measures_pos+length(dataRows));
       firstMeasure := true;
       for ii_0:=0 to length(dataRows)-1 do
         begin
@@ -13864,12 +14267,12 @@ var
           avgv := dataRows[ii_0][avgCol];
           if (end_ > self._startTimeMs) and((self._endTimeMs = 0) or(tim < self._endTimeMs)) and not(isNaN_D5(avgv)) then
             begin
-              self._measures[measures_pos] := TYMeasure.create(tim / 1000, end_ / 1000, dataRows[ii_0][minCol], avgv, dataRows[ii_0][maxCol]);
-              inc(measures_pos);
+              self._measures[_measures_pos] := TYMeasure.create(tim / 1000, end_ / 1000, dataRows[ii_0][minCol], avgv, dataRows[ii_0][maxCol]);
+              inc(_measures_pos);
             end;
           tim := end_;
         end;
-      SetLength(self._measures, measures_pos);;
+      SetLength(self._measures, _measures_pos);;
       // Perform bulk preload to speed-up network transfer
       if (self._bulkLoad > 0) and(self._progress < length(self._streams)) then
         begin
@@ -13900,16 +14303,15 @@ var
               idx := idx + 1;
             end;
           bulkFile := self._parent._download(url);
-          streamStr := self._parent._json_get_array(bulkFile);
+          streamBin := self._parent._json_get_array(bulkFile);
           urlIdx := 0;
           idx := self._progress;
-          while (idx < length(self._streams)) and(urlIdx < length(suffixes)) and(urlIdx < length(streamStr)) do
+          while (idx < length(self._streams)) and(urlIdx < length(suffixes)) and(urlIdx < length(streamBin)) do
             begin
               stream := self._streams[idx];
               if ((stream._get_baseurl = baseurl)) and((stream._get_urlsuffix = suffixes[urlIdx])) then
                 begin
-                  streamBin := _StrToByte(streamStr[urlIdx]);
-                  stream._parseStream(streamBin);
+                  stream._parseStream(streamBin[urlIdx]);
                   urlIdx := urlIdx + 1;
                 end;
               idx := idx + 1;
@@ -13998,7 +14400,7 @@ var
           result := 100;
           exit;
         end;
-      result := (1 + (1 + self._progress) * 98 div (1 + length(self._streams)));
+      result := ((1 + (1 + self._progress) * 98) div (1 + length(self._streams)));
       exit;
     end;
 
@@ -14225,42 +14627,42 @@ var
       newvalue : double;
       measures : TYMeasureArray;
       nexttime : double;
-      datasets_pos : LongInt;
-      progresss_pos : LongInt;
-      nextidx_pos : LongInt;
-      nexttim_pos : LongInt;
+      _datasets_pos : LongInt;
+      _progresss_pos : LongInt;
+      _nextidx_pos : LongInt;
+      _nexttim_pos : LongInt;
       datarec_pos : LongInt;
     begin
       if self._nsensors = -1 then
         begin
           self._nsensors := length(self._sensors);
-          datasets_pos := 0;
+          _datasets_pos := 0;
           SetLength(self._datasets, self._nsensors);
-          progresss_pos := 0;
+          _progresss_pos := 0;
           SetLength(self._progresss, self._nsensors);
-          nextidx_pos := 0;
+          _nextidx_pos := 0;
           SetLength(self._nextidx, self._nsensors);
-          nexttim_pos := 0;
+          _nexttim_pos := 0;
           SetLength(self._nexttim, self._nsensors);
           s := 0;
           while s < self._nsensors do
             begin
               sensor := self._sensors[s];
               newdataset := sensor.get_recordedData(self._start, self._end);
-              self._datasets[datasets_pos] := newdataset;
-              inc(datasets_pos);
-              self._progresss[progresss_pos] := 0;
-              inc(progresss_pos);
-              self._nextidx[nextidx_pos] := 0;
-              inc(nextidx_pos);
-              self._nexttim[nexttim_pos] := 0.0;
-              inc(nexttim_pos);
+              self._datasets[_datasets_pos] := newdataset;
+              inc(_datasets_pos);
+              self._progresss[_progresss_pos] := 0;
+              inc(_progresss_pos);
+              self._nextidx[_nextidx_pos] := 0;
+              inc(_nextidx_pos);
+              self._nexttim[_nexttim_pos] := 0.0;
+              inc(_nexttim_pos);
               s := s + 1;
             end;
-          SetLength(self._datasets, datasets_pos);
-          SetLength(self._progresss, progresss_pos);
-          SetLength(self._nextidx, nextidx_pos);
-          SetLength(self._nexttim, nexttim_pos);
+          SetLength(self._datasets, _datasets_pos);
+          SetLength(self._progresss, _progresss_pos);
+          SetLength(self._nextidx, _nextidx_pos);
+          SetLength(self._nexttim, _nexttim_pos);
         end;
       SetLength(datarec, 0);
       //
@@ -14777,23 +15179,21 @@ const
     end;
 
 
-  function TYDataLogger.parse_dataSets(json: TByteArray):TYDataSetArray;
+  function TYDataLogger.parse_dataSets(jsonbuff: TByteArray):TYDataSetArray;
     var
-      dslist : TStringArray;
+      dslist : TTByteArrayArray;
       dataset : TYDataSet;
       res : TYDataSetArray;
       res_pos : LongInt;
       ii_0 : LongInt;
     begin
-      SetLength(dslist, 0);
-
-      dslist := self._json_get_array(json);
+      dslist := self._json_get_array(jsonbuff);
       res_pos := 0;
       SetLength(res, length(dslist));;
       for ii_0:=0 to length(dslist)-1 do
         begin
           dataset :=  TYDataSet.create(self);
-          dataset._parse(dslist[ii_0]);
+          dataset._parse(_ByteToString(dslist[ii_0]));
           res[res_pos] := dataset;
           inc(res_pos);
         end;

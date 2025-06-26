@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 63506 2024-11-28 10:42:13Z seb $
+ * $Id: yocto_serialport.pas 66665 2025-05-14 07:32:24Z seb $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -2137,12 +2137,10 @@ implementation
     var
       url : string;
       msgbin : TByteArray;
-      msgarr : TStringArray;
+      msgarr : TTByteArrayArray;
       msglen : LongInt;
       res : string;
     begin
-      SetLength(msgarr, 0);
-
       url := 'rxmsg.json?pos='+inttostr(self._rxptr)+'&len=1&maxw=1';
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
@@ -2154,13 +2152,13 @@ implementation
         end;
       // last element of array is the new position
       msglen := msglen - 1;
-      self._rxptr := _atoi(msgarr[msglen]);
+      self._rxptr := self._decode_json_int(msgarr[msglen]);
       if msglen = 0 then
         begin
           result := '';
           exit;
         end;
-      res := self._json_get_string(_StrToByte(msgarr[0]));
+      res := self._json_get_string(msgarr[0]);
       result := res;
       exit;
     end;
@@ -2170,13 +2168,12 @@ implementation
     var
       url : string;
       msgbin : TByteArray;
-      msgarr : TStringArray;
+      msgarr : TTByteArrayArray;
       msglen : LongInt;
       res : TStringArray;
       idx : LongInt;
       res_pos : LongInt;
     begin
-      SetLength(msgarr, 0);
       SetLength(res, 0);
 
       url := 'rxmsg.json?pos='+inttostr(self._rxptr)+'&maxw='+inttostr(maxWait)+'&pat='+pattern;
@@ -2190,13 +2187,13 @@ implementation
         end;
       // last element of array is the new position
       msglen := msglen - 1;
-      self._rxptr := _atoi(msgarr[msglen]);
+      self._rxptr := self._decode_json_int(msgarr[msglen]);
       idx := 0;
       res_pos := length(res);
       SetLength(res, res_pos+msglen);;
       while idx < msglen do
         begin
-          res[res_pos] := self._json_get_string(_StrToByte(msgarr[idx]));
+          res[res_pos] := self._json_get_string(msgarr[idx]);
           inc(res_pos);
           idx := idx + 1;
         end;
@@ -2258,11 +2255,10 @@ implementation
       prevpos : LongInt;
       url : string;
       msgbin : TByteArray;
-      msgarr : TStringArray;
+      msgarr : TTByteArrayArray;
       msglen : LongInt;
       res : string;
     begin
-      SetLength(msgarr, 0);
       if Length(query) <= 80 then
         begin
           // fast query
@@ -2286,13 +2282,13 @@ implementation
         end;
       // last element of array is the new position
       msglen := msglen - 1;
-      self._rxptr := _atoi(msgarr[msglen]);
+      self._rxptr := self._decode_json_int(msgarr[msglen]);
       if msglen = 0 then
         begin
           result := '';
           exit;
         end;
-      res := self._json_get_string(_StrToByte(msgarr[0]));
+      res := self._json_get_string(msgarr[0]);
       result := res;
       exit;
     end;
@@ -2303,11 +2299,10 @@ implementation
       prevpos : LongInt;
       url : string;
       msgbin : TByteArray;
-      msgarr : TStringArray;
+      msgarr : TTByteArrayArray;
       msglen : LongInt;
       res : string;
     begin
-      SetLength(msgarr, 0);
       if Length(hexString) <= 80 then
         begin
           // fast query
@@ -2331,13 +2326,13 @@ implementation
         end;
       // last element of array is the new position
       msglen := msglen - 1;
-      self._rxptr := _atoi(msgarr[msglen]);
+      self._rxptr := self._decode_json_int(msgarr[msglen]);
       if msglen = 0 then
         begin
           result := '';
           exit;
         end;
-      res := self._json_get_string(_StrToByte(msgarr[0]));
+      res := self._json_get_string(msgarr[0]);
       result := res;
       exit;
     end;
@@ -2773,14 +2768,12 @@ implementation
     var
       url : string;
       msgbin : TByteArray;
-      msgarr : TStringArray;
+      msgarr : TTByteArrayArray;
       msglen : LongInt;
       res : TYSnoopingRecordArray;
       idx : LongInt;
       res_pos : LongInt;
     begin
-      SetLength(msgarr, 0);
-
       url := 'rxmsg.json?pos='+inttostr(self._rxptr)+'&maxw='+inttostr(maxWait)+'&t=0&len='+inttostr(maxMsg);
       msgbin := self._download(url);
       msgarr := self._json_get_array(msgbin);
@@ -2792,13 +2785,13 @@ implementation
         end;
       // last element of array is the new position
       msglen := msglen - 1;
-      self._rxptr := _atoi(msgarr[msglen]);
+      self._rxptr := self._decode_json_int(msgarr[msglen]);
       idx := 0;
       res_pos := length(res);
       SetLength(res, res_pos+msglen);;
       while idx < msglen do
         begin
-          res[res_pos] := TYSnoopingRecord.create(msgarr[idx]);
+          res[res_pos] := TYSnoopingRecord.create(_ByteToString(msgarr[idx]));
           inc(res_pos);
           idx := idx + 1;
         end;
@@ -2837,11 +2830,10 @@ implementation
     var
       url : string;
       msgbin : TByteArray;
-      msgarr : TStringArray;
+      msgarr : TTByteArrayArray;
       msglen : LongInt;
       idx : LongInt;
     begin
-      SetLength(msgarr, 0);
       if not((addr(self._eventCallback) <> nil)) then
         begin
           // first simulated event, use it only to initialize reference values
@@ -2862,15 +2854,15 @@ implementation
       if not((addr(self._eventCallback) <> nil)) then
         begin
           // first simulated event, use it only to initialize reference values
-          self._eventPos := _atoi(msgarr[msglen]);
+          self._eventPos := self._decode_json_int(msgarr[msglen]);
           result := YAPI_SUCCESS;
           exit;
         end;
-      self._eventPos := _atoi(msgarr[msglen]);
+      self._eventPos := self._decode_json_int(msgarr[msglen]);
       idx := 0;
       while idx < msglen do
         begin
-          self._eventCallback(self, TYSnoopingRecord.create(msgarr[idx]));
+          self._eventCallback(self, TYSnoopingRecord.create(_ByteToString(msgarr[idx])));
           idx := idx + 1;
         end;
       result := YAPI_SUCCESS;
@@ -2906,14 +2898,13 @@ implementation
       url : string;
       pat : string;
       msgs : TByteArray;
-      reps : TStringArray;
+      reps : TTByteArrayArray;
       rep : string;
       res : TLongIntArray;
       replen : LongInt;
       hexb : LongInt;
       res_pos : LongInt;
     begin
-      SetLength(reps, 0);
       funCode := pduBytes[0];
       nib := ((funCode) shr 4);
       pat := ''+AnsiUpperCase(inttohex(slaveNo,02))+'['+AnsiUpperCase(inttohex(nib,1))+''+AnsiUpperCase(inttohex((nib+8),1))+']'+AnsiUpperCase(inttohex(((funCode) and 15),1))+'.*';
@@ -2947,7 +2938,7 @@ implementation
         end;
       if length(reps) > 1 then
         begin
-          rep := self._json_get_string(_StrToByte(reps[0]));
+          rep := self._json_get_string(reps[0]);
           replen := ((Length(rep) - 3) shr 1);
           res_pos := length(res);
           SetLength(res, res_pos+replen);

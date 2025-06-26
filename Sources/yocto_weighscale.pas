@@ -1299,7 +1299,7 @@ implementation
     var
       id : string;
       bin_json : TByteArray;
-      paramlist : TStringArray;
+      paramlist : TTByteArrayArray;
       siz : LongInt;
       idx : LongInt;
       temp : double;
@@ -1307,8 +1307,6 @@ implementation
       tempValues_pos : LongInt;
       compValues_pos : LongInt;
     begin
-      SetLength(paramlist, 0);
-
       id := self.get_functionId;
       id := Copy(id, 10 + 1, Length(id) - 10);
       bin_json := self._download('extra.json?page='+inttostr((4*_atoi(id))+tableIndex));
@@ -1322,8 +1320,8 @@ implementation
       idx := 0;
       while idx < siz do
         begin
-          temp := _yapiStrToFloat(paramlist[2*idx])/1000.0;
-          comp := _yapiStrToFloat(paramlist[2*idx+1])/1000.0;
+          temp := _yapiStrToFloat(_ByteToString(paramlist[2*idx]))/1000.0;
+          comp := _yapiStrToFloat(_ByteToString(paramlist[2*idx+1]))/1000.0;
           tempValues[tempValues_pos] := temp;
           inc(tempValues_pos);
           compValues[compValues_pos] := comp;
