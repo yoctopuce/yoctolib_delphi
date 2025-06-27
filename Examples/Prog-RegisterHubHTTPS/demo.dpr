@@ -46,11 +46,16 @@ procedure SaveCertToFile(const Host, Cert: string);
 var
   CertFile: TFileStream;
   Path: string;
+  Bytes: TBytes;
+  l,i : integer;
 begin
   Path := Host + '.crt';
+  SetLength(Bytes, Length(Cert));
+  for I := 0 to Length(Cert) - 1 do
+    Bytes[I] := Byte(Cert[I + 1]);
   CertFile := TFileStream.Create(Path, fmCreate);
   try
-    CertFile.WriteBuffer(Pointer(Cert)^, Length(Cert));
+    CertFile.WriteBuffer(Bytes[0], Length(Bytes));
   finally
     CertFile.Free;
   end;

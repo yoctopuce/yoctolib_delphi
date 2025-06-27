@@ -1,3 +1,5 @@
-Delphi v2.1.7663
+Delphi v2.1.7725
 
--test
+- Implement API 2.0
+- Add Prog-RegisterHubHTTPS example
+- Fix Timeout on invalid credential with HTTP protocol

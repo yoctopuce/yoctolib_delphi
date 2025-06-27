@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 67627 2025-06-20 14:29:43Z mvuilleu $
+ * $Id: yocto_api.pas 67700 2025-06-26 08:24:25Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -129,7 +129,7 @@ const
   Y_DETECT_ALL : integer = (Y_DETECT_USB or Y_DETECT_NET);
 
   YOCTO_API_VERSION_STR     = '2.1';
-  YOCTO_API_BUILD_NO        = '67663';
+  YOCTO_API_BUILD_NO        = '67725';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -6971,7 +6971,7 @@ var
       apidate : string;
     begin
       yapiGetAPIVersion(version, apidate);
-      yGetAPIVersion:=  '2.1.7663 (' + version + ')';
+      yGetAPIVersion:=  '2.1.7725 (' + version + ')';
     end;
 
 
@@ -12948,85 +12948,169 @@ var
 //--- (generated code: YAPIContext yapiwrapper)
 
   procedure ySetDeviceListValidity(deviceListValidity: LongInt);
+    var
+        dummy : string;
     begin
+        if (Not(YAPI_apiInitialized)) then
+          begin
+            yInitAPI(0, dummy);
+          end;
         _yapiContext.SetDeviceListValidity(deviceListValidity);
     end;
 
 
   function yGetDeviceListValidity():LongInt;
+    var
+        dummy : string;
     begin
+        if (Not(YAPI_apiInitialized)) then
+          begin
+            yInitAPI(0, dummy);
+          end;
         result := _yapiContext.GetDeviceListValidity();
     end;
 
 
   function yGetYAPISharedLibraryPath():string;
+    var
+        dummy : string;
     begin
+        if (Not(YAPI_apiInitialized)) then
+          begin
+            yInitAPI(0, dummy);
+          end;
         result := _yapiContext.GetYAPISharedLibraryPath();
     end;
 
 
   function yAddUdevRule(force: boolean):string;
+    var
+        dummy : string;
     begin
+        if (Not(YAPI_apiInitialized)) then
+          begin
+            yInitAPI(0, dummy);
+          end;
         result := _yapiContext.AddUdevRule(force);
     end;
 
 
   function yDownloadHostCertificate(url: string; mstimeout: u64):string;
+    var
+        dummy : string;
     begin
+        if (Not(YAPI_apiInitialized)) then
+          begin
+            yInitAPI(0, dummy);
+          end;
         result := _yapiContext.DownloadHostCertificate(url, mstimeout);
     end;
 
 
   function yAddTrustedCertificates(certificate: string):string;
+    var
+        dummy : string;
     begin
+        if (Not(YAPI_apiInitialized)) then
+          begin
+            yInitAPI(0, dummy);
+          end;
         result := _yapiContext.AddTrustedCertificates(certificate);
     end;
 
 
   function ySetTrustedCertificatesList(certificatePath: string):string;
+    var
+        dummy : string;
     begin
+        if (Not(YAPI_apiInitialized)) then
+          begin
+            yInitAPI(0, dummy);
+          end;
         result := _yapiContext.SetTrustedCertificatesList(certificatePath);
     end;
 
 
   function ySetNetworkSecurityOptions(opts: LongInt):string;
+    var
+        dummy : string;
     begin
+        if (Not(YAPI_apiInitialized)) then
+          begin
+            yInitAPI(0, dummy);
+          end;
         result := _yapiContext.SetNetworkSecurityOptions(opts);
     end;
 
 
   procedure ySetNetworkTimeout(networkMsTimeout: LongInt);
+    var
+        dummy : string;
     begin
+        if (Not(YAPI_apiInitialized)) then
+          begin
+            yInitAPI(0, dummy);
+          end;
         _yapiContext.SetNetworkTimeout(networkMsTimeout);
     end;
 
 
   function yGetNetworkTimeout():LongInt;
+    var
+        dummy : string;
     begin
+        if (Not(YAPI_apiInitialized)) then
+          begin
+            yInitAPI(0, dummy);
+          end;
         result := _yapiContext.GetNetworkTimeout();
     end;
 
 
   procedure ySetCacheValidity(cacheValidityMs: u64);
+    var
+        dummy : string;
     begin
+        if (Not(YAPI_apiInitialized)) then
+          begin
+            yInitAPI(0, dummy);
+          end;
         _yapiContext.SetCacheValidity(cacheValidityMs);
     end;
 
 
   function yGetCacheValidity():u64;
+    var
+        dummy : string;
     begin
+        if (Not(YAPI_apiInitialized)) then
+          begin
+            yInitAPI(0, dummy);
+          end;
         result := _yapiContext.GetCacheValidity();
     end;
 
 
   function ynextHubInUseInternal(hubref: LongInt):TYHub;
+    var
+        dummy : string;
     begin
+        if (Not(YAPI_apiInitialized)) then
+          begin
+            yInitAPI(0, dummy);
+          end;
         result := _yapiContext.nextHubInUseInternal(hubref);
     end;
 
 
   function ygetYHubObj(hubref: LongInt):TYHub;
+    var
+        dummy : string;
     begin
+        if (Not(YAPI_apiInitialized)) then
+          begin
+            yInitAPI(0, dummy);
+          end;
         result := _yapiContext.getYHubObj(hubref);
     end;
 
