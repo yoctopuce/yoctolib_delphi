@@ -633,7 +633,7 @@ implementation
       obj : TYPower;
     begin
       obj := TYPower(TYFunction._FindFromCache('Power', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYPower.create(func);
           TYFunction._AddToCache('Power', func, obj);

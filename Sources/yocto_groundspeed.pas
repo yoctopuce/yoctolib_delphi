@@ -319,7 +319,7 @@ implementation
       obj : TYGroundSpeed;
     begin
       obj := TYGroundSpeed(TYFunction._FindFromCache('GroundSpeed', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYGroundSpeed.create(func);
           TYFunction._AddToCache('GroundSpeed', func, obj);

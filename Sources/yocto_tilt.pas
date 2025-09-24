@@ -469,7 +469,7 @@ implementation
       obj : TYTilt;
     begin
       obj := TYTilt(TYFunction._FindFromCache('Tilt', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYTilt.create(func);
           TYFunction._AddToCache('Tilt', func, obj);

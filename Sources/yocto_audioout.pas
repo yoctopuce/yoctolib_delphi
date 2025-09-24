@@ -583,7 +583,7 @@ implementation
       obj : TYAudioOut;
     begin
       obj := TYAudioOut(TYFunction._FindFromCache('AudioOut', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYAudioOut.create(func);
           TYFunction._AddToCache('AudioOut', func, obj);

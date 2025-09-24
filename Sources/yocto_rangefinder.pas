@@ -795,7 +795,7 @@ implementation
       obj : TYRangeFinder;
     begin
       obj := TYRangeFinder(TYFunction._FindFromCache('RangeFinder', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYRangeFinder.create(func);
           TYFunction._AddToCache('RangeFinder', func, obj);
@@ -916,11 +916,11 @@ implementation
     begin
       if (self.get_unit = '"') then
         begin
-          distmm := round(targetDist * 25.4);
+          distmm := LongInt(round(targetDist * 25.4));
         end
       else
         begin
-          distmm := round(targetDist);
+          distmm := LongInt(round(targetDist));
         end;
       result := self.set_command('O'+inttostr(distmm));
       exit;
@@ -933,11 +933,11 @@ implementation
     begin
       if (self.get_unit = '"') then
         begin
-          distmm := round(targetDist * 25.4);
+          distmm := LongInt(round(targetDist * 25.4));
         end
       else
         begin
-          distmm := round(targetDist);
+          distmm := LongInt(round(targetDist));
         end;
       result := self.set_command('X'+inttostr(distmm));
       exit;

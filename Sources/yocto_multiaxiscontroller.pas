@@ -584,7 +584,7 @@ implementation
       obj : TYMultiAxisController;
     begin
       obj := TYMultiAxisController(TYFunction._FindFromCache('MultiAxisController', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYMultiAxisController.create(func);
           TYFunction._AddToCache('MultiAxisController', func, obj);
@@ -683,11 +683,11 @@ implementation
       ndim : LongInt;
     begin
       ndim := length(speed);
-      cmd := 'H'+inttostr(round(1000*speed[0]));
+      cmd := 'H'+inttostr(LongInt(round(1000*speed[0])));
       i := 1;
       while i < ndim do
         begin
-          cmd := ''+cmd+','+inttostr(round(1000*speed[i]));
+          cmd := ''+cmd+','+inttostr(LongInt(round(1000*speed[i])));
           i := i + 1;
         end;
       result := self.sendCommand(cmd);
@@ -702,11 +702,11 @@ implementation
       ndim : LongInt;
     begin
       ndim := length(absPos);
-      cmd := 'M'+inttostr(round(16*absPos[0]));
+      cmd := 'M'+inttostr(LongInt(round(16*absPos[0])));
       i := 1;
       while i < ndim do
         begin
-          cmd := ''+cmd+','+inttostr(round(16*absPos[i]));
+          cmd := ''+cmd+','+inttostr(LongInt(round(16*absPos[i])));
           i := i + 1;
         end;
       result := self.sendCommand(cmd);
@@ -721,11 +721,11 @@ implementation
       ndim : LongInt;
     begin
       ndim := length(relPos);
-      cmd := 'm'+inttostr(round(16*relPos[0]));
+      cmd := 'm'+inttostr(LongInt(round(16*relPos[0])));
       i := 1;
       while i < ndim do
         begin
-          cmd := ''+cmd+','+inttostr(round(16*relPos[i]));
+          cmd := ''+cmd+','+inttostr(LongInt(round(16*relPos[i])));
           i := i + 1;
         end;
       result := self.sendCommand(cmd);

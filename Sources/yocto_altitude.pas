@@ -486,7 +486,7 @@ implementation
       obj : TYAltitude;
     begin
       obj := TYAltitude(TYFunction._FindFromCache('Altitude', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYAltitude.create(func);
           TYFunction._AddToCache('Altitude', func, obj);

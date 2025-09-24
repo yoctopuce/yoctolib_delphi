@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 66665 2025-05-14 07:32:24Z seb $
+ * $Id: yocto_cellular.pas 68482 2025-08-21 10:07:30Z mvuilleu $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *
@@ -1686,7 +1686,7 @@ implementation
       obj : TYCellular;
     begin
       obj := TYCellular(TYFunction._FindFromCache('Cellular', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYCellular.create(func);
           TYFunction._AddToCache('Cellular', func, obj);

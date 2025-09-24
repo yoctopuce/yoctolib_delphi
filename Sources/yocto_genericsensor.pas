@@ -892,7 +892,7 @@ implementation
       obj : TYGenericSensor;
     begin
       obj := TYGenericSensor(TYFunction._FindFromCache('GenericSensor', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYGenericSensor.create(func);
           TYFunction._AddToCache('GenericSensor', func, obj);

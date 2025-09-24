@@ -2399,7 +2399,7 @@ implementation
       obj : TYSdi12Port;
     begin
       obj := TYSdi12Port(TYFunction._FindFromCache('Sdi12Port', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYSdi12Port.create(func);
           TYFunction._AddToCache('Sdi12Port', func, obj);

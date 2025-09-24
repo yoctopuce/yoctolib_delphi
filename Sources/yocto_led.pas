@@ -532,7 +532,7 @@ implementation
       obj : TYLed;
     begin
       obj := TYLed(TYFunction._FindFromCache('Led', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYLed.create(func);
           TYFunction._AddToCache('Led', func, obj);

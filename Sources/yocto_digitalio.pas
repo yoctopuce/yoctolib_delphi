@@ -1077,7 +1077,7 @@ implementation
       obj : TYDigitalIO;
     begin
       obj := TYDigitalIO(TYFunction._FindFromCache('DigitalIO', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYDigitalIO.create(func);
           TYFunction._AddToCache('DigitalIO', func, obj);

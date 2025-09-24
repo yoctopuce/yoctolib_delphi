@@ -319,7 +319,7 @@ implementation
       obj : TYLatitude;
     begin
       obj := TYLatitude(TYFunction._FindFromCache('Latitude', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYLatitude.create(func);
           TYFunction._AddToCache('Latitude', func, obj);

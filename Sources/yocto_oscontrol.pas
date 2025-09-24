@@ -387,7 +387,7 @@ implementation
       obj : TYOsControl;
     begin
       obj := TYOsControl(TYFunction._FindFromCache('OsControl', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYOsControl.create(func);
           TYFunction._AddToCache('OsControl', func, obj);

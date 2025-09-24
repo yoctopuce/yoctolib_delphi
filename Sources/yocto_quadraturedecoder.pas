@@ -551,7 +551,7 @@ implementation
       obj : TYQuadratureDecoder;
     begin
       obj := TYQuadratureDecoder(TYFunction._FindFromCache('QuadratureDecoder', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYQuadratureDecoder.create(func);
           TYFunction._AddToCache('QuadratureDecoder', func, obj);

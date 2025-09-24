@@ -504,7 +504,7 @@ implementation
       obj : TYVoltageOutput;
     begin
       obj := TYVoltageOutput(TYFunction._FindFromCache('VoltageOutput', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYVoltageOutput.create(func);
           TYFunction._AddToCache('VoltageOutput', func, obj);
@@ -568,7 +568,7 @@ implementation
         begin
           V_target := 10.0;
         end;
-      newval := ''+inttostr(round(V_target*65536))+':'+inttostr(ms_duration);
+      newval := ''+inttostr(LongInt(round(V_target*65536)))+':'+inttostr(ms_duration);
 
       result := self.set_voltageTransition(newval);
       exit;

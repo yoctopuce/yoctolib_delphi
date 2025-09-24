@@ -1057,7 +1057,7 @@ implementation
       obj : TYMultiCellWeighScale;
     begin
       obj := TYMultiCellWeighScale(TYFunction._FindFromCache('MultiCellWeighScale', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYMultiCellWeighScale.create(func);
           TYFunction._AddToCache('MultiCellWeighScale', func, obj);
@@ -1152,7 +1152,7 @@ implementation
 
   function TYMultiCellWeighScale.setupSpan(currWeight: double; maxWeight: double):LongInt;
     begin
-      result := self.set_command('S'+inttostr(round(1000*currWeight))+':'+inttostr(round(1000*maxWeight)));
+      result := self.set_command('S'+inttostr(LongInt(round(1000*currWeight)))+':'+inttostr(LongInt(round(1000*maxWeight))));
       exit;
     end;
 

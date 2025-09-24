@@ -940,7 +940,7 @@ implementation
       obj : TYBluetoothLink;
     begin
       obj := TYBluetoothLink(TYFunction._FindFromCache('BluetoothLink', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYBluetoothLink.create(func);
           TYFunction._AddToCache('BluetoothLink', func, obj);

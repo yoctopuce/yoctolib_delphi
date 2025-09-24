@@ -474,7 +474,7 @@ implementation
       obj : TYHubPort;
     begin
       obj := TYHubPort(TYFunction._FindFromCache('HubPort', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYHubPort.create(func);
           TYFunction._AddToCache('HubPort', func, obj);

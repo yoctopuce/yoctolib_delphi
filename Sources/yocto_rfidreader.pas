@@ -2449,7 +2449,7 @@ implementation
       obj : TYRfidReader;
     begin
       obj := TYRfidReader(TYFunction._FindFromCache('RfidReader', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYRfidReader.create(func);
           TYFunction._AddToCache('RfidReader', func, obj);

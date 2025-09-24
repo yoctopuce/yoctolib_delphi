@@ -473,7 +473,7 @@ implementation
       obj : TYCompass;
     begin
       obj := TYCompass(TYFunction._FindFromCache('Compass', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYCompass.create(func);
           TYFunction._AddToCache('Compass', func, obj);

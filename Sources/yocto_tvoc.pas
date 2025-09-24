@@ -320,7 +320,7 @@ implementation
       obj : TYTvoc;
     begin
       obj := TYTvoc(TYFunction._FindFromCache('Tvoc', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYTvoc.create(func);
           TYFunction._AddToCache('Tvoc', func, obj);

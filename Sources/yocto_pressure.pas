@@ -320,7 +320,7 @@ implementation
       obj : TYPressure;
     begin
       obj := TYPressure(TYFunction._FindFromCache('Pressure', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYPressure.create(func);
           TYFunction._AddToCache('Pressure', func, obj);

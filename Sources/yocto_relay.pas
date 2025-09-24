@@ -998,7 +998,7 @@ implementation
       obj : TYRelay;
     begin
       obj := TYRelay(TYFunction._FindFromCache('Relay', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYRelay.create(func);
           TYFunction._AddToCache('Relay', func, obj);

@@ -473,7 +473,7 @@ implementation
       obj : TYDualPower;
     begin
       obj := TYDualPower(TYFunction._FindFromCache('DualPower', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYDualPower.create(func);
           TYFunction._AddToCache('DualPower', func, obj);

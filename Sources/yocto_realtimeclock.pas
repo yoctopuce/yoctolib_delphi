@@ -627,7 +627,7 @@ implementation
       obj : TYRealTimeClock;
     begin
       obj := TYRealTimeClock(TYFunction._FindFromCache('RealTimeClock', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYRealTimeClock.create(func);
           TYFunction._AddToCache('RealTimeClock', func, obj);

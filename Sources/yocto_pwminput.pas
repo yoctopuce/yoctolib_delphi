@@ -1042,7 +1042,7 @@ implementation
       obj : TYPwmInput;
     begin
       obj := TYPwmInput(TYFunction._FindFromCache('PwmInput', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYPwmInput.create(func);
           TYFunction._AddToCache('PwmInput', func, obj);

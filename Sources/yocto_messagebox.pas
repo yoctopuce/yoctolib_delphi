@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 67474 2025-06-16 08:58:53Z seb $
+ * $Id: yocto_messagebox.pas 68482 2025-08-21 10:07:30Z mvuilleu $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *
@@ -40,7 +40,7 @@
 
 unit yocto_messagebox;
 {$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
-{$WARN USE_BEFORE_DEF OFF}
+
 interface
 
 uses
@@ -1045,7 +1045,7 @@ implementation
       obj : TYMessageBox;
     begin
       obj := TYMessageBox(TYFunction._FindFromCache('MessageBox', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYMessageBox.create(func);
           TYFunction._AddToCache('MessageBox', func, obj);
@@ -1886,6 +1886,8 @@ implementation
       SetLength(newArr, newArr_pos);;
       self._pdus := newArr;
       // append complete concatenated messages
+      newAgg_pos := 0;
+      SetLength(newAgg, 0);;
       i := 0;
       while i < nsig do
         begin

@@ -1,5 +1,5 @@
-Delphi v2.1.7725
+Delphi v2.1.9018
 
-- Implement API 2.0
-- Add Prog-RegisterHubHTTPS example
-- Fix Timeout on invalid credential with HTTP protocol
+- Fix timeout in case of invalid credential when using HTTP protocol
+- Fix potential timeouts with YAPI::PreregisterHub
+- Fix potential short write on socket

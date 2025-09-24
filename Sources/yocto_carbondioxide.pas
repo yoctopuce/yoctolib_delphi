@@ -521,7 +521,7 @@ implementation
       obj : TYCarbonDioxide;
     begin
       obj := TYCarbonDioxide(TYFunction._FindFromCache('CarbonDioxide', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYCarbonDioxide.create(func);
           TYFunction._AddToCache('CarbonDioxide', func, obj);
@@ -609,7 +609,7 @@ implementation
 
   function TYCarbonDioxide.triggerForcedCalibration(refVal: double):LongInt;
     begin
-      result := self.set_command('F'+inttostr(round(1000*refVal))+'C');
+      result := self.set_command('F'+inttostr(LongInt(round(1000*refVal)))+'C');
       exit;
     end;
 

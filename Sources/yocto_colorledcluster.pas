@@ -1603,7 +1603,7 @@ implementation
       obj : TYColorLedCluster;
     begin
       obj := TYColorLedCluster(TYFunction._FindFromCache('ColorLedCluster', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYColorLedCluster.create(func);
           TYFunction._AddToCache('ColorLedCluster', func, obj);

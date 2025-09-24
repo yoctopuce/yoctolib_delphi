@@ -446,7 +446,7 @@ implementation
       obj : TYHumidity;
     begin
       obj := TYHumidity(TYFunction._FindFromCache('Humidity', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYHumidity.create(func);
           TYFunction._AddToCache('Humidity', func, obj);

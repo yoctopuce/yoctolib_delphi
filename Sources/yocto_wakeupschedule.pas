@@ -903,7 +903,7 @@ implementation
       obj : TYWakeUpSchedule;
     begin
       obj := TYWakeUpSchedule(TYFunction._FindFromCache('WakeUpSchedule', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYWakeUpSchedule.create(func);
           TYFunction._AddToCache('WakeUpSchedule', func, obj);

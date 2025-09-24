@@ -1041,7 +1041,7 @@ implementation
       obj : TYAnButton;
     begin
       obj := TYAnButton(TYFunction._FindFromCache('AnButton', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYAnButton.create(func);
           TYFunction._AddToCache('AnButton', func, obj);

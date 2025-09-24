@@ -750,7 +750,7 @@ implementation
       obj : TYWakeUpMonitor;
     begin
       obj := TYWakeUpMonitor(TYFunction._FindFromCache('WakeUpMonitor', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYWakeUpMonitor.create(func);
           TYFunction._AddToCache('WakeUpMonitor', func, obj);

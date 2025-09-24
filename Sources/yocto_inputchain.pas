@@ -1122,7 +1122,7 @@ implementation
       obj : TYInputChain;
     begin
       obj := TYInputChain(TYFunction._FindFromCache('InputChain', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYInputChain.create(func);
           TYFunction._AddToCache('InputChain', func, obj);

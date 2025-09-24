@@ -485,7 +485,7 @@ implementation
       obj : TYLightSensor;
     begin
       obj := TYLightSensor(TYFunction._FindFromCache('LightSensor', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYLightSensor.create(func);
           TYFunction._AddToCache('LightSensor', func, obj);

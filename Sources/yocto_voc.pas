@@ -319,7 +319,7 @@ implementation
       obj : TYVoc;
     begin
       obj := TYVoc(TYFunction._FindFromCache('Voc', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYVoc.create(func);
           TYFunction._AddToCache('Voc', func, obj);

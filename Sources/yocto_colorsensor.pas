@@ -57,6 +57,7 @@ const Y_ESTIMATIONMODEL_EMISSION = 1;
 const Y_ESTIMATIONMODEL_INVALID = -1;
 const Y_WORKINGMODE_AUTO = 0;
 const Y_WORKINGMODE_EXPERT = 1;
+const Y_WORKINGMODE_AUTOGAIN = 2;
 const Y_WORKINGMODE_INVALID = -1;
 const Y_LEDCURRENT_INVALID            = YAPI_INVALID_UINT;
 const Y_LEDCALIBRATION_INVALID        = YAPI_INVALID_UINT;
@@ -189,8 +190,8 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   either <c>YColorSensor.WORKINGMODE_AUTO</c> or <c>YColorSensor.WORKINGMODE_EXPERT</c>, according to
-    ///   the sensor working mode
+    ///   a value among <c>YColorSensor.WORKINGMODE_AUTO</c>, <c>YColorSensor.WORKINGMODE_EXPERT</c> and
+    ///   <c>YColorSensor.WORKINGMODE_AUTOGAIN</c> corresponding to the sensor working mode
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>YColorSensor.WORKINGMODE_INVALID</c>.
@@ -210,8 +211,8 @@ type
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   either <c>YColorSensor.WORKINGMODE_AUTO</c> or <c>YColorSensor.WORKINGMODE_EXPERT</c>, according to
-    ///   the sensor working mode
+    ///   a value among <c>YColorSensor.WORKINGMODE_AUTO</c>, <c>YColorSensor.WORKINGMODE_EXPERT</c> and
+    ///   <c>YColorSensor.WORKINGMODE_AUTOGAIN</c> corresponding to the sensor working mode
     /// </param>
     /// <para>
     /// </para>
@@ -1371,7 +1372,7 @@ implementation
       obj : TYColorSensor;
     begin
       obj := TYColorSensor(TYFunction._FindFromCache('ColorSensor', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYColorSensor.create(func);
           TYFunction._AddToCache('ColorSensor', func, obj);

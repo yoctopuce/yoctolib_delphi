@@ -319,7 +319,7 @@ implementation
       obj : TYLongitude;
     begin
       obj := TYLongitude(TYFunction._FindFromCache('Longitude', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYLongitude.create(func);
           TYFunction._AddToCache('Longitude', func, obj);

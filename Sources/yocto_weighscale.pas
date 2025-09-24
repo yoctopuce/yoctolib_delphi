@@ -1126,7 +1126,7 @@ implementation
       obj : TYWeighScale;
     begin
       obj := TYWeighScale(TYFunction._FindFromCache('WeighScale', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYWeighScale.create(func);
           TYFunction._AddToCache('WeighScale', func, obj);
@@ -1221,7 +1221,7 @@ implementation
 
   function TYWeighScale.setupSpan(currWeight: double; maxWeight: double):LongInt;
     begin
-      result := self.set_command('S'+inttostr(round(1000*currWeight))+':'+inttostr(round(1000*maxWeight)));
+      result := self.set_command('S'+inttostr(LongInt(round(1000*currWeight)))+':'+inttostr(LongInt(round(1000*maxWeight))));
       exit;
     end;
 
@@ -1280,7 +1280,7 @@ implementation
             end;
           if found > 0 then
             begin
-              res := self.set_command(''+inttostr(tableIndex)+'m'+inttostr(round(1000*curr))+':'+inttostr(round(1000*currComp)));
+              res := self.set_command(''+inttostr(tableIndex)+'m'+inttostr(LongInt(round(1000*curr)))+':'+inttostr(LongInt(round(1000*currComp))));
               if not(res=YAPI_SUCCESS) then
                 begin
                   self._throw(YAPI_IO_ERROR,'unable to set thermal compensation table');

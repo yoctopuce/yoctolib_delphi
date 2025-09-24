@@ -468,7 +468,7 @@ implementation
       obj : TYDaisyChain;
     begin
       obj := TYDaisyChain(TYFunction._FindFromCache('DaisyChain', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYDaisyChain.create(func);
           TYFunction._AddToCache('DaisyChain', func, obj);

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_i2cport.pas 66665 2025-05-14 07:32:24Z seb $
+ *  $Id: yocto_i2cport.pas 68482 2025-08-21 10:07:30Z mvuilleu $
  *
  *  Implements yFindI2cPort(), the high-level API for I2cPort functions
  *
@@ -1675,7 +1675,7 @@ implementation
       obj : TYI2cPort;
     begin
       obj := TYI2cPort(TYFunction._FindFromCache('I2cPort', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYI2cPort.create(func);
           TYFunction._AddToCache('I2cPort', func, obj);

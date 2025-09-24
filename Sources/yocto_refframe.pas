@@ -871,7 +871,7 @@ implementation
       obj : TYRefFrame;
     begin
       obj := TYRefFrame(TYFunction._FindFromCache('RefFrame', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYRefFrame.create(func);
           TYFunction._AddToCache('RefFrame', func, obj);
@@ -1076,7 +1076,7 @@ implementation
       self._calibStageProgress := 0;
       self._calibProgress := 1;
       self._calibInternalPos := 0;
-      self._calibPrevTick := ((yGetTickCount) and ($07FFFFFFF));
+      self._calibPrevTick := LongInt(((yGetTickCount) and ($07FFFFFFF)));
       _calibOrient_pos := 0;
       SetLength(self._calibOrient, 6);;
       _calibDataAccX_pos := 0;
@@ -1131,7 +1131,7 @@ implementation
           exit;
         end;
       // make sure we leave at least 160 ms between samples
-      currTick :=  ((yGetTickCount) and ($07FFFFFFF));
+      currTick :=  LongInt(((yGetTickCount) and ($07FFFFFFF)));
       if ((currTick - self._calibPrevTick) and ($07FFFFFFF)) < 160 then
         begin
           result := YAPI_SUCCESS;
@@ -1275,7 +1275,7 @@ implementation
       intpos := (self._calibStage - 1) * self._calibCount;
       self._calibSort(intpos, intpos + self._calibCount);
       intpos := intpos + (self._calibCount div 2);
-      self._calibLogMsg := 'Stage '+inttostr(self._calibStage)+': median is '+inttostr(round(1000*self._calibDataAccX[intpos]))+','+inttostr(round(1000*self._calibDataAccY[intpos]))+','+inttostr(round(1000*self._calibDataAccZ[intpos]));
+      self._calibLogMsg := 'Stage '+inttostr(self._calibStage)+': median is '+inttostr(LongInt(round(1000*self._calibDataAccX[intpos])))+','+inttostr(LongInt(round(1000*self._calibDataAccY[intpos])))+','+inttostr(LongInt(round(1000*self._calibDataAccZ[intpos])));
       // move to next stage
       self._calibStage := self._calibStage + 1;
       if self._calibStage < 7 then
@@ -1388,7 +1388,7 @@ implementation
       // make sure we don't start before previous calibration is cleared
       if self._calibStage = 1 then
         begin
-          currTick := ((yGetTickCount) and ($07FFFFFFF));
+          currTick := LongInt(((yGetTickCount) and ($07FFFFFFF)));
           currTick := ((currTick - self._calibPrevTick) and ($07FFFFFFF));
           if currTick < 1600 then
             begin
@@ -1512,24 +1512,24 @@ implementation
           exit;
         end;
       // Compute integer values (correction unit is 732ug/count)
-      shiftX := -round(self._calibAccXOfs / 0.000732);
+      shiftX := -LongInt(round(self._calibAccXOfs / 0.000732));
       if shiftX < 0 then
         begin
           shiftX := shiftX + 65536;
         end;
-      shiftY := -round(self._calibAccYOfs / 0.000732);
+      shiftY := -LongInt(round(self._calibAccYOfs / 0.000732));
       if shiftY < 0 then
         begin
           shiftY := shiftY + 65536;
         end;
-      shiftZ := -round(self._calibAccZOfs / 0.000732);
+      shiftZ := -LongInt(round(self._calibAccZOfs / 0.000732));
       if shiftZ < 0 then
         begin
           shiftZ := shiftZ + 65536;
         end;
-      scaleX := round(2048.0 / self._calibAccXScale) - 2048;
-      scaleY := round(2048.0 / self._calibAccYScale) - 2048;
-      scaleZ := round(2048.0 / self._calibAccZScale) - 2048;
+      scaleX := LongInt(round(2048.0 / self._calibAccXScale)) - 2048;
+      scaleY := LongInt(round(2048.0 / self._calibAccYScale)) - 2048;
+      scaleZ := LongInt(round(2048.0 / self._calibAccZScale)) - 2048;
       if scaleX < -2048 or scaleX >= 2048 or scaleY < -2048 or scaleY >= 2048 or scaleZ < -2048 or scaleZ >= 2048 then
         begin
           scaleExp := 3;

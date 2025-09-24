@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_gyro.pas 63506 2024-11-28 10:42:13Z seb $
+ * $Id: yocto_gyro.pas 68482 2025-08-21 10:07:30Z mvuilleu $
  *
  * Implements yFindGyro(), the high-level API for Gyro functions
  *
@@ -863,7 +863,7 @@ constructor TYQt.Create(func:string);
       obj : TYQt;
     begin
       obj := TYQt(TYFunction._FindFromCache('Qt', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYQt.create(func);
           TYFunction._AddToCache('Qt', func, obj);
@@ -1167,7 +1167,7 @@ constructor TYQt.Create(func:string);
       obj : TYGyro;
     begin
       obj := TYGyro(TYFunction._FindFromCache('Gyro', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYGyro.create(func);
           TYFunction._AddToCache('Gyro', func, obj);
@@ -1258,7 +1258,7 @@ constructor TYQt.Create(func:string);
       now_stamp : LongInt;
       age_ms : LongInt;
     begin
-      now_stamp := ((yGetTickCount) and ($07FFFFFFF));
+      now_stamp := LongInt(((yGetTickCount) and ($07FFFFFFF)));
       age_ms := (((now_stamp - self._qt_stamp)) and ($07FFFFFFF));
       if (age_ms >= 10) or(self._qt_stamp = 0) then
         begin
@@ -1504,7 +1504,7 @@ constructor TYQt.Create(func:string);
           result := 0;
           exit;
         end;
-      self._qt_stamp := ((yGetTickCount) and ($07FFFFFFF));
+      self._qt_stamp := LongInt(((yGetTickCount) and ($07FFFFFFF)));
       if (addr(self._quatCallback) <> nil) then
         begin
           self._quatCallback(self, self._w, self._x, self._y, self._z);

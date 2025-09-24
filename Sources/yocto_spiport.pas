@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_spiport.pas 66665 2025-05-14 07:32:24Z seb $
+ *  $Id: yocto_spiport.pas 68482 2025-08-21 10:07:30Z mvuilleu $
  *
  *  Implements yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -1847,7 +1847,7 @@ implementation
       obj : TYSpiPort;
     begin
       obj := TYSpiPort(TYFunction._FindFromCache('SpiPort', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYSpiPort.create(func);
           TYFunction._AddToCache('SpiPort', func, obj);

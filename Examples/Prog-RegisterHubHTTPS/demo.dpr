@@ -47,7 +47,7 @@ var
   CertFile: TFileStream;
   Path: string;
   Bytes: TBytes;
-  l,i : integer;
+  I: integer;
 begin
   Path := Host + '.crt';
   SetLength(Bytes, Length(Cert));

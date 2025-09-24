@@ -1402,7 +1402,7 @@ implementation
       obj : TYWatchdog;
     begin
       obj := TYWatchdog(TYFunction._FindFromCache('Watchdog', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYWatchdog.create(func);
           TYFunction._AddToCache('Watchdog', func, obj);

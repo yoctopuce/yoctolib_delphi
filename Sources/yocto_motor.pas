@@ -1052,7 +1052,7 @@ implementation
       obj : TYMotor;
     begin
       obj := TYMotor(TYFunction._FindFromCache('Motor', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYMotor.create(func);
           TYFunction._AddToCache('Motor', func, obj);
@@ -1120,14 +1120,14 @@ implementation
 
   function TYMotor.drivingForceMove(targetPower: double; delay: LongInt):LongInt;
     begin
-      result := self.set_command('P'+inttostr(round(targetPower*10))+','+inttostr(delay));
+      result := self.set_command('P'+inttostr(LongInt(round(targetPower*10)))+','+inttostr(delay));
       exit;
     end;
 
 
   function TYMotor.brakingForceMove(targetPower: double; delay: LongInt):LongInt;
     begin
-      result := self.set_command('B'+inttostr(round(targetPower*10))+','+inttostr(delay));
+      result := self.set_command('B'+inttostr(LongInt(round(targetPower*10)))+','+inttostr(delay));
       exit;
     end;
 

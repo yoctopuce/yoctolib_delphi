@@ -2,7 +2,7 @@
  *
  *  $Id: svn_id $
  *
- *  Implements yFindSpectralChannel(), the high-level API for SpectralChannel functions
+ *  Implements yFindVirtualSensor(), the high-level API for VirtualSensor functions
  *
  *  - - - - - - - - - License information: - - - - - - - - -
  *
@@ -38,7 +38,7 @@
  *********************************************************************}
 
 
-unit yocto_spectralchannel;
+unit yocto_virtualsensor;
 {$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 interface
@@ -50,102 +50,145 @@ uses
 {$ENDIF}
   yocto_api, yjson;
 
-//--- (YSpectralChannel definitions)
+//--- (YVirtualSensor definitions)
 
-const Y_RAWCOUNT_INVALID              = YAPI_INVALID_INT;
-const Y_CHANNELNAME_INVALID           = YAPI_INVALID_STRING;
-const Y_PEAKWAVELENGTH_INVALID        = YAPI_INVALID_INT;
+const Y_INVALIDVALUE_INVALID          = YAPI_INVALID_DOUBLE;
 
-//--- (end of YSpectralChannel definitions)
+//--- (end of YVirtualSensor definitions)
 
-//--- (YSpectralChannel yapiwrapper declaration)
-//--- (end of YSpectralChannel yapiwrapper declaration)
+//--- (YVirtualSensor yapiwrapper declaration)
+//--- (end of YVirtualSensor yapiwrapper declaration)
 
 type
 
-  TYSpectralChannel = class;
-  //--- (YSpectralChannel class start)
-  TYSpectralChannelValueCallback = procedure(func: TYSpectralChannel; value:string);
-  TYSpectralChannelTimedReportCallback = procedure(func: TYSpectralChannel; value:TYMeasure);
+  TYVirtualSensor = class;
+  //--- (YVirtualSensor class start)
+  TYVirtualSensorValueCallback = procedure(func: TYVirtualSensor; value:string);
+  TYVirtualSensorTimedReportCallback = procedure(func: TYVirtualSensor; value:TYMeasure);
 
   ////
   /// <summary>
-  ///   TYSpectralChannel Class: spectral analysis channel control interface
+  ///   TYVirtualSensor Class: virtual sensor control interface
   /// <para>
-  ///   The <c>YSpectralChannel</c> class allows you to read and configure Yoctopuce spectral analysis channels.
-  ///   It inherits from <c>YSensor</c> class the core functions to read measurements,
-  ///   to register callback functions, and to access the autonomous datalogger.
+  ///   The <c>YVirtualSensor</c> class allows you to use Yoctopuce virtual sensors.
+  ///   These sensors make it possible to show external data collected by the user
+  ///   as a Yoctopuce Sensor. This class inherits from <c>YSensor</c> class the core
+  ///   functions to read measurements, to register callback functions, and to access
+  ///   the autonomous datalogger. It adds the ability to change the sensor value as
+  ///   needed, or to mark current value as invalid.
   /// </para>
   /// </summary>
   ///-
-  TYSpectralChannel=class(TYSensor)
-  //--- (end of YSpectralChannel class start)
+  TYVirtualSensor=class(TYSensor)
+  //--- (end of YVirtualSensor class start)
   protected
-  //--- (YSpectralChannel declaration)
+  //--- (YVirtualSensor declaration)
     // Attributes (function value cache)
-    _rawCount                 : LongInt;
-    _channelName              : string;
-    _peakWavelength           : LongInt;
-    _valueCallbackSpectralChannel : TYSpectralChannelValueCallback;
-    _timedReportCallbackSpectralChannel : TYSpectralChannelTimedReportCallback;
+    _invalidValue             : double;
+    _valueCallbackVirtualSensor : TYVirtualSensorValueCallback;
+    _timedReportCallbackVirtualSensor : TYVirtualSensorTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
-    //--- (end of YSpectralChannel declaration)
+    //--- (end of YVirtualSensor declaration)
 
   public
-    //--- (YSpectralChannel accessors declaration)
+    //--- (YVirtualSensor accessors declaration)
     constructor Create(func:string);
 
     ////
     /// <summary>
-    ///   Retrieves the raw spectral intensity value as measured by the sensor, without any scaling or calibration.
+    ///   Changes the measuring unit for the measured value.
     /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
+    /// <param name="newval">
+    ///   a string corresponding to the measuring unit for the measured value
+    /// </param>
+    /// <para>
+    /// </para>
     /// <returns>
-    ///   an integer
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>YSpectralChannel.RAWCOUNT_INVALID</c>.
+    ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function get_rawCount():LongInt;
+    function set_unit(newval:string):integer;
 
     ////
     /// <summary>
-    ///   Returns the target spectral band name.
+    ///   Changes the current value of the sensor (raw value, before calibration).
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
+    /// <param name="newval">
+    ///   a floating point number corresponding to the current value of the sensor (raw value, before calibration)
+    /// </param>
+    /// <para>
+    /// </para>
     /// <returns>
-    ///   a string corresponding to the target spectral band name
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>YSpectralChannel.CHANNELNAME_INVALID</c>.
+    ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function get_channelName():string;
+    function set_currentRawValue(newval:double):integer;
+
+    function set_sensorState(newval:LongInt):integer;
 
     ////
     /// <summary>
-    ///   Returns the target spectral band peak wavelength, in nm.
+    ///   Changes the invalid value of the sensor, returned if the sensor is read when in invalid state
+    ///   (for instance before having been set).
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a floating point number corresponding to the invalid value of the sensor, returned if the sensor is
+    ///   read when in invalid state
+    ///   (for instance before having been set)
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_invalidValue(newval:double):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the invalid value of the sensor, returned if the sensor is read when in invalid state
+    ///   (for instance before having been set).
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the target spectral band peak wavelength, in nm
+    ///   a floating point number corresponding to the invalid value of the sensor, returned if the sensor is
+    ///   read when in invalid state
+    ///   (for instance before having been set)
     /// </returns>
     /// <para>
-    ///   On failure, throws an exception or returns <c>YSpectralChannel.PEAKWAVELENGTH_INVALID</c>.
+    ///   On failure, throws an exception or returns <c>YVirtualSensor.INVALIDVALUE_INVALID</c>.
     /// </para>
     ///-
-    function get_peakWavelength():LongInt;
+    function get_invalidValue():double;
 
     ////
     /// <summary>
@@ -175,7 +218,7 @@ type
     /// <para>
     ///   This function does not require that $THEFUNCTION$ is online at the time
     ///   it is invoked. The returned object is nevertheless valid.
-    ///   Use the method <c>YSpectralChannel.isOnline()</c> to test if $THEFUNCTION$ is
+    ///   Use the method <c>YVirtualSensor.isOnline()</c> to test if $THEFUNCTION$ is
     ///   indeed online at a given time. In case of ambiguity when looking for
     ///   $AFUNCTION$ by logical name, no error is notified: the first instance
     ///   found is returned. The search is performed first by hardware name,
@@ -194,10 +237,10 @@ type
     ///   <c>$FULLHARDWAREID$</c>.
     /// </param>
     /// <returns>
-    ///   a <c>YSpectralChannel</c> object allowing you to drive $THEFUNCTION$.
+    ///   a <c>YVirtualSensor</c> object allowing you to drive $THEFUNCTION$.
     /// </returns>
     ///-
-    class function FindSpectralChannel(func: string):TYSpectralChannel;
+    class function FindVirtualSensor(func: string):TYVirtualSensor;
 
     ////
     /// <summary>
@@ -217,7 +260,7 @@ type
     /// @noreturn
     /// </param>
     ///-
-    function registerValueCallback(callback: TYSpectralChannelValueCallback):LongInt; overload;
+    function registerValueCallback(callback: TYVirtualSensorValueCallback):LongInt; overload;
 
     function _invokeValueCallback(value: string):LongInt; override;
 
@@ -239,27 +282,42 @@ type
     /// @noreturn
     /// </param>
     ///-
-    function registerTimedReportCallback(callback: TYSpectralChannelTimedReportCallback):LongInt; overload;
+    function registerTimedReportCallback(callback: TYVirtualSensorTimedReportCallback):LongInt; overload;
 
     function _invokeTimedReportCallback(value: TYMeasure):LongInt; override;
+
+    ////
+    /// <summary>
+    ///   Changes the current sensor state to invalid (as if no value would have been ever set).
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_sensorAsInvalid():LongInt; overload; virtual;
 
 
     ////
     /// <summary>
-    ///   Continues the enumeration of spectral analysis channels started using <c>yFirstSpectralChannel()</c>.
+    ///   Continues the enumeration of virtual sensors started using <c>yFirstVirtualSensor()</c>.
     /// <para>
-    ///   Caution: You can't make any assumption about the returned spectral analysis channels order.
-    ///   If you want to find a specific a spectral analysis channel, use <c>SpectralChannel.findSpectralChannel()</c>
+    ///   Caution: You can't make any assumption about the returned virtual sensors order.
+    ///   If you want to find a specific a virtual sensor, use <c>VirtualSensor.findVirtualSensor()</c>
     ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a pointer to a <c>YSpectralChannel</c> object, corresponding to
-    ///   a spectral analysis channel currently online, or a <c>NIL</c> pointer
-    ///   if there are no more spectral analysis channels to enumerate.
+    ///   a pointer to a <c>YVirtualSensor</c> object, corresponding to
+    ///   a virtual sensor currently online, or a <c>NIL</c> pointer
+    ///   if there are no more virtual sensors to enumerate.
     /// </returns>
     ///-
-    function nextSpectralChannel():TYSpectralChannel;
+    function nextVirtualSensor():TYVirtualSensor;
     ////
     /// <summary>
     ///   c
@@ -268,14 +326,14 @@ type
     /// </para>
     /// </summary>
     ///-
-    class function FirstSpectralChannel():TYSpectralChannel;
-  //--- (end of YSpectralChannel accessors declaration)
+    class function FirstVirtualSensor():TYVirtualSensor;
+  //--- (end of YVirtualSensor accessors declaration)
   end;
 
-//--- (YSpectralChannel functions declaration)
+//--- (YVirtualSensor functions declaration)
   ////
   /// <summary>
-  ///   Retrieves a spectral analysis channel for a given identifier.
+  ///   Retrieves a virtual sensor for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
   /// </para>
@@ -299,11 +357,11 @@ type
   /// <para>
   /// </para>
   /// <para>
-  ///   This function does not require that the spectral analysis channel is online at the time
+  ///   This function does not require that the virtual sensor is online at the time
   ///   it is invoked. The returned object is nevertheless valid.
-  ///   Use the method <c>YSpectralChannel.isOnline()</c> to test if the spectral analysis channel is
+  ///   Use the method <c>YVirtualSensor.isOnline()</c> to test if the virtual sensor is
   ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   a spectral analysis channel by logical name, no error is notified: the first instance
+  ///   a virtual sensor by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
   /// </para>
@@ -316,75 +374,61 @@ type
   /// </para>
   /// </summary>
   /// <param name="func">
-  ///   a string that uniquely characterizes the spectral analysis channel, for instance
-  ///   <c>MyDevice.spectralChannel1</c>.
+  ///   a string that uniquely characterizes the virtual sensor, for instance
+  ///   <c>MyDevice.virtualSensor1</c>.
   /// </param>
   /// <returns>
-  ///   a <c>YSpectralChannel</c> object allowing you to drive the spectral analysis channel.
+  ///   a <c>YVirtualSensor</c> object allowing you to drive the virtual sensor.
   /// </returns>
   ///-
-  function yFindSpectralChannel(func:string):TYSpectralChannel;
+  function yFindVirtualSensor(func:string):TYVirtualSensor;
   ////
   /// <summary>
-  ///   Starts the enumeration of spectral analysis channels currently accessible.
+  ///   Starts the enumeration of virtual sensors currently accessible.
   /// <para>
-  ///   Use the method <c>YSpectralChannel.nextSpectralChannel()</c> to iterate on
-  ///   next spectral analysis channels.
+  ///   Use the method <c>YVirtualSensor.nextVirtualSensor()</c> to iterate on
+  ///   next virtual sensors.
   /// </para>
   /// </summary>
   /// <returns>
-  ///   a pointer to a <c>YSpectralChannel</c> object, corresponding to
-  ///   the first spectral analysis channel currently online, or a <c>NIL</c> pointer
+  ///   a pointer to a <c>YVirtualSensor</c> object, corresponding to
+  ///   the first virtual sensor currently online, or a <c>NIL</c> pointer
   ///   if there are none.
   /// </returns>
   ///-
-  function yFirstSpectralChannel():TYSpectralChannel;
+  function yFirstVirtualSensor():TYVirtualSensor;
 
-//--- (end of YSpectralChannel functions declaration)
+//--- (end of YVirtualSensor functions declaration)
 
 implementation
 
-//--- (YSpectralChannel dlldef)
-//--- (end of YSpectralChannel dlldef)
+//--- (YVirtualSensor dlldef)
+//--- (end of YVirtualSensor dlldef)
 
-  constructor TYSpectralChannel.Create(func:string);
+  constructor TYVirtualSensor.Create(func:string);
     begin
       inherited Create(func);
-      _className := 'SpectralChannel';
-      //--- (YSpectralChannel accessors initialization)
-      _rawCount := Y_RAWCOUNT_INVALID;
-      _channelName := Y_CHANNELNAME_INVALID;
-      _peakWavelength := Y_PEAKWAVELENGTH_INVALID;
-      _valueCallbackSpectralChannel := nil;
-      _timedReportCallbackSpectralChannel := nil;
-      //--- (end of YSpectralChannel accessors initialization)
+      _className := 'VirtualSensor';
+      //--- (YVirtualSensor accessors initialization)
+      _invalidValue := Y_INVALIDVALUE_INVALID;
+      _valueCallbackVirtualSensor := nil;
+      _timedReportCallbackVirtualSensor := nil;
+      //--- (end of YVirtualSensor accessors initialization)
     end;
 
-//--- (YSpectralChannel yapiwrapper)
-//--- (end of YSpectralChannel yapiwrapper)
+//--- (YVirtualSensor yapiwrapper)
+//--- (end of YVirtualSensor yapiwrapper)
 
-//--- (YSpectralChannel implementation)
+//--- (YVirtualSensor implementation)
 {$HINTS OFF}
-  function TYSpectralChannel._parseAttr(member:PJSONRECORD):integer;
+  function TYVirtualSensor._parseAttr(member:PJSONRECORD):integer;
     var
       sub : PJSONRECORD;
       i,l        : integer;
     begin
-      if (member^.name = 'rawCount') then
+      if (member^.name = 'invalidValue') then
         begin
-          _rawCount := integer(member^.ivalue);
-         result := 1;
-         exit;
-         end;
-      if (member^.name = 'channelName') then
-        begin
-          _channelName := string(member^.svalue);
-         result := 1;
-         exit;
-         end;
-      if (member^.name = 'peakWavelength') then
-        begin
-          _peakWavelength := integer(member^.ivalue);
+          _invalidValue := round(member^.ivalue / 65.536) / 1000.0;
          result := 1;
          exit;
          end;
@@ -392,76 +436,72 @@ implementation
     end;
 {$HINTS ON}
 
-  function TYSpectralChannel.get_rawCount():LongInt;
+  function TYVirtualSensor.set_unit(newval:string):integer;
     var
-      res : LongInt;
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('unit',rest_val);
+    end;
+
+  function TYVirtualSensor.set_currentRawValue(newval:double):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(round(newval * 65536.0));
+      result := _setAttr('currentRawValue',rest_val);
+    end;
+
+  function TYVirtualSensor.set_sensorState(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('sensorState',rest_val);
+    end;
+
+  function TYVirtualSensor.set_invalidValue(newval:double):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(round(newval * 65536.0));
+      result := _setAttr('invalidValue',rest_val);
+    end;
+
+  function TYVirtualSensor.get_invalidValue():double;
+    var
+      res : double;
     begin
       if self._cacheExpiration <= yGetTickCount then
         begin
           if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
-              result := Y_RAWCOUNT_INVALID;
+              result := Y_INVALIDVALUE_INVALID;
               exit;
             end;
         end;
-      res := self._rawCount;
+      res := self._invalidValue;
       result := res;
       exit;
     end;
 
 
-  function TYSpectralChannel.get_channelName():string;
+  class function TYVirtualSensor.FindVirtualSensor(func: string):TYVirtualSensor;
     var
-      res : string;
+      obj : TYVirtualSensor;
     begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
-            begin
-              result := Y_CHANNELNAME_INVALID;
-              exit;
-            end;
-        end;
-      res := self._channelName;
-      result := res;
-      exit;
-    end;
-
-
-  function TYSpectralChannel.get_peakWavelength():LongInt;
-    var
-      res : LongInt;
-    begin
-      if self._cacheExpiration <= yGetTickCount then
-        begin
-          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
-            begin
-              result := Y_PEAKWAVELENGTH_INVALID;
-              exit;
-            end;
-        end;
-      res := self._peakWavelength;
-      result := res;
-      exit;
-    end;
-
-
-  class function TYSpectralChannel.FindSpectralChannel(func: string):TYSpectralChannel;
-    var
-      obj : TYSpectralChannel;
-    begin
-      obj := TYSpectralChannel(TYFunction._FindFromCache('SpectralChannel', func));
+      obj := TYVirtualSensor(TYFunction._FindFromCache('VirtualSensor', func));
       if (obj = nil) then
         begin
-          obj :=  TYSpectralChannel.create(func);
-          TYFunction._AddToCache('SpectralChannel', func, obj);
+          obj :=  TYVirtualSensor.create(func);
+          TYFunction._AddToCache('VirtualSensor', func, obj);
         end;
       result := obj;
       exit;
     end;
 
 
-  function TYSpectralChannel.registerValueCallback(callback: TYSpectralChannelValueCallback):LongInt;
+  function TYVirtualSensor.registerValueCallback(callback: TYVirtualSensorValueCallback):LongInt;
     var
       val : string;
     begin
@@ -473,7 +513,7 @@ implementation
         begin
           TYFunction._UpdateValueCallbackList(self, false);
         end;
-      self._valueCallbackSpectralChannel := callback;
+      self._valueCallbackVirtualSensor := callback;
       // Immediately invoke value callback with current value
       if (addr(callback) <> nil) and self.isOnline then
         begin
@@ -488,11 +528,11 @@ implementation
     end;
 
 
-  function TYSpectralChannel._invokeValueCallback(value: string):LongInt;
+  function TYVirtualSensor._invokeValueCallback(value: string):LongInt;
     begin
-      if (addr(self._valueCallbackSpectralChannel) <> nil) then
+      if (addr(self._valueCallbackVirtualSensor) <> nil) then
         begin
-          self._valueCallbackSpectralChannel(self, value);
+          self._valueCallbackVirtualSensor(self, value);
         end
       else
         begin
@@ -503,7 +543,7 @@ implementation
     end;
 
 
-  function TYSpectralChannel.registerTimedReportCallback(callback: TYSpectralChannelTimedReportCallback):LongInt;
+  function TYVirtualSensor.registerTimedReportCallback(callback: TYVirtualSensorTimedReportCallback):LongInt;
     var
       sensor : TYSensor;
     begin
@@ -516,17 +556,17 @@ implementation
         begin
           TYFunction._UpdateTimedReportCallbackList(sensor, false);
         end;
-      self._timedReportCallbackSpectralChannel := callback;
+      self._timedReportCallbackVirtualSensor := callback;
       result := 0;
       exit;
     end;
 
 
-  function TYSpectralChannel._invokeTimedReportCallback(value: TYMeasure):LongInt;
+  function TYVirtualSensor._invokeTimedReportCallback(value: TYMeasure):LongInt;
     begin
-      if (addr(self._timedReportCallbackSpectralChannel) <> nil) then
+      if (addr(self._timedReportCallbackVirtualSensor) <> nil) then
         begin
-          self._timedReportCallbackSpectralChannel(self, value);
+          self._timedReportCallbackVirtualSensor(self, value);
         end
       else
         begin
@@ -537,31 +577,38 @@ implementation
     end;
 
 
-  function TYSpectralChannel.nextSpectralChannel(): TYSpectralChannel;
+  function TYVirtualSensor.set_sensorAsInvalid():LongInt;
+    begin
+      result := self.set_sensorState(1);
+      exit;
+    end;
+
+
+  function TYVirtualSensor.nextVirtualSensor(): TYVirtualSensor;
     var
       hwid: string;
     begin
       if YISERR(_nextFunction(hwid)) then
         begin
-          nextSpectralChannel := nil;
+          nextVirtualSensor := nil;
           exit;
         end;
       if hwid = '' then
         begin
-          nextSpectralChannel := nil;
+          nextVirtualSensor := nil;
           exit;
         end;
-      nextSpectralChannel := TYSpectralChannel.FindSpectralChannel(hwid);
+      nextVirtualSensor := TYVirtualSensor.FindVirtualSensor(hwid);
     end;
 
-  class function TYSpectralChannel.FirstSpectralChannel(): TYSpectralChannel;
+  class function TYVirtualSensor.FirstVirtualSensor(): TYVirtualSensor;
     var
       v_fundescr      : YFUN_DESCR;
       dev             : YDEV_DESCR;
       neededsize, err : integer;
       serial, funcId, funcName, funcVal, errmsg : string;
     begin
-      err := yapiGetFunctionsByClass('SpectralChannel', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
+      err := yapiGetFunctionsByClass('VirtualSensor', 0, PyHandleArray(@v_fundescr), sizeof(YFUN_DESCR), neededsize, errmsg);
       if (YISERR(err) or (neededsize = 0)) then
         begin
           result := nil;
@@ -572,36 +619,36 @@ implementation
           result := nil;
           exit;
         end;
-     result := TYSpectralChannel.FindSpectralChannel(serial+'.'+funcId);
+     result := TYVirtualSensor.FindVirtualSensor(serial+'.'+funcId);
     end;
 
-//--- (end of YSpectralChannel implementation)
+//--- (end of YVirtualSensor implementation)
 
-//--- (YSpectralChannel functions)
+//--- (YVirtualSensor functions)
 
-  function yFindSpectralChannel(func:string): TYSpectralChannel;
+  function yFindVirtualSensor(func:string): TYVirtualSensor;
     begin
-      result := TYSpectralChannel.FindSpectralChannel(func);
+      result := TYVirtualSensor.FindVirtualSensor(func);
     end;
 
-  function yFirstSpectralChannel(): TYSpectralChannel;
+  function yFirstVirtualSensor(): TYVirtualSensor;
     begin
-      result := TYSpectralChannel.FirstSpectralChannel();
+      result := TYVirtualSensor.FirstVirtualSensor();
     end;
 
-  procedure _SpectralChannelCleanup();
+  procedure _VirtualSensorCleanup();
     begin
     end;
 
-//--- (end of YSpectralChannel functions)
+//--- (end of YVirtualSensor functions)
 
 initialization
-  //--- (YSpectralChannel initialization)
-  //--- (end of YSpectralChannel initialization)
+  //--- (YVirtualSensor initialization)
+  //--- (end of YVirtualSensor initialization)
 
 finalization
-  //--- (YSpectralChannel cleanup)
-  _SpectralChannelCleanup();
-  //--- (end of YSpectralChannel cleanup)
+  //--- (YVirtualSensor cleanup)
+  _VirtualSensorCleanup();
+  //--- (end of YVirtualSensor cleanup)
 
 end.

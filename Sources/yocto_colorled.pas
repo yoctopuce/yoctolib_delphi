@@ -1028,7 +1028,7 @@ implementation
       obj : TYColorLed;
     begin
       obj := TYColorLed(TYFunction._FindFromCache('ColorLed', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYColorLed.create(func);
           TYFunction._AddToCache('ColorLed', func, obj);

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 66665 2025-05-14 07:32:24Z seb $
+ * $Id: yocto_serialport.pas 68482 2025-08-21 10:07:30Z mvuilleu $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -2074,7 +2074,7 @@ implementation
       obj : TYSerialPort;
     begin
       obj := TYSerialPort(TYFunction._FindFromCache('SerialPort', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYSerialPort.create(func);
           TYFunction._AddToCache('SerialPort', func, obj);

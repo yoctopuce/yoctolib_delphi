@@ -1123,7 +1123,7 @@ implementation
       obj : TYPwmOutput;
     begin
       obj := TYPwmOutput(TYFunction._FindFromCache('PwmOutput', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYPwmOutput.create(func);
           TYFunction._AddToCache('PwmOutput', func, obj);
@@ -1183,7 +1183,7 @@ implementation
         begin
           ms_target := 0.0;
         end;
-      newval := ''+inttostr(round(ms_target*65536))+'ms:'+inttostr(ms_duration);
+      newval := ''+inttostr(LongInt(round(ms_target*65536)))+'ms:'+inttostr(ms_duration);
       result := self.set_pwmTransition(newval);
       exit;
     end;
@@ -1201,7 +1201,7 @@ implementation
         begin
           target := 100.0;
         end;
-      newval := ''+inttostr(round(target*65536))+':'+inttostr(ms_duration);
+      newval := ''+inttostr(LongInt(round(target*65536)))+':'+inttostr(ms_duration);
       result := self.set_pwmTransition(newval);
       exit;
     end;
@@ -1239,7 +1239,7 @@ implementation
         begin
           ms_target := 0.0;
         end;
-      newval := ''+inttostr(round(ms_target*65536))+'ms*'+inttostr(n_pulses);
+      newval := ''+inttostr(LongInt(round(ms_target*65536)))+'ms*'+inttostr(n_pulses);
       result := self.set_pwmTransition(newval);
       exit;
     end;
@@ -1257,7 +1257,7 @@ implementation
         begin
           target := 100.0;
         end;
-      newval := ''+inttostr(round(target*65536))+'*'+inttostr(n_pulses);
+      newval := ''+inttostr(LongInt(round(target*65536)))+'*'+inttostr(n_pulses);
       result := self.set_pwmTransition(newval);
       exit;
     end;

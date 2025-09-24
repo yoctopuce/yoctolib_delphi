@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_micropython.pas 67285 2025-06-05 08:48:43Z seb $
+ *  $Id: yocto_micropython.pas 68482 2025-08-21 10:07:30Z mvuilleu $
  *
  *  Implements yFindMicroPython(), the high-level API for MicroPython functions
  *
@@ -54,6 +54,7 @@ uses
 
 const Y_LASTMSG_INVALID               = YAPI_INVALID_STRING;
 const Y_HEAPUSAGE_INVALID             = YAPI_INVALID_UINT;
+const Y_HEAPFRAG_INVALID              = YAPI_INVALID_UINT;
 const Y_XHEAPUSAGE_INVALID            = YAPI_INVALID_UINT;
 const Y_STACKUSAGE_INVALID            = YAPI_INVALID_UINT;
 const Y_CURRENTSCRIPT_INVALID         = YAPI_INVALID_STRING;
@@ -93,6 +94,7 @@ type
     // Attributes (function value cache)
     _lastMsg                  : string;
     _heapUsage                : LongInt;
+    _heapFrag                 : LongInt;
     _xheapUsage               : LongInt;
     _stackUsage               : LongInt;
     _currentScript            : string;
@@ -149,6 +151,25 @@ type
     /// </para>
     ///-
     function get_heapUsage():LongInt;
+
+    ////
+    /// <summary>
+    ///   Returns the fragmentation ratio of MicroPython main memory,
+    ///   as observed at the end of the last garbage collection.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the fragmentation ratio of MicroPython main memory,
+    ///   as observed at the end of the last garbage collection
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YMicroPython.HEAPFRAG_INVALID</c>.
+    /// </para>
+    ///-
+    function get_heapFrag():LongInt;
 
     ////
     /// <summary>
@@ -656,6 +677,7 @@ implementation
       //--- (generated code: YMicroPython accessors initialization)
       _lastMsg := Y_LASTMSG_INVALID;
       _heapUsage := Y_HEAPUSAGE_INVALID;
+      _heapFrag := Y_HEAPFRAG_INVALID;
       _xheapUsage := Y_XHEAPUSAGE_INVALID;
       _stackUsage := Y_STACKUSAGE_INVALID;
       _currentScript := Y_CURRENTSCRIPT_INVALID;
@@ -688,6 +710,12 @@ implementation
       if (member^.name = 'heapUsage') then
         begin
           _heapUsage := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'heapFrag') then
+        begin
+          _heapFrag := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -768,6 +796,24 @@ implementation
             end;
         end;
       res := self._heapUsage;
+      result := res;
+      exit;
+    end;
+
+
+  function TYMicroPython.get_heapFrag():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_HEAPFRAG_INVALID;
+              exit;
+            end;
+        end;
+      res := self._heapFrag;
       result := res;
       exit;
     end;
@@ -944,7 +990,7 @@ implementation
       obj : TYMicroPython;
     begin
       obj := TYMicroPython(TYFunction._FindFromCache('MicroPython', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYMicroPython.create(func);
           TYFunction._AddToCache('MicroPython', func, obj);

@@ -2535,7 +2535,7 @@ implementation
       obj : TYNetwork;
     begin
       obj := TYNetwork(TYFunction._FindFromCache('Network', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYNetwork.create(func);
           TYFunction._AddToCache('Network', func, obj);

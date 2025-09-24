@@ -382,7 +382,7 @@ implementation
       obj : TYPowerOutput;
     begin
       obj := TYPowerOutput(TYFunction._FindFromCache('PowerOutput', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYPowerOutput.create(func);
           TYFunction._AddToCache('PowerOutput', func, obj);

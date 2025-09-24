@@ -1620,7 +1620,7 @@ implementation
       obj : TYInputCapture;
     begin
       obj := TYInputCapture(TYFunction._FindFromCache('InputCapture', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYInputCapture.create(func);
           TYFunction._AddToCache('InputCapture', func, obj);

@@ -404,7 +404,7 @@ implementation
       obj : TYCurrent;
     begin
       obj := TYCurrent(TYFunction._FindFromCache('Current', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYCurrent.create(func);
           TYFunction._AddToCache('Current', func, obj);

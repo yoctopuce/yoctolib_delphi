@@ -559,7 +559,7 @@ implementation
       obj : TYCurrentLoopOutput;
     begin
       obj := TYCurrentLoopOutput(TYFunction._FindFromCache('CurrentLoopOutput', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYCurrentLoopOutput.create(func);
           TYFunction._AddToCache('CurrentLoopOutput', func, obj);
@@ -623,7 +623,7 @@ implementation
         begin
           mA_target := 21.0;
         end;
-      newval := ''+inttostr(round(mA_target*65536))+':'+inttostr(ms_duration);
+      newval := ''+inttostr(LongInt(round(mA_target*65536)))+':'+inttostr(ms_duration);
 
       result := self.set_currentTransition(newval);
       exit;

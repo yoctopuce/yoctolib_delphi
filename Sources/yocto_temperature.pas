@@ -690,7 +690,7 @@ implementation
       obj : TYTemperature;
     begin
       obj := TYTemperature(TYFunction._FindFromCache('Temperature', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYTemperature.create(func);
           TYFunction._AddToCache('Temperature', func, obj);
@@ -862,7 +862,7 @@ implementation
             end;
           if found > 0 then
             begin
-              res := self.set_command('m'+inttostr(round(1000*curr))+':'+inttostr(round(1000*currTemp)));
+              res := self.set_command('m'+inttostr(LongInt(round(1000*curr)))+':'+inttostr(LongInt(round(1000*currTemp))));
               if not(res=YAPI_SUCCESS) then
                 begin
                   self._throw(YAPI_IO_ERROR,'unable to reset thermistor parameters');

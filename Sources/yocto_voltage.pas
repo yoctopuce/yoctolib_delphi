@@ -505,7 +505,7 @@ implementation
       obj : TYVoltage;
     begin
       obj := TYVoltage(TYFunction._FindFromCache('Voltage', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYVoltage.create(func);
           TYFunction._AddToCache('Voltage', func, obj);

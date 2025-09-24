@@ -535,7 +535,7 @@ implementation
       obj : TYMagnetometer;
     begin
       obj := TYMagnetometer(TYFunction._FindFromCache('Magnetometer', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYMagnetometer.create(func);
           TYFunction._AddToCache('Magnetometer', func, obj);

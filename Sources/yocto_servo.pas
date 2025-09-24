@@ -882,7 +882,7 @@ implementation
       obj : TYServo;
     begin
       obj := TYServo(TYFunction._FindFromCache('Servo', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYServo.create(func);
           TYFunction._AddToCache('Servo', func, obj);

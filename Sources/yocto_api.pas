@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 67700 2025-06-26 08:24:25Z seb $
+ * $Id: yocto_api.pas 68482 2025-08-21 10:07:30Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -129,7 +129,7 @@ const
   Y_DETECT_ALL : integer = (Y_DETECT_USB or Y_DETECT_NET);
 
   YOCTO_API_VERSION_STR     = '2.1';
-  YOCTO_API_BUILD_NO        = '67725';
+  YOCTO_API_BUILD_NO        = '69018';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -210,6 +210,11 @@ type
 
 //--- (generated code: YHub definitions)
 
+const YHUB_TRYING                     = 1;
+const YHUB_CONNECTED                  = 2;
+const YHUB_RECONNECTING               = 3;
+const YHUB_ABORTED                    = 4;
+const YHUB_UNREGISTERED               = 5;
 //--- (end of generated code: YHub definitions)
 
 //--- (generated code: YFunction definitions)
@@ -236,6 +241,7 @@ const YAPI_RFID_HARD_ERROR           = -17;     // Serious RFID error (eg. write
 const YAPI_BUFFER_TOO_SMALL          = -18;     // The buffer provided is too small
 const YAPI_DNS_ERROR                 = -19;     // Error during name resolutions (invalid hostname or dns communication error)
 const YAPI_SSL_UNK_CERT              = -20;     // The certificate is not correctly signed by the trusted CA
+const YAPI_UNCONFIGURED              = -21;     // Remote hub is not yet configured
 
 const Y_LOGICALNAME_INVALID           = YAPI_INVALID_STRING;
 const Y_ADVERTISEDVALUE_INVALID       = YAPI_INVALID_STRING;
@@ -459,6 +465,16 @@ type
 
     ////
     /// <summary>
+    ///   Returns the state of the connection with this hub.
+    /// <para>
+    ///   (TRYING, CONNECTED, RECONNECTING, ABORTED, UNREGISTERED)
+    /// </para>
+    /// </summary>
+    ///-
+    function get_connectionState():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Returns the hub serial number, if the hub was already connected once.
     /// <para>
     /// </para>
@@ -620,6 +636,25 @@ type
 
     ////
     /// <summary>
+    ///   Retrieves hub for a given identifier.
+    /// <para>
+    ///   The identifier can be the URL or the
+    ///   serial of the hub.
+    /// </para>
+    /// </summary>
+    /// <param name="url">
+    ///   The url or serial of the hub.
+    /// </param>
+    /// <returns>
+    ///   a pointer to a <c>YHub</c> object, corresponding to
+    ///   the first hub currently in use by the API, or a
+    ///   <c>null</c> pointer if none has been registered.
+    /// </returns>
+    ///-
+    class function FindHubInUse(url: string):TYHub;
+
+    ////
+    /// <summary>
     ///   Continues the module enumeration started using <c>YHub.FirstHubInUse()</c>.
     /// <para>
     ///   Caution: You can't make any assumption about the order of returned hubs.
@@ -627,7 +662,7 @@ type
     /// </summary>
     /// <returns>
     ///   a pointer to a <c>YHub</c> object, corresponding to
-    ///   the next hub currenlty in use, or a <c>NIL</c> pointer
+    ///   the next hub currently in use, or a <c>NIL</c> pointer
     ///   if there are no more hubs to enumerate.
     /// </returns>
     ///-
@@ -3248,6 +3283,8 @@ end;
 
     function getYHubObj(hubref: LongInt):TYHub; overload; virtual;
 
+    function findYHubFromID(id: string):TYHub; overload; virtual;
+
 
   //--- (end of generated code: YAPIContext accessors declaration)
 
@@ -5089,6 +5126,8 @@ end;
     function ynextHubInUseInternal(hubref: LongInt):TYHub;
 
     function ygetYHubObj(hubref: LongInt):TYHub;
+
+    function yfindYHubFromID(id: string):TYHub;
 
 //--- (end of generated code: YAPIContext yapiwrapper declaration)
 
@@ -6971,7 +7010,7 @@ var
       apidate : string;
     begin
       yapiGetAPIVersion(version, apidate);
-      yGetAPIVersion:=  '2.1.7725 (' + version + ')';
+      yGetAPIVersion:=  '2.1.9018 (' + version + ')';
     end;
 
 
@@ -7812,6 +7851,13 @@ var
     end;
 
 
+  function TYHub.get_connectionState():LongInt;
+    begin
+      result := self._getIntAttr('connectionState');
+      exit;
+    end;
+
+
   function TYHub.get_serialNumber():string;
     begin
       result := self._getStrAttr('serialNumber');
@@ -7883,6 +7929,13 @@ var
   class function TYHub.FirstHubInUse():TYHub;
     begin
       result := ynextHubInUseInternal(-1);
+      exit;
+    end;
+
+
+  class function TYHub.FindHubInUse(url: string):TYHub;
+    begin
+      result := yfindYHubFromID(url);
       exit;
     end;
 
@@ -8511,7 +8564,7 @@ var
       obj : TYFunction;
     begin
       obj := TYFunction(TYFunction._FindFromCache('Function', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYFunction.create(func);
           TYFunction._AddToCache('Function', func, obj);
@@ -9951,7 +10004,7 @@ var
           cleanHwId := func + '.module';
         end;
       obj := TYModule(TYFunction._FindFromCache('Module', cleanHwId));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYModule.create(cleanHwId);
           TYFunction._AddToCache('Module', cleanHwId, obj);
@@ -10787,7 +10840,7 @@ var
               else
                 begin
                   // floating-point decoding
-                  calibData[i] := _decimalToDouble(round(calibData[i]));
+                  calibData[i] := _decimalToDouble(LongInt(round(calibData[i])));
                 end;
               i := i + 1;
             end;
@@ -10796,7 +10849,7 @@ var
         begin
           // Handle latest 32bit parameter format
           iCalib := _decodeFloats(param);
-          calibType := round(iCalib[0] / 1000.0);
+          calibType := LongInt(round(iCalib[0] / 1000.0));
           if calibType >= 30 then
             begin
               calibType := calibType - 30;
@@ -10833,7 +10886,7 @@ var
                     begin
                       param := param + ' ';
                     end;
-                  param := param + IntToStr(round(calibData[i] * 1000.0 / 1000.0));
+                  param := param + IntToStr(LongInt(round(calibData[i] * 1000.0 / 1000.0)));
                   i := i + 1;
                 end;
               param := param + ',';
@@ -10851,7 +10904,7 @@ var
                 begin
                   if funScale = 0 then
                     begin
-                      wordVal := _doubleToDecimal(round(calibData[i]));
+                      wordVal := _doubleToDecimal(LongInt(round(calibData[i])));
                     end
                   else
                     begin
@@ -11952,7 +12005,7 @@ var
       obj : TYSensor;
     begin
       obj := TYSensor(TYFunction._FindFromCache('Sensor', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYSensor.create(func);
           TYFunction._AddToCache('Sensor', func, obj);
@@ -12890,12 +12943,36 @@ var
       obj : TYHub;
     begin
       obj := self._findYHubFromCache(hubref);
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYHub.create(self, hubref);
           self._addYHubToCache(hubref, obj);
         end;
       result := obj;
+      exit;
+    end;
+
+
+  function TYAPIContext.findYHubFromID(id: string):TYHub;
+    var
+      rhub : TYHub;
+    begin
+      rhub := self.nextHubInUseInternal(-1);
+      while not((rhub = nil)) do
+        begin
+          if (rhub.get_serialNumber = id) then
+            begin
+              result := rhub;
+              exit;
+            end;
+          if (rhub.get_registeredUrl = id) then
+            begin
+              result := rhub;
+              exit;
+            end;
+          rhub := rhub.nextHubInUse;
+        end;
+      result := rhub;
       exit;
     end;
 
@@ -13112,6 +13189,18 @@ var
             yInitAPI(0, dummy);
           end;
         result := _yapiContext.getYHubObj(hubref);
+    end;
+
+
+  function yfindYHubFromID(id: string):TYHub;
+    var
+        dummy : string;
+    begin
+        if (Not(YAPI_apiInitialized)) then
+          begin
+            yInitAPI(0, dummy);
+          end;
+        result := _yapiContext.findYHubFromID(id);
     end;
 
 //--- (end of generated code: YAPIContext yapiwrapper)
@@ -13716,7 +13805,7 @@ var
 
   function TYDataStream.get_startTimeUTC():int64;
     begin
-      result := round(self._startTime);
+      result := LongInt(round(self._startTime));
       exit;
     end;
 
@@ -13730,7 +13819,7 @@ var
 
   function TYDataStream.get_dataSamplesIntervalMs():LongInt;
     begin
-      result := round(self._dataSamplesInterval*1000);
+      result := LongInt(round(self._dataSamplesInterval*1000));
       exit;
     end;
 
@@ -14575,7 +14664,7 @@ var
               stream := self._streams[ii_0];
             end;
         end;
-      if stream = nil then
+      if (stream = nil) then
         begin
           result := measures;
           exit;
@@ -15197,7 +15286,7 @@ const
       obj : TYDataLogger;
     begin
       obj := TYDataLogger(TYFunction._FindFromCache('DataLogger', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYDataLogger.create(func);
           TYFunction._AddToCache('DataLogger', func, obj);

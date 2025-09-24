@@ -873,7 +873,7 @@ implementation
       obj : TYBuzzer;
     begin
       obj := TYBuzzer(TYFunction._FindFromCache('Buzzer', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYBuzzer.create(func);
           TYFunction._AddToCache('Buzzer', func, obj);
@@ -1092,7 +1092,7 @@ implementation
                 begin
                   prevDuration := num;
                 end;
-              ms := round(320000.0 / (tempo * num));
+              ms := LongInt(round(320000.0 / (tempo * num)));
               if typ = 0 then
                 begin
                   self.addPulseToPlaySeq(0, ms);
@@ -1109,7 +1109,7 @@ implementation
                       dNote := dNote + 12;
                     end;
                   pitch := prevPitch + dNote;
-                  freq := round(440 * Exp(pitch * 0.05776226504666));
+                  freq := LongInt(round(440 * Exp(pitch * 0.05776226504666)));
                   ms16 := ((ms) shr 4);
                   rest := 0;
                   if typ = 3 then

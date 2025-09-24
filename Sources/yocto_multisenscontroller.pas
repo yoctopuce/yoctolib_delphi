@@ -627,7 +627,7 @@ implementation
       obj : TYMultiSensController;
     begin
       obj := TYMultiSensController(TYFunction._FindFromCache('MultiSensController', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYMultiSensController.create(func);
           TYFunction._AddToCache('MultiSensController', func, obj);

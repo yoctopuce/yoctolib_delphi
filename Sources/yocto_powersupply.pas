@@ -984,7 +984,7 @@ implementation
       obj : TYPowerSupply;
     begin
       obj := TYPowerSupply(TYFunction._FindFromCache('PowerSupply', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYPowerSupply.create(func);
           TYFunction._AddToCache('PowerSupply', func, obj);
@@ -1044,7 +1044,7 @@ implementation
         begin
           V_target  := 0.0;
         end;
-      newval := ''+inttostr(round(V_target*65536))+':'+inttostr(ms_duration);
+      newval := ''+inttostr(LongInt(round(V_target*65536)))+':'+inttostr(ms_duration);
 
       result := self.set_voltageTransition(newval);
       exit;

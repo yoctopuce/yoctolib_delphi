@@ -583,7 +583,7 @@ implementation
       obj : TYAudioIn;
     begin
       obj := TYAudioIn(TYFunction._FindFromCache('AudioIn', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYAudioIn.create(func);
           TYFunction._AddToCache('AudioIn', func, obj);

@@ -410,7 +410,7 @@ implementation
       obj : TYSegmentedDisplay;
     begin
       obj := TYSegmentedDisplay(TYFunction._FindFromCache('SegmentedDisplay', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYSegmentedDisplay.create(func);
           TYFunction._AddToCache('SegmentedDisplay', func, obj);

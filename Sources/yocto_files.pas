@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 67452 2025-06-13 09:53:42Z seb $
+ * $Id: yocto_files.pas 68482 2025-08-21 10:07:30Z mvuilleu $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -594,7 +594,7 @@ implementation
       obj : TYFiles;
     begin
       obj := TYFiles(TYFunction._FindFromCache('Files', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYFiles.create(func);
           TYFunction._AddToCache('Files', func, obj);
@@ -812,14 +812,14 @@ implementation
             begin
               blksz := 256;
             end;
-          part := ((_bincrc(content, blkidx * 256, blksz)) xor ($0ffffffff));
+          part := ((_bincrc(content, blkidx * 256, blksz)) xor (LongInt($0ffffffff)));
           meta[4 * blkidx] := ((part) and 255);
           meta[4 * blkidx + 1] := ((((part) shr 8)) and 255);
           meta[4 * blkidx + 2] := ((((part) shr 16)) and 255);
           meta[4 * blkidx + 3] := ((((part) shr 24)) and 255);
           blkidx := blkidx + 1;
         end;
-      res := ((_bincrc(meta, 0, 4 * blkcnt)) xor ($0ffffffff));
+      res := ((_bincrc(meta, 0, 4 * blkcnt)) xor (LongInt($0ffffffff)));
       result := res;
       exit;
     end;

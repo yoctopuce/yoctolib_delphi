@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 67474 2025-06-16 08:58:53Z seb $
+ * $Id: yocto_display.pas 68482 2025-08-21 10:07:30Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -1896,7 +1896,7 @@ destructor TYDisplay.destroy();
       obj : TYDisplay;
     begin
       obj := TYDisplay(TYFunction._FindFromCache('Display', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYDisplay.create(func);
           TYFunction._AddToCache('Display', func, obj);

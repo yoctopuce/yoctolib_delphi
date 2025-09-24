@@ -1136,7 +1136,7 @@ implementation
       obj : TYGps;
     begin
       obj := TYGps(TYFunction._FindFromCache('Gps', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYGps.create(func);
           TYFunction._AddToCache('Gps', func, obj);

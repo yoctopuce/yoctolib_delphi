@@ -534,7 +534,7 @@ implementation
       obj : TYArithmeticSensor;
     begin
       obj := TYArithmeticSensor(TYFunction._FindFromCache('ArithmeticSensor', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYArithmeticSensor.create(func);
           TYFunction._AddToCache('ArithmeticSensor', func, obj);

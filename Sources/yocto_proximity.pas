@@ -1027,7 +1027,7 @@ implementation
       obj : TYProximity;
     begin
       obj := TYProximity(TYFunction._FindFromCache('Proximity', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYProximity.create(func);
           TYFunction._AddToCache('Proximity', func, obj);

@@ -573,7 +573,7 @@ implementation
       obj : TYAccelerometer;
     begin
       obj := TYAccelerometer(TYFunction._FindFromCache('Accelerometer', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYAccelerometer.create(func);
           TYFunction._AddToCache('Accelerometer', func, obj);

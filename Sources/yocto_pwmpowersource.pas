@@ -383,7 +383,7 @@ implementation
       obj : TYPwmPowerSource;
     begin
       obj := TYPwmPowerSource(TYFunction._FindFromCache('PwmPowerSource', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYPwmPowerSource.create(func);
           TYFunction._AddToCache('PwmPowerSource', func, obj);

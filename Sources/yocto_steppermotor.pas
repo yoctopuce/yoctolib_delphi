@@ -1434,7 +1434,7 @@ implementation
       obj : TYStepperMotor;
     begin
       obj := TYStepperMotor(TYFunction._FindFromCache('StepperMotor', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYStepperMotor.create(func);
           TYFunction._AddToCache('StepperMotor', func, obj);
@@ -1531,35 +1531,35 @@ implementation
 
   function TYStepperMotor.findHomePosition(speed: double):LongInt;
     begin
-      result := self.sendCommand('H'+inttostr(round(1000*speed)));
+      result := self.sendCommand('H'+inttostr(LongInt(round(1000*speed))));
       exit;
     end;
 
 
   function TYStepperMotor.changeSpeed(speed: double):LongInt;
     begin
-      result := self.sendCommand('R'+inttostr(round(1000*speed)));
+      result := self.sendCommand('R'+inttostr(LongInt(round(1000*speed))));
       exit;
     end;
 
 
   function TYStepperMotor.moveTo(absPos: double):LongInt;
     begin
-      result := self.sendCommand('M'+inttostr(round(16*absPos)));
+      result := self.sendCommand('M'+inttostr(LongInt(round(16*absPos))));
       exit;
     end;
 
 
   function TYStepperMotor.moveRel(relPos: double):LongInt;
     begin
-      result := self.sendCommand('m'+inttostr(round(16*relPos)));
+      result := self.sendCommand('m'+inttostr(LongInt(round(16*relPos))));
       exit;
     end;
 
 
   function TYStepperMotor.moveRelSlow(relPos: double; maxSpeed: double):LongInt;
     begin
-      result := self.sendCommand('m'+inttostr(round(16*relPos))+'@'+inttostr(round(1000*maxSpeed)));
+      result := self.sendCommand('m'+inttostr(LongInt(round(16*relPos)))+'@'+inttostr(LongInt(round(1000*maxSpeed))));
       exit;
     end;
 

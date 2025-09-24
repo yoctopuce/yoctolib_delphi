@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_wireless.pas 66665 2025-05-14 07:32:24Z seb $
+ * $Id: yocto_wireless.pas 68482 2025-08-21 10:07:30Z mvuilleu $
  *
  * Implements yFindWireless(), the high-level API for Wireless functions
  *
@@ -839,7 +839,7 @@ implementation
       obj : TYWireless;
     begin
       obj := TYWireless(TYFunction._FindFromCache('Wireless', func));
-      if obj = nil then
+      if (obj = nil) then
         begin
           obj :=  TYWireless.create(func);
           TYFunction._AddToCache('Wireless', func, obj);
