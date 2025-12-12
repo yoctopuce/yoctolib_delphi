@@ -91,10 +91,9 @@ begin
       product := module.get_productName();
       if (product = 'YoctoHub-Shield') then
         shield.Add(serial)
-      else
-        if (copy(product,1,9)='YoctoHub-') then
-          hubs.Add(serial)
-        else
+      else if (Copy(product, 1, 9) = 'YoctoHub-') then
+        hubs.Add(serial)
+      else if (Copy(product, 1, 10) <> 'VirtualHub') then
         devices.Add(serial);
       module := module.nextModule();
     end;

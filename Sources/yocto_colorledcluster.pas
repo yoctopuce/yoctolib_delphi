@@ -1966,7 +1966,7 @@ implementation
 
   function TYColorLedCluster.get_rgbColorBuffer(ledIndex: LongInt; count: LongInt):TByteArray;
     begin
-      result := self._download('rgb.bin?typ=0&pos='+inttostr(3*ledIndex)+'&len='+inttostr(3*count));
+      result := self._download('rgb.bin?typ='+inttostr(0)+'&pos='+inttostr(3*ledIndex)+'&len='+inttostr(3*count));
       exit;
     end;
 
@@ -1981,7 +1981,7 @@ implementation
       b : LongInt;
       res_pos : LongInt;
     begin
-      buff := self._download('rgb.bin?typ=0&pos='+inttostr(3*ledIndex)+'&len='+inttostr(3*count));
+      buff := self._download('rgb.bin?typ='+inttostr(0)+'&pos='+inttostr(3*ledIndex)+'&len='+inttostr(3*count));
       SetLength(res, 0);
       res_pos := length(res);
       SetLength(res, res_pos+count);;
@@ -2011,7 +2011,7 @@ implementation
       b : LongInt;
       res_pos : LongInt;
     begin
-      buff := self._download('rgb.bin?typ=4&pos='+inttostr(3*ledIndex)+'&len='+inttostr(3*count));
+      buff := self._download('rgb.bin?typ='+inttostr(4)+'&pos='+inttostr(3*ledIndex)+'&len='+inttostr(3*count));
       SetLength(res, 0);
       res_pos := length(res);
       SetLength(res, res_pos+count);;
@@ -2039,7 +2039,7 @@ implementation
       seq : LongInt;
       res_pos : LongInt;
     begin
-      buff := self._download('rgb.bin?typ=1&pos='+inttostr(ledIndex)+'&len='+inttostr(count));
+      buff := self._download('rgb.bin?typ='+inttostr(1)+'&pos='+inttostr(ledIndex)+'&len='+inttostr(count));
       SetLength(res, 0);
       res_pos := length(res);
       SetLength(res, res_pos+count);;
@@ -2068,7 +2068,7 @@ implementation
       ll : LongInt;
       res_pos : LongInt;
     begin
-      buff := self._download('rgb.bin?typ=2&pos='+inttostr(4*seqIndex)+'&len='+inttostr(4*count));
+      buff := self._download('rgb.bin?typ='+inttostr(2)+'&pos='+inttostr(4*seqIndex)+'&len='+inttostr(4*count));
       SetLength(res, 0);
       res_pos := length(res);
       SetLength(res, res_pos+count);;
@@ -2098,7 +2098,7 @@ implementation
       ll : LongInt;
       res_pos : LongInt;
     begin
-      buff := self._download('rgb.bin?typ=6&pos='+inttostr(seqIndex)+'&len='+inttostr(count));
+      buff := self._download('rgb.bin?typ='+inttostr(6)+'&pos='+inttostr(seqIndex)+'&len='+inttostr(count));
       SetLength(res, 0);
       res_pos := length(res);
       SetLength(res, res_pos+count);;
@@ -2125,7 +2125,7 @@ implementation
       started : LongInt;
       res_pos : LongInt;
     begin
-      buff := self._download('rgb.bin?typ=5&pos='+inttostr(seqIndex)+'&len='+inttostr(count));
+      buff := self._download('rgb.bin?typ='+inttostr(5)+'&pos='+inttostr(seqIndex)+'&len='+inttostr(count));
       SetLength(res, 0);
       res_pos := length(res);
       SetLength(res, res_pos+count);;
@@ -2151,7 +2151,7 @@ implementation
       started : LongInt;
       res_pos : LongInt;
     begin
-      buff := self._download('rgb.bin?typ=3&pos='+inttostr(seqIndex)+'&len='+inttostr(count));
+      buff := self._download('rgb.bin?typ='+inttostr(3)+'&pos='+inttostr(seqIndex)+'&len='+inttostr(count));
       SetLength(res, 0);
       res_pos := length(res);
       SetLength(res, res_pos+count);;
@@ -2218,47 +2218,32 @@ implementation
         end
       else
         begin
-          temp2 := (L+S) * 255 - L*S;
+          temp2 := (L + S) * 255 - L * S;
         end;
       temp1 := 510 * L - temp2;
       // R
-      temp3 := (H + 85);
-      if temp3 > 255 then
-        begin
-          temp3 := temp3-255;
-        end;
+      temp3 := (((H + 85)) and ($0ff));
       R := self.hsl2rgbInt(temp1, temp2, temp3);
       // G
-      temp3 := H;
-      if temp3 > 255 then
-        begin
-          temp3 := temp3-255;
-        end;
+      temp3 := ((H) and ($0ff));
       G := self.hsl2rgbInt(temp1, temp2, temp3);
       // B
-      if H >= 85 then
-        begin
-          temp3 := H - 85 ;
-        end
-      else
-        begin
-          temp3 := H + 170;
-        end;
+      temp3 := (((H + 170)) and ($0ff));
       B := self.hsl2rgbInt(temp1, temp2, temp3);
       // just in case
-      if R>255 then
+      if R > 255 then
         begin
-          R:=255;
+          R := 255;
         end;
-      if G>255 then
+      if G > 255 then
         begin
-          G:=255;
+          G := 255;
         end;
-      if B>255 then
+      if B > 255 then
         begin
-          B:=255;
+          B := 255;
         end;
-      res := ((R) shl 16)+((G) shl 8)+B;
+      res := ((R) shl 16) + ((G) shl 8) + B;
       result := res;
       exit;
     end;

@@ -2045,9 +2045,8 @@ implementation
     var
       rest_val: string;
     begin
-      if Length(newval) > YAPI_HASH_BUF_SIZE then
+      if Not(_is_valid_pass(newval)) then
         begin
-          _throw(YAPI_INVALID_ARGUMENT,'Password too long :' + newval);
           result := YAPI_INVALID_ARGUMENT;
           exit;
         end;
@@ -2077,9 +2076,8 @@ implementation
     var
       rest_val: string;
     begin
-      if Length(newval) > YAPI_HASH_BUF_SIZE then
+      if Not(_is_valid_pass(newval)) then
         begin
-          _throw(YAPI_INVALID_ARGUMENT,'Password too long :' + newval);
           result := YAPI_INVALID_ARGUMENT;
           exit;
         end;

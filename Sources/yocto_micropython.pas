@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_micropython.pas 68482 2025-08-21 10:07:30Z mvuilleu $
+ *  $Id: yocto_micropython.pas 69442 2025-10-16 08:53:14Z mvuilleu $
  *
  *  Implements yFindMicroPython(), the high-level API for MicroPython functions
  *
@@ -323,7 +323,7 @@ type
     ////
     /// <summary>
     ///   Returns the wait time before running the startup script on power on,
-    ///   between 0.1 second and 25 seconds.
+    ///   measured in seconds.
     /// <para>
     /// </para>
     /// <para>
@@ -331,7 +331,7 @@ type
     /// </summary>
     /// <returns>
     ///   a floating point number corresponding to the wait time before running the startup script on power on,
-    ///   between 0.1 second and 25 seconds
+    ///   measured in seconds
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>YMicroPython.STARTUPDELAY_INVALID</c>.

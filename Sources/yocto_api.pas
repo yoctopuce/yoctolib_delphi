@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 68482 2025-08-21 10:07:30Z mvuilleu $
+ * $Id: yocto_api.pas 70666 2025-12-09 10:26:00Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -129,7 +129,7 @@ const
   Y_DETECT_ALL : integer = (Y_DETECT_USB or Y_DETECT_NET);
 
   YOCTO_API_VERSION_STR     = '2.1';
-  YOCTO_API_BUILD_NO        = '69018';
+  YOCTO_API_BUILD_NO        = '70736';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -174,6 +174,17 @@ type
     beacon          : u8;
     pad             : u8;
   end;
+
+
+  YCalibCtx = packed record
+    src  : string;
+    hdl  : yCalibrationHandler;
+    typ  : LongInt;
+    par  : TLongIntArray;
+    raw  : TDoubleArray;
+    cal  : TDoubleArray;
+  end;
+ PYCalibCtx = ^YCalibCtx;
 
   YIOHDL = packed record
     raw : array[0..YIOHDL_SIZE-1] of u8;
@@ -1245,6 +1256,8 @@ type
     function get_serialNumber():string; overload; virtual;
 
     function _parserHelper():LongInt; overload; virtual;
+
+    function _is_valid_pass(passwd: string):boolean; overload; virtual;
 
 
     ////
@@ -2345,6 +2358,8 @@ end;
   TYSensor=class(TYFunction)
   //--- (end of generated code: YSensor class start)
   protected
+    _cal_stat                 : YCalibCtx;
+    _cal                      : PYCalibCtx;
   //--- (generated code: YSensor declaration)
     // Attributes (function value cache)
     _unit                     : string;
@@ -2360,19 +2375,12 @@ end;
     _sensorState              : LongInt;
     _valueCallbackSensor      : TYSensorValueCallback;
     _timedReportCallbackSensor : TYSensorTimedReportCallback;
-    _prevTimedReport          : double;
+    _prevTR                   : double;
     _iresol                   : double;
-    _offset                   : double;
-    _scale                    : double;
-    _decexp                   : double;
-    _caltyp                   : LongInt;
-    _calpar                   : TLongIntArray;
-    _calraw                   : TDoubleArray;
-    _calref                   : TDoubleArray;
-    _calhdl                   : yCalibrationHandler;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
     //--- (end of generated code: YSensor declaration)
+    function _calib_ctx(calibStr:string; calhdl:yCalibrationHandler; caltyp:LongInt; calpar:TLongIntArray; calraw:TDoubleArray; calref:TDoubleArray): PYCalibCtx;
 
 
   public
@@ -2844,6 +2852,8 @@ end;
     /// </returns>
     ///-
     function get_dataLogger():TYDataLogger; overload; virtual;
+
+    function _parseCalibStr(calibStr: string):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -3454,6 +3464,8 @@ end;
   ///-
   TYDataStream=class(TObject)
   //--- (end of generated code: YDataStream class start)
+    _cal                      : PYCalibCtx;
+    _cal_stat                 : YCalibCtx;
   protected
   //--- (generated code: YDataStream declaration)
     // Attributes (function value cache)
@@ -3473,20 +3485,19 @@ end;
     _minVal                   : double;
     _avgVal                   : double;
     _maxVal                   : double;
-    _caltyp                   : LongInt;
-    _calpar                   : TLongIntArray;
-    _calraw                   : TDoubleArray;
-    _calref                   : TDoubleArray;
     _values                   : TDoubleArrayArray;
     _isLoaded                 : boolean;
     //--- (end of generated code: YDataStream declaration)
-    _calhdl                  : yCalibrationHandler;
+    function _calib_ctx(calibStr:string; calhdl:yCalibrationHandler; caltyp:LongInt; calpar:TLongIntArray; calraw:TDoubleArray; calref:TDoubleArray): PYCalibCtx;
+
   public
     constructor Create(parent:TYFunction); Overload;
     constructor Create(parent:TYFunction; dataset:TYDataSet; encoded:TLongIntArray); Overload;
 
 
   //--- (generated code: YDataStream accessors declaration)
+
+    function _parseCalibArr(iCalib: TLongIntArray):LongInt; overload; virtual;
 
     function _initFromDataSet(dataset: TYDataSet; encoded: TLongIntArray):LongInt; overload; virtual;
 
@@ -7010,7 +7021,7 @@ var
       apidate : string;
     begin
       yapiGetAPIVersion(version, apidate);
-      yGetAPIVersion:=  '2.1.9018 (' + version + ')';
+      yGetAPIVersion:=  '2.1.10736 (' + version + ')';
     end;
 
 
@@ -8679,6 +8690,34 @@ var
   function TYFunction._parserHelper():LongInt;
     begin
       result := 0;
+      exit;
+    end;
+
+
+  function TYFunction._is_valid_pass(passwd: string):boolean;
+    var
+      tmp : string;
+    begin
+      if Length(passwd) > YAPI_HASH_BUF_SIZE then
+        begin
+          tmp := 'Password too long (max '+inttostr(YAPI_HASH_BUF_SIZE)+' chars) :'+passwd;
+          self._throw(YAPI_INVALID_ARGUMENT, tmp);
+          result := false;
+          exit;
+        end;
+      if (pos('@', passwd) - 1) >=0 then
+        begin
+          self._throw(YAPI_INVALID_ARGUMENT, 'Character @ is not allowed in password');
+          result := false;
+          exit;
+        end;
+      if (pos('/', passwd) - 1) >=0 then
+        begin
+          self._throw(YAPI_INVALID_ARGUMENT, 'Character / is not allowed in password');
+          result := false;
+          exit;
+        end;
+      result := true;
       exit;
     end;
 
@@ -11651,14 +11690,23 @@ var
       _sensorState := Y_SENSORSTATE_INVALID;
       _valueCallbackSensor := nil;
       _timedReportCallbackSensor := nil;
-      _prevTimedReport := 0;
+      _prevTR := 0;
       _iresol := 0;
-      _offset := 0;
-      _scale := 0;
-      _decexp := 0;
-      _caltyp := 0;
       //--- (end of generated code: YSensor accessors initialization)
     end;
+
+
+function TYSensor._calib_ctx(calibStr:string; calhdl:yCalibrationHandler; caltyp:LongInt; calpar:TLongIntArray; calraw:TDoubleArray; calref:TDoubleArray): PYCalibCtx;
+  begin
+      _cal_stat.src := calibStr;
+      _cal_stat.hdl := calhdl;
+      _cal_stat.typ := caltyp;
+      _cal_stat.par := calpar;
+      _cal_stat.raw := calraw;
+      _cal_stat.cal := calref;
+      result := @_cal_stat;
+     exit;
+  end;
 
 
 //--- (generated code: YSensor implementation)
@@ -11768,13 +11816,20 @@ var
               exit;
             end;
         end;
-      res := self._applyCalibration(self._currentRawValue);
-      if res = Y_CURRENTVALUE_INVALID then
+      if (self._cal = nil) then
         begin
           res := self._currentValue;
+        end
+      else
+        begin
+          res := self._applyCalibration(self._currentRawValue);
         end;
-      res := res * self._iresol;
-      res := round(res) / self._iresol;
+      if res = Y_CURRENTVALUE_INVALID then
+        begin
+          result := res;
+          exit;
+        end;
+      res := round(res * self._iresol) / self._iresol;
       result := res;
       exit;
     end;
@@ -11800,8 +11855,7 @@ var
               exit;
             end;
         end;
-      res := self._lowestValue * self._iresol;
-      res := round(res) / self._iresol;
+      res := round(self._lowestValue * self._iresol) / self._iresol;
       result := res;
       exit;
     end;
@@ -11827,8 +11881,7 @@ var
               exit;
             end;
         end;
-      res := self._highestValue * self._iresol;
-      res := round(res) / self._iresol;
+      res := round(self._highestValue * self._iresol) / self._iresol;
       result := res;
       exit;
     end;
@@ -12059,23 +12112,8 @@ var
 
   function TYSensor._parserHelper():LongInt;
     var
-      position : LongInt;
-      maxpos : LongInt;
-      iCalib : TLongIntArray;
-      iRaw : LongInt;
-      iRef : LongInt;
-      fRaw : double;
-      fRef : double;
-      _calpar_pos : LongInt;
-      _calraw_pos : LongInt;
-      _calref_pos : LongInt;
+      calibStr : string;
     begin
-      self._caltyp := -1;
-      self._scale := -1;
-      SetLength(self._calpar, 0);
-      SetLength(self._calraw, 0);
-      SetLength(self._calref, 0);
-      // Store inverted resolution, to provide better rounding
       if self._resolution > 0 then
         begin
           self._iresol := round(1.0 / self._resolution);
@@ -12083,147 +12121,19 @@ var
       else
         begin
           self._iresol := 10000;
-          self._resolution := 0.0001;
         end;
-      // Old format: supported when there is no calibration
-      if (self._calibrationParam = '') or (self._calibrationParam = '0') then
+      // Shortcut when there is no calibration parameter
+      calibStr := self._calibrationParam;
+      if (calibStr = '0,') or (calibStr = '') or (calibStr = '0') then
         begin
-          self._caltyp := 0;
+          self._cal := nil;
           result := 0;
           exit;
         end;
-      if (pos(',', self._calibrationParam) - 1) >= 0 then
+      // Parse calibration parameters only if they have changed
+      if (self._cal = nil) or not((self._cal.src = calibStr)) then
         begin
-          // Plain text format
-          iCalib := _decodeFloats(self._calibrationParam);
-          self._caltyp := (iCalib[0] div 1000);
-          if self._caltyp > 0 then
-            begin
-              if self._caltyp < YOCTO_CALIB_TYPE_OFS then
-                begin
-                  // Unknown calibration type: calibrated value will be provided by the device
-                  self._caltyp := -1;
-                  result := 0;
-                  exit;
-                end;
-              self._calhdl := _getCalibrationHandler(self._caltyp);
-              if not((addr(self._calhdl) <> nil)) then
-                begin
-                  // Unknown calibration type: calibrated value will be provided by the device
-                  self._caltyp := -1;
-                  result := 0;
-                  exit;
-                end;
-            end;
-          // New 32 bits text format
-          self._offset := 0;
-          self._scale := 1000;
-          maxpos := length(iCalib);
-          _calpar_pos := 0;
-          SetLength(self._calpar, maxpos);
-          position := 1;
-          while position < maxpos do
-            begin
-              self._calpar[_calpar_pos] := iCalib[position];
-              inc(_calpar_pos);
-              position := position + 1;
-            end;
-          SetLength(self._calpar, _calpar_pos);
-          _calraw_pos := 0;
-          SetLength(self._calraw, maxpos);
-          _calref_pos := 0;
-          SetLength(self._calref, maxpos);
-          position := 1;
-          while position + 1 < maxpos do
-            begin
-              fRaw := iCalib[position];
-              fRaw := fRaw / 1000.0;
-              fRef := iCalib[position + 1];
-              fRef := fRef / 1000.0;
-              self._calraw[_calraw_pos] := fRaw;
-              inc(_calraw_pos);
-              self._calref[_calref_pos] := fRef;
-              inc(_calref_pos);
-              position := position + 2;
-            end;
-          SetLength(self._calraw, _calraw_pos);
-          SetLength(self._calref, _calref_pos);
-        end
-      else
-        begin
-          // Recorder-encoded format, including encoding
-          iCalib := _decodeWords(self._calibrationParam);
-          // In case of unknown format, calibrated value will be provided by the device
-          if length(iCalib) < 2 then
-            begin
-              self._caltyp := -1;
-              result := 0;
-              exit;
-            end;
-          // Save variable format (scale for scalar, or decimal exponent)
-          self._offset := 0;
-          self._scale := 1;
-          self._decexp := 1.0;
-          position := iCalib[0];
-          while position > 0 do
-            begin
-              self._decexp := self._decexp * 10;
-              position := position - 1;
-            end;
-          // Shortcut when there is no calibration parameter
-          if length(iCalib) = 2 then
-            begin
-              self._caltyp := 0;
-              result := 0;
-              exit;
-            end;
-          self._caltyp := iCalib[2];
-          self._calhdl := _getCalibrationHandler(self._caltyp);
-          // parse calibration points
-          if self._caltyp <= 10 then
-            begin
-              maxpos := self._caltyp;
-            end
-          else
-            begin
-              if self._caltyp <= 20 then
-                begin
-                  maxpos := self._caltyp - 10;
-                end
-              else
-                begin
-                  maxpos := 5;
-                end;
-            end;
-          maxpos := 3 + 2 * maxpos;
-          if maxpos > length(iCalib) then
-            begin
-              maxpos := length(iCalib);
-            end;
-          _calpar_pos := 0;
-          SetLength(self._calpar, maxpos);
-          _calraw_pos := 0;
-          SetLength(self._calraw, maxpos);
-          _calref_pos := 0;
-          SetLength(self._calref, maxpos);
-          position := 3;
-          while position + 1 < maxpos do
-            begin
-              iRaw := iCalib[position];
-              iRef := iCalib[position + 1];
-              self._calpar[_calpar_pos] := iRaw;
-              inc(_calpar_pos);
-              self._calpar[_calpar_pos] := iRef;
-              inc(_calpar_pos);
-              self._calraw[_calraw_pos] := _decimalToDouble(iRaw);
-              inc(_calraw_pos);
-              self._calref[_calref_pos] := _decimalToDouble(iRef);
-              inc(_calref_pos);
-              position := position + 2;
-            end;
-          SetLength(self._calpar, _calpar_pos);
-          SetLength(self._calraw, _calraw_pos);
-          SetLength(self._calref, _calref_pos);
+          self._parseCalibStr(calibStr);
         end;
       result := 0;
       exit;
@@ -12232,16 +12142,16 @@ var
 
   function TYSensor.isSensorReady():boolean;
     begin
-      if not(self.isOnline) then
-        begin
-          result := false;
-          exit;
-        end;
-      if not(self._sensorState = 0) then
-        begin
-          result := false;
-          exit;
-        end;
+      Try
+        if self.get_sensorState <> 0 then
+          begin
+            result := false;
+            exit;
+          end;
+      Except
+        result := false;
+        exit;
+      End;
       result := true;
       exit;
     end;
@@ -12264,6 +12174,147 @@ var
       hwid := serial + '.dataLogger';
       logger := TYDataLogger.FindDataLogger(hwid);
       result := logger;
+      exit;
+    end;
+
+
+  function TYSensor._parseCalibStr(calibStr: string):LongInt;
+    var
+      iCalib : TLongIntArray;
+      caltyp : LongInt;
+      calhdl : yCalibrationHandler;
+      maxpos : LongInt;
+      position : LongInt;
+      calpar : TLongIntArray;
+      calraw : TDoubleArray;
+      calref : TDoubleArray;
+      fRaw : double;
+      fRef : double;
+      iRaw : LongInt;
+      iRef : LongInt;
+      calpar_pos : LongInt;
+      calraw_pos : LongInt;
+      calref_pos : LongInt;
+    begin
+      if (pos(',', calibStr) - 1) >= 0 then
+        begin
+          // Plain text format
+          iCalib := _decodeFloats(calibStr);
+          caltyp := (iCalib[0] div 1000);
+          if caltyp < YOCTO_CALIB_TYPE_OFS then
+            begin
+              // Unknown calibration type: calibrated value will be provided by the device
+              self._cal := nil;
+              result := YAPI_SUCCESS;
+              exit;
+            end;
+          calhdl := _getCalibrationHandler(caltyp);
+          if not((addr(calhdl) <> nil)) then
+            begin
+              // Unknown calibration type: calibrated value will be provided by the device
+              self._cal := nil;
+              result := YAPI_SUCCESS;
+              exit;
+            end;
+          // New 32 bits text format
+          maxpos := length(iCalib);
+          calpar_pos := 0;
+          SetLength(calpar, maxpos);
+          position := 1;
+          while position < maxpos do
+            begin
+              calpar[calpar_pos] := iCalib[position];
+              inc(calpar_pos);
+              position := position + 1;
+            end;
+          SetLength(calpar, calpar_pos);
+          calraw_pos := 0;
+          SetLength(calraw, maxpos);
+          calref_pos := 0;
+          SetLength(calref, maxpos);
+          position := 1;
+          while position + 1 < maxpos do
+            begin
+              fRaw := iCalib[position];
+              fRaw := fRaw / 1000.0;
+              fRef := iCalib[position + 1];
+              fRef := fRef / 1000.0;
+              calraw[calraw_pos] := fRaw;
+              inc(calraw_pos);
+              calref[calref_pos] := fRef;
+              inc(calref_pos);
+              position := position + 2;
+            end;
+          SetLength(calraw, calraw_pos);
+          SetLength(calref, calref_pos);
+        end
+      else
+        begin
+          // Old recorder-encoded format, including encoding
+          iCalib := _decodeWords(calibStr);
+          if length(iCalib) <= 2 then
+            begin
+              // Unknown calibration type: calibrated value will be provided by the device
+              self._cal := nil;
+              result := YAPI_SUCCESS;
+              exit;
+            end;
+          caltyp := iCalib[2];
+          calhdl := _getCalibrationHandler(caltyp);
+          if not((addr(calhdl) <> nil)) then
+            begin
+              // Unknown calibration type: calibrated value will be provided by the device
+              self._cal := nil;
+              result := YAPI_SUCCESS;
+              exit;
+            end;
+          if caltyp <= 10 then
+            begin
+              maxpos := caltyp;
+            end
+          else
+            begin
+              if caltyp <= 20 then
+                begin
+                  maxpos := caltyp - 10;
+                end
+              else
+                begin
+                  maxpos := 5;
+                end;
+            end;
+          maxpos := 3 + 2 * maxpos;
+          if maxpos > length(iCalib) then
+            begin
+              maxpos := length(iCalib);
+            end;
+          calpar_pos := 0;
+          SetLength(calpar, maxpos);
+          calraw_pos := 0;
+          SetLength(calraw, maxpos);
+          calref_pos := 0;
+          SetLength(calref, maxpos);
+          position := 3;
+          while position + 1 < maxpos do
+            begin
+              iRaw := iCalib[position];
+              iRef := iCalib[position + 1];
+              calpar[calpar_pos] := iRaw;
+              inc(calpar_pos);
+              calpar[calpar_pos] := iRef;
+              inc(calpar_pos);
+              calraw[calraw_pos] := _decimalToDouble(iRaw);
+              inc(calraw_pos);
+              calref[calref_pos] := _decimalToDouble(iRef);
+              inc(calref_pos);
+              position := position + 2;
+            end;
+          SetLength(calpar, calpar_pos);
+          SetLength(calraw, calraw_pos);
+          SetLength(calref, calref_pos);
+        end;
+      self._cal := self._calib_ctx(calibStr, calhdl, caltyp, calpar, calraw, calref);
+      result := YAPI_SUCCESS;
       exit;
     end;
 
@@ -12367,7 +12418,7 @@ var
       SetLength(rawValues, 0);
       SetLength(refValues, 0);
       // Load function parameters if not yet loaded
-      if (self._scale = 0) or(self._cacheExpiration <= yGetTickCount) then
+      if self._cacheExpiration <= yGetTickCount then
         begin
           if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
             begin
@@ -12375,25 +12426,23 @@ var
               exit;
             end;
         end;
-      if self._caltyp < 0 then
+      if (self._cal = nil) then
         begin
-          self._throw(YAPI_NOT_SUPPORTED, 'Calibration parameters format mismatch. Please upgrade your lib'
-          + 'rary or firmware.');
-          result := YAPI_NOT_SUPPORTED;
+          result := YAPI_SUCCESS;
           exit;
         end;
       rawValues_pos := 0;
-      SetLength(rawValues, length(self._calraw));
+      SetLength(rawValues, length(self._cal.raw));
       refValues_pos := 0;
-      SetLength(refValues, length(self._calref));
-      for ii_0:=0 to length(self._calraw)-1 do
+      SetLength(refValues, length(self._cal.cal));
+      for ii_0:=0 to length(self._cal.raw)-1 do
         begin
-          rawValues[rawValues_pos] := self._calraw[ii_0];
+          rawValues[rawValues_pos] := self._cal.raw[ii_0];
           inc(rawValues_pos);
         end;
-      for ii_1:=0 to length(self._calref)-1 do
+      for ii_1:=0 to length(self._cal.cal)-1 do
         begin
-          refValues[refValues_pos] := self._calref[ii_1];
+          refValues[refValues_pos] := self._cal.cal[ii_1];
           inc(refValues_pos);
         end;
       result := YAPI_SUCCESS;
@@ -12420,24 +12469,7 @@ var
           result := '0';
           exit;
         end;
-      // Load function parameters if not yet loaded
-      if self._scale = 0 then
-        begin
-          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
-            begin
-              result := YAPI_INVALID_STRING;
-              exit;
-            end;
-        end;
-      // Detect old firmware
-      if (self._caltyp < 0) or(self._scale < 0) then
-        begin
-          self._throw(YAPI_NOT_SUPPORTED, 'Calibration parameters format mismatch. Please upgrade your lib'
-          + 'rary or firmware.');
-          result := '0';
-          exit;
-        end;
-      // 32-bit fixed-point encoding
+      // Encode using newer 32-bit fixed-point method
       res := ''+inttostr(YOCTO_CALIB_TYPE_OFS);
       idx := 0;
       while idx < npt do
@@ -12452,27 +12484,17 @@ var
 
   function TYSensor._applyCalibration(rawValue: double):double;
     begin
+      if (self._cal = nil) then
+        begin
+          result := rawValue;
+          exit;
+        end;
       if rawValue = Y_CURRENTVALUE_INVALID then
         begin
           result := Y_CURRENTVALUE_INVALID;
           exit;
         end;
-      if self._caltyp = 0 then
-        begin
-          result := rawValue;
-          exit;
-        end;
-      if self._caltyp < 0 then
-        begin
-          result := Y_CURRENTVALUE_INVALID;
-          exit;
-        end;
-      if not((addr(self._calhdl) <> nil)) then
-        begin
-          result := Y_CURRENTVALUE_INVALID;
-          exit;
-        end;
-      result := self._calhdl(rawValue, self._caltyp, self._calpar, self._calraw, self._calref);
+      result := self._cal.hdl(rawValue, self._cal.typ, self._cal.par, self._cal.raw, self._cal.cal);
       exit;
     end;
 
@@ -12499,10 +12521,10 @@ var
         end
       else
         begin
-          startTime := self._prevTimedReport;
+          startTime := self._prevTR;
         end;
       endTime := timestamp;
-      self._prevTimedReport := endTime;
+      self._prevTR := endTime;
       if startTime = 0 then
         begin
           startTime := endTime;
@@ -12527,12 +12549,9 @@ var
               avgRaw := avgRaw - poww;
             end;
           avgVal := avgRaw / 1000.0;
-          if self._caltyp <> 0 then
+          if not((self._cal = nil)) then
             begin
-              if (addr(self._calhdl) <> nil) then
-                begin
-                  avgVal := self._calhdl(avgVal, self._caltyp, self._calpar, self._calraw, self._calref);
-                end;
+              avgVal := self._cal.hdl(avgVal, self._cal.typ, self._cal.par, self._cal.raw, self._cal.cal);
             end;
           minVal := avgVal;
           maxVal := avgVal;
@@ -12584,14 +12603,11 @@ var
           avgVal := avgRaw / 1000.0;
           minVal := minRaw / 1000.0;
           maxVal := maxRaw / 1000.0;
-          if self._caltyp <> 0 then
+          if not((self._cal = nil)) then
             begin
-              if (addr(self._calhdl) <> nil) then
-                begin
-                  avgVal := self._calhdl(avgVal, self._caltyp, self._calpar, self._calraw, self._calref);
-                  minVal := self._calhdl(minVal, self._caltyp, self._calpar, self._calraw, self._calref);
-                  maxVal := self._calhdl(maxVal, self._caltyp, self._calpar, self._calraw, self._calref);
-                end;
+              avgVal := self._cal.hdl(avgVal, self._cal.typ, self._cal.par, self._cal.raw, self._cal.cal);
+              minVal := self._cal.hdl(minVal, self._cal.typ, self._cal.par, self._cal.raw, self._cal.cal);
+              maxVal := self._cal.hdl(maxVal, self._cal.typ, self._cal.par, self._cal.raw, self._cal.cal);
             end;
         end;
       result := TYMeasure.create(startTime, endTime, minVal, avgVal, maxVal);
@@ -12604,12 +12620,9 @@ var
       val : double;
     begin
       val := w;
-      if self._caltyp <> 0 then
+      if not((self._cal = nil)) then
         begin
-          if (addr(self._calhdl) <> nil) then
-            begin
-              val := self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref);
-            end;
+          val := self._cal.hdl(val, self._cal.typ, self._cal.par, self._cal.raw, self._cal.cal);
         end;
       result := val;
       exit;
@@ -12621,12 +12634,9 @@ var
       val : double;
     begin
       val := dw;
-      if self._caltyp <> 0 then
+      if not((self._cal = nil)) then
         begin
-          if (addr(self._calhdl) <> nil) then
-            begin
-              val := self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref);
-            end;
+          val := self._cal.hdl(val, self._cal.typ, self._cal.par, self._cal.raw, self._cal.cal);
         end;
       result := val;
       exit;
@@ -12960,7 +12970,7 @@ var
       rhub := self.nextHubInUseInternal(-1);
       while not((rhub = nil)) do
         begin
-          if (rhub.get_serialNumber = id) then
+          if (rhub.get_serialNumber() = id) then
             begin
               result := rhub;
               exit;
@@ -13473,21 +13483,96 @@ var
 //--- (end of generated code: YFirmwareUpdate implementation)
 
 
+function TYDataStream._calib_ctx(calibStr:string; calhdl:yCalibrationHandler; caltyp:LongInt; calpar:TLongIntArray; calraw:TDoubleArray; calref:TDoubleArray): PYCalibCtx;
+  begin
+      _cal_stat.src := calibStr;
+      _cal_stat.hdl := calhdl;
+      _cal_stat.typ := caltyp;
+      _cal_stat.par := calpar;
+      _cal_stat.raw := calraw;
+      _cal_stat.cal := calref;
+      result := @_cal_stat;
+     exit;
+  end;
+
+
 //--- (generated code: YDataStream implementation)
+
+  function TYDataStream._parseCalibArr(iCalib: TLongIntArray):LongInt;
+    var
+      caltyp : LongInt;
+      calhdl : yCalibrationHandler;
+      maxpos : LongInt;
+      position : LongInt;
+      calpar : TLongIntArray;
+      calraw : TDoubleArray;
+      calref : TDoubleArray;
+      fRaw : double;
+      fRef : double;
+      calpar_pos : LongInt;
+      calraw_pos : LongInt;
+      calref_pos : LongInt;
+    begin
+      caltyp := (iCalib[0] div 1000);
+      if caltyp < YOCTO_CALIB_TYPE_OFS then
+        begin
+          // Unknown calibration type: calibrated value will be provided by the device
+          self._cal := nil;
+          result := YAPI_SUCCESS;
+          exit;
+        end;
+      calhdl := _getCalibrationHandler(caltyp);
+      if not((addr(calhdl) <> nil)) then
+        begin
+          // Unknown calibration type: calibrated value will be provided by the device
+          self._cal := nil;
+          result := YAPI_SUCCESS;
+          exit;
+        end;
+      // New 32 bits text format
+      maxpos := length(iCalib);
+      calpar_pos := 0;
+      SetLength(calpar, maxpos);;
+      position := 1;
+      while position < maxpos do
+        begin
+          calpar[calpar_pos] := iCalib[position];
+          inc(calpar_pos);
+          position := position + 1;
+        end;
+      SetLength(calpar, calpar_pos);;
+      calraw_pos := 0;
+      SetLength(calraw, maxpos);;
+      calref_pos := 0;
+      SetLength(calref, maxpos);;
+      position := 1;
+      while position + 1 < maxpos do
+        begin
+          fRaw := iCalib[position];
+          fRaw := fRaw / 1000.0;
+          fRef := iCalib[position + 1];
+          fRef := fRef / 1000.0;
+          calraw[calraw_pos] := fRaw;
+          inc(calraw_pos);
+          calref[calref_pos] := fRef;
+          inc(calref_pos);
+          position := position + 2;
+        end;
+      SetLength(calraw, calraw_pos);;
+      SetLength(calref, calref_pos);;
+      self._cal := self._calib_ctx('', calhdl, caltyp, calpar, calraw, calref);
+      result := YAPI_SUCCESS;
+      exit;
+    end;
+
 
   function TYDataStream._initFromDataSet(dataset: TYDataSet; encoded: TLongIntArray):LongInt;
     var
       val : LongInt;
-      i : LongInt;
-      maxpos : LongInt;
       ms_offset : LongInt;
       samplesPerHour : LongInt;
-      fRaw : double;
-      fRef : double;
+      caltyp : LongInt;
       iCalib : TLongIntArray;
-      _calpar_pos : LongInt;
-      _calraw_pos : LongInt;
-      _calref_pos : LongInt;
       _columnNames_pos : LongInt;
     begin
       self._runNo := encoded[0] + (((encoded[1]) shl 16));
@@ -13547,40 +13632,14 @@ var
         end;
       // precompute decoding parameters
       iCalib := dataset._get_calibration;
-      self._caltyp := iCalib[0];
-      if self._caltyp <> 0 then
+      caltyp := iCalib[0];
+      if caltyp = 0 then
         begin
-          self._calhdl := _getCalibrationHandler(self._caltyp);
-          maxpos := length(iCalib);
-          _calpar_pos := 0;
-          SetLength(self._calpar, length(iCalib));
-          _calraw_pos := 0;
-          SetLength(self._calraw, length(iCalib));
-          _calref_pos := 0;
-          SetLength(self._calref, length(iCalib));
-          i := 1;
-          while i < maxpos do
-            begin
-              self._calpar[_calpar_pos] := iCalib[i];
-              inc(_calpar_pos);
-              i := i + 1;
-            end;
-          i := 1;
-          while i + 1 < maxpos do
-            begin
-              fRaw := iCalib[i];
-              fRaw := fRaw / 1000.0;
-              fRef := iCalib[i + 1];
-              fRef := fRef / 1000.0;
-              self._calraw[_calraw_pos] := fRaw;
-              inc(_calraw_pos);
-              self._calref[_calref_pos] := fRef;
-              inc(_calref_pos);
-              i := i + 2;
-            end;
-          SetLength(self._calpar, _calpar_pos);
-          SetLength(self._calraw, _calraw_pos);
-          SetLength(self._calref, _calref_pos);
+          self._cal := nil;
+        end
+      else
+        begin
+          self._parseCalibArr(iCalib);
         end;
       // preload column names for backward-compatibility
       self._functionId := dataset.get_functionId;
@@ -13750,14 +13809,10 @@ var
     var
       val : double;
     begin
-      val := w;
-      val := val / 1000.0;
-      if self._caltyp <> 0 then
+      val := (w) / 1000.0;
+      if not((self._cal = nil)) then
         begin
-          if (addr(self._calhdl) <> nil) then
-            begin
-              val := self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref);
-            end;
+          val := self._cal.hdl(val, self._cal.typ, self._cal.par, self._cal.raw, self._cal.cal);
         end;
       result := val;
       exit;
@@ -13768,14 +13823,10 @@ var
     var
       val : double;
     begin
-      val := dw;
-      val := val / 1000.0;
-      if self._caltyp <> 0 then
+      val := (dw) / 1000.0;
+      if not((self._cal = nil)) then
         begin
-          if (addr(self._calhdl) <> nil) then
-            begin
-              val := self._calhdl(val, self._caltyp, self._calpar, self._calraw, self._calref);
-            end;
+          val := self._cal.hdl(val, self._cal.typ, self._cal.par, self._cal.raw, self._cal.cal);
         end;
       result := val;
       exit;
@@ -13805,7 +13856,7 @@ var
 
   function TYDataStream.get_startTimeUTC():int64;
     begin
-      result := LongInt(round(self._startTime));
+      result := floor(round(self._startTime));
       exit;
     end;
 

@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_spiport.pas 68482 2025-08-21 10:07:30Z mvuilleu $
+ *  $Id: yocto_spiport.pas 70736 2025-12-12 07:53:30Z mvuilleu $
  *
  *  Implements yFindSpiPort(), the high-level API for SpiPort functions
  *
@@ -2305,8 +2305,9 @@ implementation
       reqlen := 1024;
       buff := self.readBin(reqlen);
       bufflen := length(buff);
-      if self._rxptr = currpos+bufflen then
+      if (bufflen > 0) and(self._rxptr = currpos+bufflen) then
         begin
+          // up to 1024 bytes in buffer, all in direction Rx
           res := buff[0];
           self._rxptr := currpos+1;
           self._rxbuffptr := currpos;
@@ -2319,8 +2320,9 @@ implementation
       reqlen := 16;
       buff := self.readBin(reqlen);
       bufflen := length(buff);
-      if self._rxptr = currpos+bufflen then
+      if (bufflen > 0) and(self._rxptr = currpos+bufflen) then
         begin
+          // up to 16 bytes in buffer, all in direction Rx
           res := buff[0];
           self._rxptr := currpos+1;
           self._rxbuffptr := currpos;

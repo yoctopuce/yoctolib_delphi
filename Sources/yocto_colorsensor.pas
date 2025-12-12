@@ -63,6 +63,7 @@ const Y_LEDCURRENT_INVALID            = YAPI_INVALID_UINT;
 const Y_LEDCALIBRATION_INVALID        = YAPI_INVALID_UINT;
 const Y_INTEGRATIONTIME_INVALID       = YAPI_INVALID_UINT;
 const Y_GAIN_INVALID                  = YAPI_INVALID_UINT;
+const Y_AUTOGAIN_INVALID              = YAPI_INVALID_STRING;
 const Y_SATURATION_INVALID            = YAPI_INVALID_UINT;
 const Y_ESTIMATEDRGB_INVALID          = YAPI_INVALID_UINT;
 const Y_ESTIMATEDHSL_INVALID          = YAPI_INVALID_UINT;
@@ -117,6 +118,7 @@ type
     _ledCalibration           : LongInt;
     _integrationTime          : LongInt;
     _gain                     : LongInt;
+    _autoGain                 : string;
     _saturation               : LongInt;
     _estimatedRGB             : LongInt;
     _estimatedHSL             : LongInt;
@@ -398,6 +400,46 @@ type
     /// </para>
     ///-
     function set_gain(newval:LongInt):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the current autogain parameters of the sensor as a character string.
+    /// <para>
+    ///   The returned parameter format is: "Min &lt; Channel &lt; Max:Saturation".
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the current autogain parameters of the sensor as a character string
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YColorSensor.AUTOGAIN_INVALID</c>.
+    /// </para>
+    ///-
+    function get_autoGain():string;
+
+    ////
+    /// <summary>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a string
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_autoGain(newval:string):integer;
 
     ////
     /// <summary>
@@ -749,6 +791,34 @@ type
 
     ////
     /// <summary>
+    ///   Changes the sensor automatic gain control settings.
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
+    /// </para>
+    /// </summary>
+    /// <param name="channel">
+    ///   reference channel to use for automated gain control.
+    /// </param>
+    /// <param name="minRaw">
+    ///   lower threshold for the measured raw value, below which the gain is
+    ///   automatically increased as long as possible.
+    /// </param>
+    /// <param name="maxRaw">
+    ///   high threshold for the measured raw value, over which the gain is
+    ///   automatically decreased as long as possible.
+    /// </param>
+    /// <param name="noSatur">
+    ///   enables gain reduction in case of sensor saturation.
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the operation completes successfully.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </returns>
+    ///-
+    function configureAutoGain(channel: string; minRaw: LongInt; maxRaw: LongInt; noSatur: boolean):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Turns on the built-in illumination LEDs using the same current as used during the latest calibration.
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -882,6 +952,7 @@ implementation
       _ledCalibration := Y_LEDCALIBRATION_INVALID;
       _integrationTime := Y_INTEGRATIONTIME_INVALID;
       _gain := Y_GAIN_INVALID;
+      _autoGain := Y_AUTOGAIN_INVALID;
       _saturation := Y_SATURATION_INVALID;
       _estimatedRGB := Y_ESTIMATEDRGB_INVALID;
       _estimatedHSL := Y_ESTIMATEDHSL_INVALID;
@@ -940,6 +1011,12 @@ implementation
       if (member^.name = 'gain') then
         begin
           _gain := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'autoGain') then
+        begin
+          _autoGain := string(member^.svalue);
          result := 1;
          exit;
          end;
@@ -1167,6 +1244,32 @@ implementation
     begin
       rest_val := inttostr(newval);
       result := _setAttr('gain',rest_val);
+    end;
+
+  function TYColorSensor.get_autoGain():string;
+    var
+      res : string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_AUTOGAIN_INVALID;
+              exit;
+            end;
+        end;
+      res := self._autoGain;
+      result := res;
+      exit;
+    end;
+
+
+  function TYColorSensor.set_autoGain(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('autoGain',rest_val);
     end;
 
   function TYColorSensor.get_saturation():LongInt;
@@ -1420,6 +1523,24 @@ implementation
           inherited _invokeValueCallback(value);
         end;
       result := 0;
+      exit;
+    end;
+
+
+  function TYColorSensor.configureAutoGain(channel: string; minRaw: LongInt; maxRaw: LongInt; noSatur: boolean):LongInt;
+    var
+      opt : string;
+    begin
+      if noSatur then
+        begin
+          opt := 'nosat';
+        end
+      else
+        begin
+          opt := '';
+        end;
+
+      result := self.set_autoGain(''+inttostr(minRaw)+' < '+channel+' < '+inttostr(maxRaw)+':'+opt);
       exit;
     end;
 

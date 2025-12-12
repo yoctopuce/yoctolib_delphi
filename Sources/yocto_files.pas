@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 68482 2025-08-21 10:07:30Z mvuilleu $
+ * $Id: yocto_files.pas 70518 2025-11-26 16:18:50Z mvuilleu $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -788,17 +788,12 @@ implementation
       res : LongInt;
     begin
       sz := length(content);
-      if sz = 0 then
-        begin
-          res := _bincrc(content, 0, 0);
-          result := res;
-          exit;
-        end;
 
       fsver := self._getVersion;
       if fsver < 40 then
         begin
           res := _bincrc(content, 0, sz);
+          res := (((res) and ($07fffffff)) - 2 * ((((res) shr 1)) and ($040000000)));
           result := res;
           exit;
         end;
@@ -820,6 +815,7 @@ implementation
           blkidx := blkidx + 1;
         end;
       res := ((_bincrc(meta, 0, 4 * blkcnt)) xor (LongInt($0ffffffff)));
+      res := (((res) and ($07fffffff)) - 2 * ((((res) shr 1)) and ($040000000)));
       result := res;
       exit;
     end;
