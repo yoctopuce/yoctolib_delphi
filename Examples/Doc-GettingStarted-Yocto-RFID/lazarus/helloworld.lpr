@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: helloworld.dpr 47192 2021-11-08 18:02:19Z seb $
+ *  $Id: helloworld.dpr 70974 2025-12-22 15:06:26Z seb $
  *
  *  An example that shows how to use a Yocto-RFID-xxxx
  *

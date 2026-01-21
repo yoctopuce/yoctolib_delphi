@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: helloworld.dpr 70974 2025-12-22 15:06:26Z seb $
  *
  *  An example that shows how to use a  Yocto-Spectral
  *

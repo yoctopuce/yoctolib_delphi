@@ -1,0 +1,14 @@
+{
+    "main": "helloworld.dpr",
+    "other_files": [],
+    "ylib": [
+        "yocto_carbondioxide",
+        "yocto_api"
+    ],
+    "skip": true,
+    "xcode": false,
+    "pom": false,
+    "vstudio": false,
+    "gnu": false,
+    "cb": false
+}

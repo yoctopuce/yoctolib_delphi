@@ -1,0 +1,18 @@
+{
+    "main": "helloworld.dpr",
+    "other_files": [],
+    "ylib": [
+        "yocto_altitude",
+        "yocto_gps",
+        "yocto_groundspeed",
+        "yocto_latitude",
+        "yocto_longitude",
+        "yocto_api"
+    ],
+    "skip": true,
+    "xcode": false,
+    "pom": false,
+    "vstudio": false,
+    "gnu": false,
+    "cb": false
+}

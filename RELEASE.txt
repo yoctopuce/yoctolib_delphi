@@ -1,8 +1,6 @@
-Delphi v2.1.10736
+Delphi v2.1.11416
 
-- Prevent setting passwords with unsupported characters (@ and /)
-- Fix behavior of YSerialPort.readByte when there is no data available
-- Fix Prog-FirmwareUpdate example to properly handle VirtualHub-4web and VirtualHub-V2
-- Fix potential short write on socket
-- Fix possible incorrect timeout values in YAPI::PreregisterHub
-- Fix redirection handling with IPv6 address
+- Update Mbed-TLS lib to 4.0
+- Fix some timeout with YAPI::PreregisterHub
+- Fix redirection handling with IpV6 address
+- Fix rare deadlock when network connection is very unstable

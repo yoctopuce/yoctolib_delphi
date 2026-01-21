@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: helloworld.dpr 70974 2025-12-22 15:06:26Z seb $
  *
  *  Doc-GettingStarted-Yocto-SDI12 example
  *

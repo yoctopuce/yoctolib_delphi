@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 68482 2025-08-21 10:07:30Z mvuilleu $
+ * $Id: yocto_display.pas 71207 2026-01-07 18:17:59Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -55,16 +55,19 @@ const Y_ENABLED_TRUE = 1;
 const Y_ENABLED_INVALID = -1;
 const Y_STARTUPSEQ_INVALID            = YAPI_INVALID_STRING;
 const Y_BRIGHTNESS_INVALID            = YAPI_INVALID_UINT;
+const Y_AUTOINVERTDELAY_INVALID       = YAPI_INVALID_UINT;
 const Y_ORIENTATION_LEFT = 0;
 const Y_ORIENTATION_UP = 1;
 const Y_ORIENTATION_RIGHT = 2;
 const Y_ORIENTATION_DOWN = 3;
 const Y_ORIENTATION_INVALID = -1;
+const Y_DISPLAYPANEL_INVALID          = YAPI_INVALID_STRING;
 const Y_DISPLAYWIDTH_INVALID          = YAPI_INVALID_UINT;
 const Y_DISPLAYHEIGHT_INVALID         = YAPI_INVALID_UINT;
 const Y_DISPLAYTYPE_MONO = 0;
 const Y_DISPLAYTYPE_GRAY = 1;
 const Y_DISPLAYTYPE_RGB = 2;
+const Y_DISPLAYTYPE_EPAPER = 3;
 const Y_DISPLAYTYPE_INVALID = -1;
 const Y_LAYERWIDTH_INVALID            = YAPI_INVALID_UINT;
 const Y_LAYERHEIGHT_INVALID           = YAPI_INVALID_UINT;
@@ -116,7 +119,9 @@ type
     _enabled                  : Integer;
     _startupSeq               : string;
     _brightness               : LongInt;
+    _autoInvertDelay          : LongInt;
     _orientation              : Integer;
+    _displayPanel             : string;
     _displayWidth             : LongInt;
     _displayHeight            : LongInt;
     _displayType              : Integer;
@@ -269,6 +274,55 @@ public
 
     ////
     /// <summary>
+    ///   Returns the interval between automatic display inversions, or 0 if automatic
+    ///   inversion is disabled.
+    /// <para>
+    ///   Using the automatic inversion mechanism reduces the
+    ///   burn-in that occurs on OLED screens over long periods when the same content
+    ///   remains displayed on the screen.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the interval between automatic display inversions, or 0 if automatic
+    ///   inversion is disabled
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YDisplay.AUTOINVERTDELAY_INVALID</c>.
+    /// </para>
+    ///-
+    function get_autoInvertDelay():LongInt;
+
+    ////
+    /// <summary>
+    ///   Changes the interval between automatic display inversions.
+    /// <para>
+    ///   The parameter is the number of seconds, or 0 to disable automatic inversion.
+    ///   Using the automatic inversion mechanism reduces the burn-in that occurs on OLED
+    ///   screens over long periods when the same content remains displayed on the screen.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   an integer corresponding to the interval between automatic display inversions
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_autoInvertDelay(newval:LongInt):integer;
+
+    ////
+    /// <summary>
     ///   Returns the currently selected display orientation.
     /// <para>
     /// </para>
@@ -313,6 +367,49 @@ public
 
     ////
     /// <summary>
+    ///   Returns the exact model of the display panel.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a string corresponding to the exact model of the display panel
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YDisplay.DISPLAYPANEL_INVALID</c>.
+    /// </para>
+    ///-
+    function get_displayPanel():string;
+
+    ////
+    /// <summary>
+    ///   Changes the model of display to match the connected display panel.
+    /// <para>
+    ///   This function has no effect if the module does not support the selected
+    ///   display panel.
+    ///   Remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a string corresponding to the model of display to match the connected display panel
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_displayPanel(newval:string):integer;
+
+    ////
+    /// <summary>
     ///   Returns the display width, in pixels.
     /// <para>
     /// </para>
@@ -354,8 +451,9 @@ public
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>YDisplay.DISPLAYTYPE_MONO</c>, <c>YDisplay.DISPLAYTYPE_GRAY</c> and
-    ///   <c>YDisplay.DISPLAYTYPE_RGB</c> corresponding to the display type: monochrome, gray levels or full color
+    ///   a value among <c>YDisplay.DISPLAYTYPE_MONO</c>, <c>YDisplay.DISPLAYTYPE_GRAY</c>,
+    ///   <c>YDisplay.DISPLAYTYPE_RGB</c> and <c>YDisplay.DISPLAYTYPE_EPAPER</c> corresponding to the display
+    ///   type: monochrome, gray levels or full color
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>YDisplay.DISPLAYTYPE_INVALID</c>.
@@ -510,6 +608,65 @@ public
     /// </para>
     ///-
     function resetAll():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Forces an ePaper screen to perform a regenerative update using the slow
+    ///   update method.
+    /// <para>
+    ///   Periodic use of the slow method (total panel update with
+    ///   multiple inversions) prevents ghosting effects and improves contrast.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function regenerateDisplay():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Disables screen refresh for a short period of time.
+    /// <para>
+    ///   The combination of
+    ///   <c>postponeRefresh</c> and <c>triggerRefresh</c> can be used as an
+    ///   alternative to double-buffering to avoid flickering during display updates.
+    /// </para>
+    /// </summary>
+    /// <param name="duration">
+    ///   duration of deactivation in milliseconds (max. 30 seconds)
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function postponeRefresh(duration: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Trigger an immediate screen refresh.
+    /// <para>
+    ///   The combination of
+    ///   <c>postponeRefresh</c> and <c>triggerRefresh</c> can be used as an
+    ///   alternative to double-buffering to avoid flickering during display updates.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function triggerRefresh():LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -727,6 +884,30 @@ public
     /// </para>
     ///-
     function get_displayLayer(layerId: LongInt):TYDisplayLayer; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns a color image with the current content of the display.
+    /// <para>
+    ///   The image is returned as a binary object, where each byte represents a pixel,
+    ///   from left to right and from top to bottom. The palette used to map byte
+    ///   values to RGB colors is filled into the list provided as argument.
+    ///   In all cases, the first palette entry (value 0) corresponds to the
+    ///   screen default background color.
+    ///   The image dimensions are given by the display width and height.
+    /// </para>
+    /// </summary>
+    /// <param name="palette">
+    ///   a list to be filled with the image palette
+    /// </param>
+    /// <returns>
+    ///   a binary object if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns an empty binary object.
+    /// </para>
+    ///-
+    function readDisplay(palette: TLongIntArray):TByteArray; overload; virtual;
 
 
     ////
@@ -1563,7 +1744,9 @@ destructor TYDisplay.destroy();
       _enabled := Y_ENABLED_INVALID;
       _startupSeq := Y_STARTUPSEQ_INVALID;
       _brightness := Y_BRIGHTNESS_INVALID;
+      _autoInvertDelay := Y_AUTOINVERTDELAY_INVALID;
       _orientation := Y_ORIENTATION_INVALID;
+      _displayPanel := Y_DISPLAYPANEL_INVALID;
       _displayWidth := Y_DISPLAYWIDTH_INVALID;
       _displayHeight := Y_DISPLAYHEIGHT_INVALID;
       _displayType := Y_DISPLAYTYPE_INVALID;
@@ -1601,9 +1784,21 @@ destructor TYDisplay.destroy();
          result := 1;
          exit;
          end;
+      if (member^.name = 'autoInvertDelay') then
+        begin
+          _autoInvertDelay := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
       if (member^.name = 'orientation') then
         begin
           _orientation := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'displayPanel') then
+        begin
+          _displayPanel := string(member^.svalue);
          result := 1;
          exit;
          end;
@@ -1731,6 +1926,32 @@ destructor TYDisplay.destroy();
       result := _setAttr('brightness',rest_val);
     end;
 
+  function TYDisplay.get_autoInvertDelay():LongInt;
+    var
+      res : LongInt;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_AUTOINVERTDELAY_INVALID;
+              exit;
+            end;
+        end;
+      res := self._autoInvertDelay;
+      result := res;
+      exit;
+    end;
+
+
+  function TYDisplay.set_autoInvertDelay(newval:LongInt):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(newval);
+      result := _setAttr('autoInvertDelay',rest_val);
+    end;
+
   function TYDisplay.get_orientation():Integer;
     var
       res : Integer;
@@ -1755,6 +1976,32 @@ destructor TYDisplay.destroy();
     begin
       rest_val := inttostr(newval);
       result := _setAttr('orientation',rest_val);
+    end;
+
+  function TYDisplay.get_displayPanel():string;
+    var
+      res : string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_DISPLAYPANEL_INVALID;
+              exit;
+            end;
+        end;
+      res := self._displayPanel;
+      result := res;
+      exit;
+    end;
+
+
+  function TYDisplay.set_displayPanel(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('displayPanel',rest_val);
     end;
 
   function TYDisplay.get_displayWidth():LongInt;
@@ -1957,6 +2204,27 @@ destructor TYDisplay.destroy();
     end;
 
 
+  function TYDisplay.regenerateDisplay():LongInt;
+    begin
+      result := self.sendCommand('z');
+      exit;
+    end;
+
+
+  function TYDisplay.postponeRefresh(duration: LongInt):LongInt;
+    begin
+      result := self.sendCommand('t'+inttostr(duration));
+      exit;
+    end;
+
+
+  function TYDisplay.triggerRefresh():LongInt;
+    begin
+      result := self.sendCommand('t0');
+      exit;
+    end;
+
+
   function TYDisplay.fade(brightness: LongInt; duration: LongInt):LongInt;
     begin
       self.flushLayers;
@@ -2061,6 +2329,244 @@ destructor TYDisplay.destroy();
           SetLength(self._allDisplayLayers, _allDisplayLayers_pos);
         end;
       result := self._allDisplayLayers[layerId];
+      exit;
+    end;
+
+
+  function TYDisplay.readDisplay(palette: TLongIntArray):TByteArray;
+    var
+      zipmap : TByteArray;
+      zipsize : LongInt;
+      zipwidth : LongInt;
+      zipheight : LongInt;
+      ziprotate : LongInt;
+      zipcolors : LongInt;
+      zipcol : LongInt;
+      zipbits : LongInt;
+      zipmask : LongInt;
+      srcpos : LongInt;
+      endrun : LongInt;
+      srcpat : LongInt;
+      srcbit : LongInt;
+      srcval : LongInt;
+      srcx : LongInt;
+      srcy : LongInt;
+      srci : LongInt;
+      incx : LongInt;
+      pixmap : TByteArray;
+      pixcount : LongInt;
+      pixval : LongInt;
+      pixpos : LongInt;
+      rotmap : TByteArray;
+      palette_pos : LongInt;
+    begin
+      setlength(pixmap,0);
+      // Check if the display firmware has autoInvertDelay and pixels.bin support
+
+      if self.get_autoInvertDelay < 0 then
+        begin
+          // Old firmware, use uncompressed GIF output to rebuild pixmap
+          zipmap := self._download('display.gif');
+          zipsize := length(zipmap);
+          if zipsize = 0 then
+            begin
+              result := pixmap;
+              exit;
+            end;
+          if not(zipsize >= 32) then
+            begin
+              self._throw(YAPI_IO_ERROR,'not a GIF image');
+              result:=pixmap;
+              exit;
+            end;
+          if not((zipmap[0] = 71) and(zipmap[2] = 70)) then
+            begin
+              self._throw(YAPI_INVALID_ARGUMENT,'not a GIF image');
+              result:=pixmap;
+              exit;
+            end;
+          zipwidth := zipmap[6] + 256 * zipmap[7];
+          zipheight := zipmap[8] + 256 * zipmap[9];
+          palette_pos := 0;
+          SetLength(palette, 2);
+          zipcol := zipmap[13] * 65536 + zipmap[14] * 256 + zipmap[15];
+          palette[palette_pos] := zipcol;
+          inc(palette_pos);
+          zipcol := zipmap[16] * 65536 + zipmap[17] * 256 + zipmap[18];
+          palette[palette_pos] := zipcol;
+          inc(palette_pos);
+          SetLength(palette, palette_pos);
+          pixcount := zipwidth * zipheight;
+          setlength(pixmap,pixcount);
+          pixpos := 0;
+          srcpos := 30;
+          zipsize := zipsize - 2;
+          while srcpos < zipsize do
+            begin
+              // load next run size
+              endrun := srcpos + 1 + zipmap[srcpos];
+              srcpos := srcpos + 1;
+              while srcpos < endrun do
+                begin
+                  srcval := zipmap[srcpos];
+                  srcpos := srcpos + 1;
+                  srcbit := 8;
+                  while srcbit <> 0 do
+                    begin
+                      if srcbit < 3 then
+                        begin
+                          srcval := srcval + ((zipmap[srcpos]) shl (srcbit));
+                          srcpos := srcpos + 1;
+                        end;
+                      pixval := ((srcval) and 7);
+                      srcval := ((srcval) shr 3);
+                      if not((pixval > 1) and(pixval <> 4)) then
+                        begin
+                          self._throw(YAPI_INVALID_ARGUMENT,'unexpected encoding');
+                          result:=pixmap;
+                          exit;
+                        end;
+                      pixmap[pixpos] := pixval;
+                      pixpos := pixpos + 1;
+                      srcbit := srcbit - 3;
+                    end;
+                end;
+            end;
+          result := pixmap;
+          exit;
+        end;
+      // New firmware, use compressed pixels.bin
+      zipmap := self._download('pixels.bin');
+      zipsize := length(zipmap);
+      if zipsize = 0 then
+        begin
+          result := pixmap;
+          exit;
+        end;
+      if not(zipsize >= 16) then
+        begin
+          self._throw(YAPI_IO_ERROR,'not a pixmap');
+          result:=pixmap;
+          exit;
+        end;
+      if not((zipmap[0] = 80) and(zipmap[2] = 88)) then
+        begin
+          self._throw(YAPI_INVALID_ARGUMENT,'not a pixmap');
+          result:=pixmap;
+          exit;
+        end;
+      zipwidth := zipmap[4] + 256 * zipmap[5];
+      zipheight := zipmap[6] + 256 * zipmap[7];
+      ziprotate := zipmap[8];
+      zipcolors := zipmap[9];
+      palette_pos := 0;
+      SetLength(palette, zipcolors);;
+      srcpos := 10;
+      srci := 0;
+      while srci < zipcolors do
+        begin
+          zipcol := zipmap[srcpos] * 65536 + zipmap[srcpos+1] * 256 + zipmap[srcpos+2];
+          palette[palette_pos] := zipcol;
+          inc(palette_pos);
+          srcpos := srcpos + 3;
+          srci := srci + 1;
+        end;
+      zipbits := 1;
+      while ((1) shl (zipbits)) < zipcolors do
+        begin
+          zipbits := zipbits + 1;
+        end;
+      zipmask := ((1) shl (zipbits)) - 1;
+      SetLength(palette, palette_pos);;
+      pixcount := zipwidth * zipheight;
+      setlength(pixmap,pixcount);
+      srcx := 0;
+      srcy := 0;
+      incx := (8 div zipbits);
+      srcval := 0;
+      while srcpos < zipsize do
+        begin
+          // load next compression pattern byte
+          srcpat := zipmap[srcpos];
+          srcpos := srcpos + 1;
+          srcbit := 7;
+          while srcbit >= 0 do
+            begin
+              // get next bitmap byte
+              if ((srcpat) and 128) <> 0 then
+                begin
+                  srcval := zipmap[srcpos];
+                  srcpos := srcpos + 1;
+                end;
+              srcpat := ((srcpat) shl 1);
+              pixpos := srcy * zipwidth + srcx;
+              // produce 8 pixels (or 4, if bitmap uses 2 bits per pixel)
+              srci := 8 - zipbits;
+              while srci >= 0 do
+                begin
+                  pixval := ((((srcval) shr (srci))) and (zipmask));
+                  pixmap[pixpos] := pixval;
+                  pixpos := pixpos + 1;
+                  srci := srci - zipbits;
+                end;
+              srcy := srcy + 1;
+              if srcy >= zipheight then
+                begin
+                  srcy := 0;
+                  srcx := srcx + incx;
+                  // drop last bytes if image is not a multiple of 8
+                  if srcx >= zipwidth then
+                    begin
+                      srcbit := 0;
+                    end;
+                end;
+              srcbit := srcbit - 1;
+            end;
+        end;
+      // rotate pixmap to match display orientation
+      if ziprotate = 0 then
+        begin
+          result := pixmap;
+          exit;
+        end;
+      if ((ziprotate) and 2) <> 0 then
+        begin
+          // rotate buffer 180 degrees by swapping pixels
+          srcpos := 0;
+          pixpos := pixcount - 1;
+          while srcpos < pixpos do
+            begin
+              pixval := pixmap[srcpos];
+              pixmap[srcpos] := pixmap[pixpos];
+              pixmap[pixpos] := pixval;
+              srcpos := srcpos + 1;
+              pixpos := pixpos - 1;
+            end;
+        end;
+      if ((ziprotate) and 1) = 0 then
+        begin
+          result := pixmap;
+          exit;
+        end;
+      // rotate 90 ccw: first pixel is bottom left
+      setlength(rotmap,pixcount);
+      srcx := 0;
+      srcy := zipwidth - 1;
+      srcpos := 0;
+      while srcpos < pixcount do
+        begin
+          pixval := pixmap[srcpos];
+          pixpos := srcy * zipheight + srcx;
+          rotmap[pixpos] := pixval;
+          srcy := srcy - 1;
+          if srcy < 0 then
+            begin
+              srcx := srcx + 1;
+              srcy := zipwidth - 1;
+            end;
+          srcpos := srcpos + 1;
+        end;
+      result := rotmap;
       exit;
     end;
 

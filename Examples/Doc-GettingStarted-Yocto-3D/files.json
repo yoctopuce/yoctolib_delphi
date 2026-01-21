@@ -1,0 +1,19 @@
+{
+    "main": "helloworld.dpr",
+    "other_files": [],
+    "ylib": [
+        "yocto_accelerometer",
+        "yocto_compass",
+        "yocto_gyro",
+        "yocto_magnetometer",
+        "yocto_refframe",
+        "yocto_tilt",
+        "yocto_api"
+    ],
+    "skip": true,
+    "xcode": false,
+    "pom": false,
+    "vstudio": false,
+    "gnu": false,
+    "cb": false
+}
