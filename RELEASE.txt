@@ -1,6 +1,3 @@
-Delphi v2.1.11416
+Delphi v2.1.11632
 
-- Update Mbed-TLS lib to 4.0
-- Fix some timeout with YAPI::PreregisterHub
-- Fix redirection handling with IpV6 address
-- Fix rare deadlock when network connection is very unstable
+- Add new DisplayLayer methods

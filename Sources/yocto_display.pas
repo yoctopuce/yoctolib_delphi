@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 71207 2026-01-07 18:17:59Z mvuilleu $
+ * $Id: yocto_display.pas 71629 2026-01-29 15:08:26Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -79,6 +79,9 @@ const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 //--- (generated code: YDisplayLayer definitions)
 type  TYALIGN = (Y_ALIGN_TOP_LEFT,Y_ALIGN_CENTER_LEFT,Y_ALIGN_BASELINE_LEFT,Y_ALIGN_BOTTOM_LEFT,Y_ALIGN_TOP_CENTER,Y_ALIGN_CENTER,Y_ALIGN_BASELINE_CENTER,Y_ALIGN_BOTTOM_CENTER,Y_ALIGN_TOP_DECIMAL,Y_ALIGN_CENTER_DECIMAL,Y_ALIGN_BASELINE_DECIMAL,Y_ALIGN_BOTTOM_DECIMAL,Y_ALIGN_TOP_RIGHT,Y_ALIGN_CENTER_RIGHT,Y_ALIGN_BASELINE_RIGHT,Y_ALIGN_BOTTOM_RIGHT);
 
+const Y_NO_INK                        = -1;
+const Y_BG_INK                        = -2;
+const Y_FG_INK                        = -3;
 //--- (end of generated code: YDisplayLayer definitions)
 
 type
@@ -963,6 +966,8 @@ end;
 
   //--- (generated code: YDisplayLayer declaration)
     // Attributes (function value cache)
+    _polyPrevX                : LongInt;
+    _polyPrevY                : LongInt;
     //--- (end of generated code: YDisplayLayer declaration)
 private
    _display : TYdisplay;
@@ -1018,9 +1023,11 @@ public
 
     ////
     /// <summary>
-    ///   Selects the pen color for all subsequent drawing functions,
-    ///   including text drawing.
+    ///   Selects the color to be used for all subsequent drawing functions,
+    ///   for filling as well as for line and text drawing.
     /// <para>
+    ///   To select a different fill and outline color, use
+    ///   <c>selectFillColor</c> and <c>selectLineColor</c>.
     ///   The pen color is provided as an RGB value.
     ///   For grayscale or monochrome displays, the value is
     ///   automatically converted to the proper range.
@@ -1041,8 +1048,10 @@ public
     ////
     /// <summary>
     ///   Selects the pen gray level for all subsequent drawing functions,
-    ///   including text drawing.
+    ///   for filling as well as for line and text drawing.
     /// <para>
+    ///   To select a different fill and outline color, use
+    ///   <c>selectFillColor</c> and <c>selectLineColor</c>.
     ///   The gray level is provided as a number between
     ///   0 (black) and 255 (white, or whichever the lightest color is).
     ///   For monochrome displays (without gray levels), any value
@@ -1083,19 +1092,21 @@ public
 
     ////
     /// <summary>
-    ///   Enables or disables anti-aliasing for drawing oblique lines and circles.
+    ///   Selects the color to be used for filling rectangular bars,
+    ///   discs and polygons.
     /// <para>
-    ///   Anti-aliasing provides a smoother aspect when looked from far enough,
-    ///   but it can add fuzziness when the display is looked from very close.
-    ///   At the end of the day, it is your personal choice.
-    ///   Anti-aliasing is enabled by default on grayscale and color displays,
-    ///   but you can disable it if you prefer. This setting has no effect
-    ///   on monochrome displays.
+    ///   The color is provided as an RGB value.
+    ///   For grayscale or monochrome displays, the value is
+    ///   automatically converted to the proper range.
+    ///   You can also use the constants <c>FG_INK</c> to use the
+    ///   default drawing colour, <c>BG_INK</c> to use the default
+    ///   background colour, and <c>NO_INK</c> to disable filling.
     /// </para>
     /// </summary>
-    /// <param name="mode">
-    ///   <c>true</c> to enable anti-aliasing, <c>false</c> to
-    ///   disable it.
+    /// <param name="color">
+    ///   the desired drawing color, as a 24-bit RGB value,
+    ///   or one of the constants <c>NO_INK</c>, <c>FG_INK</c>
+    ///   or <c>BG_INK</c>
     /// </param>
     /// <returns>
     ///   <c>YAPI.SUCCESS</c> if the call succeeds.
@@ -1104,6 +1115,54 @@ public
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
+    function selectFillColor(color: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Selects the color to be used for drawing the outline of rectangular
+    ///   bars, discs and polygons, as well as for drawing lines and text.
+    /// <para>
+    ///   The color is provided as an RGB value.
+    ///   For grayscale or monochrome displays, the value is
+    ///   automatically converted to the proper range.
+    ///   You can also use the constants <c>FG_INK</c> to use the
+    ///   default drawing colour, <c>BG_INK</c> to use the default
+    ///   background colour, and <c>NO_INK</c> to disable outline drawing.
+    /// </para>
+    /// </summary>
+    /// <param name="color">
+    ///   the desired drawing color, as a 24-bit RGB value,
+    ///   or one of the constants <c>NO_INK</c>, <c>FG_INK</c>
+    ///   or <c>BG_INK</c>
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function selectLineColor(color: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Selects the line width for drawing the outline of rectangular
+    ///   bars, discs and polygons, as well as for drawing lines.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="width">
+    ///   the desired line width, in pixels
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function selectLineWidth(width: LongInt):LongInt; overload; virtual;
+
     function setAntialiasingMode(mode: boolean):LongInt; overload; virtual;
 
     ////
@@ -1293,12 +1352,11 @@ public
 
     ////
     /// <summary>
-    ///   Draws a GIF image at the specified position.
+    ///   Draws an image previously uploaded to the device filesystem, at the specified position.
     /// <para>
-    ///   The GIF image must have been previously
-    ///   uploaded to the device built-in memory. If you experience problems using an image
-    ///   file, check the device logs for any error message such as missing image file or bad
-    ///   image file format.
+    ///   At present time, GIF images are the only supported image format. If you experience
+    ///   problems using an image file, check the device logs for any error message such as
+    ///   missing image file or bad image file format.
     /// </para>
     /// </summary>
     /// <param name="x">
@@ -1359,6 +1417,32 @@ public
 
     ////
     /// <summary>
+    ///   Draws a GIF image provided as a binary buffer at the specified position.
+    /// <para>
+    ///   If the image drawing must be included in an animation sequence, save it
+    ///   in the device filesystem first and use <c>drawImage</c> instead.
+    /// </para>
+    /// </summary>
+    /// <param name="x">
+    ///   the distance from left of layer to the left of the image, in pixels
+    /// </param>
+    /// <param name="y">
+    ///   the distance from top of layer to the top of the image, in pixels
+    /// </param>
+    /// <param name="gifimage">
+    ///   a binary object with the content of a GIF file
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function drawGIF(x: LongInt; y: LongInt; gifimage: TByteArray):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Moves the drawing pointer of this layer to the specified position.
     /// <para>
     /// </para>
@@ -1400,6 +1484,65 @@ public
     /// </para>
     ///-
     function lineTo(x: LongInt; y: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Starts drawing a polygon with the first corner at the specified position.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="x">
+    ///   the distance from left of layer, in pixels
+    /// </param>
+    /// <param name="y">
+    ///   the distance from top of layer, in pixels
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function polygonStart(x: LongInt; y: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Adds a point to the currently open polygon, previously opened using
+    ///   <c>polygonStart</c>.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="x">
+    ///   the distance from left of layer to the new point, in pixels
+    /// </param>
+    /// <param name="y">
+    ///   the distance from top of layer to the new point, in pixels
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function polygonAdd(x: LongInt; y: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Close the currently open polygon, fill its content the fill color currently
+    ///   selected for the layer, and draw its outline using the selected line color.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function polygonEnd():LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -2213,14 +2356,14 @@ destructor TYDisplay.destroy();
 
   function TYDisplay.postponeRefresh(duration: LongInt):LongInt;
     begin
-      result := self.sendCommand('t'+inttostr(duration));
+      result := self.sendCommand('H'+inttostr(duration));
       exit;
     end;
 
 
   function TYDisplay.triggerRefresh():LongInt;
     begin
-      result := self.sendCommand('t0');
+      result := self.sendCommand('H0');
       exit;
     end;
 
@@ -2754,6 +2897,71 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
+  function TYDisplayLayer.selectFillColor(color: LongInt):LongInt;
+    var
+      r : LongInt;
+      g : LongInt;
+      b : LongInt;
+    begin
+      if color=-1 then
+        begin
+          result := self.command_push('f_');
+          exit;
+        end;
+      if color=-2 then
+        begin
+          result := self.command_push('f-');
+          exit;
+        end;
+      if color=-3 then
+        begin
+          result := self.command_push('f.');
+          exit;
+        end;
+      r := ((((color) shr 20)) and 15);
+      g := ((((color) shr 12)) and 15);
+      b := ((((color) shr 4)) and 15);
+      result := self.command_push('f'+AnsiLowerCase(inttohex(r,1))+''+AnsiLowerCase(inttohex(g,1))+''+AnsiLowerCase(inttohex(b,1)));
+      exit;
+    end;
+
+
+  function TYDisplayLayer.selectLineColor(color: LongInt):LongInt;
+    var
+      r : LongInt;
+      g : LongInt;
+      b : LongInt;
+    begin
+      if color=-1 then
+        begin
+          result := self.command_push('l_');
+          exit;
+        end;
+      if color=-2 then
+        begin
+          result := self.command_push('l-');
+          exit;
+        end;
+      if color=-3 then
+        begin
+          result := self.command_push('l*');
+          exit;
+        end;
+      r := ((((color) shr 20)) and 15);
+      g := ((((color) shr 12)) and 15);
+      b := ((((color) shr 4)) and 15);
+      result := self.command_push('l'+AnsiLowerCase(inttohex(r,1))+''+AnsiLowerCase(inttohex(g,1))+''+AnsiLowerCase(inttohex(b,1)));
+      exit;
+    end;
+
+
+  function TYDisplayLayer.selectLineWidth(width: LongInt):LongInt;
+    begin
+      result := self.command_push('t'+inttostr(width));
+      exit;
+    end;
+
+
   function TYDisplayLayer.setAntialiasingMode(mode: boolean):LongInt;
     begin
       result := self.command_push('a'+_yapiBoolToStr(mode));
@@ -2827,6 +3035,16 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
     end;
 
 
+  function TYDisplayLayer.drawGIF(x: LongInt; y: LongInt; gifimage: TByteArray):LongInt;
+    var
+      destname : string;
+    begin
+      destname := 'layer'+inttostr(self._id)+':G,-1@'+inttostr(x)+','+inttostr(y);
+      result := self._display.upload(destname, gifimage);
+      exit;
+    end;
+
+
   function TYDisplayLayer.moveTo(x: LongInt; y: LongInt):LongInt;
     begin
       result := self.command_push('@'+inttostr(x)+','+inttostr(y));
@@ -2837,6 +3055,36 @@ function TYDisplayLayer.command_flush(cmd:string):integer;
   function TYDisplayLayer.lineTo(x: LongInt; y: LongInt):LongInt;
     begin
       result := self.command_flush('-'+inttostr(x)+','+inttostr(y));
+      exit;
+    end;
+
+
+  function TYDisplayLayer.polygonStart(x: LongInt; y: LongInt):LongInt;
+    begin
+      self._polyPrevX := x;
+      self._polyPrevY := y;
+      result := self.command_push('['+inttostr(x)+','+inttostr(y));
+      exit;
+    end;
+
+
+  function TYDisplayLayer.polygonAdd(x: LongInt; y: LongInt):LongInt;
+    var
+      dx : LongInt;
+      dy : LongInt;
+    begin
+      dx := x - self._polyPrevX;
+      dy := y - self._polyPrevY;
+      self._polyPrevX := x;
+      self._polyPrevY := y;
+      result := self.command_flush(';'+inttostr(dx)+','+inttostr(dy));
+      exit;
+    end;
+
+
+  function TYDisplayLayer.polygonEnd():LongInt;
+    begin
+      result := self.command_flush(']');
       exit;
     end;
 

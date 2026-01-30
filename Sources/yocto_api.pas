@@ -129,7 +129,7 @@ const
   Y_DETECT_ALL : integer = (Y_DETECT_USB or Y_DETECT_NET);
 
   YOCTO_API_VERSION_STR     = '2.1';
-  YOCTO_API_BUILD_NO        = '71416';
+  YOCTO_API_BUILD_NO        = '71632';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -7021,7 +7021,7 @@ var
       apidate : string;
     begin
       yapiGetAPIVersion(version, apidate);
-      yGetAPIVersion:=  '2.1.11416 (' + version + ')';
+      yGetAPIVersion:=  '2.1.11632 (' + version + ')';
     end;
 
 
