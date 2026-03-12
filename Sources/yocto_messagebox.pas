@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 68482 2025-08-21 10:07:30Z mvuilleu $
+ * $Id: yocto_messagebox.pas 72410 2026-03-11 07:18:41Z mvuilleu $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *
@@ -74,6 +74,7 @@ type
   //--- (generated code: YMessageBox class start)
   TYMessageBoxValueCallback = procedure(func: TYMessageBox; value:string);
   TYMessageBoxTimedReportCallback = procedure(func: TYMessageBox; value:TYMeasure);
+  TYSmsCallback = procedure(func: TYMessageBox; sms: TYSms);
 
   ////
   /// <summary>
@@ -98,6 +99,7 @@ type
     _obey                     : string;
     _command                  : string;
     _valueCallbackMessageBox  : TYMessageBoxValueCallback;
+    _smsCallback              : TYSmsCallback;
     _nextMsgRef               : LongInt;
     _prevBitmapStr            : string;
     _pdus                     : TYSmsArray;
@@ -341,9 +343,11 @@ type
     /// <summary>
     ///   Registers the callback function that is invoked on every change of advertised value.
     /// <para>
-    ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-    ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-    ///   one of these two functions periodically. To unregister a callback, pass a NIL pointer as argument.
+    ///   The callback is then invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+    ///   This provides control over the time when the callback is triggered. For good responsiveness,
+    ///   remember to call one of these two functions periodically. The callback is called once juste after beeing
+    ///   registered, passing the current advertised value  of the function, provided that it is not an empty string.
+    ///   To unregister a callback, pass a NIL pointer as argument.
     /// </para>
     /// <para>
     /// </para>
@@ -363,7 +367,7 @@ type
 
     function clearSIMSlot(slot: LongInt):LongInt; overload; virtual;
 
-    function _AT(cmd: string):string; overload; virtual;
+    function sendPDU(pdu: TByteArray):LongInt; overload; virtual;
 
     function fetchPdu(slot: LongInt):TYSms; overload; virtual;
 
@@ -485,6 +489,30 @@ type
     ///-
     function get_messages():TYSmsArray; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Registers a callback function to be called each time that a new SMS is received.
+    /// <para>
+    ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+    ///   This provides control over the time when the callback is triggered.
+    ///   For good responsiveness, remember to call one of these two functions periodically.
+    ///   To unregister a callback, pass a NIL pointer as argument.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="callback">
+    ///   the callback function to call, or a NIL pointer.
+    ///   The callback function should take four arguments:
+    ///   the <c>YMessageBox</c> object that emitted the event, and
+    ///   the <c>YSms</c> object containing the received message.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </param>
+    ///-
+    function registerSmsCallback(callback: TYSmsCallback):LongInt; overload; virtual;
+
+    function _internalEventHandler(cbVal: string):LongInt; overload; virtual;
+
 
     ////
     /// <summary>
@@ -537,6 +565,7 @@ type
     _mbox                     : TYMessageBox;
     _slot                     : LongInt;
     _deliv                    : boolean;
+    _isnew                    : boolean;
     _smsc                     : string;
     _mref                     : LongInt;
     _orig                     : string;
@@ -566,11 +595,11 @@ type
 
     function get_msgRef():LongInt; overload; virtual;
 
-    function get_sender():string; overload; virtual;
+    function get_protocolId():LongInt; overload; virtual;
 
     function get_recipient():string; overload; virtual;
 
-    function get_protocolId():LongInt; overload; virtual;
+    function isNew():boolean; overload; virtual;
 
     function isReceived():boolean; overload; virtual;
 
@@ -580,17 +609,51 @@ type
 
     function get_dcs():LongInt; overload; virtual;
 
-    function get_timestamp():string; overload; virtual;
-
     function get_userDataHeader():TByteArray; overload; virtual;
 
     function get_userData():TByteArray; overload; virtual;
 
     ////
     /// <summary>
-    ///   Returns the content of the message.
+    ///   Returns true iff the message is a "Flash" SMS (class 0 message).
+    /// <para>
+    ///   Flash messages
+    ///   are displayed on the handset immediately and usually not saved on the SIM card.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a boolean.
+    /// </returns>
+    ///-
+    function isFlashMessage():boolean; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the reported message timestamp.
     /// <para>
     /// </para>
+    /// </summary>
+    /// <returns>
+    ///   the timestamp as a text string.
+    /// </returns>
+    ///-
+    function get_timestamp():string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the reported message sender.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a text string.
+    /// </returns>
+    ///-
+    function get_sender():string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the content of the message as a text string.
     /// <para>
     /// </para>
     /// </summary>
@@ -600,6 +663,16 @@ type
     ///-
     function get_textData():string; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns the content of the message, as a list of integer unicode values.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a list of integers.
+    /// </returns>
+    ///-
     function get_unicodeData():TLongIntArray; overload; virtual;
 
     function get_partCount():LongInt; overload; virtual;
@@ -617,6 +690,8 @@ type
     function set_slot(val: LongInt):LongInt; overload; virtual;
 
     function set_received(val: boolean):LongInt; overload; virtual;
+
+    function set_new(val: boolean):LongInt; overload; virtual;
 
     function set_smsc(val: string):LongInt; overload; virtual;
 
@@ -644,7 +719,7 @@ type
 
     ////
     /// <summary>
-    ///   Add a regular text to the SMS.
+    ///   Adds regular text to the SMS.
     /// <para>
     ///   This function support messages
     ///   of more than 160 characters. ISO-latin accented characters
@@ -665,7 +740,7 @@ type
 
     ////
     /// <summary>
-    ///   Add a unicode text to the SMS.
+    ///   Adds unicode characters to the SMS.
     /// <para>
     ///   This function support messages
     ///   of more than 160 characters, using SMS concatenation.
@@ -674,7 +749,7 @@ type
     /// </para>
     /// </summary>
     /// <param name="val">
-    ///   an array of special unicode characters
+    ///   a list of unicode characters provided as integers
     /// </param>
     /// <returns>
     ///   <c>YAPI.SUCCESS</c> when the call succeeds.
@@ -725,6 +800,21 @@ type
     ///-
     function send():LongInt; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Delete the SMS from the SIM card.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
     function deleteFromSIM():LongInt; overload; virtual;
 
 
@@ -799,6 +889,8 @@ type
   /// </returns>
   ///-
   function yFirstMessageBox():TYMessageBox;
+
+Procedure yInternalEventCallback(obj:TYMessageBox; value:string);
 
 //--- (end of generated code: YMessageBox functions declaration)
 //--- (generated code: YSms functions declaration)
@@ -1109,7 +1201,6 @@ implementation
     var
       retry : LongInt;
       idx : LongInt;
-      res : string;
       bitmapStr : string;
       int_res : LongInt;
       newBitmap : TByteArray;
@@ -1124,8 +1215,8 @@ implementation
           idx := ((slot) shr 3);
           if idx < length(newBitmap) then
             begin
-              bitVal := ((1) shl ((((slot) and 7))));
-              if (((newBitmap[idx]) and (bitVal))) <> 0 then
+              bitVal := ((1) shl (((slot) and 7)));
+              if ((newBitmap[idx]) and (bitVal)) <> 0 then
                 begin
                   self._prevBitmapStr := '';
                   int_res := self.set_command('DS'+inttostr(slot));
@@ -1146,7 +1237,7 @@ implementation
               result := YAPI_INVALID_ARGUMENT;
               exit;
             end;
-          res := self._AT('');
+          self._download('at.txt?cmd=');
           retry := retry - 1;
         end;
       result := YAPI_IO_ERROR;
@@ -1154,62 +1245,47 @@ implementation
     end;
 
 
-  function TYMessageBox._AT(cmd: string):string;
+  function TYMessageBox.sendPDU(pdu: TByteArray):LongInt;
     var
-      chrPos : LongInt;
-      cmdLen : LongInt;
-      waitMore : LongInt;
-      res : string;
+      i : LongInt;
       buff : TByteArray;
       bufflen : LongInt;
       buffstr : string;
-      buffstrlen : LongInt;
-      idx : LongInt;
-      suffixlen : LongInt;
+      res : string;
+      waitMore : LongInt;
+      cmd : string;
     begin
-      cmdLen := Length(cmd);
-      chrPos := (pos('#', cmd) - 1);
-      while chrPos >= 0 do
+      buff := self._uploadEx('sendSMS', pdu);
+      if length(buff) < 2 then
         begin
-          cmd := ''+Copy(cmd, 0 + 1, chrPos)+''+chr(37)+'23'+Copy(cmd, chrPos+1 + 1, cmdLen-chrPos-1);
-          cmdLen := cmdLen + 2;
-          chrPos := (pos('#', cmd) - 1);
+          result := YAPI_SUCCESS;
+          exit;
         end;
-      chrPos := (pos('+', cmd) - 1);
-      while chrPos >= 0 do
+      if buff[0] <> 64 then
         begin
-          cmd := ''+Copy(cmd, 0 + 1, chrPos)+''+chr(37)+'2B'+Copy(cmd, chrPos+1 + 1, cmdLen-chrPos-1);
-          cmdLen := cmdLen + 2;
-          chrPos := (pos('+', cmd) - 1);
+          result := YAPI_SUCCESS;
+          exit;
         end;
-      chrPos := (pos('=', cmd) - 1);
-      while chrPos >= 0 do
-        begin
-          cmd := ''+Copy(cmd, 0 + 1, chrPos)+''+chr(37)+'3D'+Copy(cmd, chrPos+1 + 1, cmdLen-chrPos-1);
-          cmdLen := cmdLen + 2;
-          chrPos := (pos('=', cmd) - 1);
-        end;
-      cmd := 'at.txt?cmd='+cmd;
+      // new firmware provides a way to check result of SMS send command
       res := '';
-      // max 2 minutes (each iteration may take up to 5 seconds if waiting)
-      waitMore := 24;
+      bufflen := length(buff);
+      buffstr := _ByteToString(buff);
+      i := 0;
+      waitMore := 10;
       while waitMore > 0 do
         begin
+          cmd := 'at.txt?cmd='+Copy(buffstr, i + 1, bufflen - i);
           buff := self._download(cmd);
           bufflen := length(buff);
           buffstr := _ByteToString(buff);
-          buffstrlen := Length(buffstr);
-          idx := bufflen - 1;
-          while (idx > 0) and(buff[idx] <> 64) and(buff[idx] <> 10) and(buff[idx] <> 13) do
+          i := bufflen - 1;
+          while (i > 0) and(buff[i] <> 64) and(buff[i] <> 10) and(buff[i] <> 13) do
             begin
-              idx := idx - 1;
+              i := i - 1;
             end;
-          if buff[idx] = 64 then
+          if (i >= 0) and(buff[i] = 64) then
             begin
               // continuation detected
-              suffixlen := bufflen - idx;
-              cmd := 'at.txt?cmd='+Copy(buffstr, buffstrlen - suffixlen + 1, suffixlen);
-              buffstr := Copy(buffstr, 0 + 1, buffstrlen - suffixlen);
               waitMore := waitMore - 1;
             end
           else
@@ -1217,9 +1293,15 @@ implementation
               // request complete
               waitMore := 0;
             end;
-          res := ''+res+''+buffstr;
+          res := ''+res+''+Copy(buffstr, 0 + 1, i);
         end;
-      result := res;
+      if not((pos('OK', res) - 1) >= 0) then
+        begin
+          self._throw(YAPI_NOT_SUPPORTED,'Failed to send SMS');
+          result:=YAPI_NOT_SUPPORTED;
+          exit;
+        end;
+      result := YAPI_SUCCESS;
       exit;
     end;
 
@@ -1230,12 +1312,26 @@ implementation
       arrPdu : TTByteArrayArray;
       hexPdu : string;
       sms : TYSms;
+      ignoreErrMsg : string;
     begin
-      binPdu := self._download('sms.json?pos='+inttostr(slot)+'&len=1');
-      arrPdu := self._json_get_array(binPdu);
-      hexPdu := self._decode_json_string(arrPdu[0]);
       sms :=  TYSms.create(self);
       sms.set_slot(slot);
+
+      binPdu := self._download('sms.json?pos='+inttostr(slot)+'&len=1');
+      if length(binPdu)<8 then
+        begin
+          // Retry in case SIM was busy
+          ySleep(250, ignoreErrMsg);
+          binPdu := self._download('sms.json?pos='+inttostr(slot)+'&len=1');
+          if not(length(binPdu)>=8) then
+            begin
+              self._throw(YAPI_IO_ERROR,'unable to retrieve SMS');
+              result:=sms;
+              exit;
+            end;
+        end;
+      arrPdu := self._json_get_array(binPdu);
+      hexPdu := self._decode_json_string(arrPdu[0]);
       sms.parsePdu(_hexStrToBin(hexPdu));
       result := sms;
       exit;
@@ -1754,18 +1850,17 @@ implementation
   function TYMessageBox.checkNewMessages():LongInt;
     var
       bitmapStr : string;
-      prevBitmap : TByteArray;
       newBitmap : TByteArray;
       slot : LongInt;
       nslots : LongInt;
       pduIdx : LongInt;
       idx : LongInt;
       bitVal : LongInt;
-      prevBit : LongInt;
       i : LongInt;
       nsig : LongInt;
       cnt : LongInt;
       sig : string;
+      isnew : boolean;
       newArr : TYSmsArray;
       newMsg : TYSmsArray;
       newAgg : TYSmsArray;
@@ -1784,9 +1879,8 @@ implementation
           result := YAPI_SUCCESS;
           exit;
         end;
-      prevBitmap := _hexStrToBin(self._prevBitmapStr);
-      newBitmap := _hexStrToBin(bitmapStr);
       self._prevBitmapStr := bitmapStr;
+      newBitmap := _hexStrToBin(bitmapStr);
       nslots := 8*length(newBitmap);
       newArr_pos := 0;
       SetLength(newArr, nslots);;
@@ -1800,23 +1894,25 @@ implementation
       while pduIdx < length(self._pdus) do
         begin
           sms := self._pdus[pduIdx];
-          slot := sms.get_slot;
+          slot := sms.get_slot();
           idx := ((slot) shr 3);
           if idx < length(newBitmap) then
             begin
-              bitVal := ((1) shl ((((slot) and 7))));
-              if (((newBitmap[idx]) and (bitVal))) <> 0 then
+              bitVal := ((1) shl (((slot) and 7)));
+              if ((newBitmap[idx]) and (bitVal)) <> 0 then
                 begin
+                  newBitmap[idx] := ((newBitmap[idx]) xor (bitVal));
+                  sms.set_new(false);
                   newArr[newArr_pos] := sms;
                   inc(newArr_pos);
-                  if sms.get_concatCount = 0 then
+                  if sms.get_concatCount() = 0 then
                     begin
                       newMsg[newMsg_pos] := sms;
                       inc(newMsg_pos);
                     end
                   else
                     begin
-                      sig := sms.get_concatSignature;
+                      sig := sms.get_concatSignature();
                       i := 0;
                       while (i < nsig) and(Length(sig) > 0) do
                         begin
@@ -1842,42 +1938,35 @@ implementation
       while slot < nslots do
         begin
           idx := ((slot) shr 3);
-          bitVal := ((1) shl ((((slot) and 7))));
-          prevBit := 0;
-          if idx < length(prevBitmap) then
+          bitVal := ((1) shl (((slot) and 7)));
+          if ((newBitmap[idx]) and (bitVal)) <> 0 then
             begin
-              prevBit := ((prevBitmap[idx]) and (bitVal));
-            end;
-          if (((newBitmap[idx]) and (bitVal))) <> 0 then
-            begin
-              if prevBit = 0 then
+              sms := self.fetchPdu(slot);
+              sms.set_new(true);
+              newArr[newArr_pos] := sms;
+              inc(newArr_pos);
+              if sms.get_concatCount() = 0 then
                 begin
-                  sms := self.fetchPdu(slot);
-                  newArr[newArr_pos] := sms;
-                  inc(newArr_pos);
-                  if sms.get_concatCount = 0 then
+                  newMsg[newMsg_pos] := sms;
+                  inc(newMsg_pos);
+                end
+              else
+                begin
+                  sig := sms.get_concatSignature();
+                  i := 0;
+                  while (i < nsig) and(Length(sig) > 0) do
                     begin
-                      newMsg[newMsg_pos] := sms;
-                      inc(newMsg_pos);
-                    end
-                  else
+                      if (signatures[i] = sig) then
+                        begin
+                          sig := '';
+                        end;
+                      i := i + 1;
+                    end;
+                  if Length(sig) > 0 then
                     begin
-                      sig := sms.get_concatSignature;
-                      i := 0;
-                      while (i < nsig) and(Length(sig) > 0) do
-                        begin
-                          if (signatures[i] = sig) then
-                            begin
-                              sig := '';
-                            end;
-                          i := i + 1;
-                        end;
-                      if Length(sig) > 0 then
-                        begin
-                          signatures[signatures_pos] := sig;
-                          inc(signatures_pos);
-                          nsig := nsig + 1;
-                        end;
+                      signatures[signatures_pos] := sig;
+                      inc(signatures_pos);
+                      nsig := nsig + 1;
                     end;
                 end;
             end;
@@ -1894,19 +1983,21 @@ implementation
           sig := signatures[i];
           cnt := 0;
           pduIdx := 0;
+          isnew := true;
           while pduIdx < length(self._pdus) do
             begin
               sms := self._pdus[pduIdx];
-              if sms.get_concatCount > 0 then
+              if sms.get_concatCount() > 0 then
                 begin
-                  if (sms.get_concatSignature = sig) then
+                  if (sms.get_concatSignature() = sig) then
                     begin
                       if cnt = 0 then
                         begin
-                          cnt := sms.get_concatCount;
+                          cnt := sms.get_concatCount();
                           newAgg_pos := 0;
                           SetLength(newAgg, cnt);
                         end;
+                      isnew := sms.isNew();
                       newAgg[newAgg_pos] := sms;
                       inc(newAgg_pos);
                     end;
@@ -1918,6 +2009,7 @@ implementation
             begin
               sms :=  TYSms.create(self);
               sms.set_parts(newAgg);
+              sms.set_new(isnew);
               newMsg[newMsg_pos] := sms;
               inc(newMsg_pos);
             end;
@@ -1961,7 +2053,7 @@ implementation
       sms :=  TYSms.create(self);
       sms.set_recipient(recipient);
       sms.addText(message);
-      result := sms.send;
+      result := sms.send();
       exit;
     end;
 
@@ -1974,7 +2066,7 @@ implementation
       sms.set_recipient(recipient);
       sms.set_msgClass(0);
       sms.addText(message);
-      result := sms.send;
+      result := sms.send();
       exit;
     end;
 
@@ -1994,6 +2086,51 @@ implementation
     begin
       self.checkNewMessages;
       result := self._messages;
+      exit;
+    end;
+
+
+  function TYMessageBox.registerSmsCallback(callback: TYSmsCallback):LongInt;
+    begin
+      self._smsCallback := TYSmsCallback(nil);
+      if (addr(callback) <> nil) then
+        begin
+          self.registerValueCallback(yInternalEventCallback);
+        end
+      else
+        begin
+          self.registerValueCallback(TYMessageBoxValueCallback(nil));
+        end;
+      self._smsCallback := callback;
+      result := 0;
+      exit;
+    end;
+
+
+  function TYMessageBox._internalEventHandler(cbVal: string):LongInt;
+    var
+      arrLen : LongInt;
+      arrPos : LongInt;
+      messages : TYSmsArray;
+      sms : TYSms;
+    begin
+      messages := self.get_messages;
+      // invoke callback for all new messages
+      arrLen := length(messages);
+      arrPos := 0;
+      while arrPos < arrLen do
+        begin
+          sms := messages[arrPos];
+          if sms.isNew() then
+            begin
+              if (addr(self._smsCallback) <> nil) then
+                begin
+                  self._smsCallback(self, sms);
+                end;
+            end;
+          arrPos := arrPos + 1;
+        end;
+      result := YAPI_SUCCESS;
       exit;
     end;
 
@@ -2035,6 +2172,11 @@ implementation
         end;
      result := TYMessageBox.FindMessageBox(serial+'.'+funcId);
     end;
+
+Procedure yInternalEventCallback(obj:TYMessageBox; value:string);
+begin
+    obj._internalEventHandler(value);
+end;
 
 //--- (end of generated code: YMessageBox implementation)
 
@@ -2101,9 +2243,9 @@ implementation
     end;
 
 
-  function TYSms.get_sender():string;
+  function TYSms.get_protocolId():LongInt;
     begin
-      result := self._orig;
+      result := self._pid;
       exit;
     end;
 
@@ -2115,9 +2257,9 @@ implementation
     end;
 
 
-  function TYSms.get_protocolId():LongInt;
+  function TYSms.isNew():boolean;
     begin
-      result := self._pid;
+      result := self._isnew;
       exit;
     end;
 
@@ -2150,14 +2292,7 @@ implementation
 
   function TYSms.get_dcs():LongInt;
     begin
-      result := ((self._mclass) or ((((self._alphab) shl 2))));
-      exit;
-    end;
-
-
-  function TYSms.get_timestamp():string;
-    begin
-      result := self._stamp;
+      result := ((self._mclass) or (((self._alphab) shl 2)));
       exit;
     end;
 
@@ -2172,6 +2307,27 @@ implementation
   function TYSms.get_userData():TByteArray;
     begin
       result := self._udata;
+      exit;
+    end;
+
+
+  function TYSms.isFlashMessage():boolean;
+    begin
+      result := self.get_msgClass = 0;
+      exit;
+    end;
+
+
+  function TYSms.get_timestamp():string;
+    begin
+      result := self._stamp;
+      exit;
+    end;
+
+
+  function TYSms.get_sender():string;
+    begin
+      result := self._orig;
       exit;
     end;
 
@@ -2339,6 +2495,14 @@ implementation
     end;
 
 
+  function TYSms.set_new(val: boolean):LongInt;
+    begin
+      self._isnew := val;
+      result := YAPI_SUCCESS;
+      exit;
+    end;
+
+
   function TYSms.set_smsc(val: string):LongInt;
     begin
       self._smsc := val;
@@ -2411,7 +2575,7 @@ implementation
 
   function TYSms.set_dcs(val: LongInt):LongInt;
     begin
-      self._alphab := (((((val) shr 2))) and 3);
+      self._alphab := ((((val) shr 2)) and 3);
       self._mclass := ((val) and (16+3));
       self._npdu := 0;
       result := YAPI_SUCCESS;
@@ -2603,11 +2767,11 @@ implementation
           if uni >= 65536 then
             begin
               surrogate := uni - 65536;
-              uni := (((((surrogate) shr 10)) and 1023)) + 55296;
+              uni := ((((surrogate) shr 10)) and 1023) + 55296;
               udata[udatalen] := ((uni) shr 8);
               udata[udatalen+1] := ((uni) and 255);
               udatalen := udatalen + 2;
-              uni := (((surrogate) and 1023)) + 56320;
+              uni := ((surrogate) and 1023) + 56320;
             end;
           udata[udatalen] := ((uni) shr 8);
           udata[udatalen+1] := ((uni) and 255);
@@ -2657,7 +2821,7 @@ implementation
           while i < self._npdu do
             begin
               subsms := parts[i];
-              if subsms.get_concatIndex = partno then
+              if subsms.get_concatIndex() = partno then
                 begin
                   sorted[sorted_pos] := subsms;
                   inc(sorted_pos);
@@ -2674,7 +2838,7 @@ implementation
       self._parts := sorted;
       // inherit header fields from first part
       subsms := self._parts[0];
-      retcode := self.parsePdu(subsms.get_pdu);
+      retcode := self.parsePdu(subsms.get_pdu());
       if retcode <> YAPI_SUCCESS then
         begin
           result := retcode;
@@ -2687,7 +2851,7 @@ implementation
       while partno < length(self._parts) do
         begin
           subsms := self._parts[partno];
-          subdata := subsms.get_userData;
+          subdata := subsms.get_userData();
           totsize := totsize + length(subdata);
           partno := partno + 1;
         end;
@@ -2697,7 +2861,7 @@ implementation
       while partno < length(self._parts) do
         begin
           subsms := self._parts[partno];
-          subdata := subsms.get_userData;
+          subdata := subsms.get_userData();
           i := 0;
           while i < length(subdata) do
             begin
@@ -2822,7 +2986,7 @@ implementation
                 begin
                   byt := addr[ofs+rpos];
                   rpos := rpos + 1;
-                  gsm7[i] := ((carry) or ((((((byt) shl (nbits)))) and 127)));
+                  gsm7[i] := ((carry) or (((((byt) shl (nbits))) and 127)));
                   carry := ((byt) shr ((7 - nbits)));
                   nbits := nbits + 1;
                 end;
@@ -3155,7 +3319,7 @@ implementation
               else
                 begin
                   thi_b := self._udata[i];
-                  res[wpos] := ((carry) or ((((((thi_b) shl (nbits)))) and 255)));
+                  res[wpos] := ((carry) or (((((thi_b) shl (nbits))) and 255)));
                   wpos := wpos + 1;
                   nbits := nbits - 1;
                   carry := ((thi_b) shr ((7 - nbits)));
@@ -3445,9 +3609,9 @@ implementation
           rpos := rpos + 1;
           self._dest := self.decodeAddress(pdu, rpos, addrlen);
           self._orig := '';
-          if (((pdutyp) and 16)) <> 0 then
+          if ((pdutyp) and 16) <> 0 then
             begin
-              if (((pdutyp) and 8)) <> 0 then
+              if ((pdutyp) and 8) <> 0 then
                 begin
                   tslen := 7;
                 end
@@ -3461,12 +3625,12 @@ implementation
               tslen := 0;
             end;
         end;
-      rpos := rpos + ((((addrlen+3)) shr 1));
+      rpos := rpos + (((addrlen+3)) shr 1);
       self._pid := pdu[rpos];
       rpos := rpos + 1;
       dcs := pdu[rpos];
       rpos := rpos + 1;
-      self._alphab := (((((dcs) shr 2))) and 3);
+      self._alphab := ((((dcs) shr 2)) and 3);
       self._mclass := ((dcs) and (16+3));
       self._stamp := self.decodeTimeStamp(pdu, rpos, tslen);
       rpos := rpos + tslen;
@@ -3529,7 +3693,7 @@ implementation
                 begin
                   thi_b := pdu[rpos];
                   rpos := rpos + 1;
-                  self._udata[i] := ((carry) or ((((((thi_b) shl (nbits)))) and 127)));
+                  self._udata[i] := ((carry) or (((((thi_b) shl (nbits))) and 127)));
                   carry := ((thi_b) shr ((7 - nbits)));
                   nbits := nbits + 1;
                 end;
@@ -3563,20 +3727,22 @@ implementation
         begin
           self.generatePdu;
         end;
-      if self._npdu = 1 then
+      if self._npdu > 1 then
         begin
-          result := self._mbox._upload('sendSMS', self._pdu);
+          // send multiple PDUs using recursive call
+          retcode := YAPI_SUCCESS;
+          i := 0;
+          while (i < self._npdu) and(retcode = YAPI_SUCCESS) do
+            begin
+              pdu := self._parts[i];
+              retcode:= pdu.send;
+              i := i + 1;
+            end;
+          result := retcode;
           exit;
         end;
-      retcode := YAPI_SUCCESS;
-      i := 0;
-      while (i < self._npdu) and(retcode = YAPI_SUCCESS) do
-        begin
-          pdu := self._parts[i];
-          retcode:= pdu.send;
-          i := i + 1;
-        end;
-      result := retcode;
+      // send a single PDU
+      result := self._mbox.sendPDU(self._pdu);
       exit;
     end;
 

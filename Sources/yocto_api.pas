@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 70666 2025-12-09 10:26:00Z seb $
+ * $Id: yocto_api.pas 72342 2026-03-09 13:58:37Z seb $
  *
  * High-level programming interface, common to all modules
  *
@@ -129,7 +129,7 @@ const
   Y_DETECT_ALL : integer = (Y_DETECT_USB or Y_DETECT_NET);
 
   YOCTO_API_VERSION_STR     = '2.1';
-  YOCTO_API_BUILD_NO        = '71632';
+  YOCTO_API_BUILD_NO        = '72413';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -796,8 +796,8 @@ type
     ///   <c>SERIAL</c>     is the serial number of the module if the module is connected or <c>"unresolved"</c>, and
     ///   <c>FUNCTIONID</c> is  the hardware identifier of the function if the module is connected.
     ///   For example, this method returns <c>Relay(MyCustomName.relay1)=RELAYLO1-123456.relay1</c> if the
-    ///   module is already connected or <c>Relay(BadCustomeName.relay1)=unresolved</c> if the module has
-    ///   not yet been connected. This method does not trigger any USB or TCP transaction and can therefore be used in
+    ///   module is connected or <c>Relay(BadCustomeName.relay1)=unresolved</c> if the module is
+    ///   not connected. This method does not trigger any USB or TCP transaction and can therefore be used in
     ///   a debugger.
     /// </para>
     /// <para>
@@ -1148,9 +1148,11 @@ type
     /// <summary>
     ///   Registers the callback function that is invoked on every change of advertised value.
     /// <para>
-    ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-    ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-    ///   one of these two functions periodically. To unregister a callback, pass a NIL pointer as argument.
+    ///   The callback is then invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+    ///   This provides control over the time when the callback is triggered. For good responsiveness,
+    ///   remember to call one of these two functions periodically. The callback is called once juste after beeing
+    ///   registered, passing the current advertised value  of the function, provided that it is not an empty string.
+    ///   To unregister a callback, pass a NIL pointer as argument.
     /// </para>
     /// <para>
     /// </para>
@@ -1807,9 +1809,11 @@ type
     /// <summary>
     ///   Registers the callback function that is invoked on every change of advertised value.
     /// <para>
-    ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-    ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-    ///   one of these two functions periodically. To unregister a callback, pass a NIL pointer as argument.
+    ///   The callback is then invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+    ///   This provides control over the time when the callback is triggered. For good responsiveness,
+    ///   remember to call one of these two functions periodically. The callback is called once juste after beeing
+    ///   registered, passing the current advertised value  of the function, provided that it is not an empty string.
+    ///   To unregister a callback, pass a NIL pointer as argument.
     /// </para>
     /// <para>
     /// </para>
@@ -2799,9 +2803,11 @@ end;
     /// <summary>
     ///   Registers the callback function that is invoked on every change of advertised value.
     /// <para>
-    ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-    ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-    ///   one of these two functions periodically. To unregister a callback, pass a NIL pointer as argument.
+    ///   The callback is then invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+    ///   This provides control over the time when the callback is triggered. For good responsiveness,
+    ///   remember to call one of these two functions periodically. The callback is called once juste after beeing
+    ///   registered, passing the current advertised value  of the function, provided that it is not an empty string.
+    ///   To unregister a callback, pass a NIL pointer as argument.
     /// </para>
     /// <para>
     /// </para>
@@ -4755,9 +4761,11 @@ end;
     /// <summary>
     ///   Registers the callback function that is invoked on every change of advertised value.
     /// <para>
-    ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-    ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-    ///   one of these two functions periodically. To unregister a callback, pass a NIL pointer as argument.
+    ///   The callback is then invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+    ///   This provides control over the time when the callback is triggered. For good responsiveness,
+    ///   remember to call one of these two functions periodically. The callback is called once juste after beeing
+    ///   registered, passing the current advertised value  of the function, provided that it is not an empty string.
+    ///   To unregister a callback, pass a NIL pointer as argument.
     /// </para>
     /// <para>
     /// </para>
@@ -7021,7 +7029,7 @@ var
       apidate : string;
     begin
       yapiGetAPIVersion(version, apidate);
-      yGetAPIVersion:=  '2.1.11632 (' + version + ')';
+      yGetAPIVersion:=  '2.1.12413 (' + version + ')';
     end;
 
 

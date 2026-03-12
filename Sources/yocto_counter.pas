@@ -52,6 +52,7 @@ uses
 
 //--- (YCounter definitions)
 
+const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 //--- (end of YCounter definitions)
 
@@ -80,6 +81,7 @@ type
   protected
   //--- (YCounter declaration)
     // Attributes (function value cache)
+    _command                  : string;
     _valueCallbackCounter     : TYCounterValueCallback;
     _timedReportCallbackCounter : TYCounterTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
@@ -89,6 +91,10 @@ type
   public
     //--- (YCounter accessors declaration)
     constructor Create(func:string);
+
+    function get_command():string;
+
+    function set_command(newval:string):integer;
 
     ////
     /// <summary>
@@ -146,9 +152,11 @@ type
     /// <summary>
     ///   Registers the callback function that is invoked on every change of advertised value.
     /// <para>
-    ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-    ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-    ///   one of these two functions periodically. To unregister a callback, pass a NIL pointer as argument.
+    ///   The callback is then invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+    ///   This provides control over the time when the callback is triggered. For good responsiveness,
+    ///   remember to call one of these two functions periodically. The callback is called once juste after beeing
+    ///   registered, passing the current advertised value  of the function, provided that it is not an empty string.
+    ///   To unregister a callback, pass a NIL pointer as argument.
     /// </para>
     /// <para>
     /// </para>
@@ -185,6 +193,23 @@ type
     function registerTimedReportCallback(callback: TYCounterTimedReportCallback):LongInt; overload;
 
     function _invokeTimedReportCallback(value: TYMeasure):LongInt; override;
+
+    function sendCommand(command: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Reset the counter to zero.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function zero():LongInt; overload; virtual;
 
 
     ////
@@ -295,6 +320,7 @@ implementation
       inherited Create(func);
       _className := 'Counter';
       //--- (YCounter accessors initialization)
+      _command := Y_COMMAND_INVALID;
       _valueCallbackCounter := nil;
       _timedReportCallbackCounter := nil;
       //--- (end of YCounter accessors initialization)
@@ -310,9 +336,41 @@ implementation
       sub : PJSONRECORD;
       i,l        : integer;
     begin
+      if (member^.name = 'command') then
+        begin
+          _command := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
+
+  function TYCounter.get_command():string;
+    var
+      res : string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_COMMAND_INVALID;
+              exit;
+            end;
+        end;
+      res := self._command;
+      result := res;
+      exit;
+    end;
+
+
+  function TYCounter.set_command(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('command',rest_val);
+    end;
 
   class function TYCounter.FindCounter(func: string):TYCounter;
     var
@@ -401,6 +459,20 @@ implementation
           inherited _invokeTimedReportCallback(value);
         end;
       result := 0;
+      exit;
+    end;
+
+
+  function TYCounter.sendCommand(command: string):LongInt;
+    begin
+      result := self.set_command(command);
+      exit;
+    end;
+
+
+  function TYCounter.zero():LongInt;
+    begin
+      result := self.sendCommand('Z');
       exit;
     end;
 

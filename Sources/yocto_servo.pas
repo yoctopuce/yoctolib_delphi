@@ -118,14 +118,14 @@ type
 
     ////
     /// <summary>
-    ///   Returns the current servo position.
+    ///   Returns the current servo position, usually a value between -1000 and 1000.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   an integer corresponding to the current servo position
+    ///   an integer corresponding to the current servo position, usually a value between -1000 and 1000
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>YServo.POSITION_INVALID</c>.
@@ -135,14 +135,14 @@ type
 
     ////
     /// <summary>
-    ///   Changes immediately the servo driving position.
+    ///   Changes immediately the servo  position, the parameter is  a value between -1000 and +1000.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   an integer corresponding to immediately the servo driving position
+    ///   an integer corresponding to immediately the servo  position, the parameter is  a value between -1000 and +1000
     /// </param>
     /// <para>
     /// </para>
@@ -451,9 +451,11 @@ type
     /// <summary>
     ///   Registers the callback function that is invoked on every change of advertised value.
     /// <para>
-    ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-    ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-    ///   one of these two functions periodically. To unregister a callback, pass a NIL pointer as argument.
+    ///   The callback is then invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+    ///   This provides control over the time when the callback is triggered. For good responsiveness,
+    ///   remember to call one of these two functions periodically. The callback is called once juste after beeing
+    ///   registered, passing the current advertised value  of the function, provided that it is not an empty string.
+    ///   To unregister a callback, pass a NIL pointer as argument.
     /// </para>
     /// <para>
     /// </para>

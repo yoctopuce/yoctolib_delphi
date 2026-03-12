@@ -52,6 +52,8 @@ uses
 
 //--- (YOrientation definitions)
 
+const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
+const Y_ZEROOFFSET_INVALID            = YAPI_INVALID_DOUBLE;
 
 //--- (end of YOrientation definitions)
 
@@ -80,6 +82,8 @@ type
   protected
   //--- (YOrientation declaration)
     // Attributes (function value cache)
+    _command                  : string;
+    _zeroOffset               : double;
     _valueCallbackOrientation : TYOrientationValueCallback;
     _timedReportCallbackOrientation : TYOrientationTimedReportCallback;
     // Function-specific method for reading JSON output and caching result
@@ -89,6 +93,55 @@ type
   public
     //--- (YOrientation accessors declaration)
     constructor Create(func:string);
+
+    function get_command():string;
+
+    function set_command(newval:string):integer;
+
+    ////
+    /// <summary>
+    ///   Sets an offset between the orientation reported by the sensor and the actual orientation.
+    /// <para>
+    ///   This
+    ///   can typically be used  to compensate for mechanical offset. This offset can also be set
+    ///   automatically using the zero() method.
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   a floating point number
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_zeroOffset(newval:double):integer;
+
+    ////
+    /// <summary>
+    ///   Returns the Offset between the orientation reported by the sensor and the actual orientation.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a floating point number corresponding to the Offset between the orientation reported by the sensor
+    ///   and the actual orientation
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YOrientation.ZEROOFFSET_INVALID</c>.
+    /// </para>
+    ///-
+    function get_zeroOffset():double;
 
     ////
     /// <summary>
@@ -146,9 +199,11 @@ type
     /// <summary>
     ///   Registers the callback function that is invoked on every change of advertised value.
     /// <para>
-    ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-    ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-    ///   one of these two functions periodically. To unregister a callback, pass a NIL pointer as argument.
+    ///   The callback is then invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+    ///   This provides control over the time when the callback is triggered. For good responsiveness,
+    ///   remember to call one of these two functions periodically. The callback is called once juste after beeing
+    ///   registered, passing the current advertised value  of the function, provided that it is not an empty string.
+    ///   To unregister a callback, pass a NIL pointer as argument.
     /// </para>
     /// <para>
     /// </para>
@@ -185,6 +240,98 @@ type
     function registerTimedReportCallback(callback: TYOrientationTimedReportCallback):LongInt; overload;
 
     function _invokeTimedReportCallback(value: TYMeasure):LongInt; override;
+
+    function sendCommand(command: string):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Reset the sensor's zero to current position by automatically setting a new offset.
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function zero():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Modifies the calibration of the MA600A sensor using an array of 32
+    ///   values representing the offset in degrees between the true values and
+    ///   those measured regularly every 11.25 degrees starting from zero.
+    /// <para>
+    ///   The calibration
+    ///   is applied immediately and is stored permanently in the MA600A sensor.
+    ///   Before calculating the offset values, remember to clear any previous
+    ///   calibration using the <c>clearCalibration</c> function and set
+    ///   the zero offset  to 0. After a calibration change, the sensor will stop
+    ///   measurements for about one second.
+    ///   Do not confuse this function with the generic <c>calibrateFromPoints</c> function,
+    ///   which works at the YSensor level and is not necessarily well suited to
+    ///   a sensor returning circular values.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="offsetValues">
+    ///   array of 32 floating point values in the [-11.25..+11.25] range
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_calibration(var offsetValues: TDoubleArray):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Retrieves offset correction data points previously entered using the method
+    ///   <c>set_calibration</c>.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="offsetValues">
+    ///   array of 32 floating point numbers, that will be filled by the
+    ///   function with the offset values for the correction points.
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function get_Calibration(var offsetValues: TDoubleArray):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Cancels any calibration set with <c>set_calibration</c>.
+    /// <para>
+    ///   This function
+    ///   is equivalent to calling <c>set_calibration</c> with only zeros.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function clearCalibration():LongInt; overload; virtual;
 
 
     ////
@@ -295,6 +442,8 @@ implementation
       inherited Create(func);
       _className := 'Orientation';
       //--- (YOrientation accessors initialization)
+      _command := Y_COMMAND_INVALID;
+      _zeroOffset := Y_ZEROOFFSET_INVALID;
       _valueCallbackOrientation := nil;
       _timedReportCallbackOrientation := nil;
       //--- (end of YOrientation accessors initialization)
@@ -310,9 +459,73 @@ implementation
       sub : PJSONRECORD;
       i,l        : integer;
     begin
+      if (member^.name = 'command') then
+        begin
+          _command := string(member^.svalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'zeroOffset') then
+        begin
+          _zeroOffset := round(member^.ivalue / 65.536) / 1000.0;
+         result := 1;
+         exit;
+         end;
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
+
+  function TYOrientation.get_command():string;
+    var
+      res : string;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_COMMAND_INVALID;
+              exit;
+            end;
+        end;
+      res := self._command;
+      result := res;
+      exit;
+    end;
+
+
+  function TYOrientation.set_command(newval:string):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := newval;
+      result := _setAttr('command',rest_val);
+    end;
+
+  function TYOrientation.set_zeroOffset(newval:double):integer;
+    var
+      rest_val: string;
+    begin
+      rest_val := inttostr(round(newval * 65536.0));
+      result := _setAttr('zeroOffset',rest_val);
+    end;
+
+  function TYOrientation.get_zeroOffset():double;
+    var
+      res : double;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_ZEROOFFSET_INVALID;
+              exit;
+            end;
+        end;
+      res := self._zeroOffset;
+      result := res;
+      exit;
+    end;
+
 
   class function TYOrientation.FindOrientation(func: string):TYOrientation;
     var
@@ -401,6 +614,71 @@ implementation
           inherited _invokeTimedReportCallback(value);
         end;
       result := 0;
+      exit;
+    end;
+
+
+  function TYOrientation.sendCommand(command: string):LongInt;
+    begin
+      result := self.set_command(command);
+      exit;
+    end;
+
+
+  function TYOrientation.zero():LongInt;
+    begin
+      result := self.sendCommand('Z');
+      exit;
+    end;
+
+
+  function TYOrientation.set_calibration(var offsetValues: TDoubleArray):LongInt;
+    var
+      res : string;
+      npt : LongInt;
+      idx : LongInt;
+      corr : LongInt;
+    begin
+      npt := length(offsetValues);
+      if npt <> 32 then
+        begin
+          self._throw(YAPI_INVALID_ARGUMENT, 'Invalid calibration parameters (32 expected)');
+          result := YAPI_INVALID_ARGUMENT;
+          exit;
+        end;
+      res := 'C';
+      idx := 0;
+      while idx < npt do
+        begin
+          corr := LongInt(round(offsetValues[idx] * 128 / 11.25));
+          if (corr < -128) or(corr > 127) then
+            begin
+              self._throw(YAPI_INVALID_ARGUMENT, 'Calibration parameter exceeds permitted range (+/-11.25)');
+              result := YAPI_INVALID_ARGUMENT;
+              exit;
+            end;
+          if corr < 0 then
+            begin
+              corr := corr + 256;
+            end;
+          res := ''+res+''+AnsiLowerCase(inttohex(corr,02));
+          idx := idx + 1;
+        end;
+      result := self.sendCommand(res);
+      exit;
+    end;
+
+
+  function TYOrientation.get_Calibration(var offsetValues: TDoubleArray):LongInt;
+    begin
+      result := 0;
+      exit;
+    end;
+
+
+  function TYOrientation.clearCalibration():LongInt;
+    begin
+      result := self.sendCommand('-');
       exit;
     end;
 

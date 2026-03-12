@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 71629 2026-01-29 15:08:26Z mvuilleu $
+ * $Id: yocto_display.pas 72057 2026-02-17 09:44:53Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -65,9 +65,9 @@ const Y_DISPLAYPANEL_INVALID          = YAPI_INVALID_STRING;
 const Y_DISPLAYWIDTH_INVALID          = YAPI_INVALID_UINT;
 const Y_DISPLAYHEIGHT_INVALID         = YAPI_INVALID_UINT;
 const Y_DISPLAYTYPE_MONO = 0;
-const Y_DISPLAYTYPE_GRAY = 1;
-const Y_DISPLAYTYPE_RGB = 2;
-const Y_DISPLAYTYPE_EPAPER = 3;
+const Y_DISPLAYTYPE_EPAPER_BW = 1;
+const Y_DISPLAYTYPE_EPAPER_BWR = 2;
+const Y_DISPLAYTYPE_EPAPER_BWRY = 3;
 const Y_DISPLAYTYPE_INVALID = -1;
 const Y_LAYERWIDTH_INVALID            = YAPI_INVALID_UINT;
 const Y_LAYERHEIGHT_INVALID           = YAPI_INVALID_UINT;
@@ -447,16 +447,16 @@ public
 
     ////
     /// <summary>
-    ///   Returns the display type: monochrome, gray levels or full color.
+    ///   Returns the display type: monochrome OLED, black and white ePaper, color ePaper, etc.
     /// <para>
     /// </para>
     /// <para>
     /// </para>
     /// </summary>
     /// <returns>
-    ///   a value among <c>YDisplay.DISPLAYTYPE_MONO</c>, <c>YDisplay.DISPLAYTYPE_GRAY</c>,
-    ///   <c>YDisplay.DISPLAYTYPE_RGB</c> and <c>YDisplay.DISPLAYTYPE_EPAPER</c> corresponding to the display
-    ///   type: monochrome, gray levels or full color
+    ///   a value among <c>YDisplay.DISPLAYTYPE_MONO</c>, <c>YDisplay.DISPLAYTYPE_EPAPER_BW</c>,
+    ///   <c>YDisplay.DISPLAYTYPE_EPAPER_BWR</c> and <c>YDisplay.DISPLAYTYPE_EPAPER_BWRY</c> corresponding to
+    ///   the display type: monochrome OLED, black and white ePaper, color ePaper, etc
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>YDisplay.DISPLAYTYPE_INVALID</c>.
@@ -575,9 +575,11 @@ public
     /// <summary>
     ///   Registers the callback function that is invoked on every change of advertised value.
     /// <para>
-    ///   The callback is invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
-    ///   This provides control over the time when the callback is triggered. For good responsiveness, remember to call
-    ///   one of these two functions periodically. To unregister a callback, pass a NIL pointer as argument.
+    ///   The callback is then invoked only during the execution of <c>ySleep</c> or <c>yHandleEvents</c>.
+    ///   This provides control over the time when the callback is triggered. For good responsiveness,
+    ///   remember to call one of these two functions periodically. The callback is called once juste after beeing
+    ///   registered, passing the current advertised value  of the function, provided that it is not an empty string.
+    ///   To unregister a callback, pass a NIL pointer as argument.
     /// </para>
     /// <para>
     /// </para>
@@ -2495,7 +2497,6 @@ destructor TYDisplay.destroy();
       srcx : LongInt;
       srcy : LongInt;
       srci : LongInt;
-      incx : LongInt;
       pixmap : TByteArray;
       pixcount : LongInt;
       pixval : LongInt;
@@ -2625,7 +2626,6 @@ destructor TYDisplay.destroy();
       setlength(pixmap,pixcount);
       srcx := 0;
       srcy := 0;
-      incx := (8 div zipbits);
       srcval := 0;
       while srcpos < zipsize do
         begin
@@ -2640,11 +2640,16 @@ destructor TYDisplay.destroy();
                 begin
                   srcval := zipmap[srcpos];
                   srcpos := srcpos + 1;
+                  if zipbits > 1 then
+                    begin
+                      srcval := ((srcval) shl 8) + zipmap[srcpos];
+                      srcpos := srcpos + 1;
+                    end;
                 end;
               srcpat := ((srcpat) shl 1);
               pixpos := srcy * zipwidth + srcx;
-              // produce 8 pixels (or 4, if bitmap uses 2 bits per pixel)
-              srci := 8 - zipbits;
+              // produce 8 pixels
+              srci := 7 * zipbits;
               while srci >= 0 do
                 begin
                   pixval := ((((srcval) shr (srci))) and (zipmask));
@@ -2656,7 +2661,7 @@ destructor TYDisplay.destroy();
               if srcy >= zipheight then
                 begin
                   srcy := 0;
-                  srcx := srcx + incx;
+                  srcx := srcx + 8;
                   // drop last bytes if image is not a multiple of 8
                   if srcx >= zipwidth then
                     begin
