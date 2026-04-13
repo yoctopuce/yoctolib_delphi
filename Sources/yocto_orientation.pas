@@ -52,6 +52,9 @@ uses
 
 //--- (YOrientation definitions)
 
+const Y_COUNTERCLOCKWISE_FALSE = 0;
+const Y_COUNTERCLOCKWISE_TRUE = 1;
+const Y_COUNTERCLOCKWISE_INVALID = -1;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 const Y_ZEROOFFSET_INVALID            = YAPI_INVALID_DOUBLE;
 
@@ -82,6 +85,7 @@ type
   protected
   //--- (YOrientation declaration)
     // Attributes (function value cache)
+    _counterClockwise         : Integer;
     _command                  : string;
     _zeroOffset               : double;
     _valueCallbackOrientation : TYOrientationValueCallback;
@@ -93,6 +97,48 @@ type
   public
     //--- (YOrientation accessors declaration)
     constructor Create(func:string);
+
+    ////
+    /// <summary>
+    ///   Returns a value indicating whether the sensor is operating in a counterclockwise direction.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   either <c>YOrientation.COUNTERCLOCKWISE_FALSE</c> or <c>YOrientation.COUNTERCLOCKWISE_TRUE</c>,
+    ///   according to a value indicating whether the sensor is operating in a counterclockwise direction
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YOrientation.COUNTERCLOCKWISE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_counterClockwise():Integer;
+
+    ////
+    /// <summary>
+    ///   Defines the operating direction of the sensor.
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the
+    ///   modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   either <c>YOrientation.COUNTERCLOCKWISE_FALSE</c> or <c>YOrientation.COUNTERCLOCKWISE_TRUE</c>
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_counterClockwise(newval:Integer):integer;
 
     function get_command():string;
 
@@ -106,7 +152,6 @@ type
     ///   can typically be used  to compensate for mechanical offset. This offset can also be set
     ///   automatically using the zero() method.
     ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
-    ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     /// <para>
     /// </para>
@@ -252,10 +297,8 @@ type
     /// </summary>
     /// <returns>
     ///   <c>YAPI.SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
     ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
+    /// </returns>
     ///-
     function zero():LongInt; overload; virtual;
 
@@ -442,6 +485,7 @@ implementation
       inherited Create(func);
       _className := 'Orientation';
       //--- (YOrientation accessors initialization)
+      _counterClockwise := Y_COUNTERCLOCKWISE_INVALID;
       _command := Y_COMMAND_INVALID;
       _zeroOffset := Y_ZEROOFFSET_INVALID;
       _valueCallbackOrientation := nil;
@@ -459,6 +503,12 @@ implementation
       sub : PJSONRECORD;
       i,l        : integer;
     begin
+      if (member^.name = 'counterClockwise') then
+        begin
+          _counterClockwise := member^.ivalue;
+         result := 1;
+         exit;
+         end;
       if (member^.name = 'command') then
         begin
           _command := string(member^.svalue);
@@ -474,6 +524,32 @@ implementation
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
+
+  function TYOrientation.get_counterClockwise():Integer;
+    var
+      res : Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_COUNTERCLOCKWISE_INVALID;
+              exit;
+            end;
+        end;
+      res := self._counterClockwise;
+      result := res;
+      exit;
+    end;
+
+
+  function TYOrientation.set_counterClockwise(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      if(newval>0) then rest_val := '1' else rest_val := '0';
+      result := _setAttr('counterClockwise',rest_val);
+    end;
 
   function TYOrientation.get_command():string;
     var

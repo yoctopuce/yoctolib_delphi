@@ -52,6 +52,9 @@ uses
 
 //--- (YCounter definitions)
 
+const Y_DECIMALMODE_FALSE = 0;
+const Y_DECIMALMODE_TRUE = 1;
+const Y_DECIMALMODE_INVALID = -1;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 //--- (end of YCounter definitions)
@@ -81,6 +84,7 @@ type
   protected
   //--- (YCounter declaration)
     // Attributes (function value cache)
+    _decimalMode              : Integer;
     _command                  : string;
     _valueCallbackCounter     : TYCounterValueCallback;
     _timedReportCallbackCounter : TYCounterTimedReportCallback;
@@ -91,6 +95,48 @@ type
   public
     //--- (YCounter accessors declaration)
     constructor Create(func:string);
+
+    ////
+    /// <summary>
+    ///   Returns a value indicating if the senseur compute whole or fractional values.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   either <c>YCounter.DECIMALMODE_FALSE</c> or <c>YCounter.DECIMALMODE_TRUE</c>, according to a value
+    ///   indicating if the senseur compute whole or fractional values
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YCounter.DECIMALMODE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_decimalMode():Integer;
+
+    ////
+    /// <summary>
+    ///   Changes the sensor's operating mode so that it computes integer or decimal values.
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c> method of the module if the modification must be kept.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="newval">
+    ///   either <c>YCounter.DECIMALMODE_FALSE</c> or <c>YCounter.DECIMALMODE_TRUE</c>, according to the
+    ///   sensor's operating mode so that it computes integer or decimal values
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_decimalMode(newval:Integer):integer;
 
     function get_command():string;
 
@@ -203,7 +249,10 @@ type
     /// </para>
     /// </summary>
     /// <returns>
-    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds. Please note that this function only resets
+    ///   the integer part of the counter. In <c>CONTINUOUS</c> mode, the decimal part is calculated
+    ///   from the angle measured by the sensor. To set the decimal part of the sensor to zero,
+    ///   the origin of the sensor must be changed with the <c>YOrientation.zero()</c>.
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
@@ -320,6 +369,7 @@ implementation
       inherited Create(func);
       _className := 'Counter';
       //--- (YCounter accessors initialization)
+      _decimalMode := Y_DECIMALMODE_INVALID;
       _command := Y_COMMAND_INVALID;
       _valueCallbackCounter := nil;
       _timedReportCallbackCounter := nil;
@@ -336,6 +386,12 @@ implementation
       sub : PJSONRECORD;
       i,l        : integer;
     begin
+      if (member^.name = 'decimalMode') then
+        begin
+          _decimalMode := member^.ivalue;
+         result := 1;
+         exit;
+         end;
       if (member^.name = 'command') then
         begin
           _command := string(member^.svalue);
@@ -345,6 +401,32 @@ implementation
       result := inherited _parseAttr(member);
     end;
 {$HINTS ON}
+
+  function TYCounter.get_decimalMode():Integer;
+    var
+      res : Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_DECIMALMODE_INVALID;
+              exit;
+            end;
+        end;
+      res := self._decimalMode;
+      result := res;
+      exit;
+    end;
+
+
+  function TYCounter.set_decimalMode(newval:Integer):integer;
+    var
+      rest_val: string;
+    begin
+      if(newval>0) then rest_val := '1' else rest_val := '0';
+      result := _setAttr('decimalMode',rest_val);
+    end;
 
   function TYCounter.get_command():string;
     var
