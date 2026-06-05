@@ -24,9 +24,17 @@ procedure  HubDiscovered(serial, url: string);
    if  list.indexof(serial)>=0 then exit;
 
    Writeln('hub found: '+serial+' ('+url+')');
+  // add the hub to the dictionnary so we won't have to
+   // process is again.
+   list.add(serial);
 
    // connect to the hub
-   YRegisterHub(url,msg);
+   if YRegisterHub('url', msg)<>YAPI_SUCCESS then
+    begin
+      Writeln(' Ignore hub '+ serial + ' (' + msg +')');
+      exit;
+    end;
+
 
    //  find the hub module
    hub := YfindModule(serial);
@@ -45,9 +53,7 @@ procedure  HubDiscovered(serial, url: string);
          Writeln(' '+fctHwdName+' : '+deviceid);
        end;
     end;
-   // add the hub to the dictionnary so we won't have to
-   // process is again.
-   list.add(serial);
+
 
    // disconnect from the hub
    YUnRegisterHub(url);

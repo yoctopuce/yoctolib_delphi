@@ -512,6 +512,86 @@ type
 
     ////
     /// <summary>
+    ///   Changes the color displayed by the last LED and shifts all currently displayed colors
+    ///   toward the beginning of the RGB LED string.
+    /// <para>
+    ///   The new color is encoded as follows: 0xRRGGBB.
+    /// </para>
+    /// </summary>
+    /// <param name="rgbValue">
+    ///   new color.
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function shl_rgb(rgbValue: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Changes the color displayed by the first LED and shifts all currently displayed colors
+    ///   toward the end of the RGB LED string.
+    /// <para>
+    ///   The new color is encoded as follows: 0xRRGGBB.
+    /// </para>
+    /// </summary>
+    /// <param name="rgbValue">
+    ///   new color.
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function shr_rgb(rgbValue: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Changes the color displayed by the last LED and shifts all currently displayed colors
+    ///   toward the beginning of the RGB LED string.
+    /// <para>
+    ///   The new color is encoded as follows: 0xHHSSLL.
+    /// </para>
+    /// </summary>
+    /// <param name="hslValue">
+    ///   new color.
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function shl_hsl(hslValue: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Changes the color displayed by the first LED and shifts all currently displayed colors
+    ///   toward the end of the RGB LED string.
+    /// <para>
+    ///   The new color is encoded as follows: 0xHHSSLL.
+    /// </para>
+    /// </summary>
+    /// <param name="hslValue">
+    ///   new color.
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> when the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function shr_hsl(hslValue: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Adds an RGB transition to a sequence.
     /// <para>
     ///   A sequence is a transition list, which can
@@ -1705,6 +1785,34 @@ implementation
   function TYColorLedCluster.hsl_move(ledIndex: LongInt; count: LongInt; hslValue: LongInt; delay: LongInt):LongInt;
     begin
       result := self.sendCommand('MH'+inttostr(ledIndex)+','+inttostr(count)+','+AnsiLowerCase(inttohex(hslValue,1))+','+inttostr(delay));
+      exit;
+    end;
+
+
+  function TYColorLedCluster.shl_rgb(rgbValue: LongInt):LongInt;
+    begin
+      result := self.sendCommand('<R'+AnsiLowerCase(inttohex(rgbValue,1)));
+      exit;
+    end;
+
+
+  function TYColorLedCluster.shr_rgb(rgbValue: LongInt):LongInt;
+    begin
+      result := self.sendCommand('>R'+AnsiLowerCase(inttohex(rgbValue,1)));
+      exit;
+    end;
+
+
+  function TYColorLedCluster.shl_hsl(hslValue: LongInt):LongInt;
+    begin
+      result := self.sendCommand('<H'+AnsiLowerCase(inttohex(hslValue,1)));
+      exit;
+    end;
+
+
+  function TYColorLedCluster.shr_hsl(hslValue: LongInt):LongInt;
+    begin
+      result := self.sendCommand('>H'+AnsiLowerCase(inttohex(hslValue,1)));
       exit;
     end;
 

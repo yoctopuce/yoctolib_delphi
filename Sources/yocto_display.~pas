@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 74504 2026-06-01 14:50:23Z seb $
+ * $Id: yocto_display.pas 73705 2026-05-22 13:37:33Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -49,7 +49,7 @@ uses
  yocto_api, yjson;
 
 //--- (generated code: YDisplay definitions)
-type  TYDISPLAYSTATE = (Y_DISPLAYSTATE_FAILURE,Y_DISPLAYSTATE_OFF,Y_DISPLAYSTATE_POWERING,Y_DISPLAYSTATE_IDLE,Y_DISPLAYSTATE_REFRESHING);
+type  TYDISPLAYSTATE = (Y_DISPLAYSTATE_ERROR,Y_DISPLAYSTATE_OFF,Y_DISPLAYSTATE_POWERING,Y_DISPLAYSTATE_IDLE,Y_DISPLAYSTATE_REFRESHING);
 
 const Y_ENABLED_FALSE = 0;
 const Y_ENABLED_TRUE = 1;
@@ -656,7 +656,7 @@ public
     /// </param>
     /// <returns>
     ///   a value among the enumeration <c>YDisplay.DISPLAYSTATE</c>
-    ///   (<c>YDisplay.DISPLAYSTATE_FAILURE</c>, <c>YDisplay.DISPLAYSTATE_OFF</c>,
+    ///   (<c>YDisplay.DISPLAYSTATE_ERROR</c>, <c>YDisplay.DISPLAYSTATE_OFF</c>,
     ///   <c>YDisplay.DISPLAYSTATE_POWERING</c>, <c>YDisplay.DISPLAYSTATE_IDLE</c>,
     ///   <c>YDisplay.DISPLAYSTATE_REFRESHING</c>)
     ///   corresponding to the current display state.
@@ -2453,15 +2453,10 @@ destructor TYDisplay.destroy();
   function TYDisplay.get_ePaperState(var errmsg: string):TYDISPLAYSTATE;
     var
       json : TByteArray;
+      jsonStr : string;
       dispError : string;
       dispState : LongInt;
     begin
-      if self.get_displayType = Y_DISPLAYTYPE_MONO then
-        begin
-          errmsg := 'Not an ePaper display';
-          result := TYDISPLAYSTATE(0);
-          exit;
-        end;
       json := self._download('disp.json');
       if length(json) = 0 then
         begin
@@ -2471,6 +2466,7 @@ destructor TYDisplay.destroy();
         end
       else
         begin
+          jsonStr := _ByteToString(json);
           dispError := self._json_get_string(self._get_json_path(json, 'err'));
           errmsg := dispError;
           if Length(dispError) > 0 then
@@ -2573,7 +2569,6 @@ destructor TYDisplay.destroy();
 
   function TYDisplay.upload(pathname: string; content: TByteArray):LongInt;
     begin
-      self.flushLayers;
       result := self._upload(pathname, content);
       exit;
     end;
@@ -2934,6 +2929,40 @@ destructor TYDisplay.destroy();
     self._cmdbuff:='';
  end;
 
+
+
+function  TYDisplayLayer.flush_now():integer;
+  var res:integer;
+ begin
+  res:=YAPI_SUCCESS;
+  if (self._cmdbuff<>'') then
+   begin
+    res := self._display.sendCommand(self._cmdbuff);
+    self._cmdbuff := '';
+   end;
+ flush_now :=res;
+ end;
+
+function TYDisplayLayer.command_push(cmd:string):integer;
+var res:integer;
+ begin
+    res:=YAPI_SUCCESS;
+    if (length(self._cmdbuff) + length(cmd) >=100) then res:=flush_now();
+    if (self._cmdbuff='') then self._cmdbuff := inttostr(self._id);
+    self._cmdbuff:=self._cmdbuff+cmd;
+    command_push := res ;
+ end;
+
+function TYDisplayLayer.command_flush(cmd:string):integer;
+ var
+   res : integer;
+ begin
+  res:=command_push(cmd);
+  if not(_hidden) then res:= flush_now();
+  command_flush := res;
+ end;
+
+
 //--- (generated code: YDisplayLayer implementation)
 
   function TYDisplayLayer.must_be_flushed():boolean;
@@ -2979,7 +3008,7 @@ destructor TYDisplay.destroy();
       if Length(self._cmdbuff) = 0 then
         begin
           // always prepend layer ID first
-          self._cmdbuff := IntToStr(self._id);
+          self._cmdbuff = IntToStr(self._id);
         end;
       self._cmdbuff := self._cmdbuff + cmd;
       result := res;

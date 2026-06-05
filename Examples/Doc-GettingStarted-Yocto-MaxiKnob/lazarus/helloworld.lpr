@@ -1,8 +1,8 @@
 {*********************************************************************
  *
- *  $Id: helloworld.lpr 59874 2024-03-14 11:47:58Z seb $
+ *  $Id: helloworld.lpr 72781 2026-04-17 08:44:55Z seb $
  *
- *  An example that show how to use a  Yocto-MaxiKnob
+ *  An example that shows how to use a  Yocto-MaxiKnob
  *
  *  You can find more information on our web site:
  *   Yocto-MaxiKnob documentation:

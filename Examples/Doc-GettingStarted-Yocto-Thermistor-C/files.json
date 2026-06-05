@@ -2,10 +2,7 @@
     "main": "helloworld.dpr",
     "other_files": [],
     "ylib": [
-        "yocto_humidity",
         "yocto_temperature",
-        "yocto_tvoc",
-        "yocto_voc",
         "yocto_api"
     ],
     "skip": true,

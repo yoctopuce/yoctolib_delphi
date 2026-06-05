@@ -1,12 +1,12 @@
 {*********************************************************************
  *
- *  $Id: helloworld.dpr 70974 2025-12-22 15:06:26Z seb $
+ *  $Id: helloworld.dpr 72955 2026-04-24 08:26:36Z seb $
  *
- *  An example that shows how to use a Yocto-RFID-xxxx
+ *  An example that shows how to use a  Yocto-RFID
  *
  *  You can find more information on our web site:
- *   Yocto-RFID-15693 documentation:
- *      https://www.yoctopuce.com/EN/products/yocto-rfid-15693/doc.html
+ *   Yocto-RFID documentation:
+ *      https://www.yoctopuce.com/EN/products/yocto-rfid/doc.html
  *   Delphi API Reference:
  *      https://www.yoctopuce.com/EN/doc/reference/yoctolib-delphi-EN.html
  *

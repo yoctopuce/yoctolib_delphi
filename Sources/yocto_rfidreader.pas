@@ -62,6 +62,12 @@ const Y_IEC_14443_NTAG_213            = 7;
 const Y_IEC_14443_NTAG_215            = 8;
 const Y_IEC_14443_NTAG_216            = 9;
 const Y_IEC_14443_NTAG_424_DNA        = 10;
+const Y_IEC_15693_ST25DV              = 11;
+const Y_IEC_15693_ST25TV              = 12;
+const Y_IEC_15693_TAGIT_HFI           = 13;
+const Y_IEC_15693_MB89R               = 14 ;
+const Y_IEC_15693_ICODE_DNA           = 15;
+const Y_IEC_15693_ICODE_SLI           = 16;
 //--- (end of generated code: YRfidTagInfo definitions)
 
 type
@@ -214,6 +220,13 @@ type
 const Y_NO_RFID_KEY                   = 0;
 const Y_MIFARE_KEY_A                  = 1;
 const Y_MIFARE_KEY_B                  = 2;
+const Y_ST25DV_CONFIG_PWD             = 3;
+const Y_ST25DV_PWD1                   = 4;
+const Y_ST25DV_PWD2                   = 5;
+const Y_ST25DV_PWD3                   = 6;
+const Y_ST25TV_CONFIG_PWD             = 7;
+const Y_ST25TV_PWD1                   = 8;
+const Y_ST25TV_PWD2                   = 9;
 //--- (end of generated code: YRfidOptions definitions)
 
 type
@@ -457,6 +470,14 @@ const Y_INVLD_ACCESS_MODE_COMBINATION = -153;
 const Y_INVALID_SIZE                  = -154;
 const Y_BAD_PASSWORD_FORMAT           = -155;
 const Y_RADIO_IS_OFF                  = -156;
+const Y_NOT_AVAILABLE_ON_THIS_TAG     = -157;
+const Y_PASSWORD_FEATURE_NOT_SUPPORTED = -158;
+const Y_BAD_PASSWORD_LENGTH           = -159 ;
+const Y_BAD_PASSWORD_TYPE             = -160;
+const Y_BAD_PASSWORD                  = -161;
+const Y_PASSWORD_REQUIRED             = -162;
+const Y_MULTIWRITE_NOT_SUPPORTED      = -163;
+const Y_MULTIREAD_NOT_SUPPORTED       = -164;
 //--- (end of generated code: YRfidStatus definitions)
 
 type
@@ -854,7 +875,13 @@ type
     /// <para>
     ///   This operation is definitive and irreversible.
     ///   Depending on the tag type and block index, adjascent blocks may become
-    ///   read-only as well, based on the locking granularity.
+    ///   read-only as well, based on the locking granularity.  Note that some tags
+    ///   may allow only a few blocks to be locked, for instance ST25DVxxx  tags
+    ///   allows a lock on block 0 and 1 only.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// <para>
     /// </para>
     /// <para>
     /// </para>
@@ -1354,6 +1381,130 @@ type
 
     ////
     /// <summary>
+    ///   Reads a byte from the Tag configuration (ISO 15693 ST25DVxx only).
+    /// <para>
+    ///   This function is actually a call to the 0xA0 RFID command and is specific to
+    ///   ST25DVxx tags. Check ST25DVxx datasheet for more information about
+    ///   the data organisation of ST25DVxx tags configuration.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="tagId">
+    ///   identifier of the tag to use
+    /// </param>
+    /// <param name="addr">
+    ///   offset of the byte in the tag configuation
+    /// </param>
+    /// <para>
+    /// </para>
+    /// <param name="options">
+    ///   an <c>YRfidOptions</c> object with the optional
+    ///   command execution parameters, such as security key
+    ///   if required
+    /// </param>
+    /// <param name="status">
+    ///   an <c>RfidStatus</c> object that will contain
+    ///   the detailled status of the operation
+    /// </param>
+    /// <returns>
+    ///   the requested byte value (0...255)
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code. When it
+    ///   happens, you can get more information from the <c>status</c> object.
+    /// </para>
+    ///-
+    function tagGetConfigByte(tagId: string; addr: LongInt; options: TYRfidOptions; var status: TYRfidStatus):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Changes a byte in the tag's configuration (ISO 15693 ST25DVxx only).
+    /// <para>
+    ///   Warning: modifing the tag configation may alter its behavior in a non-reversible way.
+    ///   This operation requires the CONFIG_PWD password to be set in the options,
+    ///   default value is "0000000000000000" (16 zeros). This function is actually
+    ///   a call to the 0xA1 RFID command and is specific to ST25DVxx tags. Check
+    ///   ST25DVxx datasheet for more information about the data organisation
+    ///   of ST25DVxx tags configuration.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="tagId">
+    ///   identifier of the tag to use
+    /// </param>
+    /// <param name="addr">
+    ///   address of the byte to write
+    /// </param>
+    /// <param name="value">
+    ///   the value to write (0...255)
+    /// </param>
+    /// <param name="options">
+    ///   an <c>YRfidOptions</c> object with the optional
+    ///   command execution parameters, such as security key
+    ///   if required
+    /// </param>
+    /// <param name="status">
+    ///   an <c>RfidStatus</c> object that will contain
+    ///   the detailled status of the operation
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code. When it
+    ///   happens, you can get more information from the <c>status</c> object.
+    /// </para>
+    ///-
+    function tagSetConfigByte(tagId: string; addr: LongInt; value: LongInt; options: TYRfidOptions; var status: TYRfidStatus):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Set a password that will be required to access the tag  (ISO 15693 ST25DVxx only).
+    /// <para>
+    ///   The password must be a string of characters representing 8 bytes in hexadecimal.
+    ///   There are several types of password for the same tag; please consult your tags
+    ///   documentation to understand their respective applications. Once the password
+    ///   has been configured, operations requiring this password must be initiated with
+    ///   the password defined in the <c>KeyType</c> and <c>HexKey</c> fields of the
+    ///   <c>options</c> parameter for the operations in question. It is not necessarily
+    ///   required to consistently provide the same password for every operation during the
+    ///   same session with a tag.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="tagId">
+    ///   identifier of the tag to use
+    /// </param>
+    /// <param name="passwordType">
+    ///   type of password to be set (YRfidOptions.ST25D_CONFIG_PWD,YRfidOptions.ST25D_PWD1,YRfidOptions.ST25D_PWD2..)
+    /// </param>
+    /// <param name="password">
+    ///   the password (16 characters hex string encoding 8 bytes)
+    /// </param>
+    /// <param name="options">
+    ///   an <c>YRfidOptions</c> object with the optional
+    ///   command execution parameters, such as security key
+    ///   if required
+    /// </param>
+    /// <param name="status">
+    ///   an <c>RfidStatus</c> object that will contain
+    ///   the detailled status of the operation
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code. When it
+    ///   happens, you can get more information from the <c>status</c> object.
+    /// </para>
+    ///-
+    function tagSetPassword(tagId: string; passwordType: LongInt; password: string; options: TYRfidOptions; var status: TYRfidStatus):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Changes an RFID tag AFI byte (ISO 15693 only).
     /// <para>
     /// </para>
@@ -1766,6 +1917,31 @@ implementation
         begin
           typeStr := 'NTAG 424 DNA';
         end;
+      if tagType = Y_IEC_15693_ST25DV then
+        begin
+          typeStr := 'ST25DVxx';
+        end;
+      if tagType = Y_IEC_15693_ST25TV then
+        begin
+          typeStr := 'ST25TVxx';
+        end;
+      if tagType = Y_IEC_15693_TAGIT_HFI then
+        begin
+          typeStr := 'TI TAGIT HFI';
+        end;
+      if tagType = Y_IEC_15693_MB89R then
+        begin
+          typeStr := 'MB89Rxx';
+        end;
+      if tagType = Y_IEC_15693_ICODE_DNA then
+        begin
+          typeStr := 'ICODE DNA';
+        end;
+      if tagType = Y_IEC_15693_ICODE_SLI then
+        begin
+          typeStr := 'ICODE SLI';
+        end;
+
       self._tagId := tagId;
       self._tagType := tagType;
       self._typeStr := typeStr;
@@ -1997,7 +2173,8 @@ implementation
             end;
           if errCode = Y_BLOCK_LOCKED then
             begin
-              errMsg := 'Block / byte is locked and its content cannot be changed';
+              errMsg := 'Block / byte is either locked and its content cannot be changed'
+              + ' or operation might require a password.';
             end;
           if errCode = Y_BLOCK_NOT_SUCESSFULLY_PROGRAMMED then
             begin
@@ -2344,6 +2521,38 @@ implementation
           if errCode = Y_RADIO_IS_OFF then
             begin
               errMsg := 'Radio is OFF (refreshRate=0).';
+            end;
+          if errCode = Y_NOT_AVAILABLE_ON_THIS_TAG then
+            begin
+              errMsg := 'Tag does not provide this feature.';
+            end;
+          if errCode = Y_PASSWORD_FEATURE_NOT_SUPPORTED then
+            begin
+              errMsg := 'Password feature not supported this tag.';
+            end;
+          if errCode = Y_BAD_PASSWORD_LENGTH then
+            begin
+              errMsg := 'Incorrect password length';
+            end;
+          if errCode = Y_BAD_PASSWORD_TYPE then
+            begin
+              errMsg := 'Bad password type.';
+            end;
+          if errCode = Y_BAD_PASSWORD then
+            begin
+              errMsg := 'Bad password.';
+            end;
+          if errCode = Y_PASSWORD_REQUIRED then
+            begin
+              errMsg := 'Operation requires a password';
+            end;
+          if errCode = Y_MULTIWRITE_NOT_SUPPORTED then
+            begin
+              errMsg := 'Multi block write unavailable on this tag.';
+            end;
+          if errCode = Y_MULTIREAD_NOT_SUPPORTED then
+            begin
+              errMsg := 'Multi block read unavailable on this tag.';
             end;
           if errBlk >= 0 then
             begin
@@ -2898,6 +3107,61 @@ implementation
           res := status.get_yapiError;
         end;
       result := res;
+      exit;
+    end;
+
+
+  function TYRfidReader.tagGetConfigByte(tagId: string; addr: LongInt; options: TYRfidOptions; var status: TYRfidStatus):LongInt;
+    var
+      optstr : string;
+      url : string;
+      json : TByteArray;
+      res : LongInt;
+    begin
+      optstr := options.imm_getParams;
+      url := 'rfid.json?a=gcfg&t='+tagId+'&b='+inttostr(addr)+''+optstr;
+
+      json := self._download(url);
+      self._chkerror(tagId, json, status);
+      if status.get_yapiError = YAPI_SUCCESS then
+        begin
+          res := _atoi(self._json_get_key(json, 'res'));
+        end
+      else
+        begin
+          res := status.get_yapiError;
+        end;
+      result := res;
+      exit;
+    end;
+
+
+  function TYRfidReader.tagSetConfigByte(tagId: string; addr: LongInt; value: LongInt; options: TYRfidOptions; var status: TYRfidStatus):LongInt;
+    var
+      optstr : string;
+      url : string;
+      json : TByteArray;
+    begin
+      optstr := options.imm_getParams;
+      url := 'rfid.json?a=scfg&t='+tagId+'&b='+inttostr(addr)+'&v='+inttostr(value)+''+optstr;
+
+      json := self._download(url);
+      result := self._chkerror(tagId, json, status);
+      exit;
+    end;
+
+
+  function TYRfidReader.tagSetPassword(tagId: string; passwordType: LongInt; password: string; options: TYRfidOptions; var status: TYRfidStatus):LongInt;
+    var
+      optstr : string;
+      url : string;
+      json : TByteArray;
+    begin
+      optstr := options.imm_getParams;
+      url := 'rfid.json?a=spwd&t='+tagId+'&b='+inttostr(passwordType)+'&p='+password+''+optstr;
+
+      json := self._download(url);
+      result := self._chkerror(tagId, json, status);
       exit;
     end;
 

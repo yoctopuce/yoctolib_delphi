@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: helloworld.dpr 70974 2025-12-22 15:06:26Z seb $
+ *  $Id: helloworld.lpr 72911 2026-04-22 09:28:55Z seb $
  *
  *  An example that shows how to use a  Yocto-Spectral
  *

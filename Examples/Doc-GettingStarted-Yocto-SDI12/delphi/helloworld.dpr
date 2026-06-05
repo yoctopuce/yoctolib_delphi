@@ -1,10 +1,12 @@
 {*********************************************************************
  *
- *  $Id: helloworld.dpr 70974 2025-12-22 15:06:26Z seb $
+ *  $Id: helloworld.dpr 72781 2026-04-17 08:44:55Z seb $
  *
- *  Doc-GettingStarted-Yocto-SDI12 example
+ *  An example that shows how to use a  Yocto-SDI12
  *
  *  You can find more information on our web site:
+ *   Yocto-SDI12 documentation:
+ *      https://www.yoctopuce.com/EN/products/yocto-sdi12/doc.html
  *   Delphi API Reference:
  *      https://www.yoctopuce.com/EN/doc/reference/yoctolib-delphi-EN.html
  *
