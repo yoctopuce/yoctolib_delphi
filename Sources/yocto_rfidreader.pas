@@ -92,6 +92,7 @@ type
     _tagId                    : string;
     _tagType                  : LongInt;
     _typeStr                  : string;
+    _nfcType                  : LongInt;
     _size                     : LongInt;
     _usable                   : LongInt;
     _blksize                  : LongInt;
@@ -139,6 +140,19 @@ type
     /// </returns>
     ///-
     function get_tagTypeStr():string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the type of NFC type usable on the RFID tag, between 1 and 5.
+    /// <para>
+    ///   If no known NFC type is know for the RFID tag, returns zero.
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   an integer corresponding to the RFID tag type
+    /// </returns>
+    ///-
+    function get_tagNFCtype():LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -1353,6 +1367,123 @@ type
 
     ////
     /// <summary>
+    ///   Writes data provided as a binary object to an RFID tag, using NFC
+    ///   compatible encoding.
+    /// <para>
+    ///   The function will automatically create a NFC Capability Container,
+    ///   and encapsulate the content with the required NDEF header corresponding
+    ///   to the given content type.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="tagId">
+    ///   identifier of the tag to use
+    /// </param>
+    /// <param name="ndefType">
+    ///   the content type, either "U" for a URL, or a
+    ///   generic MIME type like "text/vcard"
+    /// </param>
+    /// <param name="payload">
+    ///   the payload of the NDEF record
+    /// </param>
+    /// <param name="options">
+    ///   an <c>YRfidOptions</c> object with the optional
+    ///   command execution parameters, such as security key
+    ///   if required
+    /// </param>
+    /// <param name="status">
+    ///   an <c>RfidStatus</c> object that will contain
+    ///   the detailled status of the operation
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code. When it
+    ///   happens, you can get more information from the <c>status</c> object.
+    /// </para>
+    ///-
+    function tagWriteBinNFC(tagId: string; ndefType: string; payload: TByteArray; options: TYRfidOptions; var status: TYRfidStatus):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Writes an URL to an RFID tag using NFC compatible encoding, so that
+    ///   mobile phones with NFC support automatically offer to open
+    ///   the URL when reading the tag.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="tagId">
+    ///   identifier of the tag to use
+    /// </param>
+    /// <param name="url">
+    ///   the URL to write on the tag
+    /// </param>
+    /// <param name="options">
+    ///   an <c>YRfidOptions</c> object with the optional
+    ///   command execution parameters, such as security key
+    ///   if required
+    /// </param>
+    /// <param name="status">
+    ///   an <c>RfidStatus</c> object that will contain
+    ///   the detailled status of the operation
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code. When it
+    ///   happens, you can get more information from the <c>status</c> object.
+    /// </para>
+    ///-
+    function tagWriteUrlNFC(tagId: string; url: string; options: TYRfidOptions; var status: TYRfidStatus):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Writes WiFi settings to an RFID tag using NFC compatible encoding, so that
+    ///   mobile phones with NFC support automatically offer to connect to this WiFi
+    ///   network.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="tagId">
+    ///   identifier of the tag to use
+    /// </param>
+    /// <param name="ssid">
+    ///   the SSID of the WiFi network to connect to
+    /// </param>
+    /// <param name="auth">
+    ///   the network authentication type (currently always "WPA2")
+    /// </param>
+    /// <param name="secret">
+    ///   the network password
+    /// </param>
+    /// <param name="options">
+    ///   an <c>YRfidOptions</c> object with the optional
+    ///   command execution parameters, such as security key
+    ///   if required
+    /// </param>
+    /// <param name="status">
+    ///   an <c>RfidStatus</c> object that will contain
+    ///   the detailled status of the operation
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code. When it
+    ///   happens, you can get more information from the <c>status</c> object.
+    /// </para>
+    ///-
+    function tagWriteWifiConfigNFC(tagId: string; ssid: string; auth: string; secret: string; options: TYRfidOptions; var status: TYRfidStatus):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Reads an RFID tag AFI byte (ISO 15693 only).
     /// <para>
     /// </para>
@@ -1806,6 +1937,7 @@ implementation
     begin
       //--- (generated code: YRfidTagInfo accessors initialization)
       _tagType := 0;
+      _nfcType := 0;
       _size := 0;
       _usable := 0;
       _blksize := 0;
@@ -1833,6 +1965,13 @@ implementation
   function TYRfidTagInfo.get_tagTypeStr():string;
     begin
       result := self._typeStr;
+      exit;
+    end;
+
+
+  function TYRfidTagInfo.get_tagNFCtype():LongInt;
+    begin
+      result := self._nfcType;
       exit;
     end;
 
@@ -1875,6 +2014,7 @@ implementation
   procedure TYRfidTagInfo.imm_init(tagId: string; tagType: LongInt; size: LongInt; usable: LongInt; blksize: LongInt; fblk: LongInt; lblk: LongInt);
     var
       typeStr : string;
+      nfcType : LongInt;
     begin
       typeStr := 'unknown';
       if tagType = Y_IEC_15693 then
@@ -1941,9 +2081,22 @@ implementation
         begin
           typeStr := 'ICODE SLI';
         end;
-
+      nfcType := 0;
+      if (tagType = Y_IEC_14443_MIFARE_ULTRALIGHT) or(tagType = Y_IEC_14443_MIFARE_CLASSIC1K) or(tagType = Y_IEC_14443_MIFARE_CLASSIC4K) or(tagType = Y_IEC_14443_NTAG_213) or(tagType = Y_IEC_14443_NTAG_215) or(tagType = Y_IEC_14443_NTAG_216) or(tagType = Y_IEC_14443_NTAG_424_DNA) then
+        begin
+          nfcType := 2;
+        end;
+      if tagType = Y_IEC_14443_MIFARE_DESFIRE then
+        begin
+          nfcType := 4;
+        end;
+      if (tagType = Y_IEC_15693) or(tagType = Y_IEC_15693_ST25DV) or(tagType = Y_IEC_15693_ST25TV) or(tagType = Y_IEC_15693_TAGIT_HFI) or(tagType = Y_IEC_15693_MB89R) or(tagType = Y_IEC_15693_ICODE_DNA) or(tagType = Y_IEC_15693_ICODE_SLI) then
+        begin
+          nfcType := 5;
+        end;
       self._tagId := tagId;
       self._tagType := tagType;
+      self._nfcType := nfcType;
       self._typeStr := typeStr;
       self._size := size;
       self._usable := usable;
@@ -3082,6 +3235,271 @@ implementation
       buff := _StrToByte(text);
 
       result := self.tagWriteBin(tagId, firstBlock, buff, options, status);
+      exit;
+    end;
+
+
+  function TYRfidReader.tagWriteBinNFC(tagId: string; ndefType: string; payload: TByteArray; options: TYRfidOptions; var status: TYRfidStatus):LongInt;
+    var
+      tagInfo : TYRfidTagInfo;
+      nfcType : LongInt;
+      usableSize : LongInt;
+      nfcBlocks : LongInt;
+      ccLen : LongInt;
+      typeLen : LongInt;
+      payloadLen : LongInt;
+      srBit : LongInt;
+      ndefLen : LongInt;
+      tlvHdrLen : LongInt;
+      totalLen : LongInt;
+      absPos : LongInt;
+      idx : LongInt;
+      binType : TByteArray;
+      buff : TByteArray;
+    begin
+      tagInfo := self.get_tagInfo(tagId, status);
+      // for now, we only allow NFC Type 5 (T5T)
+      nfcType := tagInfo.get_tagNFCtype();
+      if not(nfcType = 5) then
+        begin
+          self._throw(YAPI_INVALID_ARGUMENT,'no NFC support for this tag');
+          result:=YAPI_INVALID_ARGUMENT;
+          exit;
+        end;
+      usableSize := tagInfo.get_tagUsableSize();
+      ccLen := 4;
+      nfcBlocks := ((usableSize - ccLen) div 8);
+      if nfcBlocks > 255 then
+        begin
+          if nfcType = 5 then
+            begin
+              ccLen := 8;
+              nfcBlocks := ((usableSize - ccLen) div 8);
+            end
+          else
+            begin
+              nfcBlocks := 255;
+            end;
+        end;
+      binType := _StrToByte(ndefType);
+      typeLen := length(binType);
+      payloadLen := length(payload);
+      // compute the total length of the NDEF record
+      ndefLen := 3 + typeLen + payloadLen;
+      srBit := $010;
+      if payloadLen > 255 then
+        begin
+          ndefLen := ndefLen + 3;
+          srBit := 0;
+        end;
+      // compute the total length of the TLV record
+      tlvHdrLen := 2;
+      if ndefLen > 254 then
+        begin
+          tlvHdrLen := 4;
+        end;
+      // make sure the content fits on the tag
+      if not((tlvHdrLen + ndefLen + 1) <= (8 * nfcBlocks)) then
+        begin
+          self._throw(YAPI_INVALID_ARGUMENT,'content is too large');
+          result:=YAPI_INVALID_ARGUMENT;
+          exit;
+        end;
+      totalLen := ccLen + tlvHdrLen + ndefLen + 1;
+      setlength(buff,totalLen);
+      // CC header
+      if ccLen = 4 then
+        begin
+          buff[0] := $0E1;
+          if nfcType = 5 then
+            begin
+              buff[1] := $040;
+            end
+          else
+            begin
+              buff[1] := $010;
+            end;
+          buff[2] := nfcBlocks;
+          buff[3] := $000;
+        end
+      else
+        begin
+          buff[0] := $0E2;
+          buff[1] := $040;
+          buff[2] := $000;
+          buff[3] := $001;
+          buff[4] := $000;
+          buff[5] := $000;
+          buff[6] := (nfcBlocks div 256);
+          buff[7] := ((nfcBlocks) and 255);
+        end;
+      // TLV header
+      buff[ccLen] := 3;
+      if tlvHdrLen = 2 then
+        begin
+          buff[ccLen + 1] := ndefLen;
+        end
+      else
+        begin
+          buff[ccLen + 1] := $0ff;
+          buff[ccLen + 2] := (ndefLen div 256);
+          buff[ccLen + 3] := ((ndefLen) and 255);
+        end;
+      absPos := ccLen + tlvHdrLen;
+      // NDEF record
+      if typeLen <= 3 then
+        begin
+          // NFC Forum type
+          buff[absPos] := $0C1 + srBit;
+        end
+      else
+        begin
+          // MIME type
+          buff[absPos] := $0C2 + srBit;
+        end;
+      if srBit > 0 then
+        begin
+          buff[absPos + 1] := typeLen;
+          buff[absPos + 2] := payloadLen;
+          absPos := absPos + 3;
+        end
+      else
+        begin
+          buff[absPos + 1] := typeLen;
+          buff[absPos + 2] := 0;
+          buff[absPos + 3] := 0;
+          buff[absPos + 4] := (payloadLen div 256);
+          buff[absPos + 5] := ((payloadLen) and 255);
+          absPos := absPos + 6;
+        end;
+      idx := 0;
+      while idx < typeLen do
+        begin
+          buff[absPos + idx] := binType[idx];
+          idx := idx + 1;
+        end;
+      absPos := absPos + typeLen;
+      idx := 0;
+      while idx < payloadLen do
+        begin
+          buff[absPos + idx] := payload[idx];
+          idx := idx + 1;
+        end;
+      absPos := absPos + payloadLen;
+      // TLV trailer
+      buff[absPos] := $0fe;
+      idx := tagInfo.get_tagFirstBlock();
+      result := self.tagWriteBin(tagId, idx, buff, options, status);
+      exit;
+    end;
+
+
+  function TYRfidReader.tagWriteUrlNFC(tagId: string; url: string; options: TYRfidOptions; var status: TYRfidStatus):LongInt;
+    var
+      prefix : LongInt;
+      binUrl : TByteArray;
+    begin
+      prefix := 0;
+      if (Copy(url, 0 + 1, 8) = 'https://') then
+        begin
+          prefix := 4;
+          url := Copy(url, 8 + 1, Length(url) - 8);
+        end
+      else
+        begin
+          if (Copy(url, 0 + 1, 8) = 'http://') then
+            begin
+              prefix := 3;
+              url := Copy(url, 7 + 1, Length(url) - 7);
+            end;
+        end;
+      if (Copy(url, 0 + 1, 8) = 'www.') then
+        begin
+          prefix := prefix - 2;
+          url := Copy(url, 4 + 1, Length(url) - 4);
+        end;
+      binUrl := _StrToByte('_' + url);
+      binUrl[0] := prefix;
+      result := self.tagWriteBinNFC(tagId, 'U', binUrl, options, status);
+      exit;
+    end;
+
+
+  function TYRfidReader.tagWriteWifiConfigNFC(tagId: string; ssid: string; auth: string; secret: string; options: TYRfidOptions; var status: TYRfidStatus):LongInt;
+    var
+      ssidBin : TByteArray;
+      ssidLen : LongInt;
+      secretBin : TByteArray;
+      secretLen : LongInt;
+      payloadLen : LongInt;
+      payload : TByteArray;
+      idx : LongInt;
+    begin
+      ssidBin := _StrToByte(ssid);
+      ssidLen := length(ssidBin);
+      secretBin := _StrToByte(secret);
+      secretLen := length(secretBin);
+      payloadLen := ssidLen + secretLen + 39;
+      setlength(payload,payloadLen);
+      // Credential header
+      payload[0] := $010;
+      payload[1] := $00e;
+      payload[2] := 0;
+      payload[3] := payloadLen - 4;
+      // Network index
+      payload[4] := $010;
+      payload[5] := $026;
+      payload[6] := 0;
+      payload[7] := 1;
+      payload[8] := 1;
+      // SSID
+      payload[9] := $010;
+      payload[10] := $045;
+      payload[11] := 0;
+      payload[12] := ssidLen;
+      idx := 0;
+      while idx < ssidLen do
+        begin
+          payload[13 + idx] := ssidBin[idx];
+          idx := idx + 1;
+        end;
+      // Auth: WPA2-Personal
+      payload[13 + ssidLen] := $010;
+      payload[14 + ssidLen] := $003;
+      payload[15 + ssidLen] := 0;
+      payload[16 + ssidLen] := 2;
+      payload[17 + ssidLen] := 0;
+      payload[18 + ssidLen] := 32;
+      // Encryption: AES
+      payload[19 + ssidLen] := $010;
+      payload[20 + ssidLen] := $00f;
+      payload[21 + ssidLen] := 0;
+      payload[22 + ssidLen] := 2;
+      payload[23 + ssidLen] := 0;
+      payload[24 + ssidLen] := 8;
+      // Network key
+      payload[25 + ssidLen] := $010;
+      payload[26 + ssidLen] := $027;
+      payload[27 + ssidLen] := 0;
+      payload[28 + ssidLen] := secretLen;
+      idx := 0;
+      while idx < secretLen do
+        begin
+          payload[29 + ssidLen + idx] := secretBin[idx];
+          idx := idx + 1;
+        end;
+      // MAC broadcast
+      payload[29 + ssidLen + secretLen] := $010;
+      payload[30 + ssidLen + secretLen] := $020;
+      payload[31 + ssidLen + secretLen] := 0;
+      payload[32 + ssidLen + secretLen] := 6;
+      idx := 0;
+      while idx < 6 do
+        begin
+          payload[33 + ssidLen + secretLen + idx] := $0ff;
+          idx := idx + 1;
+        end;
+      result := self.tagWriteBinNFC(tagId, 'application/vnd.wfa.wsc', payload, options, status);
       exit;
     end;
 
