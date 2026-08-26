@@ -52,7 +52,7 @@ uses
 
 //--- (YCarbonDioxide definitions)
 
-const Y_ABCPERIOD_INVALID             = YAPI_INVALID_UINT;
+const Y_ABCPERIOD_INVALID             = YAPI_INVALID_INT;
 const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 //--- (end of YCarbonDioxide definitions)
@@ -611,7 +611,7 @@ implementation
 
   function TYCarbonDioxide.triggerForcedCalibration(refVal: double):LongInt;
     begin
-      result := self.set_command('F'+inttostr(LongInt(round(1000*refVal)))+'C');
+      result := self.set_command('F'+inttostr(LongInt(round(refVal)))+'C');
       exit;
     end;
 

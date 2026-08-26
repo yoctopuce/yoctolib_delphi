@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas 72342 2026-03-09 13:58:37Z seb $
+ * $Id: yocto_api.pas 75351 2026-08-02 19:45:07Z mvuilleu $
  *
  * High-level programming interface, common to all modules
  *
@@ -129,7 +129,7 @@ const
   Y_DETECT_ALL : integer = (Y_DETECT_USB or Y_DETECT_NET);
 
   YOCTO_API_VERSION_STR     = '2.1';
-  YOCTO_API_BUILD_NO        = '75129';
+  YOCTO_API_BUILD_NO        = '75681';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -951,6 +951,8 @@ type
     ///-
     procedure clearCache();
 
+    // Internal method to force reloading even lazy attributes (eg. displayWidth, etc)
+    procedure _clearLazyCache();
 
     ////
     /// <summary>
@@ -7029,7 +7031,7 @@ var
       apidate : string;
     begin
       yapiGetAPIVersion(version, apidate);
-      yGetAPIVersion:=  '2.1.15129 (' + version + ')';
+      yGetAPIVersion:=  '2.1.15681 (' + version + ')';
     end;
 
 
@@ -9165,6 +9167,12 @@ var
         _cacheExpiration := yGetTickCount();
     end;
 
+  procedure TYFunction._clearLazyCache();
+    begin
+      clearCache();
+      _cacheExpiration := 0;
+    end;
+
   // Return the YModule object for the device on which the function is located
   function  TYFunction.get_module():TYModule;
   var
@@ -10132,8 +10140,18 @@ var
 
 
   function TYModule.revertFromFlash():LongInt;
+    var
+      res : LongInt;
     begin
-      result := self.set_persistentSettings(Y_PERSISTENTSETTINGS_LOADED);
+      res := self.set_persistentSettings(Y_PERSISTENTSETTINGS_LOADED);
+      if not(res=YAPI_SUCCESS) then
+        begin
+          self._throw(res,'unable to trigger revert settings');
+          result:=res;
+          exit;
+        end;
+      self._clearLazyCache;
+      result := res;
       exit;
     end;
 

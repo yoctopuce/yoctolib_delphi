@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas 74504 2026-06-01 14:50:23Z seb $
+ * $Id: yocto_display.pas 75637 2026-08-20 16:54:40Z mvuilleu $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -49,7 +49,9 @@ uses
  yocto_api, yjson;
 
 //--- (generated code: YDisplay definitions)
-type  TYDISPLAYSTATE = (Y_DISPLAYSTATE_FAILURE,Y_DISPLAYSTATE_OFF,Y_DISPLAYSTATE_POWERING,Y_DISPLAYSTATE_IDLE,Y_DISPLAYSTATE_REFRESHING);
+type  TYFASTREFRESH = (Y_FASTREFRESH_WHENEVER_POSSIBLE,Y_FASTREFRESH_WHENEVER_SUPPORTED,Y_FASTREFRESH_NEVER,Y_FASTREFRESH_INVALID);
+type  TYREGENERATE = (Y_REGENERATE_ON_REQUEST_ONLY,Y_REGENERATE_EVERY_DAY,Y_REGENERATE_EVERY_12H,Y_REGENERATE_EVERY_6H,Y_REGENERATE_EVERY_3H,Y_REGENERATE_EVERY_2H,Y_REGENERATE_EVERY_HOUR,Y_REGENERATE_EVERY_30MIN,Y_REGENERATE_EVERY_15MIN,Y_REGENERATE_EVERY_480,Y_REGENERATE_EVERY_432,Y_REGENERATE_EVERY_360,Y_REGENERATE_EVERY_288,Y_REGENERATE_EVERY_240,Y_REGENERATE_EVERY_192,Y_REGENERATE_EVERY_144,Y_REGENERATE_EVERY_96,Y_REGENERATE_EVERY_48,Y_REGENERATE_EVERY_36,Y_REGENERATE_EVERY_24,Y_REGENERATE_EVERY_12,Y_REGENERATE_EVERY_10,Y_REGENERATE_EVERY_8,Y_REGENERATE_EVERY_6,Y_REGENERATE_EVERY_4,Y_REGENERATE_ALWAYS,Y_REGENERATE_INVALID);
+type  TYDISPLAYSTATE = (Y_DISPLAYSTATE_FAILURE,Y_DISPLAYSTATE_OFF,Y_DISPLAYSTATE_POWERING,Y_DISPLAYSTATE_IDLE,Y_DISPLAYSTATE_REFRESHING,Y_DISPLAYSTATE_INVALID);
 
 const Y_ENABLED_FALSE = 0;
 const Y_ENABLED_TRUE = 1;
@@ -208,7 +210,7 @@ public
 
     ////
     /// <summary>
-    ///   Changes the name of the sequence to play when the displayed is powered on.
+    ///   Changes the name of the sequence to play when the display is powered on.
     /// <para>
     ///   Remember to call the <c>saveToFlash()</c> method of the module if the
     ///   modification must be kept.
@@ -217,7 +219,7 @@ public
     /// </para>
     /// </summary>
     /// <param name="newval">
-    ///   a string corresponding to the name of the sequence to play when the displayed is powered on
+    ///   a string corresponding to the name of the sequence to play when the display is powered on
     /// </param>
     /// <para>
     /// </para>
@@ -325,6 +327,9 @@ public
     /// <summary>
     ///   Returns the currently selected display orientation.
     /// <para>
+    ///   The orientation is defined as the side of the screen where the
+    ///   USB connector (for OLED displays) or the ribbon cable (for ePaper panels) is located when the
+    ///   display is up straight.
     /// </para>
     /// <para>
     /// </para>
@@ -344,7 +349,9 @@ public
     /// <summary>
     ///   Changes the display orientation.
     /// <para>
-    ///   Remember to call the <c>saveToFlash()</c>
+    ///   he orientation is defined as the side of the screen where the
+    ///   USB connector (for OLED displays) or the ribbon cable (for ePaper panels) is located when the
+    ///   display is up straight. Remember to call the <c>saveToFlash()</c>
     ///   method of the module if the modification must be kept.
     /// </para>
     /// <para>
@@ -387,8 +394,7 @@ public
     ///   Changes the model of display to match the connected display panel.
     /// <para>
     ///   This function has no effect if the module does not support the selected
-    ///   display panel.
-    ///   Remember to call the <c>saveToFlash()</c>
+    ///   display panel. Remember to call the <c>saveToFlash()</c>
     ///   method of the module if the modification must be kept.
     /// </para>
     /// <para>
@@ -444,7 +450,7 @@ public
 
     ////
     /// <summary>
-    ///   Returns the display type: monochrome OLED, black and white ePaper, color ePaper, etc.
+    ///   Returns the display type: monochrome OLED, black and white ePaper, color ePaper, and so on.
     /// <para>
     /// </para>
     /// <para>
@@ -453,7 +459,7 @@ public
     /// <returns>
     ///   a value among <c>YDisplay.DISPLAYTYPE_MONO</c>, <c>YDisplay.DISPLAYTYPE_EPAPER_BW</c>,
     ///   <c>YDisplay.DISPLAYTYPE_EPAPER_BWR</c> and <c>YDisplay.DISPLAYTYPE_EPAPER_BWRY</c> corresponding to
-    ///   the display type: monochrome OLED, black and white ePaper, color ePaper, etc
+    ///   the display type: monochrome OLED, black and white ePaper, color ePaper, and so on
     /// </returns>
     /// <para>
     ///   On failure, throws an exception or returns <c>YDisplay.DISPLAYTYPE_INVALID</c>.
@@ -602,9 +608,114 @@ public
 
     ////
     /// <summary>
+    ///   Returns the fast refresh usage policy in use (ePaper displays only).
+    /// <para>
+    ///   This setting is combined with the regenerate policy to determine when the screen
+    ///   should be updated using a fast update versus or regenerated using a slower,
+    ///   flickering full refresh.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a value among the <c>YDisplay.FASTREFRESH</c> enumeration
+    ///   (<c>YDisplay.FASTREFRESH_WHENEVER_POSSIBLE</c>,
+    ///   <c>YDisplay.FASTREFRESH_WHENEVER_SUPPORTED</c>,
+    ///   <c>YDisplay.FASTREFRESH_NEVER</c>).
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YDisplay.FASTREFRESH_INVALID</c>.
+    /// </para>
+    ///-
+    function get_fastRefreshPolicy():TYFASTREFRESH; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Returns the display regeneration minimal frequency (ePaper displays only).
+    /// <para>
+    ///   This setting is combined with the fast refresh usage policy to determine
+    ///   when the screen should be updated using a fast update versus or regenerated
+    ///   using a slower, flickering full refresh. To change the display regeneration minimal
+    ///   frequency, use methode <c>set_fastRefreshPolicy()</c>.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a value among the <c>YDisplay.REGENERATE</c> enumeration
+    ///   (<c>YDisplay.REGENERATE_ON_REQUEST_ONLY</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_DAY</c>, <c>YDisplay.REGENERATE_EVERY_12H</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_6H</c>, <c>YDisplay.REGENERATE_EVERY_3H</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_2H</c>, <c>YDisplay.REGENERATE_EVERY_HOUR</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_30MIN</c>, <c>YDisplay.REGENERATE_EVERY_15MIN</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_480</c>, <c>YDisplay.REGENERATE_EVERY_432</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_360</c>, <c>YDisplay.REGENERATE_EVERY_288</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_240</c>, <c>YDisplay.REGENERATE_EVERY_192</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_144</c>, <c>YDisplay.REGENERATE_EVERY_96</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_48</c>, <c>YDisplay.REGENERATE_EVERY_36</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_24</c>, <c>YDisplay.REGENERATE_EVERY_12</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_10</c>, <c>YDisplay.REGENERATE_EVERY_8</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_6</c>, <c>YDisplay.REGENERATE_EVERY_4</c>,
+    ///   <c>YDisplay.REGENERATE_ALWAYS</c>).
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YDisplay.REGENERATE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_regeneratePolicy():TYREGENERATE; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Changes the fast refresh usage policy and display regeneration minimal frequency
+    ///   (ePaper displays only).
+    /// <para>
+    ///   These settings jointly determine when the screen should be
+    ///   updated using a fast update versus or regenerated using a slower, flickering full
+    ///   refresh.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="fastRefresh">
+    ///   a value among the <c>YDisplay.FASTREFRESH</c> enumeration
+    ///   (<c>YDisplay.FASTREFRESH_WHENEVER_POSSIBLE</c>,
+    ///   <c>YDisplay.FASTREFRESH_WHENEVER_SUPPORTED</c>,
+    ///   <c>YDisplay.FASTREFRESH_NEVER</c>),
+    ///   corresponding to the policy for using fast refresh.
+    /// </param>
+    /// <param name="regenerate">
+    ///   a value among the enumeration <c>YRefFrame.REGENERATE</c>
+    ///   (<c>YDisplay.REGENERATE_ON_REQUEST_ONLY</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_DAY</c>, <c>YDisplay.REGENERATE_EVERY_12H</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_6H</c>, <c>YDisplay.REGENERATE_EVERY_3H</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_2H</c>, <c>YDisplay.REGENERATE_EVERY_HOUR</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_30MIN</c>, <c>YDisplay.REGENERATE_EVERY_15MIN</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_480</c>, <c>YDisplay.REGENERATE_EVERY_432</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_360</c>, <c>YDisplay.REGENERATE_EVERY_288</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_240</c>, <c>YDisplay.REGENERATE_EVERY_192</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_144</c>, <c>YDisplay.REGENERATE_EVERY_96</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_48</c>, <c>YDisplay.REGENERATE_EVERY_36</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_24</c>, <c>YDisplay.REGENERATE_EVERY_12</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_10</c>, <c>YDisplay.REGENERATE_EVERY_8</c>,
+    ///   <c>YDisplay.REGENERATE_EVERY_6</c>, <c>YDisplay.REGENERATE_EVERY_4</c>,
+    ///   <c>YDisplay.REGENERATE_ALWAYS</c>),
+    ///   corresponding to the display minimal regeneration frequency.
+    /// </param>
+    /// <para>
+    ///   Remember to call the <c>saveToFlash()</c>
+    ///   method of the module if the modification must be kept.
+    /// </para>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function set_fastRefreshPolicy(fastRefresh: TYFASTREFRESH; regenerate: TYREGENERATE):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
     ///   Clears the display screen and resets all display layers to their default state.
     /// <para>
-    ///   Using this function in a sequence will kill the sequence play-back. Don't use that
+    ///   Using this function in a sequence will kill the sequence play-back. Do not use that
     ///   function to reset the display at sequence start-up.
     /// </para>
     /// <para>
@@ -687,7 +798,7 @@ public
 
     ////
     /// <summary>
-    ///   Trigger an immediate screen refresh.
+    ///   Triggers an immediate screen refresh.
     /// <para>
     ///   The combination of
     ///   <c>postponeRefresh</c> and <c>triggerRefresh</c> can be used as an
@@ -943,6 +1054,8 @@ public
     /// </para>
     ///-
     function readDisplay(palette: TLongIntArray):TByteArray; overload; virtual;
+
+    function gifEncode(pixmap: TByteArray; palette: TLongIntArray; w: LongInt; shortHdr: boolean):TByteArray; overload; virtual;
 
 
     ////
@@ -1416,44 +1529,6 @@ public
 
     ////
     /// <summary>
-    ///   Draws a bitmap at the specified position.
-    /// <para>
-    ///   The bitmap is provided as a binary object,
-    ///   where each pixel maps to a bit, from left to right and from top to bottom.
-    ///   The most significant bit of each byte maps to the leftmost pixel, and the least
-    ///   significant bit maps to the rightmost pixel. Bits set to 1 are drawn using the
-    ///   layer selected pen color. Bits set to 0 are drawn using the specified background
-    ///   gray level, unless -1 is specified, in which case they are not drawn at all
-    ///   (as if transparent).
-    /// </para>
-    /// </summary>
-    /// <param name="x">
-    ///   the distance from left of layer to the left of the bitmap, in pixels
-    /// </param>
-    /// <param name="y">
-    ///   the distance from top of layer to the top of the bitmap, in pixels
-    /// </param>
-    /// <param name="w">
-    ///   the width of the bitmap, in pixels
-    /// </param>
-    /// <param name="bitmap">
-    ///   a binary object
-    /// </param>
-    /// <param name="bgcol">
-    ///   the background gray level to use for zero bits (0 = black,
-    ///   255 = white), or -1 to leave the pixels unchanged
-    /// </param>
-    /// <returns>
-    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
-    ///-
-    function drawBitmap(x: LongInt; y: LongInt; w: LongInt; bitmap: TByteArray; bgcol: LongInt):LongInt; overload; virtual;
-
-    ////
-    /// <summary>
     ///   Draws a GIF image provided as a binary buffer at the specified position.
     /// <para>
     ///   If the image drawing must be included in an animation sequence, save it
@@ -1477,6 +1552,80 @@ public
     /// </para>
     ///-
     function drawGIF(x: LongInt; y: LongInt; gifimage: TByteArray):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Draws a bitmap at the specified position.
+    /// <para>
+    ///   The bitmap is provided as a binary object,
+    ///   where each pixel maps to a bit, from left to right and from top to bottom.
+    ///   The most significant bit of each byte maps to the leftmost pixel, and the least
+    ///   significant bit maps to the rightmost pixel. Bits set to 1 are drawn using the
+    ///   layer selected pen color. Bits set to 0 are drawn using the specified background
+    ///   color, unless <c>NO_INK</c> (-1) is specified, in which case they are not
+    ///   drawn at all (as if transparent).
+    /// </para>
+    /// </summary>
+    /// <param name="x">
+    ///   the distance from left of layer to the left of the bitmap, in pixels
+    /// </param>
+    /// <param name="y">
+    ///   the distance from top of layer to the top of the bitmap, in pixels
+    /// </param>
+    /// <param name="w">
+    ///   the width of the bitmap, in pixels
+    /// </param>
+    /// <param name="bitmap">
+    ///   a binary object
+    /// </param>
+    /// <param name="bgcol">
+    ///   the RGB background color to use for zero bits, as a 24-bit RGB value,
+    ///   or one of the constants <c>NO_INK</c>, <c>FG_INK</c> or <c>BG_INK</c>
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function drawBitmap(x: LongInt; y: LongInt; w: LongInt; bitmap: TByteArray; bgcol: LongInt):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Draws a color pixmap at the specified position.
+    /// <para>
+    ///   The pixmap is provided as a binary
+    ///   object, where each byte maps to one pixel. The 24 bit RGB value corresponding to each
+    ///   byte value is defined in the palette provided as extra argument.
+    ///   The palette maximal size is 8, and it is recommended to use the smallest possible
+    ///   palette size to optimize the size of data to be sent to the display.
+    ///   The height of the pixmap is implicitely given by the pixmap buffer size.
+    /// </para>
+    /// </summary>
+    /// <param name="x">
+    ///   the distance from left of layer to the left of the pixmap, in pixels
+    /// </param>
+    /// <param name="y">
+    ///   the distance from top of layer to the top of the pixmap, in pixels
+    /// </param>
+    /// <param name="w">
+    ///   the width of the pixmap, in pixels
+    /// </param>
+    /// <param name="pixmap">
+    ///   a binary buffer where each byte maps to one pixel
+    /// </param>
+    /// <param name="palette">
+    ///   an array of 24-bit RGB values, defining the color for each byte value in pixmap
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function drawPixmap(x: LongInt; y: LongInt; w: LongInt; pixmap: TByteArray; palette: TLongIntArray):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -1567,7 +1716,7 @@ public
 
     ////
     /// <summary>
-    ///   Close the currently open polygon, fill its content the fill color currently
+    ///   Closes the currently open polygon, fill its content the fill color currently
     ///   selected for the layer, and draw its outline using the selected line color.
     /// <para>
     /// </para>
@@ -2155,6 +2304,7 @@ destructor TYDisplay.destroy();
     begin
       rest_val := inttostr(newval);
       result := _setAttr('orientation',rest_val);
+      _clearLazyCache();
     end;
 
   function TYDisplay.get_displayPanel():string;
@@ -2181,6 +2331,7 @@ destructor TYDisplay.destroy();
     begin
       rest_val := newval;
       result := _setAttr('displayPanel',rest_val);
+      _clearLazyCache();
     end;
 
   function TYDisplay.get_displayWidth():LongInt;
@@ -2430,6 +2581,72 @@ destructor TYDisplay.destroy();
           exit;
         end;
       result := true;
+      exit;
+    end;
+
+
+  function TYDisplay.get_fastRefreshPolicy():TYFASTREFRESH;
+    var
+      combined : LongInt;
+      fmod : LongInt;
+    begin
+      combined := self.get_brightness;
+      if combined < 0 then
+        begin
+          result := Y_FASTREFRESH_INVALID;
+          exit;
+        end;
+      fmod := (combined div 25);
+      if fmod >= 2 then
+        begin
+          fmod := fmod - 2;
+        end;
+      result := TYFASTREFRESH(fmod);
+      exit;
+    end;
+
+
+  function TYDisplay.get_regeneratePolicy():TYREGENERATE;
+    var
+      combined : LongInt;
+      fval : LongInt;
+    begin
+      combined:= self.get_brightness;
+      if combined < 0 then
+        begin
+          result := Y_REGENERATE_INVALID;
+          exit;
+        end;
+      if combined >= 100 then
+        begin
+          fval := 25;
+        end
+      else
+        begin
+          fval := (combined mod 25);
+        end;
+      result := TYREGENERATE(fval);
+      exit;
+    end;
+
+
+  function TYDisplay.set_fastRefreshPolicy(fastRefresh: TYFASTREFRESH; regenerate: TYREGENERATE):LongInt;
+    var
+      combined : LongInt;
+      fmod : LongInt;
+      fval : LongInt;
+    begin
+      fmod := ord(fastRefresh);
+      fval := ord(regenerate);
+      if (fval = 25) or(fmod = 2) then
+        begin
+          combined := 100;
+        end
+      else
+        begin
+          combined := 50 + fmod * 25 + fval;
+        end;
+      result := self.set_brightness(combined);
       exit;
     end;
 
@@ -2867,6 +3084,247 @@ destructor TYDisplay.destroy();
     end;
 
 
+  function TYDisplay.gifEncode(pixmap: TByteArray; palette: TLongIntArray; w: LongInt; shortHdr: boolean):TByteArray;
+    var
+      minCodeSize : LongInt;
+      LZW_CLRCODE : LongInt;
+      LZW_ENDCODE : LongInt;
+      LZW_1STCODE : LongInt;
+      codeSize : LongInt;
+      maxCode : LongInt;
+      codes : TLongIntArray;
+      nCodes : LongInt;
+      pixmapSize : LongInt;
+      dataStream : TByteArray;
+      blockStart : LongInt;
+      blockEnd : LongInt;
+      prevCode : LongInt;
+      pixPos : LongInt;
+      wrBits : LongInt;
+      wrBitCnt : LongInt;
+      outPos : LongInt;
+      nextVal : LongInt;
+      i : LongInt;
+      hdrSize : LongInt;
+      res : TByteArray;
+      h : LongInt;
+      codes_pos : LongInt;
+    begin
+      if length(palette) > 8 then
+        begin
+          self._throw(YAPI_INVALID_ARGUMENT, 'Palette should have no more than 8 colors');
+          setlength(res,0);
+          result := res;
+          exit;
+        end;
+      if length(palette) <= 4 then
+        begin
+          minCodeSize := 2;
+        end
+      else
+        begin
+          minCodeSize := 3;
+        end;
+      LZW_CLRCODE := ((1) shl (minCodeSize));
+      LZW_ENDCODE := LZW_CLRCODE + 1;
+      LZW_1STCODE := LZW_ENDCODE + 1;
+      codeSize := minCodeSize + 1;
+      maxCode := ((1) shl (codeSize)) - 1 - LZW_1STCODE;
+      codes_pos := 0;
+      SetLength(codes, 4090);;
+      nCodes := 0;
+      pixmapSize := length(pixmap);
+      setlength(dataStream,((2 * pixmapSize) div 3) + 8);
+      outPos := 0;
+      wrBits := LZW_CLRCODE;
+      wrBitCnt := 3;
+      // prefetch first byte
+      prevCode := pixmap[0];
+      pixPos := 1;
+      while pixPos < pixmapSize + 3 do
+        begin
+          blockStart := outPos;
+          outPos := blockStart + 1;
+          blockEnd := blockStart + 256;
+          // flush any carry-over output byte from previous data sub-block
+          while wrBitCnt >= 8 do
+            begin
+              dataStream[outPos] := ((wrBits) and ($0ff));
+              outPos := outPos + 1;
+              wrBits := ((wrBits) shr 8);
+              wrBitCnt := wrBitCnt - 8;
+            end;
+          while (outPos < blockEnd) and(pixPos < pixmapSize) do
+            begin
+              // search for an existing code matching the running input segment
+              // printf("[%d] ", rdBits >> 12);
+              nextVal := ((prevCode) or (((pixmap[pixPos]) shl 12)));
+              pixPos := pixPos + 1;
+              if prevCode < LZW_1STCODE then
+                begin
+                  i := 0;
+                end
+              else
+                begin
+                  i := prevCode - LZW_ENDCODE;
+                end;
+              while (i < nCodes) and(codes[i] <> nextVal) do
+                begin
+                  i := i + 1;
+                end;
+              if i >= nCodes then
+                begin
+                  // not found, emit prevCode and create new code
+                  wrBits := ((wrBits) or (((prevCode) shl (wrBitCnt))));
+                  wrBitCnt := wrBitCnt + codeSize;
+                  if nCodes <= maxCode then
+                    begin
+                      //fprintf(stderr, "#%d: #%d + %d\n", nextCode, nextVal & 63, nextVal >> 6);
+                      codes[codes_pos] := nextVal;
+                      inc(codes_pos);
+                      nCodes := nCodes + 1;
+                    end
+                  else
+                    begin
+                      codeSize := codeSize + 1;
+                      if codeSize <= 12 then
+                        begin
+                          //fprintf(stderr, "#%d: #%d + %d\n", nextCode, nextVal & 63, nextVal >> 6);
+                          codes[codes_pos] := nextVal;
+                          inc(codes_pos);
+                          nCodes := nCodes + 1;
+                        end
+                      else
+                        begin
+                          wrBits := ((wrBits) or (((LZW_CLRCODE) shl (wrBitCnt))));
+                          wrBitCnt := wrBitCnt + codeSize;
+                          codes_pos := 0;
+                          SetLength(codes, 4090);
+                          nCodes := 0;
+                          codeSize := minCodeSize + 1;
+                        end;
+                      maxCode := ((1) shl (codeSize)) - 1 - LZW_1STCODE;
+                    end;
+                  // flush one (or two) codes to output stream
+                  while (wrBitCnt >= 8) and(outPos < blockEnd) do
+                    begin
+                      dataStream[outPos] := ((wrBits) and ($0ff));
+                      outPos := outPos + 1;
+                      wrBits := ((wrBits) shr 8);
+                      wrBitCnt := wrBitCnt - 8;
+                    end;
+                  prevCode := ((nextVal) shr 12);
+                end
+              else
+                begin
+                  prevCode := i + LZW_1STCODE;
+                end;
+            end;
+          if pixPos >= pixmapSize then
+            begin
+              if (outPos < blockEnd) and(pixPos = pixmapSize) then
+                begin
+                  // append code for last run
+                  wrBits := ((wrBits) or (((prevCode) shl (wrBitCnt))));
+                  wrBitCnt := wrBitCnt + codeSize;
+                  while (wrBitCnt >= 8) and(outPos < blockEnd) do
+                    begin
+                      dataStream[outPos] := ((wrBits) and ($0ff));
+                      outPos := outPos + 1;
+                      wrBits := ((wrBits) shr 8);
+                      wrBitCnt := wrBitCnt - 8;
+                    end;
+                  pixPos := pixPos + 1;
+                end;
+              if (outPos < blockEnd) and(pixPos = pixmapSize + 1) then
+                begin
+                  // append end code
+                  wrBits := ((wrBits) or (((LZW_ENDCODE) shl (wrBitCnt))));
+                  wrBitCnt := wrBitCnt + codeSize;
+                  while (wrBitCnt >= 8) and(outPos < blockEnd) do
+                    begin
+                      dataStream[outPos] := ((wrBits) and ($0ff));
+                      outPos := outPos + 1;
+                      wrBits := ((wrBits) shr 8);
+                      wrBitCnt := wrBitCnt - 8;
+                    end;
+                  pixPos := pixPos + 1;
+                end;
+              if (outPos < blockEnd) and(pixPos = pixmapSize + 2) then
+                begin
+                  // flush last 0-7 bits
+                  if wrBitCnt > 0 then
+                    begin
+                      dataStream[outPos] := ((wrBits) and ($0ff));
+                      outPos := outPos + 1;
+                      wrBitCnt := 0;
+                    end;
+                  pixPos := pixPos + 1;
+                end;
+            end;
+          dataStream[blockStart] := outPos - (blockStart + 1);
+        end;
+      blockEnd := outPos;
+      // Now write final buffer
+      hdrSize := 24 + LZW_CLRCODE * 3;
+      setlength(res,hdrSize + outPos + 2);
+      // GIF89a header
+      res[$000] := $047;
+      res[$001] := $049;
+      res[$002] := $046;
+      res[$003] := $038;
+      res[$004] := $039;
+      res[$005] := $061;
+      // Logical screen descriptor
+      h := (length(pixmap) div w);
+      res[$006] := ((w) and ($0ff));
+      res[$007] := ((w) shr 8);
+      res[$008] := ((h) and ($0ff));
+      res[$009] := ((h) shr 8);
+      res[$00a] := $0f0 + minCodeSize - 1;
+      res[$00b] := 0;
+      res[$00c] := 0;
+      // Palette
+      outPos := $00d;
+      i := 0;
+      while i < LZW_CLRCODE do
+        begin
+          if i < length(palette) then
+            begin
+              wrBits := palette[i];
+              res[outPos] := ((((wrBits) shr 16)) and ($0ff));
+              res[outPos + 1] := ((((wrBits) shr 8)) and ($0ff));
+              res[outPos + 2] := ((wrBits) and ($0ff));
+            end;
+          outPos := outPos + 3;
+          i := i + 1;
+        end;
+      // Image descriptor
+      res[outPos] := $02c;
+      res[outPos + 5] := ((w) and ($0ff));
+      res[outPos + 6] := ((w) shr 8);
+      res[outPos + 7] := ((h) and ($0ff));
+      res[outPos + 8] := ((h) shr 8);
+      outPos := outPos + 10;
+      // Prepare to append Image data
+      res[outPos] := minCodeSize;
+      i := 0;
+      while i < blockEnd do
+        begin
+          outPos := outPos + 1;
+          res[outPos] := dataStream[i];
+          i := i + 1;
+        end;
+      // Append zero-block and trailer
+      outPos := outPos + 1;
+      res[outPos] := 0;
+      outPos := outPos + 1;
+      res[outPos] := $03b;
+      result := res;
+      exit;
+    end;
+
+
   function TYDisplay.nextDisplay(): TYDisplay;
     var
       hwid: string;
@@ -2971,7 +3429,7 @@ destructor TYDisplay.destroy();
       res : LongInt;
     begin
       res := YAPI_SUCCESS;
-      if Length(self._cmdbuff) + Length(cmd) >= 100 then
+      if Length(self._cmdbuff) + Length(cmd) >= 64 then
         begin
           // force flush before, to prevent overflow
           self.flush_now;
@@ -3158,7 +3616,24 @@ destructor TYDisplay.destroy();
 
 
   function TYDisplayLayer.drawText(x: LongInt; y: LongInt; anchor: TYALIGN; text: string):LongInt;
+    var
+      textlen : LongInt;
+      destname : string;
     begin
+      textlen := Length(text);
+      if textlen > 60 then
+        begin
+          if textlen > 1000 then
+            begin
+              self._display._throw(YAPI_INVALID_ARGUMENT, 'text too large (max 1000 characters)');
+              result := YAPI_INVALID_ARGUMENT;
+              exit;
+            end;
+          self._display.flushLayers;
+          destname := 'layer'+inttostr(self._id)+':T'+inttostr(x)+','+inttostr(y)+','+inttostr(ord(anchor))+',';
+          result := self._display.upload(destname, _StrToByte(text));
+          exit;
+        end;
       result := self.command_flush('T'+inttostr(x)+','+inttostr(y)+','+inttostr(ord(anchor))+','+text+''+chr(27));
       exit;
     end;
@@ -3171,22 +3646,72 @@ destructor TYDisplay.destroy();
     end;
 
 
-  function TYDisplayLayer.drawBitmap(x: LongInt; y: LongInt; w: LongInt; bitmap: TByteArray; bgcol: LongInt):LongInt;
+  function TYDisplayLayer.drawGIF(x: LongInt; y: LongInt; gifimage: TByteArray):LongInt;
     var
       destname : string;
     begin
-      destname := 'layer'+inttostr(self._id)+':'+inttostr(w)+','+inttostr(bgcol)+'@'+inttostr(x)+','+inttostr(y);
+      self._display.flushLayers;
+      destname := 'layer'+inttostr(self._id)+':G,-1@'+inttostr(x)+','+inttostr(y);
+      result := self._display.upload(destname, gifimage);
+      exit;
+    end;
+
+
+  function TYDisplayLayer.drawBitmap(x: LongInt; y: LongInt; w: LongInt; bitmap: TByteArray; bgcol: LongInt):LongInt;
+    var
+      destname : string;
+      r : LongInt;
+      g : LongInt;
+      b : LongInt;
+      rgbcol : string;
+    begin
+      if (w < 0) or(w > 512) then
+        begin
+          self._display._throw(YAPI_INVALID_ARGUMENT, 'bitmap width must be in range 1..512');
+          result := YAPI_INVALID_ARGUMENT;
+          exit;
+        end;
+      self._display.flushLayers;
+      if bgcol <= 255 then
+        begin
+          if bgcol >= -1 then
+            begin
+              // backward-compatible behaviour (gray level)
+              rgbcol := ''+inttostr(bgcol);
+            end
+          else
+            begin
+              // background color or foreground color
+              if bgcol <= -3 then
+                begin
+                  rgbcol := '#.';
+                end
+              else
+                begin
+                  rgbcol := '#-';
+                end;
+            end;
+        end
+      else
+        begin
+          // RGB color
+          r := ((((bgcol) shr 20)) and 15);
+          g := ((((bgcol) shr 12)) and 15);
+          b := ((((bgcol) shr 4)) and 15);
+          rgbcol := '#'+AnsiLowerCase(inttohex(r,1))+''+AnsiLowerCase(inttohex(g,1))+''+AnsiLowerCase(inttohex(b,1));
+        end;
+      destname := 'layer'+inttostr(self._id)+':'+inttostr(w)+','+rgbcol+'@'+inttostr(x)+','+inttostr(y);
       result := self._display.upload(destname, bitmap);
       exit;
     end;
 
 
-  function TYDisplayLayer.drawGIF(x: LongInt; y: LongInt; gifimage: TByteArray):LongInt;
+  function TYDisplayLayer.drawPixmap(x: LongInt; y: LongInt; w: LongInt; pixmap: TByteArray; palette: TLongIntArray):LongInt;
     var
-      destname : string;
+      gifimage : TByteArray;
     begin
-      destname := 'layer'+inttostr(self._id)+':G,-1@'+inttostr(x)+','+inttostr(y);
-      result := self._display.upload(destname, gifimage);
+      gifimage := self._display.gifEncode(pixmap, palette, w, false);
+      result := self.drawGIF(x, y, gifimage);
       exit;
     end;
 
@@ -3236,7 +3761,24 @@ destructor TYDisplay.destroy();
 
 
   function TYDisplayLayer.consoleOut(text: string):LongInt;
+    var
+      textlen : LongInt;
+      destname : string;
     begin
+      textlen := Length(text);
+      if textlen > 60 then
+        begin
+          if textlen > 1000 then
+            begin
+              self._display._throw(YAPI_INVALID_ARGUMENT, 'text too large (max 1000 characters)');
+              result := YAPI_INVALID_ARGUMENT;
+              exit;
+            end;
+          self._display.flushLayers;
+          destname := 'layer'+inttostr(self._id)+':!';
+          result := self._display.upload(destname, _StrToByte(text));
+          exit;
+        end;
       result := self.command_flush('!'+text+''+chr(27));
       exit;
     end;

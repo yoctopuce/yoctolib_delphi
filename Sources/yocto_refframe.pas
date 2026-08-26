@@ -957,7 +957,7 @@ implementation
     var
       mixedPos : LongInt;
     begin
-      mixedPos := ((position) shl 2) + orientation;
+      mixedPos := ((ord(position)) shl 2) + ord(orientation);
       return self.set_mountPos(mixedPos);
     end;
 
