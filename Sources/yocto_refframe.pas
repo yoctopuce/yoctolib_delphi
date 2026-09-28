@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_refframe.pas version 2.1.16087 (build 76087) $
  *
  *  Implements yFindRefFrame(), the high-level API for RefFrame functions
  *

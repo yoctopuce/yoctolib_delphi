@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas 72057 2026-02-17 09:44:53Z mvuilleu $
+ * $Id: yocto_files.pas version 2.1.16087 (build 76087) $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *

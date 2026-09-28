@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_power.pas version 2.1.16087 (build 76087) $
  *
  *  Implements yFindPower(), the high-level API for Power functions
  *

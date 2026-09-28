@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_multiaxiscontroller.pas version 2.1.16087 (build 76087) $
  *
  *  Implements yFindMultiAxisController(), the high-level API for MultiAxisController functions
  *

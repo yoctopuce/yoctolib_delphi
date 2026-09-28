@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_datalogger.pas 35285 2019-05-07 07:37:56Z seb $
+ * $Id: yocto_datalogger.pas version 2.1.16087 (build 76087) $
  *
  * Implements yFindDataLogger(), the high-level API for DataLogger functions
  *

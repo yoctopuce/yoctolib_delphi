@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_cellular.pas 72057 2026-02-17 09:44:53Z mvuilleu $
+ * $Id: yocto_cellular.pas version 2.1.16087 (build 76087) $
  *
  * Implements yFindCellular(), the high-level API for Cellular functions
  *

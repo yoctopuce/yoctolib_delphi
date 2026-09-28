@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_anbutton.pas version 2.1.16087 (build 76087) $
  *
  *  Implements yFindAnButton(), the high-level API for AnButton functions
  *

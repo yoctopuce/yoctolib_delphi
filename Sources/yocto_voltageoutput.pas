@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_voltageoutput.pas version 2.1.16087 (build 76087) $
  *
  *  Implements yFindVoltageOutput(), the high-level API for VoltageOutput functions
  *

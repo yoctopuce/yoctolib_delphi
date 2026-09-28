@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_pwminput.pas version 2.1.16087 (build 76087) $
  *
  *  Implements yFindPwmInput(), the high-level API for PwmInput functions
  *

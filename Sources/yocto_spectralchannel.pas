@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_spectralchannel.pas version 2.1.16087 (build 76087) $
  *
  *  Implements yFindSpectralChannel(), the high-level API for SpectralChannel functions
  *

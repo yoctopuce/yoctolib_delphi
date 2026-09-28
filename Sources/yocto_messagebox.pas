@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_messagebox.pas 72410 2026-03-11 07:18:41Z mvuilleu $
+ * $Id: yocto_messagebox.pas version 2.1.16087 (build 76087) $
  *
  * Implements yFindMessageBox(), the high-level API for Cellular functions
  *

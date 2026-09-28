@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_temperature.pas version 2.1.16087 (build 76087) $
  *
  *  Implements yFindTemperature(), the high-level API for Temperature functions
  *

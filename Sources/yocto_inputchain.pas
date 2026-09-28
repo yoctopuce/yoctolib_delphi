@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_inputchain.pas version 2.1.16087 (build 76087) $
  *
  *  Implements yFindInputChain(), the high-level API for InputChain functions
  *

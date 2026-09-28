@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_airquality.pas version 2.1.16087 (build 76087) $
  *
  *  Implements yFindAirQuality(), the high-level API for AirQuality functions
  *
@@ -75,7 +75,7 @@ type
   ///   TYAirQuality Class: air quality sensor control interface
   /// <para>
   ///   The <c>YAirQuality</c> class allows you to read and configure Yoctopuce air quality sensors.
-  ///   It inherits from <c>YSensor</c> class the core functions to read measurements,
+  ///   It inherits from the <c>YSensor</c> class the core functions to read measures,
   ///   to register callback functions, and to access the autonomous datalogger.
   /// </para>
   /// </summary>
@@ -280,13 +280,13 @@ type
     ///   Continues the enumeration of air quality sensors started using <c>yFirstAirQuality()</c>.
     /// <para>
     ///   Caution: You can't make any assumption about the returned air quality sensors order.
-    ///   If you want to find a specific a air quality sensor, use <c>AirQuality.findAirQuality()</c>
+    ///   If you want to find a specific an air quality sensor, use <c>AirQuality.findAirQuality()</c>
     ///   and a hardwareID or a logical name.
     /// </para>
     /// </summary>
     /// <returns>
     ///   a pointer to a <c>YAirQuality</c> object, corresponding to
-    ///   a air quality sensor currently online, or a <c>NIL</c> pointer
+    ///   an air quality sensor currently online, or a <c>NIL</c> pointer
     ///   if there are no more air quality sensors to enumerate.
     /// </returns>
     ///-
@@ -306,7 +306,7 @@ type
 //--- (YAirQuality functions declaration)
   ////
   /// <summary>
-  ///   Retrieves a air quality sensor for a given identifier.
+  ///   Retrieves an air quality sensor for a given identifier.
   /// <para>
   ///   The identifier can be specified using several formats:
   /// </para>
@@ -334,7 +334,7 @@ type
   ///   it is invoked. The returned object is nevertheless valid.
   ///   Use the method <c>YAirQuality.isOnline()</c> to test if the air quality sensor is
   ///   indeed online at a given time. In case of ambiguity when looking for
-  ///   a air quality sensor by logical name, no error is notified: the first instance
+  ///   an air quality sensor by logical name, no error is notified: the first instance
   ///   found is returned. The search is performed first by hardware name,
   ///   then by logical name.
   /// </para>

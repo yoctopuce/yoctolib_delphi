@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_serialport.pas 75514 2026-08-13 07:24:08Z mvuilleu $
+ * $Id: yocto_serialport.pas version 2.1.16087 (build 76087) $
  *
  * Implements yFindSerialPort(), the high-level API for SerialPort functions
  *
@@ -212,9 +212,14 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     _eventCallback            : TYSnoopingCallback;
     _xyproto                  : string;
     _xyfname                  : string;
+    _xyfattr                  : string;
     _xyfdata                  : TByteArray;
     _xytotal                  : LongInt;
-    _xysent                   : LongInt;
+    _xyblock                  : TByteArray;
+    _xyavail                  : LongInt;
+    _xyready                  : LongInt;
+    _xyacked                  : LongInt;
+    _xyclose                  : boolean;
     // Function-specific method for reading JSON output and caching result
     function _parseAttr(member:PJSONRECORD):integer; override;
     //--- (end of generated code: YSerialPort declaration)
@@ -1549,19 +1554,21 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///-
     function modbusWriteAndReadRegisters(slaveNo: LongInt; pduWriteAddr: LongInt; values: TLongIntArray; pduReadAddr: LongInt; nReadWords: LongInt):TLongIntArray; overload; virtual;
 
-    function _xymodemQueue(proto: string; fname: string; buff: TByteArray; timeoutSec: LongInt):LongInt; overload; virtual;
+    function _xymodemQueue(proto: string; buff: TByteArray; fname: string; attributes: string; closeBatch: boolean):LongInt; overload; virtual;
 
-    function _xymodemProcess(timeoutSec: LongInt):LongInt; overload; virtual;
+    function _xymodemProcess(proto: string):LongInt; overload; virtual;
+
+    function _xymodemAbort():LongInt; overload; virtual;
 
     ////
     /// <summary>
     ///   Initiates a buffer transmit to the serial port using the standard XMODEM protocol.
     /// <para>
-    ///   The function will block until the XMODEM receiver triggers the transfer,
-    ///   up to the specified timeout.
-    ///   Once the transfer is started, the function returns the current percentage
-    ///   of completion. The caller should then invoke method
-    ///   <c>xmodemUploadMore()</c> until it returns 100 (percent).
+    ///   The function will return almost immediately, but the transfer only starts when
+    ///   the XMODEM receiver requests it. A few kilobytes of data are buffered within the
+    ///   device, ready to be sent, but the caller should repeatedly invoke method
+    ///   <c>xmodemUploadMore()</c> until it returns 100 (percent) to ensure that the
+    ///   file transfer completes.
     /// </para>
     /// </summary>
     /// <param name="buff">
@@ -1570,6 +1577,10 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     /// <param name="timeoutSec">
     ///   the timeout before aborting send (e.g. 60 sec)
     /// </param>
+    /// <param name="use1kBlocks">
+    ///   whether to use 1KB data blocks for faster transfer
+    ///   (relatively standard XMODEM protocol extension)
+    /// </param>
     /// <returns>
     ///   an integer in the range 0 to 100 (percentage of completion),
     ///   or a negative error code in case of failure.
@@ -1578,20 +1589,17 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function xmodemUpload(buff: TByteArray; timeoutSec: LongInt):LongInt; overload; virtual;
+    function xmodemUpload(buff: TByteArray; timeoutSec: LongInt; use1kBlocks: boolean):LongInt; overload; virtual;
 
     ////
     /// <summary>
-    ///   Continues a standard XMODEM upload previously started with <c>xmodemUpload</c>.
+    ///   Continues a XMODEM upload previously started with <c>xmodemUpload</c>.
     /// <para>
     ///   The function will block until the data sent has been acknowledged by receiver,
     ///   up to the specified timeout, and return the current percentage of completion.
     ///   It should be called continuously until it returns the 100 (percent).
     /// </para>
     /// </summary>
-    /// <param name="timeoutSec">
-    ///   the timeout before aborting send (e.g. 60 sec)
-    /// </param>
     /// <returns>
     ///   an integer in the range 0 to 100 (percentage of completion),
     ///   or a negative error code in case of failure.
@@ -1600,75 +1608,45 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function xmodemUploadMore(timeoutSec: LongInt):LongInt; overload; virtual;
+    function xmodemUploadMore():LongInt; overload; virtual;
 
     ////
     /// <summary>
-    ///   Initiates a buffer transmit to the serial port using the standard XMODEM-1k protocol.
-    /// <para>
-    ///   The function will block until the XMODEM receiver triggers the transfer,
-    ///   up to the specified timeout.
-    ///   Once the transfer is started, the function returns the current percentage
-    ///   of completion. The caller should then invoke method
-    ///   <c>xmodem1kUploadMore()</c> until it returns 100 (percent).
-    /// </para>
-    /// </summary>
-    /// <param name="buff">
-    ///   the binary buffer to send
-    /// </param>
-    /// <param name="timeoutSec">
-    ///   the timeout before aborting send (e.g. 60 sec)
-    /// </param>
-    /// <returns>
-    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
-    /// </returns>
+    ///   Abort any XMODEM or YMODEM data transfer previously started.
     /// <para>
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
-    ///-
-    function xmodem1kUpload(buff: TByteArray; timeoutSec: LongInt):LongInt; overload; virtual;
-
-    ////
-    /// <summary>
-    ///   Continues a XMODEM-1k upload previously started with <c>xmodem1kUpload</c>.
-    /// <para>
-    ///   The function will block until the data sent has been acknowledged by receiver,
-    ///   up to the specified timeout, and return the current percentage of completion.
-    ///   It should be called continuously until it returns the 100 (percent).
-    /// </para>
     /// </summary>
-    /// <param name="timeoutSec">
-    ///   the timeout before aborting send (e.g. 60 sec)
-    /// </param>
-    /// <returns>
-    ///   an integer in the range 0 to 100 (percentage of completion),
-    ///   or a negative error code in case of failure.
-    /// </returns>
-    /// <para>
-    ///   On failure, throws an exception or returns a negative error code.
-    /// </para>
     ///-
-    function xmodem1kUploadMore(timeoutSec: LongInt):LongInt; overload; virtual;
+    function xmodemAbort():LongInt; overload; virtual;
 
     ////
     /// <summary>
     ///   Initiates a buffer transmit to the serial port using the standard YMODEM protocol.
     /// <para>
-    ///   The function will block until the YMODEM receiver triggers the transfer,
-    ///   up to the specified timeout.
-    ///   Once the transfer is started, the function returns the current percentage
-    ///   of completion. The caller should then invoke method
-    ///   <c>ymodemUploadMore()</c> until it returns 100 (percent).
+    ///   The function will return almost immediately, but the transfer only starts when
+    ///   the XMODEM receiver requests it. A few kilobytes of data are buffered within the
+    ///   device, ready to be sent, but the caller should repeatedly invoke method
+    ///   <c>xmodemUploadMore()</c> until it returns 100 (percent) to ensure that the
+    ///   file transfer completes.
     /// </para>
     /// </summary>
-    /// <param name="filename">
-    ///   the filename associated with the data in the buffer
-    /// </param>
     /// <param name="buff">
     ///   the binary buffer to send
     /// </param>
     /// <param name="timeoutSec">
     ///   the timeout before aborting send (e.g. 60 sec)
+    /// </param>
+    /// <param name="filename">
+    ///   the filename associated with the data in the buffer
+    /// </param>
+    /// <param name="attributes">
+    ///   optional file attributes (eg. modif date timestamp in octal form),
+    ///   or an empty string if no further attribute is required
+    /// </param>
+    /// <param name="lastFile">
+    ///   <c>TRUE</c> to end the YMODEM batch session after this file,
+    ///   or <c>FALSE</c> if more files will be sent in the same batch session
     /// </param>
     /// <returns>
     ///   <c>YAPI.SUCCESS</c> if the call succeeds.
@@ -1677,7 +1655,7 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function ymodemUpload(filename: string; buff: TByteArray; timeoutSec: LongInt):LongInt; overload; virtual;
+    function ymodemUpload(buff: TByteArray; timeoutSec: LongInt; filename: string; attributes: string; lastFile: boolean):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -1688,9 +1666,6 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   It should be called continuously until it returns the 100 (percent).
     /// </para>
     /// </summary>
-    /// <param name="timeoutSec">
-    ///   the timeout before aborting send (e.g. 60 sec)
-    /// </param>
     /// <returns>
     ///   an integer in the range 0 to 100 (percentage of completion),
     ///   or a negative error code in case of failure.
@@ -1699,7 +1674,17 @@ TYSNOOPINGRECORDARRAY = array of TYSnoopingRecord;
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function ymodemUploadMore(timeoutSec: LongInt):LongInt; overload; virtual;
+    function ymodemUploadMore():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Abort any XMODEM or YMODEM data transfer previously started.
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    /// </summary>
+    ///-
+    function ymodemAbort():LongInt; overload; virtual;
 
 
     ////
@@ -1830,7 +1815,9 @@ implementation
       _rxbuffptr := 0;
       _eventPos := 0;
       _xytotal := 0;
-      _xysent := 0;
+      _xyavail := 0;
+      _xyready := 0;
+      _xyacked := 0;
       //--- (end of generated code: YSerialPort accessors initialization)
     end;
 
@@ -3713,7 +3700,9 @@ implementation
     end;
 
 
-  function TYSerialPort._xymodemQueue(proto: string; fname: string; buff: TByteArray; timeoutSec: LongInt):LongInt;
+  function TYSerialPort._xymodemQueue(proto: string; buff: TByteArray; fname: string; attributes: string; closeBatch: boolean):LongInt;
+    var
+      datablock : TByteArray;
     begin
       if Length(self._xyproto) > 0 then
         begin
@@ -3721,142 +3710,262 @@ implementation
           result := YAPI_DEVICE_BUSY;
           exit;
         end;
+      setlength(datablock,1024);
       self._xyproto := proto;
       self._xyfname := fname;
+      self._xyfattr := attributes;
       self._xyfdata := buff;
       self._xytotal := length(buff);
-      self._xysent := 0;
-      result := self._xymodemProcess(timeoutSec);
+      self._xyblock := datablock;
+      self._xyavail := 4096;
+      self._xyready := 0;
+      self._xyacked := 0;
+      self._xyclose := closeBatch;
+      result := self._xymodemProcess(proto);
       exit;
     end;
 
 
-  function TYSerialPort._xymodemProcess(timeoutSec: LongInt):LongInt;
+  function TYSerialPort._xymodemProcess(proto: string):LongInt;
     var
-      proto : string;
+      maxblocks : LongInt;
       blksize : LongInt;
-      cnt : LongInt;
       datablock : TByteArray;
+      cnt : LongInt;
       namesuffix : string;
       fullproto : string;
       json : TByteArray;
       jsonStr : string;
       errStr : string;
-      sentBytes : LongInt;
+      state : string;
       empty : TByteArray;
+      ignoreErrMsg : string;
     begin
-      proto := self._xyproto;
-      if Length(proto) = 0 then
+      if Length(self._xyproto) = 0 then
         begin
           self._throw(YAPI_INVALID_ARGUMENT, 'no file transfer in progress');
           result := YAPI_INVALID_ARGUMENT;
           exit;
         end;
-      // create a data block up to 1k
-      blksize := self._xytotal - self._xysent;
-      if blksize > 1024 then
+      if Length(proto) > 6 then
         begin
-          blksize := 1024;
+          proto := Copy(proto, 0 + 1, 6);
         end;
-      setlength(datablock,blksize);
-      cnt := 0;
-      while cnt < blksize do
+      if not((Copy(self._xyproto, 0 + 1, 6) = proto)) then
         begin
-          datablock[cnt] := self._xyfdata[self._xysent + cnt];
-          cnt := cnt + 1;
+          self._throw(YAPI_INVALID_ARGUMENT, 'file transfer protocol mismatch');
+          result := YAPI_INVALID_ARGUMENT;
+          exit;
         end;
-      namesuffix := '';
-      if self._xysent = 0 then
+      if self._xyready = 0 then
         begin
-          if (Copy(proto, 0 + 1, 6) = 'ymodem') then
+          if (proto = 'ymodem') then
             begin
-              namesuffix := ':'+self._xyfname;
+              if Length(self._xyfattr) = 0 then
+                begin
+                  namesuffix := ':'+self._xyfname+' '+inttostr(self._xytotal);
+                end
+              else
+                begin
+                  namesuffix := ':'+self._xyfname+' '+inttostr(self._xytotal)+' '+self._xyfattr;
+                end;
+            end
+          else
+            begin
+              namesuffix := '';
             end;
         end
       else
         begin
           namesuffix := '+';
         end;
-      if self._xytotal > self._xysent + blksize then
+      maxblocks := 5;
+      while (self._xyready < self._xytotal) and(self._xyavail >= 1040) and(maxblocks > 0) do
         begin
-          fullproto := ''+proto+'-t'+inttostr(timeoutSec)+'-m'+namesuffix;
-        end
-      else
-        begin
-          fullproto := ''+proto+'-t'+inttostr(timeoutSec)+''+namesuffix;
+          // create a data block up to 1k
+          maxblocks := maxblocks - 1;
+          blksize := self._xytotal - self._xyready;
+          if blksize >= 1024 then
+            begin
+              blksize := 1024;
+              datablock := self._xyblock;
+            end
+          else
+            begin
+              setlength(datablock,blksize);
+            end;
+          cnt := 0;
+          while cnt < blksize do
+            begin
+              datablock[cnt] := self._xyfdata[self._xyready + cnt];
+              cnt := cnt + 1;
+            end;
+          if self._xytotal > self._xyready + blksize then
+            begin
+              fullproto := ''+self._xyproto+'-m'+namesuffix;
+            end
+          else
+            begin
+              fullproto := ''+self._xyproto+''+namesuffix;
+            end;
+          // backup _xyproto and clear it, to drop transfer in case of exception
+          proto := self._xyproto;
+          self._xyproto := '';
+          json := self._uploadEx(fullproto, datablock);
+          if length(json) = 0 then
+            begin
+              self._throw(YAPI_IO_ERROR, 'failed to receive result from device');
+              result := YAPI_IO_ERROR;
+              exit;
+            end;
+          jsonStr := _ByteToString(json);
+          if (Copy(jsonStr, 2 + 1, 3) = 'err') then
+            begin
+              // will get error message and full status from json URL below
+              maxblocks := 0;
+            end
+          else
+            begin
+              self._xyready := self._xyready + blksize;
+              self._xyavail := _atoi(self._json_get_key(json, 'rts'));
+              namesuffix := '+';
+            end;
+          self._xyproto := proto;
         end;
-
-      // backup _xyproto and clear it, to drop transfer in case of exception
-      self._xyproto := '';
-      json := self._uploadEx(fullproto, datablock);
-      if length(json) = 0 then
+      if (self._xyready = self._xytotal) and(self._xyavail >= 262) and(maxblocks > 0) then
         begin
-          self._throw(YAPI_IO_ERROR, 'failed to receive result from device');
-          result := YAPI_IO_ERROR;
-          exit;
+          self._xyready := self._xyready + 1;
+          if self._xyclose then
+            begin
+              // schedule transfer of NUL file to end YModem batch
+              setlength(empty,0);
+              self._uploadEx('ymodem:', empty);
+            end;
         end;
-      jsonStr := _ByteToString(json);
-      errStr := self._json_get_key(json, 'err');
-      if Length(errStr) > 0 then
+      ySleep(100, ignoreErrMsg);
+      json := self._download(''+Copy(proto, 0 + 1, 6)+'.json');
+      state := Copy(self._json_get_key(json, 'st'), 0 + 1, 2);
+      self._xyavail := _atoi(self._json_get_key(json, 'rts'));
+      self._xyacked := _atoi(self._json_get_key(json, 'ack'));
+      // Only report 100% or an error when the state machine has reached a final state
+      // But we must detect individual file completion within a multi-file batch transfer
+      if not(self._xyclose) and (state = 'BR') and(self._xyacked > 1024) then
         begin
-          self._throw(YAPI_IO_ERROR, errStr);
-          result := YAPI_IO_ERROR;
-          exit;
+          state := 'ZZ';
         end;
-      sentBytes := _atoi(self._json_get_key(json, 'sent'));
-      if sentBytes >= self._xytotal then
+      if (state = 'ZZ') then
         begin
-          // done, free binary buffer
+          // transfer completed, free binary buffer
           setlength(empty,0);
+          self._xyproto := '';
           self._xyfdata := empty;
+          self._xyblock := empty;
+          // if transfer did not end successfully, report error
+          errStr := self._json_get_key(json, 'err');
+          if Length(errStr) > 0 then
+            begin
+              self._throw(YAPI_IO_ERROR, errStr);
+              result := YAPI_IO_ERROR;
+              exit;
+            end;
           result := 100;
           exit;
         end;
-      self._xyproto := proto;
-      self._xysent := sentBytes;
-      result := ((100 * sentBytes) div self._xytotal);
+      // Stay at 0% unless receiver receives at least one header block
+      if self._xyacked = 0 then
+        begin
+          result := 0;
+          exit;
+        end;
+      // Move to 1-99% as progress unfolds
+      cnt := self._xytotal;
+      if (proto = 'ymodem') then
+        begin
+          cnt := cnt + 256;
+        end;
+      cnt := 1 + ((99 * self._xyacked) div cnt);
+      if cnt > 99 then
+        begin
+          cnt := 99;
+        end;
+      result := cnt;
       exit;
     end;
 
 
-  function TYSerialPort.xmodemUpload(buff: TByteArray; timeoutSec: LongInt):LongInt;
+  function TYSerialPort._xymodemAbort():LongInt;
+    var
+      empty : TByteArray;
+      res : LongInt;
+      ignoreErrMsg : string;
     begin
-      result := self._xymodemQueue('xmodem', '', buff, timeoutSec);
+      setlength(empty,0);
+      self._xyproto := '';
+      self._xyfname := '';
+      self._xyfdata := empty;
+      self._xyblock := empty;
+
+      res := self._upload('xmodem!', empty);
+      // give some extra time for the state machine to abort
+      ySleep(10, ignoreErrMsg);
+      result := res;
       exit;
     end;
 
 
-  function TYSerialPort.xmodemUploadMore(timeoutSec: LongInt):LongInt;
+  function TYSerialPort.xmodemUpload(buff: TByteArray; timeoutSec: LongInt; use1kBlocks: boolean):LongInt;
+    var
+      proto : string;
     begin
-      result := self._xymodemProcess(timeoutSec);
+      if use1kBlocks then
+        begin
+          proto := 'xmodem-1k-t'+inttostr(timeoutSec);
+        end
+      else
+        begin
+          proto := 'xmodem-t'+inttostr(timeoutSec);
+        end;
+
+      result := self._xymodemQueue(proto, buff, '', '', false);
       exit;
     end;
 
 
-  function TYSerialPort.xmodem1kUpload(buff: TByteArray; timeoutSec: LongInt):LongInt;
+  function TYSerialPort.xmodemUploadMore():LongInt;
     begin
-      result := self._xymodemQueue('xmodem-1k', '', buff, timeoutSec);
+      result := self._xymodemProcess('xmodem');
       exit;
     end;
 
 
-  function TYSerialPort.xmodem1kUploadMore(timeoutSec: LongInt):LongInt;
+  function TYSerialPort.xmodemAbort():LongInt;
     begin
-      result := self._xymodemProcess(timeoutSec);
+      result := self._xymodemAbort;
       exit;
     end;
 
 
-  function TYSerialPort.ymodemUpload(filename: string; buff: TByteArray; timeoutSec: LongInt):LongInt;
+  function TYSerialPort.ymodemUpload(buff: TByteArray; timeoutSec: LongInt; filename: string; attributes: string; lastFile: boolean):LongInt;
+    var
+      proto : string;
     begin
-      result := self._xymodemQueue('ymodem', filename, buff, timeoutSec);
+      proto := 'ymodem-t'+inttostr(timeoutSec);
+
+      result := self._xymodemQueue(proto, buff, filename, attributes, lastFile);
       exit;
     end;
 
 
-  function TYSerialPort.ymodemUploadMore(timeoutSec: LongInt):LongInt;
+  function TYSerialPort.ymodemUploadMore():LongInt;
     begin
-      result := self._xymodemProcess(timeoutSec);
+      result := self._xymodemProcess('ymodem');
+      exit;
+    end;
+
+
+  function TYSerialPort.ymodemAbort():LongInt;
+    begin
+      result := self._xymodemAbort;
       exit;
     end;
 

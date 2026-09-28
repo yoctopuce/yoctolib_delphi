@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: svn_id $
+ *  $Id: yocto_accelerometer.pas version 2.1.16087 (build 76087) $
  *
  *  Implements yFindAccelerometer(), the high-level API for Accelerometer functions
  *
