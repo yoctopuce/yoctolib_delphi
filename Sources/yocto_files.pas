@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_files.pas version 2.1.16087 (build 76087) $
+ * $Id:yocto_files.pas version 2.1.16635 (build 76635) $
  *
  * Implements yFindFiles(), the high-level API for Files functions
  *
@@ -416,6 +416,25 @@ public
     ///-
     function get_content_crc(content: TByteArray):LongInt; overload; virtual;
 
+    ////
+    /// <summary>
+    ///   Returns true if the path given as argument meets the requirements
+    ///   for use on a Yoctopuce device.
+    /// <para>
+    ///   This method checks for the
+    ///   maximum file name length, total path length and forbidden
+    ///   characters.
+    /// </para>
+    /// </summary>
+    /// <param name="path">
+    ///   a string representing a path
+    /// </param>
+    /// <returns>
+    ///   a boolean
+    /// </returns>
+    ///-
+    function isValidPath(path: string):boolean; overload; virtual;
+
 
     ////
     /// <summary>
@@ -747,7 +766,24 @@ implementation
 
 
   function TYFiles.download(pathname: string):TByteArray;
+    var
+      idx : LongInt;
+      plen : LongInt;
+      res : TByteArray;
     begin
+      plen := Length(pathname);
+      idx := 0;
+      while (idx < plen) and (Copy(pathname, idx + 1, 1) = '/') do
+        begin
+          idx := idx + 1;
+        end;
+      if (idx < plen) and (Copy(pathname, idx + 1, 1) = '.') then
+        begin
+          self._throw(YAPI_INVALID_ARGUMENT, 'Remote file access forbidden');
+          setlength(res,0);
+          result := res;
+          exit;
+        end;
       result := self._download(pathname);
       exit;
     end;
@@ -819,6 +855,47 @@ implementation
       res := ((_bincrc(meta, 0, 4 * blkcnt)) xor (LongInt($0ffffffff)));
       res := (((res) and ($07fffffff)) - 2 * ((((res) shr 1)) and ($040000000)));
       result := res;
+      exit;
+    end;
+
+
+  function TYFiles.isValidPath(path: string):boolean;
+    var
+      parts : TStringArray;
+      pathLen : LongInt;
+      i : LongInt;
+      allowedChars : string;
+      ii_0 : LongInt;
+    begin
+      SetLength(parts, 0);
+      pathLen := Length(path);
+      if pathLen > 250 then
+        begin
+          result := false;
+          exit;
+        end;
+      parts := _stringSplit(path, '/');
+      for ii_0:=0 to length(parts)-1 do
+        begin
+          if Length(parts[ii_0]) > 31 then
+            begin
+              result := false;
+              exit;
+            end;
+        end;
+      allowedChars := 'abcdefghijklmnopqrstuvwxyz./ABCDEFGHIJKLMNOPQRSTUVWXYZ 01234567'
+      + '89_-[]()@';
+      i := 0;
+      while i < pathLen do
+        begin
+          if (pos(Copy(path, i + 1, 1), allowedChars) - 1) < 0 then
+            begin
+              result := false;
+              exit;
+            end;
+          i := i + 1;
+        end;
+      result := true;
       exit;
     end;
 

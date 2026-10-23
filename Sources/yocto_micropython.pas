@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id: yocto_micropython.pas version 2.1.16087 (build 76087) $
+ *  $Id:yocto_micropython.pas version 2.1.16635 (build 76635) $
  *
  *  Implements yFindMicroPython(), the high-level API for MicroPython functions
  *
@@ -57,6 +57,14 @@ const Y_HEAPUSAGE_INVALID             = YAPI_INVALID_UINT;
 const Y_HEAPFRAG_INVALID              = YAPI_INVALID_UINT;
 const Y_XHEAPUSAGE_INVALID            = YAPI_INVALID_UINT;
 const Y_STACKUSAGE_INVALID            = YAPI_INVALID_UINT;
+const Y_VMSTATE_UNAVAILABLE = 0;
+const Y_VMSTATE_RESET = 1;
+const Y_VMSTATE_PENDING = 2;
+const Y_VMSTATE_RUNNING = 3;
+const Y_VMSTATE_PAUSED = 4;
+const Y_VMSTATE_IDLE = 5;
+const Y_VMSTATE_ERROR = 6;
+const Y_VMSTATE_INVALID = -1;
 const Y_CURRENTSCRIPT_INVALID         = YAPI_INVALID_STRING;
 const Y_STARTUPSCRIPT_INVALID         = YAPI_INVALID_STRING;
 const Y_STARTUPDELAY_INVALID          = YAPI_INVALID_DOUBLE;
@@ -97,6 +105,7 @@ type
     _heapFrag                 : LongInt;
     _xheapUsage               : LongInt;
     _stackUsage               : LongInt;
+    _vmState                  : Integer;
     _currentScript            : string;
     _startupScript            : string;
     _startupDelay             : double;
@@ -208,6 +217,26 @@ type
     /// </para>
     ///-
     function get_stackUsage():LongInt;
+
+    ////
+    /// <summary>
+    ///   Returns the current state of the virtual machine.
+    /// <para>
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <returns>
+    ///   a value among <c>YMicroPython.VMSTATE_UNAVAILABLE</c>, <c>YMicroPython.VMSTATE_RESET</c>,
+    ///   <c>YMicroPython.VMSTATE_PENDING</c>, <c>YMicroPython.VMSTATE_RUNNING</c>,
+    ///   <c>YMicroPython.VMSTATE_PAUSED</c>, <c>YMicroPython.VMSTATE_IDLE</c> and
+    ///   <c>YMicroPython.VMSTATE_ERROR</c> corresponding to the current state of the virtual machine
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns <c>YMicroPython.VMSTATE_INVALID</c>.
+    /// </para>
+    ///-
+    function get_vmState():Integer;
 
     ////
     /// <summary>
@@ -462,11 +491,53 @@ type
 
     ////
     /// <summary>
-    ///   Submit MicroPython code for execution in the interpreter.
+    ///   Submit a short expression to MicroPython interpreter, and return
+    ///   the output produced by its evaluation.
+    /// <para>
+    /// </para>
+    /// <para>
+    ///   There is no implicit reset of the MicroPython virtual machine
+    ///   with this function: all global symbols defined by code that
+    ///   has run since last reset can be accessed freely. But if the
+    ///   interpreter is not at rest when the function is invoked, the
+    ///   call will fail.
+    /// </para>
+    /// <para>
+    ///   Use method <c>reset()</c> if you need to start
+    ///   from a fresh environment before starting the evaluation.
+    /// </para>
+    /// <para>
+    ///   The expression is limited to about 120 ASCII characters.
+    ///   If you need to evaluate more complex code, use the <c>exec()</c>
+    ///   method to define it as a function, check for exec completion
+    ///   using <c>get_vmState()</c> and then use <c>eval()</c>
+    ///   actually run that function and capture its output.
+    /// </para>
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="pythonExpr">
+    ///   Short Python expression to be evaluated
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function eval(pythonExpr: string):string; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Submit Python code for execution in the MicroPython interpreter.
     /// <para>
     ///   If the MicroPython interpreter is busy, this function will
     ///   block until it becomes available. The code is then uploaded,
-    ///   compiled and executed on the fly, without beeing stored on the device filesystem.
+    ///   compiled unless it is already a MicroPython precompiled file,
+    ///   and executed on the fly, without beeing stored on the device
+    ///   filesystem. This method does not wait for the completion
+    ///   if the code execution.
     /// </para>
     /// <para>
     ///   There is no implicit reset of the MicroPython interpreter with
@@ -481,10 +552,11 @@ type
     /// </para>
     /// </summary>
     /// <param name="codeName">
-    ///   name of the code file (used for error reporting only)
+    ///   name of the code buffer, with a <c>.py</c> extension
+    ///   for source code and a <c>.mpy</c> extension for a precompiled file.
     /// </param>
     /// <param name="mpyCode">
-    ///   MicroPython code to compile and execute
+    ///   binary buffer containing MicroPython code to execute
     /// </param>
     /// <returns>
     ///   <c>YAPI.SUCCESS</c> if the call succeeds.
@@ -493,7 +565,7 @@ type
     ///   On failure, throws an exception or returns a negative error code.
     /// </para>
     ///-
-    function eval(codeName: string; mpyCode: string):LongInt; overload; virtual;
+    function exec(codeName: string; mpyCode: TByteArray):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -510,6 +582,25 @@ type
     /// </para>
     ///-
     function reset():LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Reset the MicroPython interpreter to its initial state, and start the specified
+    ///   program, which must have been previously uploaded to the device.
+    /// <para>
+    /// </para>
+    /// </summary>
+    /// <param name="codeFileName">
+    ///   filename of the MicroPython code to run
+    /// </param>
+    /// <returns>
+    ///   <c>YAPI.SUCCESS</c> if the call succeeds.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function run(codeFileName: string):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -682,6 +773,7 @@ implementation
       _heapFrag := Y_HEAPFRAG_INVALID;
       _xheapUsage := Y_XHEAPUSAGE_INVALID;
       _stackUsage := Y_STACKUSAGE_INVALID;
+      _vmState := Y_VMSTATE_INVALID;
       _currentScript := Y_CURRENTSCRIPT_INVALID;
       _startupScript := Y_STARTUPSCRIPT_INVALID;
       _startupDelay := Y_STARTUPDELAY_INVALID;
@@ -730,6 +822,12 @@ implementation
       if (member^.name = 'stackUsage') then
         begin
           _stackUsage := integer(member^.ivalue);
+         result := 1;
+         exit;
+         end;
+      if (member^.name = 'vmState') then
+        begin
+          _vmState := integer(member^.ivalue);
          result := 1;
          exit;
          end;
@@ -852,6 +950,24 @@ implementation
             end;
         end;
       res := self._stackUsage;
+      result := res;
+      exit;
+    end;
+
+
+  function TYMicroPython.get_vmState():Integer;
+    var
+      res : Integer;
+    begin
+      if self._cacheExpiration <= yGetTickCount then
+        begin
+          if self.load(_yapicontext.GetCacheValidity()) <> YAPI_SUCCESS then
+            begin
+              result := Y_VMSTATE_INVALID;
+              exit;
+            end;
+        end;
+      res := self._vmState;
       result := res;
       exit;
     end;
@@ -1044,13 +1160,82 @@ implementation
     end;
 
 
-  function TYMicroPython.eval(codeName: string; mpyCode: string):LongInt;
+  function TYMicroPython.eval(pythonExpr: string):string;
+    var
+      state : string;
+      content : TByteArray;
+      endPos : LongInt;
+      lenLen : LongInt;
+      lenStr : string;
+      res : LongInt;
+      url : string;
+      contentStr : string;
+      ignoreErrMsg : string;
+    begin
+      state := Copy(self.get_advertisedValue, 0 + 1, 1);
+      if not((pos(state, 'zix') - 1) >= 0) then
+        begin
+          self._throw(YAPI_DEVICE_BUSY,'MicroPython VM is not at rest');
+          result:='';
+          exit;
+        end;
+      // Retrieve current MicroPython console position (avoid transmitting current content if possible)
+      content := self._download('mpy.txt?pos=2111222333');
+      endPos := length(content) - 1;
+      while (endPos >= 0) and(content[endPos] <> 64) do
+        begin
+          endPos := endPos - 1;
+        end;
+      if not(endPos > 0) then
+        begin
+          self._throw(YAPI_IO_ERROR,'failed to download MicroPython logs');
+          result:='';
+          exit;
+        end;
+      lenLen := length(content) - endPos - 1;
+      lenStr := y_utf8Decode(content, endPos + 1, lenLen);
+      // trigger the evaluation
+      res := self.set_command('?'+pythonExpr);
+      if not(res = YAPI_SUCCESS) then
+        begin
+          self._throw(res,'failed to trigger evaluation');
+          result:='';
+          exit;
+        end;
+      // wait for the evaluation to complete
+      state := Copy(self.get_advertisedValue, 0 + 1, 1);
+      while (pos(state, 'ix') - 1) < 0 do
+        begin
+          ySleep(50, ignoreErrMsg);
+          state := Copy(self.get_advertisedValue, 0 + 1, 1);
+        end;
+      // download the logs after the evaluation
+      url := 'mpy.txt?pos='+lenStr;
+      content := self._download(url);
+      endPos := length(content) - 1;
+      while (endPos >= 0) and(content[endPos] <> 64) do
+        begin
+          endPos := endPos - 1;
+        end;
+      if not(endPos > 0) then
+        begin
+          self._throw(YAPI_IO_ERROR,'failed to download MicroPython logs');
+          result:='';
+          exit;
+        end;
+      contentStr := y_utf8Decode(content, 0, endPos - 1);
+      result := contentStr;
+      exit;
+    end;
+
+
+  function TYMicroPython.exec(codeName: string; mpyCode: TByteArray):LongInt;
     var
       fullname : string;
       res : LongInt;
     begin
       fullname := 'mpy:'+codeName;
-      res := self._upload(fullname, _StrToByte(mpyCode));
+      res := self._upload(fullname, mpyCode);
       result := res;
       exit;
     end;
@@ -1081,6 +1266,22 @@ implementation
     end;
 
 
+  function TYMicroPython.run(codeFileName: string):LongInt;
+    var
+      currentScript : string;
+    begin
+      currentScript := self.get_currentScript;
+      if (currentScript = codeFileName) then
+        begin
+          // set_currentScript does nothing when the script name is unchanged,
+          // so in this case we need to force a VM reset
+          self.set_command('Z');
+        end;
+      result := self.set_currentScript(codeFileName);
+      exit;
+    end;
+
+
   function TYMicroPython.clearLogs():LongInt;
     var
       res : LongInt;
@@ -1095,7 +1296,6 @@ implementation
     var
       buff : TByteArray;
       bufflen : LongInt;
-      res : string;
     begin
       buff := self._download('mpy.txt');
       bufflen := length(buff) - 1;
@@ -1103,8 +1303,7 @@ implementation
         begin
           bufflen := bufflen - 1;
         end;
-      res := Copy(_ByteToString(buff), 0 + 1, bufflen);
-      result := res;
+      result := y_utf8Decode(buff, 0, bufflen);
       exit;
     end;
 
@@ -1148,15 +1347,12 @@ implementation
       url : string;
       content : TByteArray;
       endPos : LongInt;
-      contentStr : string;
-      msgArr : TStringArray;
-      arrLen : LongInt;
+      lenLen : LongInt;
       lenStr : string;
-      arrPos : LongInt;
+      msgPos : LongInt;
+      msgEnd : LongInt;
       logMsg : string;
     begin
-      SetLength(msgArr, 0);
-      // detect possible power cycle of the reader to clear event pointer
       cbPos := StrToInt('$0' + Copy(cbVal, 1 + 1, Length(cbVal)-1));
       cbDPos := ((cbPos - self._prevCbPos) and ($0fffff));
       self._prevCbPos := cbPos;
@@ -1174,7 +1370,7 @@ implementation
           // use first emulated value callback caused by registerValueCallback:
           // to retrieve current logs position
           self._logPos := 0;
-          self._prevPartialLog = '';
+          self._prevPartialLog := '';
           url := 'mpy.txt';
         end
       else
@@ -1184,7 +1380,6 @@ implementation
         end;
 
       content := self._download(url);
-      contentStr := _ByteToString(content);
       // look for new position indicator at end of logs
       endPos := length(content) - 1;
       while (endPos >= 0) and(content[endPos] <> 64) do
@@ -1193,11 +1388,12 @@ implementation
         end;
       if not(endPos > 0) then
         begin
-          self._throw(YAPI_IO_ERROR,'fail to download micropython logs');
+          self._throw(YAPI_IO_ERROR,'fail to download MicroPython logs');
           result:=YAPI_IO_ERROR;
           exit;
         end;
-      lenStr := Copy(contentStr, endPos+1 + 1, Length(contentStr)-(endPos+1));
+      lenLen := length(content) - endPos - 1;
+      lenStr := y_utf8Decode(content, endPos + 1, lenLen);
       // update processed event position pointer
       self._logPos := _atoi(lenStr);
       if self._isFirstCb then
@@ -1207,37 +1403,59 @@ implementation
           result := YAPI_SUCCESS;
           exit;
         end;
-      // now generate callbacks for each complete log line
       endPos := endPos - 1;
       if not(content[endPos] = 10) then
         begin
-          self._throw(YAPI_IO_ERROR,'fail to download micropython logs');
+          self._throw(YAPI_IO_ERROR,'fail to download MicroPython logs');
           result:=YAPI_IO_ERROR;
           exit;
         end;
-      contentStr := Copy(contentStr, 0 + 1, endPos);
-      msgArr := _stringSplit(contentStr, #10);
-      arrLen := length(msgArr) - 1;
-      if arrLen > 0 then
+      if endPos = 0 then
         begin
-          logMsg := ''+self._prevPartialLog+''+msgArr[0];
+          result := YAPI_SUCCESS;
+          exit;
+        end;
+      // now generate callbacks for each complete log line
+      msgPos := 0;
+      msgEnd := 0;
+      while (msgEnd < endPos) and(content[msgEnd] <> 10) do
+        begin
+          msgEnd := msgEnd + 1;
+        end;
+      logMsg := y_utf8Decode(content, msgPos, msgEnd - msgPos);
+      logMsg := ''+self._prevPartialLog+''+logMsg;
+      if msgEnd < endPos then
+        begin
           if (addr(self._logCallback) <> nil) then
             begin
               self._logCallback(self, logMsg);
             end;
-          self._prevPartialLog := '';
-          arrPos := 1;
-          while arrPos < arrLen do
+        end
+      else
+        begin
+          self._prevPartialLog := logMsg;
+        end;
+      while msgEnd < endPos do
+        begin
+          msgPos := msgEnd + 1;
+          msgEnd := msgPos;
+          while (msgEnd < endPos) and(content[msgEnd] <> 10) do
             begin
-              logMsg := msgArr[arrPos];
+              msgEnd := msgEnd + 1;
+            end;
+          logMsg := y_utf8Decode(content, msgPos, msgEnd - msgPos);
+          if msgEnd < endPos then
+            begin
               if (addr(self._logCallback) <> nil) then
                 begin
                   self._logCallback(self, logMsg);
                 end;
-              arrPos := arrPos + 1;
+            end
+          else
+            begin
+              self._prevPartialLog := logMsg;
             end;
         end;
-      self._prevPartialLog = ''+self._prevPartialLog+''+msgArr[arrLen];
       result := YAPI_SUCCESS;
       exit;
     end;

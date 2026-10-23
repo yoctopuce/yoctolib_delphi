@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_api.pas version 2.1.16087 (build 76087) $
+ * $Id:yocto_api.pas version 2.1.16635 (build 76635) $
  *
  * High-level programming interface, common to all modules
  *
@@ -129,7 +129,7 @@ const
   Y_DETECT_ALL : integer = (Y_DETECT_USB or Y_DETECT_NET);
 
   YOCTO_API_VERSION_STR     = '2.1';
-  YOCTO_API_BUILD_NO        = '76087';
+  YOCTO_API_BUILD_NO        = '76635';
   YOCTO_DEFAULT_PORT        = 4444;
   YOCTO_VENDORID            = $24e0;
   YOCTO_DEVID_FACTORYBOOT   = 1;
@@ -3115,10 +3115,9 @@ end;
     /// <summary>
     ///   Returns the path to the dynamic YAPI library.
     /// <para>
-    ///   This function is useful for debugging problems loading the
-    ///   dynamic library YAPI. This function is supported by the C#, Python and VB languages. The other
-    ///   libraries return an
-    ///   empty string.
+    ///   This function is useful for debugging
+    ///   problems loading the dynamic library YAPI. This function is supported by the C#,
+    ///   Python and VB languages. The other libraries return an empty string.
     /// </para>
     /// </summary>
     /// <returns>
@@ -3126,6 +3125,8 @@ end;
     /// </returns>
     ///-
     function GetYAPISharedLibraryPath():string; overload; virtual;
+
+    function _utf8Decode(utf8buff: TByteArray; fromPos: LongInt; fromLen: LongInt):string; overload; virtual;
 
     ////
     /// <summary>
@@ -4962,10 +4963,9 @@ end;
     /// <summary>
     ///   Returns the path to the dynamic YAPI library.
     /// <para>
-    ///   This function is useful for debugging problems loading the
-    ///   dynamic library YAPI. This function is supported by the C#, Python and VB languages. The other
-    ///   libraries return an
-    ///   empty string.
+    ///   This function is useful for debugging
+    ///   problems loading the dynamic library YAPI. This function is supported by the C#,
+    ///   Python and VB languages. The other libraries return an empty string.
     /// </para>
     /// </summary>
     /// <returns>
@@ -4973,6 +4973,8 @@ end;
     /// </returns>
     ///-
     function yGetYAPISharedLibraryPath():string;
+
+    function y_utf8Decode(utf8buff: TByteArray; fromPos: LongInt; fromLen: LongInt):string;
 
     ////
     /// <summary>
@@ -6185,6 +6187,7 @@ const
   function _yapiGetHubStrAttr(hubref:integer; attrname:pansichar; attrval:pansichar; maxsize:integer; var neededsize:integer):integer; cdecl; external dllfile name 'yapiGetHubStrAttr';
   function _yapiGetHubIntAttr(hubref:integer; attrname:pansichar):integer; cdecl; external dllfile name 'yapiGetHubIntAttr';
   function _yapiSetHubIntAttr(hubref:integer; attrname:pansichar; value:integer):integer; cdecl; external dllfile name 'yapiSetHubIntAttr';
+  function _yapiUtf8Decode(utf8_buffer:pansichar; inputPos:integer; inputLen:integer; output:pansichar):integer; cdecl; external dllfile name 'yapiUtf8Decode';
   function _yapiSetTrustedCertificatesList(certificatePath:pansichar; errmsg:pansichar):integer; cdecl; external dllfile name 'yapiSetTrustedCertificatesList';
   function _yapiCRC32(data:pansichar; ofs:integer; len:integer):u32; cdecl; external dllfile name 'yapiCRC32';
 //--- (end of generated code: YFunction dlldef)
@@ -7031,7 +7034,7 @@ var
       apidate : string;
     begin
       yapiGetAPIVersion(version, apidate);
-      yGetAPIVersion:=  '2.1.16087 (' + version + ')';
+      yGetAPIVersion:=  '2.1.16635 (' + version + ')';
     end;
 
 
@@ -10391,7 +10394,7 @@ var
           for ii_1:=0 to length(filelist)-1 do
             begin
               name := self._json_get_key(filelist[ii_1], 'name');
-              if (Length(name) > 0) and not((name = 'startupConf.json')) then
+              if (Length(name) > 0) and not((name = 'startupConf.json')) and not((Copy(name, 0 + 1, 1) = '.')) then
                 begin
                   if (Copy(name, Length(name)-1 + 1, 1) = '/') then
                     begin
@@ -12783,6 +12786,20 @@ function TYSensor._calib_ctx(calibStr:string; calhdl:yCalibrationHandler; caltyp
     end;
 
 
+  function TYAPIContext._utf8Decode(utf8buff: TByteArray; fromPos: LongInt; fromLen: LongInt):string;
+    var
+      tmpbuff : pansichar;
+      res : string;
+    begin
+      getmem(tmpbuff, fromLen+1);
+      _yapiUtf8Decode(pansichar(ansistring(utf8buff)), fromPos, fromLen, tmpbuff);
+      res := string(tmpbuff);
+      freemem(tmpbuff);
+      result := res;
+      exit;
+    end;
+
+
   function TYAPIContext.AddUdevRule(force: boolean):string;
     var
       msg : string;
@@ -13093,6 +13110,18 @@ function TYSensor._calib_ctx(calibStr:string; calhdl:yCalibrationHandler; caltyp
             yInitAPI(0, dummy);
           end;
         result := _yapiContext.GetYAPISharedLibraryPath();
+    end;
+
+
+  function y_utf8Decode(utf8buff: TByteArray; fromPos: LongInt; fromLen: LongInt):string;
+    var
+        dummy : string;
+    begin
+        if (Not(YAPI_apiInitialized)) then
+          begin
+            yInitAPI(0, dummy);
+          end;
+        result := _yapiContext._utf8Decode(utf8buff, fromPos, fromLen);
     end;
 
 

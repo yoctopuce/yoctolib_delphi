@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id: yocto_display.pas version 2.1.16087 (build 76087) $
+ * $Id:yocto_display.pas version 2.1.16635 (build 76635) $
  *
  * Implements yFindDisplay(), the high-level API for Display functions
  *
@@ -81,6 +81,7 @@ const Y_COMMAND_INVALID               = YAPI_INVALID_STRING;
 
 //--- (generated code: YDisplayLayer definitions)
 type  TYALIGN = (Y_ALIGN_TOP_LEFT,Y_ALIGN_CENTER_LEFT,Y_ALIGN_BASELINE_LEFT,Y_ALIGN_BOTTOM_LEFT,Y_ALIGN_TOP_CENTER,Y_ALIGN_CENTER,Y_ALIGN_BASELINE_CENTER,Y_ALIGN_BOTTOM_CENTER,Y_ALIGN_TOP_DECIMAL,Y_ALIGN_CENTER_DECIMAL,Y_ALIGN_BASELINE_DECIMAL,Y_ALIGN_BOTTOM_DECIMAL,Y_ALIGN_TOP_RIGHT,Y_ALIGN_CENTER_RIGHT,Y_ALIGN_BASELINE_RIGHT,Y_ALIGN_BOTTOM_RIGHT);
+type  TYQRMODE = (Y_QRMODE_UPCASE_ECCL,Y_QRMODE_UPCASE_ECCM,Y_QRMODE_UPCASE_ECCQ,Y_QRMODE_UPCASE_ECCH,Y_QRMODE_BYTES_ECCL,Y_QRMODE_BYTES_ECCM,Y_QRMODE_BYTES_ECCQ,Y_QRMODE_BYTES_ECCH);
 
 const Y_NO_INK                        = -1;
 const Y_BG_INK                        = -2;
@@ -393,6 +394,7 @@ public
     /// <summary>
     ///   Changes the model of display to match the connected display panel.
     /// <para>
+    ///   Value examples:  "E2_266_KS0_C1" , "E2_290_QS_0F22 , "E2_370_KS_0C1", "E2_417_KS_0D0" etc..
     ///   This function has no effect if the module does not support the selected
     ///   display panel. Remember to call the <c>saveToFlash()</c>
     ///   method of the module if the modification must be kept.
@@ -1552,6 +1554,48 @@ public
     /// </para>
     ///-
     function drawGIF(x: LongInt; y: LongInt; gifimage: TByteArray):LongInt; overload; virtual;
+
+    ////
+    /// <summary>
+    ///   Displays a QR code at the specified position on the layer.
+    /// <para>
+    ///   You can choose from several
+    ///   QR code representation modes, depending on the desired content type (restricted alphabet
+    ///   vs. all characters) and the error correction level (ECC level, which can be Low, Medium,
+    ///   Quartile, or High). A code with a full character set and a higher error correction level is
+    ///   larger than a code with a limited character set and a low error correction level. You can
+    ///   precalculate the size of the QR code before displaying it by calling this function with
+    ///   a zoom factor of zero.
+    /// </para>
+    /// </summary>
+    /// <param name="x">
+    ///   the distance in pixels from the left edge of the layer to the left edge of the QR code
+    /// </param>
+    /// <param name="y">
+    ///   the distance in pixels from the top edge of the layer to the top edge of the QR code
+    /// </param>
+    /// <param name="mode">
+    ///   the QR code encoding mode, selected from the enumeration <c>YDisplayLayer.QRMODE</c>:
+    ///   <c>YDisplayLayer.QRMODE_BYTES_ECCH</c>, <c>YDisplayLayer.QRMODE_BYTES_ECCQ</c>,
+    ///   <c>YDisplayLayer.QRMODE_BYTES_ECCM</c>, <c>YDisplayLayer.QRMODE_BYTES_ECCL</c>,
+    ///   <c>YDisplayLayer.QRMODE_UPCASE_ECCH</c>, <c>YDisplayLayer.QRMODE_UPCASE_ECCQ</c>,
+    ///   <c>YDisplayLayer.QRMODE_UPCASE_ECCM</c>, <c>YDisplayLayer.QRMODE_UPCASE_ECCL</c>.
+    /// </param>
+    /// <param name="zoom">
+    ///   the magnification factor, between 0 (not displayed) and 16
+    ///   (each point of the QR code is represented by 16x16 pixels on the screen).
+    /// </param>
+    /// <param name="text">
+    ///   the text to encode in the QR code
+    /// </param>
+    /// <returns>
+    ///   the size of one side of the QR code in pixels if successful.
+    /// </returns>
+    /// <para>
+    ///   On failure, throws an exception or returns a negative error code.
+    /// </para>
+    ///-
+    function drawQRCode(x: LongInt; y: LongInt; mode: TYQRMODE; zoom: LongInt; text: string):LongInt; overload; virtual;
 
     ////
     /// <summary>
@@ -3653,6 +3697,42 @@ destructor TYDisplay.destroy();
       self._display.flushLayers;
       destname := 'layer'+inttostr(self._id)+':G,-1@'+inttostr(x)+','+inttostr(y);
       result := self._display.upload(destname, gifimage);
+      exit;
+    end;
+
+
+  function TYDisplayLayer.drawQRCode(x: LongInt; y: LongInt; mode: TYQRMODE; zoom: LongInt; text: string):LongInt;
+    var
+      content : TByteArray;
+      contentLen : LongInt;
+      destname : string;
+      json : TByteArray;
+      qrSize : LongInt;
+    begin
+      content := _StrToByte(text);
+      contentLen := length(content);
+      if zoom = 0 then
+        begin
+          // no need to send actual content for computing QR code size
+          setlength(content,0);
+        end;
+      self._display.flushLayers;
+      destname := 'layer'+inttostr(self._id)+':Q'+inttostr(ord(mode))+'*'+inttostr(zoom)+','+inttostr(contentLen)+'@'+inttostr(x)+','+inttostr(y);
+      json := self._display._uploadEx(destname, content);
+      if length(json) = 0 then
+        begin
+          self._display._throw(YAPI_IO_ERROR, 'failed to receive size');
+          result := YAPI_IO_ERROR;
+          exit;
+        end;
+      qrSize := _atoi(self._display._json_get_key(json, 'size'));
+      if qrSize >= 999 then
+        begin
+          self._display._throw(YAPI_INVALID_ARGUMENT, 'text is too large');
+          result := YAPI_INVALID_ARGUMENT;
+          exit;
+        end;
+      result := qrSize;
       exit;
     end;
 
