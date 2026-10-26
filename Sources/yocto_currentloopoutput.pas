@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id:yocto_currentloopoutput.pas version 2.1.16635 (build 76635) $
+ *  $Id: yocto_currentloopoutput.pas version 2.1.16695 (build 76695) $
  *
  *  Implements yFindCurrentLoopOutput(), the high-level API for CurrentLoopOutput functions
  *

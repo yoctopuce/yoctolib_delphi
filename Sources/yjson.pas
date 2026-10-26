@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- * $Id:yjson.pas version 2.1.16635 (build 76635) $
+ * $Id: yjson.pas version 2.1.16695 (build 76695) $
  *
  * Simple JSON parser to parse the output of Yoctopuce devices
  *

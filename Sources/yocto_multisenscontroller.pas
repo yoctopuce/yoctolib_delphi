@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id:yocto_multisenscontroller.pas version 2.1.16635 (build 76635) $
+ *  $Id: yocto_multisenscontroller.pas version 2.1.16695 (build 76695) $
  *
  *  Implements yFindMultiSensController(), the high-level API for MultiSensController functions
  *

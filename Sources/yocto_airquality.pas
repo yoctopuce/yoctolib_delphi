@@ -1,6 +1,6 @@
 {*********************************************************************
  *
- *  $Id:yocto_airquality.pas version 2.1.16635 (build 76635) $
+ *  $Id: yocto_airquality.pas version 2.1.16695 (build 76695) $
  *
  *  Implements yFindAirQuality(), the high-level API for AirQuality functions
  *
